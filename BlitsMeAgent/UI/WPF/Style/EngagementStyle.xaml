@@ -1,0 +1,11 @@
+﻿<ResourceDictionary
+	xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" 
+	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" 
+>
+    <Style x:Key="EngagementStatusText" TargetType="TextBlock">
+        <Setter Property="FontFamily" Value="Calibri" />
+        <Setter Property="FontSize" Value="12pt" />
+        <Setter Property="HorizontalAlignment" Value="Left" />
+        <Setter Property="Foreground" Value="White"/>
+    </Style>
+</ResourceDictionary>

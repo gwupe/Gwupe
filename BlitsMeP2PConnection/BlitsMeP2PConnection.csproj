@@ -1,0 +1,121 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>8.0.30703</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{C8080119-3305-43B5-8944-592DBC960F12}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>BlitsMe.Communication.P2P</RootNamespace>
+    <AssemblyName>BlitsMe.Communication.P2P</AssemblyName>
+    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <TargetFrameworkProfile>Client</TargetFrameworkProfile>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="log4net, Version=1.2.11.0, Culture=neutral, PublicKeyToken=669e0ddf0bb1aa2a, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\BlitsMeCommon\log4net.dll</HintPath>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Exceptions\ConnectionException.cs" />
+    <Compile Include="Exceptions\BufferOverrunException.cs" />
+    <Compile Include="Exceptions\UnknownPacketException.cs" />
+    <Compile Include="Exceptions\BufferUnderrunException.cs" />
+    <Compile Include="Exceptions\P2PConnectionException.cs" />
+    <None Include="MSG\CONTROL.cs.old" />
+    <None Include="MSG\KEEPALIVE.cs.old" />
+    <None Include="MSG\SYNC.cs.old" />
+    <None Include="MSG\VNC.cs.old" />
+    <None Include="MSG\WAVE.cs.old" />
+    <None Include="MSG\TYPE.cs.old" />
+    <Compile Include="Exceptions\HandshakeException.cs" />
+    <Compile Include="P2PUtils.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="RUDP\Connector\API\INamedConnector.cs" />
+    <Compile Include="RUDP\Connector\API\INamedListener.cs" />
+    <Compile Include="RUDP\Connector\ProxyConnection.cs" />
+    <Compile Include="RUDP\Connector\ProxyTcpConnector.cs" />
+    <Compile Include="RUDP\Connector\ProxyTcpListener.cs" />
+    <Compile Include="RUDP\Packet\API\IPacket.cs" />
+    <Compile Include="RUDP\Packet\API\ITunnelPacket.cs" />
+    <Compile Include="RUDP\Packet\API\IUdpPacket.cs" />
+    <Compile Include="RUDP\Packet\TCP\BasicTcpPacket.cs" />
+    <Compile Include="RUDP\Packet\TCP\StandardAckPacket.cs" />
+    <Compile Include="RUDP\Packet\TCP\StandardConnectRsPacket.cs" />
+    <Compile Include="RUDP\Packet\TCP\StandardDisconnectPacket.cs" />
+    <Compile Include="RUDP\Packet\TCP\StandardNamedConnectPacket.cs" />
+    <Compile Include="RUDP\Packet\TCP\StandardTcpDataPacket.cs" />
+    <Compile Include="RUDP\Packet\TCP\StandardTcpNopPacket.cs" />
+    <Compile Include="RUDP\Packet\StandardTcpPacketFactory.cs" />
+    <Compile Include="RUDP\Packet\Tunnel\StandardCloseTunnelPacket.cs" />
+    <Compile Include="RUDP\Packet\Tunnel\StandardPingTunnelPacket.cs" />
+    <Compile Include="RUDP\Packet\StandardUdpPacketFactory.cs" />
+    <Compile Include="RUDP\Packet\Tunnel\StandardTunnelDataPacket.cs" />
+    <Compile Include="RUDP\Packet\Tunnel\StandardTunnelNopPacket.cs" />
+    <Compile Include="RUDP\Packet\Tunnel\StandardSyncTunnelPacket.cs" />
+    <Compile Include="RUDP\Packet\Tunnel\StandardWaveTunnelPacket.cs" />
+    <Compile Include="RUDP\Packet\Tunnel\BasicTunnelPacket.cs" />
+    <Compile Include="RUDP\Socket\API\IInternalTcpOverUdptSocket.cs" />
+    <Compile Include="RUDP\Socket\API\ITcpOverUdptSocket.cs" />
+    <Compile Include="RUDP\Packet\API\ITcpPacket.cs" />
+    <Compile Include="RUDP\Socket\StandardTcPoverUdptSocket.cs" />
+    <Compile Include="RUDP\Tunnel\API\ITransportConnection.cs" />
+    <Compile Include="RUDP\Tunnel\API\ITransport.cs" />
+    <Compile Include="RUDP\Tunnel\API\IUDPTunnel.cs" />
+    <Compile Include="RUDP\Tunnel\API\ITcpConnection.cs" />
+    <Compile Include="RUDP\Tunnel\TcpOne4OneConnection.cs" />
+    <Compile Include="RUDP\Tunnel\API\ITransportManager.cs" />
+    <Compile Include="RUDP\Tunnel\TransportManager.cs" />
+    <Compile Include="RUDP\Tunnel\UDPTunnel.cs" />
+    <Compile Include="RUDP\Tunnel\Transport\TCPTransport.cs" />
+    <Compile Include="RUDP\Tunnel\Transport\UDPTransport.cs" />
+    <Compile Include="RUDP\Utils\TCPConnectionHelper.cs" />
+    <Compile Include="RUDP\Utils\PeerInfo.cs" />
+    <Compile Include="RUDP\Utils\Pinger.cs" />
+    <Compile Include="RUDP\Utils\Syncer.cs" />
+    <Compile Include="RUDP\Utils\Waver.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\BlitsMeCommon\BlitsMeCommon.csproj">
+      <Project>{1B355F1C-9D50-4BAB-8CEB-E6CA72E6DE69}</Project>
+      <Name>BlitsMeCommon</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup />
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

@@ -1,0 +1,22 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+
+namespace BlitsMe.Communication.P2P.MSG
+{
+    public class CONTROL
+    {
+        // Positional
+        public const byte POS_RQRS = 1;
+        public const byte POS_TYPE = 2;
+        // Request/Response values
+        public const byte RQ = 0;
+        public const byte RS = 1;
+        // Control types
+        public const byte VNC = 0;
+        public const byte FILE = 1;
+
+
+    }
+}

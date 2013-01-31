@@ -1,0 +1,19 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+
+namespace BlitsMe.Communication.P2P.MSG
+{
+    public static class SYNC
+    {
+        // Sync positions
+        public const int POS_SEQ = 1; // 2 bytes long
+        public const int POS_HS = 3;
+        // Sync message values
+        public const byte NULL = 0;
+        public const byte SYN = 1;
+        public const byte SYN_ACK = 2;
+        public const byte ACK = 3;
+    }
+}
