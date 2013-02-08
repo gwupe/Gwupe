@@ -191,6 +191,10 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
+    <Page Include="UI\WPF\Roster\AddPersonControl.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="UI\WPF\Roster\RosterElement.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
@@ -225,6 +229,9 @@
     <Compile Include="UI\WPF\Engage\RelativeMessageTimeConverter.cs" />
     <Compile Include="UI\WPF\LoginWindow.xaml.cs">
       <DependentUpon>LoginWindow.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="UI\WPF\Roster\AddPersonControl.xaml.cs">
+      <DependentUpon>AddPersonControl.xaml</DependentUpon>
     </Compile>
     <Compile Include="UI\WPF\Roster\RosterList.cs" />
     <Compile Include="UI\WPF\Utils\ObservableListMirror.cs" />
@@ -331,8 +338,16 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Resource>
     <Resource Include="Images\Blitsmewording200.png" />
+    <Resource Include="UI\WPF\Images\1359662466_Add.png" />
+    <Resource Include="UI\WPF\Images\1360201178_speech_bubble.png" />
     <Resource Include="UI\WPF\Images\BLITSME.png" />
+    <Resource Include="UI\WPF\Images\Check.png" />
     <Resource Include="UI\WPF\Images\facebook-like.png" />
+    <Resource Include="UI\WPF\Images\Help.png" />
+    <Resource Include="UI\WPF\Images\Log Out.png" />
+    <Resource Include="UI\WPF\Images\messagebox_warning.png" />
+    <Resource Include="UI\WPF\Images\process.png" />
+    <Resource Include="UI\WPF\Images\Search.png" />
     <Resource Include="UI\WPF\Images\tweet.png" />
   </ItemGroup>
   <ItemGroup>

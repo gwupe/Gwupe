@@ -3,11 +3,52 @@
 	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
 	xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
 	xmlns:ed="http://schemas.microsoft.com/expression/2010/drawing"
-	xmlns:ts="clr-namespace:BlitsMe.Agent.UI.WPF.Engage" >
+	xmlns:ts="clr-namespace:BlitsMe.Agent.UI.WPF.Engage" 
+	xmlns:chat="clr-namespace:BlitsMe.Agent.Components.Chat" 
+	>
+
     <!-- Resource dictionary entries should be defined here. -->
     <ResourceDictionary.MergedDictionaries>
         <ResourceDictionary Source="./Style.xaml" />
     </ResourceDictionary.MergedDictionaries>
+    <DataTemplate x:Key="FailedImage">
+        <Image Source="/BlitsMe.Agent;component/UI/WPF/Images/messagebox_warning.png" Width="20" Margin="0,0,0,0" HorizontalAlignment="Left"></Image>
+    </DataTemplate>
+
+    <DataTemplate x:Key="TryingImage">
+        <DataTemplate.Resources>
+            <Storyboard x:Key="Spin" RepeatBehavior="Forever">
+                <DoubleAnimationUsingKeyFrames BeginTime="00:00:00" Storyboard.TargetName="ellipse" Storyboard.TargetProperty="(UIElement.RenderTransform).(TransformGroup.Children)[2].(RotateTransform.Angle)">
+                    <SplineDoubleKeyFrame KeyTime="00:00:02" Value="360"/>
+                </DoubleAnimationUsingKeyFrames>
+            </Storyboard>
+        </DataTemplate.Resources>
+        <DataTemplate.Triggers>
+            <EventTrigger RoutedEvent="FrameworkElement.Loaded">
+                <BeginStoryboard Storyboard="{StaticResource Spin}"/>
+            </EventTrigger>
+        </DataTemplate.Triggers>
+        <Ellipse x:Name="ellipse" Margin="0" StrokeThickness="20" RenderTransformOrigin="0.5,0.5">
+            <Ellipse.RenderTransform>
+                <TransformGroup>
+                    <ScaleTransform/>
+                    <SkewTransform/>
+                    <RotateTransform/>
+                </TransformGroup>
+            </Ellipse.RenderTransform>
+            <Ellipse.Stroke>
+                <LinearGradientBrush EndPoint="0.445,0.997" StartPoint="0.555,0.003">
+                    <GradientStop Color="White" Offset="0"/>
+                    <GradientStop Color="#FF0052FF" Offset="1"/>
+                </LinearGradientBrush>
+            </Ellipse.Stroke>
+        </Ellipse>
+    </DataTemplate>
+    <DataTemplate x:Key="DeliveredImage">
+        <Image Source="/BlitsMe.Agent;component/UI/WPF/Images/Check.png" Width="20" Margin="0,0,0,0" HorizontalAlignment="Left"></Image>
+    </DataTemplate>
+    <DataTemplate x:Key="NoImage">
+    </DataTemplate>
     <Style x:Key="ChatBubble">
         <Setter Property="RichTextBox.Padding" Value="5" />
         <Setter Property="Control.Template">
@@ -115,39 +156,7 @@
         <Setter Property="Margin" Value="23,0,0,0" />
         <Setter Property="VerticalAlignment" Value="Top" />
     </Style>
-    <!--
-    <Style TargetType="{x:Type TabItem}">
-        <Setter Property="Template">
-            <Setter.Value>
-                <ControlTemplate TargetType="{x:Type TabItem}">
-                    <Grid>
-                        <Border 
-                 Name="Border"
-                 Background="LightBlue"
-                 BorderBrush="Black" 
-                 BorderThickness="1,1,1,0" 
-                 CornerRadius="6,6,0,0" >
-                            <ContentPresenter x:Name="ContentSite"
-                   VerticalAlignment="Center"
-                   HorizontalAlignment="Center"
-                   ContentSource="Header"
-                   Margin="12,2,12,2"/>
-                        </Border>
-                    </Grid>
-                    <ControlTemplate.Triggers>
-                        <Trigger Property="IsSelected" Value="True">
-                            <Setter TargetName="Border" Property="Background" Value="#FF2B519B" />
-                            <Setter Property="Foreground" Value="#FFFFFFFF" />
-                        </Trigger>
-                        <Trigger Property="IsSelected" Value="False">
-                            <Setter TargetName="Border" Property="Background" Value="LightGray" />
-                        </Trigger>
-                    </ControlTemplate.Triggers>
-                </ControlTemplate>
-            </Setter.Value>
-        </Setter>
-    </Style>
-	-->
+
     <Style x:Key="ChatItemContainerStyle" TargetType="{x:Type TabItem}">
         <Setter Property="BorderThickness" Value="0" />
         <Setter Property="RenderTransformOrigin" Value="0.5,0.5" />
@@ -163,36 +172,77 @@
         <Setter Property="VerticalAlignment" Value="Top" />
     </Style>
     <ts:RelativeMessageTimeConverter x:Key="relativeMessageTimeConverter" />
+    <DataTemplate x:Key="DeliveryNotification">
+        <ContentControl Name="DeliveryStatImage" ContentTemplate="{StaticResource TryingImage}" />
+        <DataTemplate.Triggers>
+            <DataTrigger Binding="{Binding DeliveryState}">
+                <DataTrigger.Value>
+                    <chat:ChatDeliveryState>Delivered</chat:ChatDeliveryState>
+                </DataTrigger.Value>
+                <Setter TargetName="DeliveryStatImage" Property="ContentTemplate" Value="{StaticResource DeliveredImage}" />
+            </DataTrigger>
+            <DataTrigger Binding="{Binding DeliveryState}">
+                <DataTrigger.Value>
+                    <chat:ChatDeliveryState>NotAttempted</chat:ChatDeliveryState>
+                </DataTrigger.Value>
+                <Setter TargetName="DeliveryStatImage" Property="ContentTemplate" Value="{StaticResource TryingImage}" />
+            </DataTrigger>
+            <DataTrigger Binding="{Binding DeliveryState}">
+                <DataTrigger.Value>
+                    <chat:ChatDeliveryState>Trying</chat:ChatDeliveryState>
+                </DataTrigger.Value>
+                <Setter TargetName="DeliveryStatImage" Property="ContentTemplate" Value="{StaticResource TryingImage}" />
+            </DataTrigger>
+            <DataTrigger Binding="{Binding DeliveryState}">
+                <DataTrigger.Value>
+                    <chat:ChatDeliveryState>Failed</chat:ChatDeliveryState>
+                </DataTrigger.Value>
+                <Setter TargetName="DeliveryStatImage" Property="ContentTemplate" Value="{StaticResource FailedImage}" />
+            </DataTrigger>
+            <DataTrigger Binding="{Binding DeliveryState}">
+                <DataTrigger.Value>
+                    <chat:ChatDeliveryState>FailedTrying</chat:ChatDeliveryState>
+                </DataTrigger.Value>
+                <Setter TargetName="DeliveryStatImage" Property="ContentTemplate" Value="{StaticResource FailedImage}" />
+            </DataTrigger>
+        </DataTemplate.Triggers>
+    </DataTemplate>
     <DataTemplate x:Key="ChatMeGroup">
-        <StackPanel>
-            <RichTextBox Style="{StaticResource ChatBubbleMe}">
-                <FlowDocument>
-                    <Paragraph>
-                        <Run Text="{Binding Path=Message, FallbackValue=An intermediary message from me}"/>
-                    </Paragraph>
-                </FlowDocument>
-            </RichTextBox>
-            <Image Style="{StaticResource ChatBubbleJoinMe}" />
-        </StackPanel>
+        <Grid>
+            <ContentPresenter ContentTemplate="{StaticResource DeliveryNotification}" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="20,3,0,0" />
+            <StackPanel>
+                <RichTextBox Style="{StaticResource ChatBubbleMe}">
+                    <FlowDocument>
+                        <Paragraph>
+                            <Run Text="{Binding Path=Message, FallbackValue=An intermediary message from me}"/>
+                        </Paragraph>
+                    </FlowDocument>
+                </RichTextBox>
+                <Image Style="{StaticResource ChatBubbleJoinMe}" />
+            </StackPanel>
+        </Grid>
     </DataTemplate>
     <DataTemplate x:Key="ChatMeSingle">
-        <StackPanel>
-            <RichTextBox Style="{StaticResource ChatBubbleMe}">
-                <FlowDocument>
-                    <Paragraph>
-                        <Run Text="{Binding Path=Message, FallbackValue=A message from us}"/>
-                    </Paragraph>
-                </FlowDocument>
-            </RichTextBox>
-            <StackPanel Orientation="Horizontal" Margin="0,0,28,0" HorizontalAlignment="Right">
-                <TextBlock Style="{StaticResource MessageTimeStyle}" 
+        <Grid>
+            <ContentPresenter ContentTemplate="{StaticResource DeliveryNotification}" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="20,3,0,0" />
+            <StackPanel>
+                <RichTextBox Style="{StaticResource ChatBubbleMe}">
+                    <FlowDocument>
+                        <Paragraph>
+                            <Run Text="{Binding Path=Message, FallbackValue=A message from us}"/>
+                        </Paragraph>
+                    </FlowDocument>
+                </RichTextBox>
+                <StackPanel Orientation="Horizontal" Margin="0,0,28,0" HorizontalAlignment="Right">
+                    <TextBlock Style="{StaticResource MessageTimeStyle}" 
 					HorizontalAlignment="Right"
 					Margin="0,4,0,0"
-					Text="{Binding Path=DateTime, Converter={StaticResource relativeMessageTimeConverter}, FallbackValue=Yesterday 8:45}"
+					Text="{Binding Path=SpeakTime, Converter={StaticResource relativeMessageTimeConverter}, FallbackValue=Yesterday 8:45}"
 				/>
-                <Image Style="{StaticResource ChatBubblePointMe}" />
+                    <Image Style="{StaticResource ChatBubblePointMe}" />
+                </StackPanel>
             </StackPanel>
-        </StackPanel>
+        </Grid>
     </DataTemplate>
     <DataTemplate x:Key="ChatOtherGroup">
         <StackPanel>
@@ -220,7 +270,7 @@
                 <TextBlock  Style="{StaticResource MessageTimeStyle}"
 							HorizontalAlignment="Left"
 							Margin="6,4,0,0"
-							Text="{Binding DateTime, Converter={StaticResource relativeMessageTimeConverter}, FallbackValue=Yesterday 8:49}"
+							Text="{Binding SpeakTime, Converter={StaticResource relativeMessageTimeConverter}, FallbackValue=Yesterday 8:49}"
 						/>
             </StackPanel>
         </StackPanel>
@@ -238,7 +288,7 @@
                 <TextBlock  Style="{StaticResource MessageTimeStyle}"
 							HorizontalAlignment="Left"
 							Margin="6,4,0,0"
-							Text="{Binding DateTime, Converter={StaticResource relativeMessageTimeConverter}, FallbackValue=Yesterday 8:49}"
+							Text="{Binding SpeakTime, Converter={StaticResource relativeMessageTimeConverter}, FallbackValue=Yesterday 8:49}"
 						/>
             </StackPanel>
         </StackPanel>
@@ -276,47 +326,49 @@
     <DataTemplate x:Key="ChatServiceComplete">
         <StackPanel>
             <Border Style="{StaticResource MessageBorder}">
-        		<Grid>
-        			<Image Margin="0,0,0,-5.573" Source="/BlitsMe.Agent;component/UI/WPF/Images/arrow_limited_blue_bg.png" Width="42.482" Height="50" HorizontalAlignment="Left" VerticalAlignment="Top" />
-        			<StackPanel Margin="47.482,0,0,0">
-        				<StackPanel>
-        					<RichTextBox Width="Auto"
+                <Grid>
+                    <Image Margin="0,0,0,-5.573" Source="/BlitsMe.Agent;component/UI/WPF/Images/arrow_limited_blue_bg.png" Width="42.482" Height="50" HorizontalAlignment="Left" VerticalAlignment="Top" />
+                    <StackPanel Margin="47.482,0,0,0">
+                        <StackPanel>
+                            <RichTextBox Width="Auto"
         						Style="{StaticResource ServiceCompleteRichText}" MinWidth="300" HorizontalAlignment="Stretch" Margin="0,0,10,0">
-        						<FlowDocument>
-        							<Paragraph><Run Text="{Binding Message, FallbackValue=You were just helped by Joe Bloggs please rate his service below.}" /></Paragraph>
-        						</FlowDocument>
-        					</RichTextBox>
-        					<Grid Width="Auto" >
-        						<TextBlock Style="{StaticResource ServiceCompleteText}" Margin="6.75,4,0,0" VerticalAlignment="Top"><Run Text="Knowledge"/></TextBlock>
-        						<Grid Margin="90,4,0,0" Height="18" HorizontalAlignment="Left" VerticalAlignment="Top">
-        							<ed:RegularPolygon Name="Knowledge1" Style="{StaticResource ScorecardStarEmpty}" Margin="0,0,0,0" />
-        							<ed:RegularPolygon Name="Knowledge2" Style="{StaticResource ScorecardStarEmpty}" Margin="15,0,0,0" />
-        							<ed:RegularPolygon Name="Knowledge3" Style="{StaticResource ScorecardStarEmpty}" Margin="30,0,0,0" />
-        							<ed:RegularPolygon Name="Knowledge4" Style="{StaticResource ScorecardStarEmpty}" Margin="45,0,0,0" />
-        							<ed:RegularPolygon Name="Knowledge5" Style="{StaticResource ScorecardStarEmpty}" Margin="60,0,0,0" />
-        						</Grid>
-        						<TextBlock Style="{StaticResource ServiceCompleteText}" VerticalAlignment="Top" HorizontalAlignment="Left" Margin="6.75,23,0,0"><Run Text="Service"/></TextBlock>
-        						<Grid Margin="90,23,0,0" Height="18" HorizontalAlignment="Left" VerticalAlignment="Top">
-        							<ed:RegularPolygon Style="{StaticResource ScorecardStarEmpty}" Margin="0,0,0,0" />
-        							<ed:RegularPolygon Style="{StaticResource ScorecardStarEmpty}" Margin="15,0,0,0" />
-        							<ed:RegularPolygon Style="{StaticResource ScorecardStarEmpty}" Margin="30,0,0,0" />
-        							<ed:RegularPolygon Style="{StaticResource ScorecardStarEmpty}" Margin="45,0,0,0" />
-        							<ed:RegularPolygon Style="{StaticResource ScorecardStarEmpty}" Margin="60,0,0,0" />
-        						</Grid>
-        						<Image Source="/BlitsMe.Agent;component/UI/WPF/Images/facebook-like.png" Width="59" HorizontalAlignment="Left" Margin="176,8.333,0,0" VerticalAlignment="Top"/>
-        						<Image Source="/BlitsMe.Agent;component/UI/WPF/Images/tweet.png" Width="61" HorizontalAlignment="Left" Margin="240,12.083,0,0" VerticalAlignment="Top" Height="Auto"/>
-        					</Grid>
-        				</StackPanel>
-        			</StackPanel>
-        		</Grid>
-        	</Border>
-        	<StackPanel Orientation="Horizontal" Margin="0,0,28,0" HorizontalAlignment="Right">
-        		<TextBlock  Style="{StaticResource MessageTimeStyle}"
+                                <FlowDocument>
+                                    <Paragraph>
+                                        <Run Text="{Binding Message, FallbackValue=You were just helped by Joe Bloggs please rate his service below.}" />
+                                    </Paragraph>
+                                </FlowDocument>
+                            </RichTextBox>
+                            <Grid Width="Auto" >
+                                <TextBlock Style="{StaticResource ServiceCompleteText}" Margin="6.75,4,0,0" VerticalAlignment="Top"><Run Text="Knowledge"/></TextBlock>
+                                <Grid Margin="90,4,0,0" Height="18" HorizontalAlignment="Left" VerticalAlignment="Top">
+                                    <ed:RegularPolygon Name="Knowledge1" Style="{StaticResource ScorecardStarEmpty}" Margin="0,0,0,0" />
+                                    <ed:RegularPolygon Name="Knowledge2" Style="{StaticResource ScorecardStarEmpty}" Margin="15,0,0,0" />
+                                    <ed:RegularPolygon Name="Knowledge3" Style="{StaticResource ScorecardStarEmpty}" Margin="30,0,0,0" />
+                                    <ed:RegularPolygon Name="Knowledge4" Style="{StaticResource ScorecardStarEmpty}" Margin="45,0,0,0" />
+                                    <ed:RegularPolygon Name="Knowledge5" Style="{StaticResource ScorecardStarEmpty}" Margin="60,0,0,0" />
+                                </Grid>
+                                <TextBlock Style="{StaticResource ServiceCompleteText}" VerticalAlignment="Top" HorizontalAlignment="Left" Margin="6.75,23,0,0"><Run Text="Service"/></TextBlock>
+                                <Grid Margin="90,23,0,0" Height="18" HorizontalAlignment="Left" VerticalAlignment="Top">
+                                    <ed:RegularPolygon Style="{StaticResource ScorecardStarEmpty}" Margin="0,0,0,0" />
+                                    <ed:RegularPolygon Style="{StaticResource ScorecardStarEmpty}" Margin="15,0,0,0" />
+                                    <ed:RegularPolygon Style="{StaticResource ScorecardStarEmpty}" Margin="30,0,0,0" />
+                                    <ed:RegularPolygon Style="{StaticResource ScorecardStarEmpty}" Margin="45,0,0,0" />
+                                    <ed:RegularPolygon Style="{StaticResource ScorecardStarEmpty}" Margin="60,0,0,0" />
+                                </Grid>
+                                <Image Source="/BlitsMe.Agent;component/UI/WPF/Images/facebook-like.png" Width="59" HorizontalAlignment="Left" Margin="176,8.333,0,0" VerticalAlignment="Top"/>
+                                <Image Source="/BlitsMe.Agent;component/UI/WPF/Images/tweet.png" Width="61" HorizontalAlignment="Left" Margin="240,12.083,0,0" VerticalAlignment="Top" Height="Auto"/>
+                            </Grid>
+                        </StackPanel>
+                    </StackPanel>
+                </Grid>
+            </Border>
+            <StackPanel Orientation="Horizontal" Margin="0,0,28,0" HorizontalAlignment="Right">
+                <TextBlock  Style="{StaticResource MessageTimeStyle}"
         			HorizontalAlignment="Left"
         			Margin="6,4,0,0"
-        			Text="{Binding DateTime, Converter={StaticResource relativeMessageTimeConverter}, FallbackValue=Yesterday 8:49}"
+        			Text="{Binding SpeakTime, Converter={StaticResource relativeMessageTimeConverter}, FallbackValue=Yesterday 8:49}"
 						/>
-        	</StackPanel>
+            </StackPanel>
         </StackPanel>
     </DataTemplate>
 

@@ -18,13 +18,25 @@ namespace BlitsMe.Agent.Components.Chat
             Exchange = new ObservableCollection<ChatElement>();
         }
 
-        public void AddMessage(String message, String speaker)
+        public ChatElement AddMessage(String message, String speaker)
         {
-            ChatElement newMessage = new ChatElement {Message = message, DateTime = DateTime.Now, Speaker = speaker};
-            if(Exchange.Count > 0)
+            ChatElement newMessage = new ChatElement {Message = message, Speaker = speaker, DeliveryState = ChatDeliveryState.Delivered, SpeakTime = DateTime.Now };
+            _addToExchange(newMessage);
+            return newMessage;
+        }
+
+        public void AddMessage(ChatElement element)
+        {
+            _addToExchange(element);
+        }
+
+        private void _addToExchange(ChatElement newMessage)
+        {
+            if (Exchange.Count > 0)
             {
                 ChatElement lastMessage = Exchange[Exchange.Count - 1];
-                if (lastMessage.Speaker.Equals(speaker) && (newMessage.DateTime.Ticks - lastMessage.DateTime.Ticks < MaxChatInterval))
+                if (lastMessage.Speaker.Equals(newMessage.Speaker) &&
+                    (newMessage.SpeakTime.Ticks - lastMessage.SpeakTime.Ticks < MaxChatInterval))
                 {
                     lastMessage.LastWord = false;
                 }

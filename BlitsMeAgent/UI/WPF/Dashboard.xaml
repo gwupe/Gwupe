@@ -24,31 +24,50 @@
         <Grid.ColumnDefinitions>
             <ColumnDefinition/>
         </Grid.ColumnDefinitions>
-        <TextBox Margin="8,10,0,0" TextWrapping="Wrap" Text="Search" VerticalAlignment="Top" FontFamily="Calibri" FontSize="16" HorizontalAlignment="Left" Width="168.5"/>
-        <!-- This is the Roster section -->
-        <Grid Style="{StaticResource RosterStyle}" MaxWidth="500" Margin="8,49,0,8">
-
-            <ListBox Name="Team" ItemsSource="{Binding}" Style="{StaticResource TeamList}" 
-					FontFamily="Corbel" Margin="0">
-			 <ListBox.Resources>
-			    <Style TargetType="{x:Type ListBoxItem}">
-			      <EventSetter Event="ListBoxItem.Selected" Handler="TeamMemberSelected" HandledEventsToo="True"/>
-			    </Style>
-			  </ListBox.Resources>
-            </ListBox>
-        </Grid>
-		        <Grid Margin="193,8,8,8">
-        	<DockPanel LastChildFill="True">
-            <ItemsControl x:Name="Notifications" DockPanel.Dock="Top" Margin="8,0">
-                <ItemsControl.ItemsPanel>
-                    <ItemsPanelTemplate>
-                        <StackPanel VerticalAlignment="Bottom" d:LayoutOverrides="VerticalAlignment" />
-                    </ItemsPanelTemplate>
-                </ItemsControl.ItemsPanel>
-            </ItemsControl>
-        <!-- Now this is the desktop area -->
-        <ContentControl Name="Engagements" BorderThickness="1" Background="#FFC8C8C8" BorderBrush="Black" DockPanel.Dock="Bottom" />
-		</DockPanel>
+		<Grid HorizontalAlignment="Left" Width="178" Margin="10,10,0,10">
+        <StackPanel>
+            <Grid>
+				<TextBox Margin="5,5,0,0" TextWrapping="Wrap" Text="Search" VerticalAlignment="Top" FontFamily="Calibri" FontSize="16" HorizontalAlignment="Left" Width="145.333"/>
+				<Button ToolTip="Help" Margin="0,5,5,5" Width="25" HorizontalAlignment="Right">
+            		<Image Source="Images/Search.png" Margin="1" />
+				</Button>
+			</Grid>
+            <StackPanel Margin="5" Orientation="Horizontal" Height="32" HorizontalAlignment="Center" >
+				<StackPanel.Resources>
+                    <Style TargetType="{x:Type Button}">
+                        <Setter Property="Margin" Value="0,0,2,0"/>
+                    </Style>
+                </StackPanel.Resources>
+				<Button ToolTip="Help">
+            		<Image Source="Images/Help.png" Margin="1"/>
+				</Button>
+				<Button ToolTip="Logout">
+            		<Image Source="Images/Log Out.png" Margin="1"/>
+				</Button>
+            </StackPanel>
+            <!-- This is the Roster section -->
+                <ListBox Name="Team" ItemsSource="{Binding}" Style="{StaticResource TeamList}" 
+					FontFamily="Corbel" Margin="0,0,0,27">
+                    <ListBox.Resources>
+                        <Style TargetType="{x:Type ListBoxItem}">
+                            <EventSetter Event="ListBoxItem.Selected" Handler="TeamMemberSelected" HandledEventsToo="True"/>
+                        </Style>
+                    </ListBox.Resources>
+                </ListBox>
+        </StackPanel>
 		</Grid>
+        <Grid Margin="193,8,8,8">
+            <DockPanel LastChildFill="True">
+                <ItemsControl x:Name="Notifications" DockPanel.Dock="Top" Margin="8,0">
+                    <ItemsControl.ItemsPanel>
+                        <ItemsPanelTemplate>
+                            <StackPanel VerticalAlignment="Bottom" d:LayoutOverrides="VerticalAlignment" />
+                        </ItemsPanelTemplate>
+                    </ItemsControl.ItemsPanel>
+                </ItemsControl>
+                <!-- Now this is the desktop area -->
+                <ContentControl Name="ActiveContent" BorderThickness="1" Background="#FFC8C8C8" BorderBrush="Black" DockPanel.Dock="Bottom" />
+            </DockPanel>
+        </Grid>
     </Grid>
 </Window>

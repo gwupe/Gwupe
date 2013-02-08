@@ -5,6 +5,7 @@ using BlitsMe.Cloud.Messaging.API;
 using BlitsMe.Cloud.Exceptions;
 using BlitsMe.Cloud.Messaging;
 using BlitsMe.Cloud.Messaging.Request;
+using BlitsMe.Cloud.Messaging.Response;
 using log4net;
 
 namespace BlitsMe.Cloud.Communication
@@ -100,6 +101,32 @@ namespace BlitsMe.Cloud.Communication
                 throw new ConnectionException("Cannot send request, not logged in");
             }
             return _sendRequest(req);
+        }
+
+        public void RequestAsync(Request req, Action<Request,Response> responseHandler)
+        {
+            if (!isEstablished())
+            {
+                throw new ConnectionException("Cannot send request, connection not established");
+            }
+            if (!isLoggedIn)
+            {
+                throw new ConnectionException("Cannot send request, not logged in");
+            }
+            Thread asyncThread = new Thread(() =>
+                {
+                    Response res = _sendRequest(req);
+                    try
+                    {
+                        responseHandler(req,res);
+                    } catch(Exception e)
+                    {
+                        logger.Error("Failed to run response handler for request",e);
+                        responseHandler(req,new ErrorRs("REQUEST_ERROR",e.Message));
+                    }
+                });
+            asyncThread.IsBackground = true;
+            asyncThread.Start();
         }
 
         private Response _sendRequest(Request req)

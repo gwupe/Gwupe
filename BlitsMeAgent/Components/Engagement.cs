@@ -9,6 +9,7 @@ using BlitsMe.Agent.Components.Notification;
 using BlitsMe.Agent.Components.RDP;
 using BlitsMe.Agent.Managers;
 using BlitsMe.Cloud.Exceptions;
+using BlitsMe.Cloud.Messaging.API;
 using BlitsMe.Cloud.Messaging.Request;
 using BlitsMe.Cloud.Messaging.Response;
 using BlitsMe.Communication.P2P.RUDP.Connector.API;
@@ -135,7 +136,7 @@ namespace BlitsMe.Agent.Components
             OnPropertyChanged(new PropertyChangedEventArgs("OutgoingTunnel"));
         }
 
-       
+
         private IUDPTunnel _incomingTunnel;
         internal IUDPTunnel IncomingTunnel
         {
@@ -299,7 +300,7 @@ namespace BlitsMe.Agent.Components
             }
             catch (Exception e)
             {
-                Logger.Error("Failed to start server : " + e.Message,e);
+                Logger.Error("Failed to start server : " + e.Message, e);
             }
             RDPRequestResponseRq request = new RDPRequestResponseRq() { accepted = true, shortCode = SecondParty.ShortCode };
             try
@@ -366,13 +367,26 @@ namespace BlitsMe.Agent.Components
             RDPRequestRq request = new RDPRequestRq() { shortCode = SecondParty.ShortCode };
             try
             {
-                RDPRequestRs response = (RDPRequestRs)_appContext.ConnectionManager.Connection.Request(request);
-                _chat.LogSystemMessage("You sent " + SecondParty.Name + " a request to control their desktop.");
+                ChatElement chatElement = _chat.LogSystemMessage("You sent " + SecondParty.Name + " a request to control their desktop.");
+                _appContext.ConnectionManager.Connection.RequestAsync(request, (req, res) => ProcessRequestRDPSessionResponse(req, res, chatElement));
             }
             catch (Exception ex)
             {
                 Logger.Error("Error during request for RDP Session : " + ex.Message, ex);
                 _chat.LogSystemMessage("An error occured trying to send " + SecondParty.Name + " a request to control their desktop.");
+            }
+        }
+
+        private void ProcessRequestRDPSessionResponse(Request request, Response response, ChatElement chatElement)
+        {
+            if (response is ErrorRs || !response.isValid())
+            {
+                Logger.Error("Received a async response to " + request.id + " that is an error");
+                chatElement.DeliveryState = ChatDeliveryState.Failed;
+            }
+            else
+            {
+                chatElement.DeliveryState = ChatDeliveryState.Delivered;
             }
         }
 
@@ -388,7 +402,7 @@ namespace BlitsMe.Agent.Components
                 }
                 catch (Exception e)
                 {
-                    Logger.Error("Failed to start RDP client : " + e.Message,e);
+                    Logger.Error("Failed to start RDP client : " + e.Message, e);
                 }
             }
             else

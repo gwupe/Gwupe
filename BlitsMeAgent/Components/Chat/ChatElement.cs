@@ -4,6 +4,16 @@ using log4net;
 
 namespace BlitsMe.Agent.Components.Chat
 {
+
+    public enum ChatDeliveryState
+    {
+        NotAttempted=1,
+        Trying,
+        Delivered,
+        FailedTrying,
+        Failed
+    };
+
     public class ChatElement : INotifyPropertyChanged
     {
         private static readonly ILog Logger = LogManager.GetLogger(typeof(ChatElement));
@@ -14,8 +24,35 @@ namespace BlitsMe.Agent.Components.Chat
             get { return _message; }
             set { _message = value; OnPropertyChanged(new PropertyChangedEventArgs("Message")); }
         }
-        public DateTime DateTime { get; set; }
+        public DateTime SpeakTime { get; set; }
+        public DateTime DeliveryTime
+        {
+            get { return _deliveryTime; }
+            private set
+            {
+                _deliveryTime = value;
+                OnPropertyChanged(new PropertyChangedEventArgs("DeliveryTime"));
+            }
+        }
+
+        public bool Delivered
+        {
+            get { return _delivered; }
+            private set
+            {
+                _delivered = value;
+                if (_delivered)
+                {
+                    DeliveryTime = DateTime.Now;
+                }
+                OnPropertyChanged(new PropertyChangedEventArgs("Delivered"));
+            }
+        }
+
         private bool _lastWord = true;
+        private DateTime _deliveryTime;
+        private bool _delivered;
+
         public bool LastWord
         {
             get { return _lastWord; }
@@ -71,5 +108,23 @@ namespace BlitsMe.Agent.Components.Chat
         {
             return Message;
         }
+
+        private ChatDeliveryState _deliveryState = ChatDeliveryState.NotAttempted;
+        public ChatDeliveryState DeliveryState
+        {
+            get
+            {
+                Logger.Debug("Calling DeliveryState on " + Message + " = " + _deliveryState);
+                return _deliveryState;
+            }
+            set
+            {
+                _deliveryState = value;
+                if (_deliveryState == ChatDeliveryState.Delivered)
+                    this.Delivered = true;
+                OnPropertyChanged(new PropertyChangedEventArgs("DeliveryState"));
+            }
+        }
+
     }
 }

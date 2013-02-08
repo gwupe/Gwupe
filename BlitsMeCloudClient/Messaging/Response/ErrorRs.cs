@@ -7,7 +7,7 @@ using System.Runtime.Serialization;
 namespace BlitsMe.Cloud.Messaging.Response
 {
     [DataContract]
-    class ErrorRs : BlitsMe.Cloud.Messaging.API.Response
+    public class ErrorRs : BlitsMe.Cloud.Messaging.API.Response
     {
         public ErrorRs()
         {

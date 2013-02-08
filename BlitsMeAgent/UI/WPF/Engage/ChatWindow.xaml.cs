@@ -1,22 +1,11 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Text;
-using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
 using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
-using BlitsMe.Agent.Components;
 using BlitsMe.Agent.Components.Chat;
-using BlitsMe.Agent.UI.WPF.Engage;
 using log4net;
 
-namespace BlitsMe.Agent
+namespace BlitsMe.Agent.UI.WPF.Engage
 {
 	/// <summary>
 	/// Interaction logic for ChatWindow.xaml

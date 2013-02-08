@@ -31,6 +31,7 @@ namespace BlitsMe.Agent.UI.WPF
         private readonly CollectionViewSource _notificationView;
         // Dispatching collection for notifications (to be used by everything)
         internal DispatchingCollection<ObservableCollection<INotification>, INotification> NotificationList { get; set; }
+        private AddPersonControl _addPersonControl;
 
         public Dashboard(BlitsMeClientAppContext appContext)
         {
@@ -45,6 +46,7 @@ namespace BlitsMe.Agent.UI.WPF
             // Setup the various data contexts and sources
             _rosterList = new RosterList(_appContext, Dispatcher);
             _rosterList.SetList(_appContext.RosterManager.ServicePersonList, "Username");
+            Team.LostFocus += Team_LostFocus;
             Team.DataContext = _rosterList.RosterViewSource;
             // Setup the engagementWindow list as a mirror of the engagements
             _engagementWindows = new EngagementWindowList(_appContext, NotificationList, Dispatcher);
@@ -111,6 +113,12 @@ namespace BlitsMe.Agent.UI.WPF
 
         #region Roster Handling
 
+        // When we click on another button, Team must lose focus so when its clicked on again, the select item event fires.
+        private void Team_LostFocus(object sender, RoutedEventArgs e)
+        {
+            Team.SelectedItem = null;
+        }
+
         private void TeamMemberSelected(object sender, RoutedEventArgs e)
         {
             ListBoxItem item = e.Source as ListBoxItem;
@@ -123,11 +131,20 @@ namespace BlitsMe.Agent.UI.WPF
             EngagementWindow egw = _engagementWindows.GetEngagementWindow(person);
             if(egw != null)
             {
-                Engagements.Content = egw;
+                ActiveContent.Content = egw;
             } else
             {
                 Logger.Error("Failed to find an engagement window for peron " + person);
             }
+        }
+
+        private void AddPersonClick(object sender, System.Windows.RoutedEventArgs e)
+        {
+        	if(_addPersonControl == null)
+        	{
+        	    _addPersonControl = new AddPersonControl();
+        	}
+            ActiveContent.Content = _addPersonControl;
         }
 
         #endregion
