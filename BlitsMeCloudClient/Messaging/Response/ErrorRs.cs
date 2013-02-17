@@ -13,12 +13,6 @@ namespace BlitsMe.Cloud.Messaging.Response
         {
         }
 
-        public ErrorRs(string id, String message)
-        {
-            this.errorMessage = message;
-            this.id = id;
-            this.error = "INTERNAL_SERVER_ERROR";
-        }
         [DataMember]
         public override string type
         {

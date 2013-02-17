@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Threading;
+using BlitsMe.Cloud.Messaging.API;
 using BlitsMe.Cloud.Messaging.Response;
 using log4net;
 
@@ -13,22 +15,24 @@ namespace BlitsMe.Cloud.Messaging
         private readonly WebSocketMessageHandler _messageHander;
 
         // Incoming message handlers
-        private readonly Dictionary<String, Delegate> _processHandlers;
+        private readonly Dictionary<String, Processor> _processors;
 
         public WebSocketServer(WebSocketMessageHandler handler)
         {
             this._messageHander = handler;
-            _processHandlers = new Dictionary<string, Delegate>();
+            _processors = new Dictionary<string, Processor>();
         }
 
-        public void reset()
+        public void RegisterProcessor(string processName, Processor processor)
         {
+            _processors.Add(processName, processor);
         }
 
-        public void RegisterProcessHandler(string name, Delegate handler)
+        public void Reset()
         {
-            _processHandlers.Add(name, handler);
+            
         }
+
         private void SendResponse(API.Response response, API.Request request)
         {
             response.id = request.id;
@@ -43,42 +47,55 @@ namespace BlitsMe.Cloud.Messaging
             }
         }
 
+
         public void ProcessRequest(API.Request request)
         {
             String requestType = request.GetType().Name;
             String processorName = requestType.Substring(0, requestType.Length - 2);
-            API.Response response = null;
-            // Do we have a process method for this processor
-            if (_processHandlers.ContainsKey(processorName))
+            Processor processor;
+            if(_processors.TryGetValue(processorName, out processor))
             {
-                try
-                {
-                    Type responseType = Type.GetType("BlitsMe.Cloud.Messaging.Response." + processorName + "Rs");
-                    System.Delegate myDelegate = _processHandlers[processorName];
-                    try
-                    {
-                        response = (API.Response) myDelegate.DynamicInvoke(request);
-                    }
-                    catch (Exception e)
-                    {
-                        Logger.Error("Failed to process message : " + e.Message, e);
-                        response = (API.Response) responseType.GetConstructor(Type.EmptyTypes).Invoke(new object[] {});
-                        response.error = "UNKNOWN_ERROR";
-                        response.errorMessage = e.Message;
-                    }
-                }
-                catch (Exception ex)
-                {
-                    Logger.Warn("Failed to find to process request of type " + processorName + " : " + ex.Message, ex);
-                    response = new ErrorRs(request.id, "Failed to process request of type " + processorName);
-                }
+                ThreadPool.QueueUserWorkItem(delegate { RunProcessor(request, processor, processorName); });
             }
             else
             {
-                Logger.Warn("Failed to find a processor for " + processorName);
-                response = new ErrorRs(request.id, "Failed to find a processor for " + processorName);
+                Logger.Error("Failed to find a processor for " + processorName);
+                SendResponse(new ErrorRs() { error = "INTERNAL_SERVER_ERROR", errorMessage = "Failed to find a processor for " + processorName },request);
             }
-            SendResponse(response, request);
+        }
+
+        private void RunProcessor(API.Request request, Processor processor, string processorName)
+        {
+            API.Response response = null;
+            try
+            {
+                // Threadpooling
+                response = processor.process(request);
+            }
+            catch (Exception e)
+            {
+                Logger.Error("Failed to process message : " + e.Message, e);
+                try
+                {
+                    Type responseType = Type.GetType("BlitsMe.Cloud.Messaging.Response." + processorName + "Rs");
+                    response = (API.Response) responseType.GetConstructor(Type.EmptyTypes).Invoke(new object[] {});
+                    response.error = "UNKNOWN_ERROR";
+                    response.errorMessage = e.Message;
+                }
+                catch (Exception exception)
+                {
+                    Logger.Error("Failed to determine return type for " + processorName);
+                    response = new ErrorRs
+                        {
+                            errorMessage = "Failed to determine return type for " + processorName,
+                            error = "INTERNAL_SERVER_ERROR"
+                        };
+                }
+            }
+            finally
+            {
+                SendResponse(response, request);
+            }
         }
     }
 }

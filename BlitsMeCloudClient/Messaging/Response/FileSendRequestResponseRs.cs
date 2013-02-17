@@ -6,11 +6,11 @@ using System.Text;
 
 namespace BlitsMe.Cloud.Messaging.Response
 {
-    public class RDPRequestResponseRs : API.UserToUserResponse
+    public class FileSendRequestResponseRs : API.UserToUserResponse
     {
         public override string type
         {
-            get { return "RDPRequestResponse-RS"; }
+            get { return "FileSendRequestResponse-RS"; }
             set { }
         }
     }

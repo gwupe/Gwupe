@@ -115,14 +115,20 @@ namespace BlitsMe.Cloud.Communication
             }
             Thread asyncThread = new Thread(() =>
                 {
-                    Response res = _sendRequest(req);
                     try
                     {
-                        responseHandler(req,res);
+                        Response res = _sendRequest(req);
+                        try
+                        {
+                            responseHandler(req, res);
+                        } catch (Exception e)
+                        {
+                          logger.Error("Assigned response handler threw an exception : " + e.Message,e);
+                        }
                     } catch(Exception e)
                     {
                         logger.Error("Failed to run response handler for request",e);
-                        responseHandler(req,new ErrorRs("REQUEST_ERROR",e.Message));
+                        responseHandler(req,new ErrorRs() { error = "REQUEST_ERROR", errorMessage = e.Message });
                     }
                 });
             asyncThread.IsBackground = true;

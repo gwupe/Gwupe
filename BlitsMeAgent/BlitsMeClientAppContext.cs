@@ -166,6 +166,8 @@ namespace BlitsMe.Agent
                 LoginManager.Close();
             if (RosterManager != null)
                 RosterManager.Close();
+            if (EngagementManager != null)
+                EngagementManager.Close();
             if(NotificationManager != null)
                 NotificationManager.Close();
             // Done

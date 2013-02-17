@@ -19,7 +19,20 @@
 			<TextBlock HorizontalAlignment="Left" Margin="8,11,0,8" Text="{Binding Path=Message, FallbackValue=Unknown Notification}" DockPanel.Dock="Left" Foreground="White" FontWeight="Bold"/>
 		</DockPanel>
 	</DataTemplate>
-	<DataTemplate DataType="{x:Type Notification:InfoNotification}">
+	<DataTemplate DataType="{x:Type Notification:FileSendRequestNotification}">
+		<DockPanel HorizontalAlignment="Stretch" LastChildFill="true" Background="#FF1AAD45">
+			<StackPanel Orientation="Horizontal" Margin="0,8,8,8" HorizontalAlignment="Right" DockPanel.Dock="Right">
+				<Button Content="Accept" HorizontalAlignment="Right" Width="75" Command="{Binding AnswerFileSendRequest}">
+					<Button.CommandParameter><s:Boolean>True</s:Boolean></Button.CommandParameter>
+				</Button>
+				<Button Content="Deny" HorizontalAlignment="Right" Width="75" Command="{Binding AnswerFileSendRequest}" >
+					<Button.CommandParameter><s:Boolean>False</s:Boolean></Button.CommandParameter>
+				</Button>
+				<Button Content="X" HorizontalAlignment="Right" Width="20" Command="{Binding DeleteNotification}" />
+			</StackPanel>
+			<TextBlock HorizontalAlignment="Left" Margin="8,11,0,8" Text="{Binding Path=Message, FallbackValue=Unknown Notification}" DockPanel.Dock="Left" Foreground="White" FontWeight="Bold"/>
+		</DockPanel>
+	</DataTemplate>	<DataTemplate DataType="{x:Type Notification:InfoNotification}">
 		<DockPanel HorizontalAlignment="Stretch" LastChildFill="true" Background="#FF1AAD45">
 			<StackPanel Orientation="Horizontal" Margin="0,8,8,8" HorizontalAlignment="Right" DockPanel.Dock="Right">
 				<Button Content="X" HorizontalAlignment="Right" Width="20" Command="{Binding DeleteNotification}" />

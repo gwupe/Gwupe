@@ -1,7 +1,9 @@
 using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Diagnostics;
+using System.IO;
 using System.Net;
 using System.Threading;
 using BlitsMe.Agent.Components.Chat;
@@ -12,6 +14,7 @@ using BlitsMe.Cloud.Exceptions;
 using BlitsMe.Cloud.Messaging.API;
 using BlitsMe.Cloud.Messaging.Request;
 using BlitsMe.Cloud.Messaging.Response;
+using BlitsMe.Common.Security;
 using BlitsMe.Communication.P2P.RUDP.Connector.API;
 using BlitsMe.Communication.P2P.RUDP.Tunnel;
 using BlitsMe.Communication.P2P.RUDP.Tunnel.API;
@@ -43,6 +46,8 @@ namespace BlitsMe.Agent.Components
             }
         }
 
+        public String SecondPartyUsername { get { return SecondParty == null ? null : SecondParty.Username; } }
+
         private void SecondPartyPropertyChanged(object sender, PropertyChangedEventArgs e)
         {
             if (e.PropertyName.Equals("ShortCode"))
@@ -60,8 +65,6 @@ namespace BlitsMe.Agent.Components
             }
         }
 
-        // The username of the person we are engaging with
-        public string SecondPartyUsername { get { return SecondParty.Username; } }
         // The thread used for creating the endPointManager
         private Thread _p2PConnectionCreatorThread;
         // The chat part of the engagement
@@ -221,27 +224,6 @@ namespace BlitsMe.Agent.Components
 
         }
 
-        public void SetupIncomingTunnel(IUDPTunnel awareIncomingTunnel, PeerInfo peerinfo)
-        {
-            IncomingTunnel = awareIncomingTunnel;
-            IncomingTunnel.id = "incoming";
-            var p2pListenerThread = new Thread(() => IncomingTunnelWaitSync(peerinfo)) { IsBackground = true };
-            p2pListenerThread.Name = "p2pListenerThread[" + p2pListenerThread.ManagedThreadId + "]";
-            p2pListenerThread.Start();
-        }
-
-        private void IncomingTunnelWaitSync(PeerInfo peerIP)
-        {
-            try
-            {
-                _incomingTunnel.WaitForSyncFromPeer(peerIP, 10000);
-            }
-            catch (Exception e)
-            {
-                Logger.Error("Failed waiting for sync from peer [" + peerIP + "] : " + e.Message, e);
-            }
-        }
-
         private void DisconnectTunnels()
         {
             if (_incomingTunnel != null && !_incomingTunnel.Closing)
@@ -302,7 +284,7 @@ namespace BlitsMe.Agent.Components
             {
                 Logger.Error("Failed to start server : " + e.Message, e);
             }
-            RDPRequestResponseRq request = new RDPRequestResponseRq() { accepted = true, shortCode = SecondParty.ShortCode };
+            RDPRequestResponseRq request = new RDPRequestResponseRq() { accepted = true, shortCode = SecondParty.ShortCode, username = SecondParty.Username };
             try
             {
                 _appContext.ConnectionManager.Connection.Request(request);
@@ -316,7 +298,7 @@ namespace BlitsMe.Agent.Components
         private void RDPNotificationOnProcessDenyRDP(object sender, EventArgs eventArgs)
         {
             _chat.LogSystemMessage("You denied the desktop assistance request from " + SecondParty.Name);
-            RDPRequestResponseRq request = new RDPRequestResponseRq() { accepted = false, shortCode = SecondParty.ShortCode };
+            RDPRequestResponseRq request = new RDPRequestResponseRq() { accepted = false, shortCode = SecondParty.ShortCode, username = SecondParty.Username };
             try
             {
                 _appContext.ConnectionManager.Connection.Request(request);
@@ -328,7 +310,7 @@ namespace BlitsMe.Agent.Components
         }
 
         private Client _client;
-        private Client Client
+        public Client Client
         {
             get
             {
@@ -341,7 +323,7 @@ namespace BlitsMe.Agent.Components
         }
 
         private Server _server;
-        private Server Server
+        public Server Server
         {
             get
             {
@@ -364,7 +346,7 @@ namespace BlitsMe.Agent.Components
 
         internal void RequestRDPSession()
         {
-            RDPRequestRq request = new RDPRequestRq() { shortCode = SecondParty.ShortCode };
+            RDPRequestRq request = new RDPRequestRq() { shortCode = SecondParty.ShortCode, username = SecondParty.Username };
             try
             {
                 ChatElement chatElement = _chat.LogSystemMessage("You sent " + SecondParty.Name + " a request to control their desktop.");
@@ -390,29 +372,82 @@ namespace BlitsMe.Agent.Components
             }
         }
 
-        public void ProcessRDPRequestResponse(string shortCode, bool accepted)
+        #endregion
+
+        #region FileSend Functionality
+
+        private readonly Dictionary<String, String> _pendingFileSends = new Dictionary<string, string>();
+
+        internal void RequestFileSend(String filepath)
         {
-            if (accepted)
+            String filename = Path.GetFileName(filepath);
+            FileSendRequestRq request = new FileSendRequestRq() { shortCode = SecondParty.ShortCode, username = SecondParty.Username, filename = filename, fileSendId = Util.getSingleton().generateString(8) };
+            try
             {
-                _chat.LogSystemMessage(SecondParty.Name + " accepted your remote assistance request.");
-                try
-                {
-                    int port = Client.Start();
-                    Process.Start("c:\\Program Files\\TightVNC\\tvnviewer.exe", "127.0.0.1:" + port);
-                }
-                catch (Exception e)
-                {
-                    Logger.Error("Failed to start RDP client : " + e.Message, e);
-                }
+                ChatElement chatElement = _chat.LogSystemMessage("You sent " + SecondParty.Name + " a request to send the file " + filename);
+                _appContext.ConnectionManager.Connection.RequestAsync(request, (req, res) => ProcessRequestFileSendResponse(req, res, chatElement));
+            }
+            catch (Exception ex)
+            {
+                Logger.Error("Error during request for File Send : " + ex.Message, ex);
+                _chat.LogSystemMessage("An error occured trying to send " + SecondParty.Name + " a request to send them a file.");
+            }
+        }
+
+        private void ProcessRequestFileSendResponse(Request req, Response res, ChatElement chatElement)
+        {
+            if (!res.isValid())
+            {
+                _chat.LogSystemMessage("An error occured trying to send " + SecondParty.Name + " a request to send them a file.");
             }
             else
             {
-                _chat.LogSystemMessage(SecondParty.Name + " did not accept your remote assistance request.");
+                FileSendRequestRq request = (FileSendRequestRq)req;
+                Logger.Debug("Successfully sent a file send request for " + request.filename + " [" + request.fileSendId + "]");
+                _pendingFileSends.Add(request.fileSendId, request.filename);
+            }
+        }
+
+        public void ProcessIncomingFileSendRequest(string filename, string fileSendId)
+        {
+            var notification = new FileSendRequestNotification()
+                {
+                    From = SecondParty.Username,
+                    Message = SecondParty.Name + " would like to send you the file " + filename
+                };
+            notification.ProcessAcceptFile += ProcessAcceptFile;
+            notification.ProcessDenyFile += ProcessDenyFile;
+            _appContext.NotificationManager.AddNotification(notification);
+            _chat.LogSystemMessage(SecondParty.Name + " offered to send you the file " + filename + ".");
+        }
+
+        private void ProcessDenyFile(object sender, FileSendEventArgs args)
+        {
+            Logger.Info("Denied request from " + SecondParty.Name + " to send the file " + args.Filename);
+            _chat.LogSystemMessage("You refused to let " + SecondParty.Name + " send you the file " + args.Filename + ".");
+        }
+
+        private void ProcessAcceptFile(object sender, FileSendEventArgs args)
+        {
+            Logger.Info("Accepted request from " + SecondParty.Name + " to send the file " + args.Filename);
+            _chat.LogSystemMessage("You allowed " + SecondParty.Name + " to send you the file " + args.Filename + ".");
+            FileSendRequestResponseRq request = new FileSendRequestResponseRq() { shortCode = SecondParty.ShortCode, username = SecondParty.Username, fileSendId = args.FileSendId, accepted = true };
+            try
+            {
+                _appContext.ConnectionManager.Connection.Request(request);
+            }
+            catch (Exception e)
+            {
+                Logger.Error("Failed to send a file acceptance request for file " + args.Filename + "[" + args.FileSendId + "] to " + SecondParty.Username);
             }
         }
 
         #endregion
 
+        public void Close()
+        {
+            Chat.Close();
+        }
     }
 
 }

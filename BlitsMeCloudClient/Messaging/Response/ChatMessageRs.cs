@@ -8,7 +8,7 @@ using System.Runtime.Serialization;
 namespace BlitsMe.Cloud.Messaging.Response
 {
     [DataContract]
-    public class ChatMessageRs : BlitsMe.Cloud.Messaging.API.Response
+    public class ChatMessageRs : UserToUserResponse
     {
         public override String type  {
             get { return "ChatMessage-RS"; }

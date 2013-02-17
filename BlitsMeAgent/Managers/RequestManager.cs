@@ -1,7 +1,12 @@
 using System;
+using System.Linq;
 using System.Net;
+using System.Reflection;
+using System.Threading;
 using BlitsMe.Agent.Components;
+using BlitsMe.Agent.Components.Processors;
 using BlitsMe.Cloud.Messaging;
+using BlitsMe.Cloud.Messaging.API;
 using BlitsMe.Cloud.Messaging.Request;
 using BlitsMe.Cloud.Messaging.Response;
 using BlitsMe.Communication.P2P.RUDP.Utils;
@@ -20,118 +25,72 @@ namespace BlitsMe.Agent.Managers
         {
             this._appContext = appContext;
             // Link into the hooks so we can receive requests
-            _appContext.ConnectionManager.Connection.webSocketServer.RegisterProcessHandler("InitUDPConnection",(ProcessRequest<InitUDPConnectionRq,InitUDPConnectionRs>)ProcessInitUDPConnection);
-            _appContext.ConnectionManager.Connection.webSocketServer.RegisterProcessHandler("ListenHandshake",(ProcessRequest<ListenHandshakeRq,ListenHandshakeRs>)ProcessListenHandshake);
-            _appContext.ConnectionManager.Connection.webSocketServer.RegisterProcessHandler("PresenceChange",(ProcessRequest<PresenceChangeRq,PresenceChangeRs>)ProcessPresenceChange);
-            _appContext.ConnectionManager.Connection.webSocketServer.RegisterProcessHandler("ChatMessage",(ProcessRequest<ChatMessageRq,ChatMessageRs>)ProcessChatMessage);
+            /*
             _appContext.ConnectionManager.Connection.webSocketServer.RegisterProcessHandler("RDPRequest", (ProcessRequest<RDPRequestRq, RDPRequestRs>)ProcessRDPIncomingRequest);
             _appContext.ConnectionManager.Connection.webSocketServer.RegisterProcessHandler("RDPRequestResponse", (ProcessRequest<RDPRequestResponseRq,RDPRequestResponseRs>)ProcessRDPRequestResponse);
+            _appContext.ConnectionManager.Connection.webSocketServer.RegisterProcessHandler("FileSendRequest", (ProcessRequest<FileSendRequestRq, FileSendRequestRs>) ProcessFileSendRequest);
+            _appContext.ConnectionManager.Connection.webSocketServer.RegisterProcessHandler("FileSendRequestResponse", (ProcessRequest<UserToUserRequest, UserToUserResponse>)GenericUserToUserRequestHandler);
+             */
+            _appContext.ConnectionManager.Connection.webSocketServer.RegisterProcessor("PresenceChange",new PresenceChangeProcessor(_appContext));
+            _appContext.ConnectionManager.Connection.webSocketServer.RegisterProcessor("ChatMessage",new ChatMessageProcessor(_appContext));
+            _appContext.ConnectionManager.Connection.webSocketServer.RegisterProcessor("InitUDPConnection", new InitUDPConnectionProcessor(_appContext));
+            _appContext.ConnectionManager.Connection.webSocketServer.RegisterProcessor("ListenHandshake", new ListenHandshakeProcessor(_appContext));
+            _appContext.ConnectionManager.Connection.webSocketServer.RegisterProcessor("RDPRequest", new RDPRequestProcessor(_appContext));
+            _appContext.ConnectionManager.Connection.webSocketServer.RegisterProcessor("RDPRequestResponse", new RDPRequestResponseProcessor(_appContext));
         }
 
-        private InitUDPConnectionRs ProcessInitUDPConnection(InitUDPConnectionRq request)
+        private UserToUserResponse GenericUserToUserRequestHandler(UserToUserRequest request)
         {
-            InitUDPConnectionRs response = new InitUDPConnectionRs();
+            String requestType = request.GetType().Name;
+            String processorName = requestType.Substring(0, requestType.Length - 2);
+            Type responseType = Type.GetType("BlitsMe.Cloud.Messaging.Response." + processorName + "Rs");
+            UserToUserResponse response = null;
             try
             {
-                PeerInfo self = _appContext.P2PManager.SetupTunnel(request.uniqueId, new IPEndPoint(IPAddress.Parse(request.facilitatorIP),Convert.ToInt32(request.facilitatorPort)));
-                response.setUDPPeerInfo(self);
-            }
-            catch (Exception e)
-            {
-                Logger.Info("Failed to contact facilitator : " + e.Message);
-                response.error = FACILITATOR_ERROR;
-                response.errorMessage = "Failed to contact facilitator";
-            }
-
-            return response;
-        }
-
-        private ListenHandshakeRs ProcessListenHandshake(ListenHandshakeRq request)
-        {
-            ListenHandshakeRs response = new ListenHandshakeRs();
-            try
-            {
-                var engagement = _appContext.EngagementManager.GetNewEngagement(request.username);
-                var peerInfo = new PeerInfo(
-                    new IPEndPoint(IPAddress.Parse(request.internalEndpointIp),Convert.ToInt32(request.internalEndpointPort)),
-                    new IPEndPoint(IPAddress.Parse(request.externalEndpointIp),Convert.ToInt32(request.externalEndpointPort))
-                    );
-                engagement.SetupIncomingTunnel(_appContext.P2PManager.CompleteTunnel(request.uniqueId),peerInfo);
-            }
-            catch (Exception e)
-            {
-                Logger.Error("Failed to start listening for UDP traffic from peer : " + e.Message);
-                response.error = LISTEN_ERROR;
-                response.errorMessage = "Failed to start listening for UDP traffic";
-            }
-            return response;
-        }
-
-        private PresenceChangeRs ProcessPresenceChange(PresenceChangeRq request)
-        {
-            var response = new PresenceChangeRs();
-            try
-            {
-                _appContext.RosterManager.PresenceChange(request.user, request.presence, request.shortCode);
-            }
-            catch (Exception e)
-            {
-                    Logger.Error("Failed to process presence change : " + e.Message);
-                    response.error = "UNKNOWN_ERROR";
-                    response.errorMessage = "Failed to process presence change";
-            }
-            return response;
-        }
-
-        private ChatMessageRs ProcessChatMessage(ChatMessageRq request)
-        {
-            ChatMessageRs response = new ChatMessageRs();
-            Engagement engagement = _appContext.EngagementManager.GetNewEngagement(request.from);
-            if (engagement == null)
-            {
-                response.error = "INVALID_USERNAME";
-                response.errorMessage = "Username was invalid";
-            }
-            else
-            {
-                try {
-                    engagement.Chat.ReceiveChatMessage(request.message, request.chatId, request.fromShortCode);
-                } catch(Exception e)
+                response =
+                    (UserToUserResponse) responseType.GetConstructor(Type.EmptyTypes).Invoke(new object[] {});
+                Engagement engagement = _appContext.EngagementManager.GetNewEngagement(request.username);
+                if (engagement == null)
                 {
-                    Logger.Error("Failed to process chat message : " + e.Message);
-                    response.error = "UNKNOWN_ERROR";
-                    response.errorMessage = "Failed to process Chat request";
-                }            }
-            return response;
-        }
-
-        private RDPRequestRs ProcessRDPIncomingRequest(RDPRequestRq request)
-        {
-            RDPRequestRs response = new RDPRequestRs();
-            Engagement engagement = _appContext.EngagementManager.GetNewEngagement(request.username);
-            if (engagement == null)
-            {
-                response.error = "INVALID_USERNAME";
-                response.errorMessage = "Username was invalid";
-            }
-            else
-            {
-                try
-                {
-                    engagement.ProcessIncomingRDPRequest(request.shortCode);
-                } catch(Exception e)
-                {
-                    Logger.Error("Failed to process RDP incoming request : " + e.Message);
-                    response.error = "UNKNOWN_ERROR";
-                    response.errorMessage = "Failed to process RDP incoming request";
+                    response.error = "INVALID_USERNAME";
+                    response.errorMessage = "Username was invalid";
                 }
+                else
+                {
+                    response.shortCode = engagement.SecondParty.ShortCode;
+                    response.username = engagement.SecondParty.Username;
+                    try
+                    {
+                        var theMethods = from mi in engagement.GetType().GetMethods()
+                                         let p = mi.GetParameters()
+                                         where p.Length == 2
+                                             && p[0].ParameterType == request.GetType()
+                                             && p[1].ParameterType == responseType
+                                             && mi.ReturnType == typeof(void)
+                                         select mi;
+                        foreach (MethodInfo methodInfo in theMethods)
+                        {
+                            Logger.Debug("Method matches " + methodInfo.Name);
+                        }
+                        //engagement.ProcessIncomingFileSendRequest(request.filename, request.fileSendId);
+                    }
+                    catch (Exception e)
+                    {
+                        Logger.Error("Failed to process incoming File Send request : " + e.Message);
+                        response.error = "UNKNOWN_ERROR";
+                        response.errorMessage = "Failed to process incoming File Send request";
+                    }
+                }
+            } catch (Exception e)
+            {
+                Logger.Error("Failed to process request with generic handler : " + e.Message,e);
             }
             return response;
         }
 
-        private RDPRequestResponseRs ProcessRDPRequestResponse(RDPRequestResponseRq request)
+        private FileSendRequestRs ProcessFileSendRequest(FileSendRequestRq request)
         {
-            RDPRequestResponseRs response = new RDPRequestResponseRs();
+            FileSendRequestRs response = new FileSendRequestRs();
             Engagement engagement = _appContext.EngagementManager.GetNewEngagement(request.username);
             if (engagement == null)
             {
@@ -140,21 +99,21 @@ namespace BlitsMe.Agent.Managers
             }
             else
             {
+                response.shortCode = engagement.SecondParty.ShortCode;
+                response.username = engagement.SecondParty.Username;
                 try
                 {
-                    engagement.ProcessRDPRequestResponse(request.shortCode, request.accepted);
+                    engagement.ProcessIncomingFileSendRequest(request.filename, request.fileSendId);
                 }
                 catch (Exception e)
                 {
-                    Logger.Error("Failed to process RDP request response : " + e.Message);
+                    Logger.Error("Failed to process incoming File Send request : " + e.Message);
                     response.error = "UNKNOWN_ERROR";
-                    response.errorMessage = "Failed to process RDP request response";
+                    response.errorMessage = "Failed to process incoming File Send request";
                 }
             }
             return response;
         }
-
-
 
     }
 }

@@ -36,8 +36,8 @@
                 <Button VerticalAlignment="Top" HorizontalAlignment="Left" Width="50" Height="50" Click="HistoryButtonClick">
                     <Image Source="..\Images\1337424609_Stats.png" Height="40" Width="40" />
                 </Button>
-                <Button VerticalAlignment="Top" HorizontalAlignment="Left" Width="50" Height="50" Click="FinancialButtonClick">
-                    <Image Source="..\Images\1337425212_02.png" Height="40" Width="40" />
+                <Button VerticalAlignment="Top" HorizontalAlignment="Left" Width="50" Height="50" Click="SendFileButtonClick">
+                    <Image Source="/BlitsMe.Agent;component/UI/WPF/Images/Upload.png" Height="40" Width="40" />
                 </Button>
 				<Grid HorizontalAlignment="Center" VerticalAlignment="Center">
 					<TextBlock Name="EngagementStatus" Style="{StaticResource EngagementStatusText}" Text="" Margin="10" MinWidth="270"/>

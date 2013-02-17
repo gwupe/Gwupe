@@ -105,21 +105,5 @@ namespace BlitsMe.Agent.Managers
             }
         }
 
-        internal void PresenceChange(String user, PresenceElement presence, String shortCode)
-        {
-            foreach (Person servicePerson in ServicePersonList)
-            {
-                if(servicePerson.Username.Equals(user))
-                {
-                    servicePerson.Presence = new Presence(presence);
-                    Logger.Info("Presence change, " + user + (servicePerson.Presence.IsAvailable ? " is available " : " is no longer available"));
-                    if (shortCode != null)
-                    {
-                        servicePerson.ShortCode = shortCode;
-                    }
-                    break;
-                }
-            }
-        }
     }
 }

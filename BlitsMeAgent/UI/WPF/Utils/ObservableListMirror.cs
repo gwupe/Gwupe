@@ -30,6 +30,13 @@ namespace BlitsMe.Agent.UI.WPF.Utils
         public void SetList(ObservableCollection<TIncomingType> list, String sourcePropertyName)
         {
             _sourceLookupProperty = typeof(TIncomingType).GetProperty(sourcePropertyName);
+            if(_sourceLookupProperty == null)
+            {
+                Logger.Error("Failed to get property " + sourcePropertyName + " of " +
+                                    typeof(TIncomingType).Name);
+                throw new Exception("Failed to get property " + sourcePropertyName + " of " +
+                                    typeof (TIncomingType).Name);
+            }
             List.Clear();
             foreach (var listElement in list)
             {

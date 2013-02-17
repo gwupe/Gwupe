@@ -6,15 +6,17 @@ using System.Text;
 
 namespace BlitsMe.Cloud.Messaging.Request
 {
-    public class RDPRequestResponseRq : API.UserToUserRequest
+    public class FileSendRequestRq : API.UserToUserRequest
     {
         public override string type
         {
-            get { return "RDPRequestResponse-RQ"; }
+            get { return "FileSendRequest-RQ"; }
             set { }
         }
 
         [DataMember]
-        public bool accepted { get; set; }
+        public String filename { get; set; }
+        [DataMember]
+        public String fileSendId { get; set; }
     }
 }

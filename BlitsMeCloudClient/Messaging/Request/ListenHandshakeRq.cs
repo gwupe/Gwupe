@@ -7,7 +7,7 @@ using System.Runtime.Serialization;
 namespace BlitsMe.Cloud.Messaging.Request
 {
     [DataContract]
-    public class ListenHandshakeRq : BlitsMe.Cloud.Messaging.API.Request
+    public class ListenHandshakeRq : BlitsMe.Cloud.Messaging.API.UserToUserRequest
     {
         public override String type
         {
@@ -24,9 +24,5 @@ namespace BlitsMe.Cloud.Messaging.Request
         public int internalEndpointPort { get; set; }
         [DataMember]
         public String uniqueId { get; set; }
-        [DataMember]
-        public String username { get; set; }
-        [DataMember]
-        public String shortCode { get; set; }
     }
 }

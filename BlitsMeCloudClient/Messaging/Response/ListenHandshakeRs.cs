@@ -7,7 +7,7 @@ using System.Runtime.Serialization;
 namespace BlitsMe.Cloud.Messaging.Response
 {
     [DataContract]
-    public class ListenHandshakeRs : BlitsMe.Cloud.Messaging.API.Response
+    public class ListenHandshakeRs : BlitsMe.Cloud.Messaging.API.UserToUserResponse
     {
         public override String type
         {

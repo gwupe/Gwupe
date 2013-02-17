@@ -17,6 +17,7 @@ using BlitsMe.Agent.Components.Notification;
 using BlitsMe.Agent.Components.Person;
 using BlitsMe.Agent.Components.RDP;
 using BlitsMe.Communication.P2P.RUDP.Tunnel.API;
+using Microsoft.Win32;
 using log4net;
 
 namespace BlitsMe.Agent.UI.WPF.Engage
@@ -133,9 +134,15 @@ namespace BlitsMe.Agent.UI.WPF.Engage
             EngagementContent.Content = null;
         }
 
-        private void FinancialButtonClick(object sender, RoutedEventArgs e)
+        private void SendFileButtonClick(object sender, RoutedEventArgs e)
         {
-            EngagementContent.Content = null;
+            var fileDialog = new OpenFileDialog();
+            Nullable<bool> result = fileDialog.ShowDialog();
+            if(result == true)
+            {
+                string filename = fileDialog.FileName;
+                Engagement.RequestFileSend(filename);
+            }
         }
 
         private void RemoteAssistanceButtonClick(object sender, RoutedEventArgs e)
@@ -168,7 +175,7 @@ namespace BlitsMe.Agent.UI.WPF.Engage
         private void NotificationFilter(object sender, FilterEventArgs eventArgs)
         {
             INotification notification = eventArgs.Item as INotification;
-            if (notification != null && notification.From != null && notification.From.Equals(Engagement.SecondPartyUsername))
+            if (notification != null && notification.From != null && notification.From.Equals(Engagement.SecondParty.Username))
             {
                 eventArgs.Accepted = true;
             }

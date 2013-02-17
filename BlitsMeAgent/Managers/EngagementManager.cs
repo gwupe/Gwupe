@@ -66,5 +66,13 @@ namespace BlitsMe.Agent.Managers
             EngagementActivityEvent handler = NewActivity;
             if (handler != null) handler(this, args);
         }
+
+        public void Close()
+        {
+            foreach (Engagement engagement in Engagements)
+            {
+                engagement.Close();
+            }
+        }
     }
 }

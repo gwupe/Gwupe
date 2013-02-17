@@ -46,9 +46,16 @@ namespace BlitsMe.Agent.Components.Chat
             _chatSender.Start();
         }
 
+        internal void Close()
+        {
+            if(_chatSender != null && _chatSender.IsAlive)
+            {
+                _chatSender.Abort();
+            }
+        }
+
         private void ProcessChats()
         {
-            Random rand = new Random((int)DateTime.Now.Ticks);
             while (true)
             {
                 while (_chatQueue.Count > 0)
@@ -59,9 +66,9 @@ namespace BlitsMe.Agent.Components.Chat
                         chatElement.DeliveryState = ChatDeliveryState.Trying;
                         var chatMessageRq = new ChatMessageRq()
                             {
-                                from = _appContext.LoginManager.LoginDetails.username,
                                 message = chatElement.Message,
-                                to = _to,
+                                username = _to,
+                                shortCode = _appContext.LoginManager.LoginDetails.shortCode,
                                 chatId = ChatId,
                             };
                         try

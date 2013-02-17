@@ -114,7 +114,6 @@ namespace BlitsMe.Agent.Components.Chat
         {
             get
             {
-                Logger.Debug("Calling DeliveryState on " + Message + " = " + _deliveryState);
                 return _deliveryState;
             }
             set

@@ -50,7 +50,13 @@ namespace BlitsMe.Agent.UI.WPF
             Team.DataContext = _rosterList.RosterViewSource;
             // Setup the engagementWindow list as a mirror of the engagements
             _engagementWindows = new EngagementWindowList(_appContext, NotificationList, Dispatcher);
-            _engagementWindows.SetList(_appContext.EngagementManager.Engagements, "SecondPartyUsername");
+            try
+            {
+                _engagementWindows.SetList(_appContext.EngagementManager.Engagements, "SecondPartyUsername");
+            } catch(Exception e)
+            {
+                Logger.Error("Failed to set the list : " + e.Message,e);
+            }
             _appContext.EngagementManager.NewActivity += EngagementManagerOnNewActivity;
         }
 

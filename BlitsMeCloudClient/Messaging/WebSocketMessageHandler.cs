@@ -1,11 +1,11 @@
-﻿using System;
-using System.Text;
-using BlitsMe.Cloud.Communication;
-using Bauglir.Ex;
+using System;
 using System.IO;
 using System.Runtime.Serialization.Json;
-using BlitsMe.Cloud.Messaging.API;
+using System.Text;
+using Bauglir.Ex;
+using BlitsMe.Cloud.Communication;
 using BlitsMe.Cloud.Exceptions;
+using BlitsMe.Cloud.Messaging.API;
 using log4net;
 
 namespace BlitsMe.Cloud.Messaging
@@ -34,7 +34,7 @@ namespace BlitsMe.Cloud.Messaging
             logger.Debug("Client : Connection [" + aConnection.ToString() + "] has closed with message : " + aCloseReason);
 #endif
             webSocketClient.Reset();
-            webSocketServer.reset();
+            webSocketServer.Reset();
             this.connection = null;
             this._connectionMaintainer.wakeupManager.Set();
         }

@@ -149,12 +149,21 @@
     <Compile Include="Components\Chat\Conversation.cs" />
     <Compile Include="Components\Engagement.cs" />
     <Compile Include="Components\EngagementActivityArgs.cs" />
+    <Compile Include="Components\Notification\FileSendEventArgs.cs" />
+    <Compile Include="Components\Notification\FileSendRequestNotification.cs" />
     <Compile Include="Components\Notification\InfoNotification.cs" />
     <Compile Include="Components\LoginDetails.cs" />
     <Compile Include="Components\Notification\INotification.cs" />
     <Compile Include="Components\Person\Person.cs" />
     <Compile Include="Components\Person\Presence.cs" />
     <Compile Include="Components\Notification\RDPNotification.cs" />
+    <Compile Include="Components\Processors\ChatMessageProcessor.cs" />
+    <Compile Include="Components\Processors\RDPRequestResponseProcessor.cs" />
+    <Compile Include="Components\Processors\RDPRequestProcessor.cs" />
+    <Compile Include="Components\Processors\ListenHandshakeProcessor.cs" />
+    <Compile Include="Components\Processors\InitUDPConnectionProcessor.cs" />
+    <Compile Include="Components\Processors\UserToUserProcessor.cs" />
+    <Compile Include="Components\Processors\PresenceChangeProcessor.cs" />
     <Compile Include="Exceptions\RDPSessionFailedException.cs" />
     <Compile Include="Components\RDP\Client.cs" />
     <Compile Include="Components\RDP\Server.cs" />
@@ -297,6 +306,7 @@
   <ItemGroup>
     <None Include="env\$(Configuration)\app.config" />
     <Resource Include="env\$(Configuration)\cacert.pem" />
+    <Resource Include="UI\WPF\Images\Upload.png" />
   </ItemGroup>
   <ItemGroup>
     <Resource Include="Images\1170492_woman_smiling_at_camera.jpg" />
