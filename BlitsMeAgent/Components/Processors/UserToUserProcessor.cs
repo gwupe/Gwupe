@@ -9,7 +9,7 @@ namespace BlitsMe.Agent.Components.Processors
     {
         private static readonly ILog Logger = LogManager.GetLogger(typeof (PresenceChangeProcessor));
 
-        private readonly BlitsMeClientAppContext _appContext;
+        protected readonly BlitsMeClientAppContext _appContext;
 
         internal UserToUserProcessor(BlitsMeClientAppContext appContext)
         {

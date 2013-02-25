@@ -149,6 +149,9 @@
     <Compile Include="Components\Chat\Conversation.cs" />
     <Compile Include="Components\Engagement.cs" />
     <Compile Include="Components\EngagementActivityArgs.cs" />
+    <Compile Include="Components\Functions\API\IFunction.cs" />
+    <Compile Include="Components\Functions\FileSend.cs" />
+    <Compile Include="Components\Functions\RemoteDesktop.cs" />
     <Compile Include="Components\Notification\FileSendEventArgs.cs" />
     <Compile Include="Components\Notification\FileSendRequestNotification.cs" />
     <Compile Include="Components\Notification\InfoNotification.cs" />
@@ -158,6 +161,7 @@
     <Compile Include="Components\Person\Presence.cs" />
     <Compile Include="Components\Notification\RDPNotification.cs" />
     <Compile Include="Components\Processors\ChatMessageProcessor.cs" />
+    <Compile Include="Components\Processors\FileSendRequestProcessor.cs" />
     <Compile Include="Components\Processors\RDPRequestResponseProcessor.cs" />
     <Compile Include="Components\Processors\RDPRequestProcessor.cs" />
     <Compile Include="Components\Processors\ListenHandshakeProcessor.cs" />

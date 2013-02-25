@@ -7,6 +7,8 @@ using System.IO;
 using System.Net;
 using System.Threading;
 using BlitsMe.Agent.Components.Chat;
+using BlitsMe.Agent.Components.Functions;
+using BlitsMe.Agent.Components.Functions.API;
 using BlitsMe.Agent.Components.Notification;
 using BlitsMe.Agent.Components.RDP;
 using BlitsMe.Agent.Managers;
@@ -91,6 +93,8 @@ namespace BlitsMe.Agent.Components
             set { _chat = value; }
         }
 
+        private readonly Dictionary<String, IFunction> _functions;
+
         public Engagement(BlitsMeClientAppContext appContext, Person.Person person)
         {
             this._appContext = appContext;
@@ -103,12 +107,31 @@ namespace BlitsMe.Agent.Components
             {
                 SetupOutgoingTunnel();
             }
+            // Setup the functions of this engagement 
+            _functions = new Dictionary<string, IFunction>();
+            _functions.Add("FileSend", new FileSend(_appContext, this));
+            _functions.Add("RemoteDesktop", new RemoteDesktop(_appContext, this));
+        }
+
+        public bool hasFunction(String function)
+        {
+            return _functions.ContainsKey(function);
+        }
+
+        public IFunction getFunction(String function)
+        {
+            if (hasFunction(function))
+            {
+                return _functions[function];
+            }
+            throw new Exception("Function " + function + " not supported.");
         }
 
         #region Tunneling Functionality
 
         // The transportManager itself
         private readonly TransportManager _transportManager;
+        internal TransportManager TransportManager { get { return _transportManager; } }
 
         private IUDPTunnel _outgoingTunnel;
         internal IUDPTunnel OutgoingTunnel
@@ -235,210 +258,6 @@ namespace BlitsMe.Agent.Components
             {
                 _outgoingTunnel.Close();
                 _outgoingTunnel = null;
-            }
-        }
-
-        #endregion
-
-        #region RDP Functionality
-
-        // event handler to get an acceptance of RDP Session
-        internal event RDPSessionRequestResponseEvent RDPSessionRequestResponse;
-        internal event RDPIncomingRequestEvent RDPIncomingRequestEvent;
-
-        internal event EventHandler RDPConnectionAccepted { add { Server.ConnectionAccepted += value; } remove { Server.ConnectionAccepted -= value; } }
-        internal event EventHandler RDPConnectionClosed { add { Server.ConnectionClosed += value; } remove { Server.ConnectionClosed -= value; } }
-
-        internal void OnRDPIncomingRequestEvent(RDPIncomingRequestArgs args)
-        {
-            RDPIncomingRequestEvent handler = RDPIncomingRequestEvent;
-            if (handler != null) handler(this, args);
-        }
-
-        internal void OnRDPSessionRequestResponse(RDPSessionRequestResponseArgs args)
-        {
-            RDPSessionRequestResponseEvent handler = RDPSessionRequestResponse;
-            if (handler != null) handler(this, args);
-        }
-
-        internal void ProcessIncomingRDPRequest(String shortCode)
-        {
-            // Set the shortcode, to make sure we connect to the right caller.
-            this.SecondParty.ShortCode = shortCode;
-            RDPNotification rdpNotification = new RDPNotification() { Message = SecondParty.Name + " would like to access your desktop.", From = SecondParty.Username };
-            rdpNotification.ProcessDenyRDP += RDPNotificationOnProcessDenyRDP;
-            rdpNotification.ProcessAcceptRDP += RDPNotificationOnProcessAcceptRDP;
-            _appContext.NotificationManager.AddNotification(rdpNotification);
-            _chat.LogSystemMessage(SecondParty.Name + " sent you a request to control your desktop.");
-            OnRDPIncomingRequestEvent(new RDPIncomingRequestArgs(this));
-        }
-
-        private void RDPNotificationOnProcessAcceptRDP(object sender, EventArgs eventArgs)
-        {
-            _chat.LogSystemMessage("You accepted the desktop assistance request from " + SecondParty.Name);
-            try
-            {
-                Server.Start();
-            }
-            catch (Exception e)
-            {
-                Logger.Error("Failed to start server : " + e.Message, e);
-            }
-            RDPRequestResponseRq request = new RDPRequestResponseRq() { accepted = true, shortCode = SecondParty.ShortCode, username = SecondParty.Username };
-            try
-            {
-                _appContext.ConnectionManager.Connection.Request(request);
-            }
-            catch (Exception e)
-            {
-                Logger.Error("Failed to send a RDP acceptance request to " + SecondParty.Username);
-            }
-        }
-
-        private void RDPNotificationOnProcessDenyRDP(object sender, EventArgs eventArgs)
-        {
-            _chat.LogSystemMessage("You denied the desktop assistance request from " + SecondParty.Name);
-            RDPRequestResponseRq request = new RDPRequestResponseRq() { accepted = false, shortCode = SecondParty.ShortCode, username = SecondParty.Username };
-            try
-            {
-                _appContext.ConnectionManager.Connection.Request(request);
-            }
-            catch (Exception e)
-            {
-                Logger.Error("Failed to send a RDP denial request to " + SecondParty.Username);
-            }
-        }
-
-        private Client _client;
-        public Client Client
-        {
-            get
-            {
-                if (_client == null)
-                {
-                    _client = new Client(_transportManager);
-                }
-                return _client;
-            }
-        }
-
-        private Server _server;
-        public Server Server
-        {
-            get
-            {
-                if (_server == null)
-                {
-                    _server = new Server(_transportManager);
-                    _server.ConnectionClosed += ServerOnConnectionClosed;
-                }
-                return _server;
-            }
-        }
-
-        private void ServerOnConnectionClosed(object sender, EventArgs eventArgs)
-        {
-#if DEBUG
-            Logger.Debug("Server connection closed, notifying end of service.");
-#endif
-            _chat.LogServiceCompleteMessage("You were just helped by " + SecondParty.Name + ", please rate his service below.");
-        }
-
-        internal void RequestRDPSession()
-        {
-            RDPRequestRq request = new RDPRequestRq() { shortCode = SecondParty.ShortCode, username = SecondParty.Username };
-            try
-            {
-                ChatElement chatElement = _chat.LogSystemMessage("You sent " + SecondParty.Name + " a request to control their desktop.");
-                _appContext.ConnectionManager.Connection.RequestAsync(request, (req, res) => ProcessRequestRDPSessionResponse(req, res, chatElement));
-            }
-            catch (Exception ex)
-            {
-                Logger.Error("Error during request for RDP Session : " + ex.Message, ex);
-                _chat.LogSystemMessage("An error occured trying to send " + SecondParty.Name + " a request to control their desktop.");
-            }
-        }
-
-        private void ProcessRequestRDPSessionResponse(Request request, Response response, ChatElement chatElement)
-        {
-            if (response is ErrorRs || !response.isValid())
-            {
-                Logger.Error("Received a async response to " + request.id + " that is an error");
-                chatElement.DeliveryState = ChatDeliveryState.Failed;
-            }
-            else
-            {
-                chatElement.DeliveryState = ChatDeliveryState.Delivered;
-            }
-        }
-
-        #endregion
-
-        #region FileSend Functionality
-
-        private readonly Dictionary<String, String> _pendingFileSends = new Dictionary<string, string>();
-
-        internal void RequestFileSend(String filepath)
-        {
-            String filename = Path.GetFileName(filepath);
-            FileSendRequestRq request = new FileSendRequestRq() { shortCode = SecondParty.ShortCode, username = SecondParty.Username, filename = filename, fileSendId = Util.getSingleton().generateString(8) };
-            try
-            {
-                ChatElement chatElement = _chat.LogSystemMessage("You sent " + SecondParty.Name + " a request to send the file " + filename);
-                _appContext.ConnectionManager.Connection.RequestAsync(request, (req, res) => ProcessRequestFileSendResponse(req, res, chatElement));
-            }
-            catch (Exception ex)
-            {
-                Logger.Error("Error during request for File Send : " + ex.Message, ex);
-                _chat.LogSystemMessage("An error occured trying to send " + SecondParty.Name + " a request to send them a file.");
-            }
-        }
-
-        private void ProcessRequestFileSendResponse(Request req, Response res, ChatElement chatElement)
-        {
-            if (!res.isValid())
-            {
-                _chat.LogSystemMessage("An error occured trying to send " + SecondParty.Name + " a request to send them a file.");
-            }
-            else
-            {
-                FileSendRequestRq request = (FileSendRequestRq)req;
-                Logger.Debug("Successfully sent a file send request for " + request.filename + " [" + request.fileSendId + "]");
-                _pendingFileSends.Add(request.fileSendId, request.filename);
-            }
-        }
-
-        public void ProcessIncomingFileSendRequest(string filename, string fileSendId)
-        {
-            var notification = new FileSendRequestNotification()
-                {
-                    From = SecondParty.Username,
-                    Message = SecondParty.Name + " would like to send you the file " + filename
-                };
-            notification.ProcessAcceptFile += ProcessAcceptFile;
-            notification.ProcessDenyFile += ProcessDenyFile;
-            _appContext.NotificationManager.AddNotification(notification);
-            _chat.LogSystemMessage(SecondParty.Name + " offered to send you the file " + filename + ".");
-        }
-
-        private void ProcessDenyFile(object sender, FileSendEventArgs args)
-        {
-            Logger.Info("Denied request from " + SecondParty.Name + " to send the file " + args.Filename);
-            _chat.LogSystemMessage("You refused to let " + SecondParty.Name + " send you the file " + args.Filename + ".");
-        }
-
-        private void ProcessAcceptFile(object sender, FileSendEventArgs args)
-        {
-            Logger.Info("Accepted request from " + SecondParty.Name + " to send the file " + args.Filename);
-            _chat.LogSystemMessage("You allowed " + SecondParty.Name + " to send you the file " + args.Filename + ".");
-            FileSendRequestResponseRq request = new FileSendRequestResponseRq() { shortCode = SecondParty.ShortCode, username = SecondParty.Username, fileSendId = args.FileSendId, accepted = true };
-            try
-            {
-                _appContext.ConnectionManager.Connection.Request(request);
-            }
-            catch (Exception e)
-            {
-                Logger.Error("Failed to send a file acceptance request for file " + args.Filename + "[" + args.FileSendId + "] to " + SecondParty.Username);
             }
         }
 

@@ -32,6 +32,7 @@ using System.Text;
 using System.Security.Cryptography.X509Certificates;
 using System.Security.Authentication;
 using System.Net.Security;
+using log4net;
 
 namespace Bauglir.Ex
 {
@@ -42,6 +43,7 @@ namespace Bauglir.Ex
   /// </summary>
   public class WebSocketConnection
   {
+      private static readonly ILog Logger = LogManager.GetLogger(typeof (WebSocketConnection));
 
     #region protected properties
     protected TcpClient fClient = null;
@@ -577,7 +579,8 @@ namespace Bauglir.Ex
       }
       return inArray;
     }
-    
+
+      private Object writeLock = new Object();
 
     public virtual bool SendData(bool aWriteFinal, bool aRes1, bool aRes2, bool aRes3, int aWriteCode, MemoryStream aStream)
     {
@@ -593,70 +596,74 @@ namespace Bauglir.Ex
       Random rand = new Random();
       if (result)
       {
-        try
-        {
-          stream = getStream(fClient);
-
-          //send basics
-          bt = (aWriteFinal ? 1 : 0) * 0x80;
-          bt += (aRes1 ? 1 : 0) * 0x40;
-          bt += (aRes2 ? 1 : 0) * 0x20;
-          bt += (aRes3 ? 1 : 0) * 0x10;
-          bt += aWriteCode;
-          stream.WriteByte((byte)bt);
-
-          //length & mask
-          len = (fMasking ? 1 : 0) * 0x80;
-          if (aStream.Length < 126) len += aStream.Length;
-          else if (aStream.Length < 65536) len += 126;
-          else len += 127;
-          stream.WriteByte((byte)len);
-
-          if (aStream.Length >= 126)
+          lock (writeLock)
           {
-            if (aStream.Length < 65536)
-            {
-              bytes = System.BitConverter.GetBytes((ushort)aStream.Length);
-            }
-            else
-            {
-              bytes = System.BitConverter.GetBytes((ulong)aStream.Length);
-            }
-            if (BitConverter.IsLittleEndian) bytes = ReverseBytes(bytes);
-            stream.Write(bytes, 0, bytes.Length);
-          }
-
-          //masking
-          if (fMasking)
-          {
-            masks[0] = (byte)rand.Next(256);
-            masks[1] = (byte)rand.Next(256);
-            masks[2] = (byte)rand.Next(256);
-            masks[3] = (byte)rand.Next(256);
-            stream.Write(masks, 0, masks.Length);
-          }
-
-          
-          //send data
-          aStream.Position = 0;
-          while ((sendLen = aStream.Read(send, 0, send.Length)) > 0)
-          {
-            if (fMasking)
-            {
-              for (i = 0; i < send.Length; i++)
+              try
               {
-                send[i] = (byte)(send[i] ^ masks[i % 4]);
+                  stream = getStream(fClient);
+
+                  //send basics
+                  bt = (aWriteFinal ? 1 : 0)*0x80;
+                  bt += (aRes1 ? 1 : 0)*0x40;
+                  bt += (aRes2 ? 1 : 0)*0x20;
+                  bt += (aRes3 ? 1 : 0)*0x10;
+                  bt += aWriteCode;
+                  stream.WriteByte((byte) bt);
+
+                  //length & mask
+                  len = (fMasking ? 1 : 0)*0x80;
+                  if (aStream.Length < 126) len += aStream.Length;
+                  else if (aStream.Length < 65536) len += 126;
+                  else len += 127;
+                  stream.WriteByte((byte) len);
+
+                  if (aStream.Length >= 126)
+                  {
+                      if (aStream.Length < 65536)
+                      {
+                          bytes = System.BitConverter.GetBytes((ushort) aStream.Length);
+                      }
+                      else
+                      {
+                          bytes = System.BitConverter.GetBytes((ulong) aStream.Length);
+                      }
+                      if (BitConverter.IsLittleEndian) bytes = ReverseBytes(bytes);
+                      stream.Write(bytes, 0, bytes.Length);
+                  }
+
+                  //masking
+                  if (fMasking)
+                  {
+                      masks[0] = (byte) rand.Next(256);
+                      masks[1] = (byte) rand.Next(256);
+                      masks[2] = (byte) rand.Next(256);
+                      masks[3] = (byte) rand.Next(256);
+                      stream.Write(masks, 0, masks.Length);
+                  }
+
+
+                  //send data
+                  aStream.Position = 0;
+                  while ((sendLen = aStream.Read(send, 0, send.Length)) > 0)
+                  {
+                      if (fMasking)
+                      {
+                          for (i = 0; i < send.Length; i++)
+                          {
+                              send[i] = (byte) (send[i] ^ masks[i%4]);
+                          }
+                      }
+                      stream.Write(send, 0, sendLen);
+                  }
+                  aStream.Position = 0;
+                  if (ConnectionWrite != null)
+                      ConnectionWrite(this, aWriteFinal, aRes1, aRes2, aRes3, aWriteCode, aStream);
               }
-            }
-            stream.Write(send, 0, sendLen);
+              catch
+              {
+                  result = false;
+              }
           }
-          aStream.Position = 0;
-          if (ConnectionWrite != null) ConnectionWrite(this, aWriteFinal, aRes1, aRes2, aRes3, aWriteCode, aStream);
-        }
-        catch
-        {
-          result = false;
-        }
       }
       return result;
     }

@@ -13,7 +13,6 @@ namespace BlitsMe.Agent.Components.Processors
 
         internal ChatMessageProcessor(BlitsMeClientAppContext appContext) : base(appContext)
         {
-            _appContext = appContext;
         }
 
         internal override UserToUserResponse ProcessWithEngagement(Engagement engagement, UserToUserRequest req)

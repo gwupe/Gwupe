@@ -13,6 +13,7 @@ using System.Windows.Threading;
 using BlitsMe.Agent.Annotations;
 using BlitsMe.Agent.Components;
 using BlitsMe.Agent.Components.Chat;
+using BlitsMe.Agent.Components.Functions;
 using BlitsMe.Agent.Components.Notification;
 using BlitsMe.Agent.Components.Person;
 using BlitsMe.Agent.Components.RDP;
@@ -39,8 +40,15 @@ namespace BlitsMe.Agent.UI.WPF.Engage
             _appContext = appContext;
             Engagement = engagement;
             engagement.PropertyChanged += EngagementOnPropertyChanged;
-            Engagement.RDPConnectionAccepted += EngagementOnRDPConnectionAccepted;
-            Engagement.RDPConnectionClosed += EngagementOnRDPConnectionClosed;
+            try
+            {
+                ((RemoteDesktop) Engagement.getFunction("RemoteDesktop")).RDPConnectionAccepted += EngagementOnRDPConnectionAccepted;
+                ((RemoteDesktop) Engagement.getFunction("RemoteDesktop")).RDPConnectionClosed += EngagementOnRDPConnectionClosed;
+            }
+            catch (Exception e)
+            {
+                Logger.Error("Failed to link into function RemoteDesktop : " + e.Message,e);
+            }
             _notificationView = new CollectionViewSource { Source = notificationList };
             _notificationView.Filter += NotificationFilter;
             Notifications.ItemsSource = _notificationView.View;
@@ -141,7 +149,7 @@ namespace BlitsMe.Agent.UI.WPF.Engage
             if(result == true)
             {
                 string filename = fileDialog.FileName;
-                Engagement.RequestFileSend(filename);
+                ((FileSend) Engagement.getFunction("FileSend")).RequestFileSend(filename);
             }
         }
 
@@ -150,7 +158,7 @@ namespace BlitsMe.Agent.UI.WPF.Engage
             // Request is asynchronous, we request and RDP session and then wait, acceptance on the users side will send a request to us
             try
             {
-                Engagement.RequestRDPSession();
+                ((RemoteDesktop)Engagement.getFunction("RemoteDesktop")).RequestRDPSession();
             } catch(Exception ex)
             {
                 Logger.Warn("Failed to get the client : " + ex.Message,ex);

@@ -18,7 +18,7 @@ namespace BlitsMe.Agent.Managers
         {
             this._appContext = appContext;
             Notifications = new ObservableCollection<INotification>();
-            _removerTimer = new System.Timers.Timer {Interval = 1000};
+            _removerTimer = new System.Timers.Timer { Interval = 1000 };
             _removerTimer.Elapsed += RemoveAfterTimeoutRunner;
             _removerTimer.Start();
         }
@@ -45,7 +45,10 @@ namespace BlitsMe.Agent.Managers
         internal void AddNotification(INotification notification)
         {
             notification.Manager = this;
-            Notifications.Add(notification);
+            lock (Notifications)
+            {
+                Notifications.Add(notification);
+            }
             if (_removerTimer.Enabled == false)
             {
                 _removerTimer.Start();
