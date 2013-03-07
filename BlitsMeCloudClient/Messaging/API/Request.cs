@@ -14,7 +14,7 @@ namespace BlitsMe.Cloud.Messaging.API
 
         protected Request()
         {
-            this.id = Util.getSingleton().generateString(32);
+            this.id = Util.getSingleton().generateString(16);
         }
     }
 }

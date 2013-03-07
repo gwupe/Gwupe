@@ -1,8 +1,8 @@
 using System;
 using System.Diagnostics;
 using BlitsMe.Agent.Components.Functions;
+using BlitsMe.Agent.Components.Functions.RemoteDesktop;
 using BlitsMe.Agent.Components.Notification;
-using BlitsMe.Agent.Components.RDP;
 using BlitsMe.Cloud.Messaging.API;
 using BlitsMe.Cloud.Messaging.Request;
 using BlitsMe.Cloud.Messaging.Response;
@@ -25,7 +25,7 @@ namespace BlitsMe.Agent.Components.Processors
             RDPRequestResponseRs response = new RDPRequestResponseRs();
             try
             {
-                ((RemoteDesktop)engagement.getFunction("RemoteDesktop")).ProcessRemoteDesktopRequestResponse(request);
+                ((Function)engagement.getFunction("RemoteDesktop")).ProcessRemoteDesktopRequestResponse(request);
             }
             catch (Exception e)
             {

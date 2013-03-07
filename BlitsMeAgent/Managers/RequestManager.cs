@@ -32,6 +32,7 @@ namespace BlitsMe.Agent.Managers
             _appContext.ConnectionManager.Connection.webSocketServer.RegisterProcessor("RDPRequest", new RDPRequestProcessor(_appContext));
             _appContext.ConnectionManager.Connection.webSocketServer.RegisterProcessor("RDPRequestResponse", new RDPRequestResponseProcessor(_appContext));
             _appContext.ConnectionManager.Connection.webSocketServer.RegisterProcessor("FileSendRequest", new FileSendRequestProcessor(_appContext));
+            _appContext.ConnectionManager.Connection.webSocketServer.RegisterProcessor("FileSendRequestResponse", new FileSendRequestResponseProcessor(_appContext));
         }
     }
 }

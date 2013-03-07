@@ -18,5 +18,7 @@ namespace BlitsMe.Cloud.Messaging.Request
         public String filename { get; set; }
         [DataMember]
         public String fileSendId { get; set; }
+        [DataMember]
+        public long fileSize { get; set; }
     }
 }

@@ -1,14 +1,10 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Net;
-using System.Text;
 using BlitsMe.Communication.P2P.RUDP.Connector;
 using BlitsMe.Communication.P2P.RUDP.Connector.API;
-using BlitsMe.Communication.P2P.RUDP.Tunnel;
 using BlitsMe.Communication.P2P.RUDP.Tunnel.API;
 
-namespace BlitsMe.Agent.Components.RDP
+namespace BlitsMe.Agent.Components.Functions.RemoteDesktop
 {
     internal class Client
     {

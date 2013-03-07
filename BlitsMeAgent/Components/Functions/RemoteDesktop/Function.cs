@@ -1,27 +1,27 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Diagnostics;
-using System.Linq;
-using System.Text;
 using BlitsMe.Agent.Components.Chat;
 using BlitsMe.Agent.Components.Functions.API;
+using BlitsMe.Agent.Components.Functions.FileSend;
 using BlitsMe.Agent.Components.Notification;
-using BlitsMe.Agent.Components.RDP;
 using BlitsMe.Cloud.Messaging.API;
 using BlitsMe.Cloud.Messaging.Request;
 using BlitsMe.Cloud.Messaging.Response;
 using log4net;
 
-namespace BlitsMe.Agent.Components.Functions
+namespace BlitsMe.Agent.Components.Functions.RemoteDesktop
 {
-    class RemoteDesktop : IFunction
+    internal delegate void RDPSessionRequestResponseEvent(object sender, RDPSessionRequestResponseArgs args);
+    internal delegate void RDPIncomingRequestEvent(object sender, RDPIncomingRequestArgs args);
+
+    class Function : IFunction
     {
         private readonly BlitsMeClientAppContext _appContext;
         private readonly Engagement _engagement;
 
-        private static readonly ILog Logger = LogManager.GetLogger(typeof (FileSend));
+        private static readonly ILog Logger = LogManager.GetLogger(typeof (FileSend.Function));
 
-        internal RemoteDesktop(BlitsMeClientAppContext appContext, Engagement engagement)
+        internal Function(BlitsMeClientAppContext appContext, Engagement engagement)
         {
             _appContext = appContext;
             _engagement = engagement;
@@ -93,7 +93,6 @@ namespace BlitsMe.Agent.Components.Functions
                 Logger.Error("Failed to send a RDP denial request to " + _engagement.SecondParty.Username, e);
             }
         }
-
         private Client _client;
         public Client Client
         {

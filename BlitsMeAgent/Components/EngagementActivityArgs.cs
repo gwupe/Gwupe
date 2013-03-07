@@ -47,4 +47,18 @@ namespace BlitsMe.Agent.Components
 
         }
     }
+
+    internal class FileSendRequestArgs : EngagementActivityArgs
+    {
+        public override string ActivityType
+        {
+            get { return "FILESEND_REQUEST"; }
+        }
+
+        internal FileSendRequestArgs(Engagement engagement)
+            : base(engagement)
+        {
+
+        }
+    }
 }

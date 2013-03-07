@@ -6,7 +6,7 @@ using BlitsMe.Communication.P2P.RUDP.Packet.API;
 
 namespace BlitsMe.Communication.P2P.RUDP.Tunnel.API
 {
-    public interface ITransportConnection
+    public interface ITransportLayer
     {
         void Open();
         void Close();

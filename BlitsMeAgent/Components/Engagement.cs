@@ -9,25 +9,25 @@ using System.Threading;
 using BlitsMe.Agent.Components.Chat;
 using BlitsMe.Agent.Components.Functions;
 using BlitsMe.Agent.Components.Functions.API;
+using BlitsMe.Agent.Components.Functions.FileSend;
+using BlitsMe.Agent.Components.Functions.RemoteDesktop;
 using BlitsMe.Agent.Components.Notification;
-using BlitsMe.Agent.Components.RDP;
 using BlitsMe.Agent.Managers;
 using BlitsMe.Cloud.Exceptions;
 using BlitsMe.Cloud.Messaging.API;
 using BlitsMe.Cloud.Messaging.Request;
 using BlitsMe.Cloud.Messaging.Response;
 using BlitsMe.Common.Security;
+using BlitsMe.Communication.P2P.RUDP.Connector;
 using BlitsMe.Communication.P2P.RUDP.Connector.API;
 using BlitsMe.Communication.P2P.RUDP.Tunnel;
 using BlitsMe.Communication.P2P.RUDP.Tunnel.API;
 using BlitsMe.Communication.P2P.RUDP.Utils;
 using log4net;
+using Function = BlitsMe.Agent.Components.Functions.FileSend.Function;
 
 namespace BlitsMe.Agent.Components
 {
-    internal delegate void RDPSessionRequestResponseEvent(object sender, RDPSessionRequestResponseArgs args);
-
-    internal delegate void RDPIncomingRequestEvent(object sender, RDPIncomingRequestArgs args);
 
     /* This class is all about interaction with a user, their chat, their billing, their everything */
     internal class Engagement : INotifyPropertyChanged
@@ -109,8 +109,8 @@ namespace BlitsMe.Agent.Components
             }
             // Setup the functions of this engagement 
             _functions = new Dictionary<string, IFunction>();
-            _functions.Add("FileSend", new FileSend(_appContext, this));
-            _functions.Add("RemoteDesktop", new RemoteDesktop(_appContext, this));
+            _functions.Add("FileSend", new Function(_appContext, this));
+            _functions.Add("RemoteDesktop", new Functions.RemoteDesktop.Function(_appContext, this));
         }
 
         public bool hasFunction(String function)

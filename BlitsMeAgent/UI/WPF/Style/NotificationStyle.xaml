@@ -3,7 +3,8 @@
 	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
 	xmlns:s="clr-namespace:System;assembly=mscorlib"
 	xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-	xmlns:Notification="clr-namespace:BlitsMe.Agent.Components.Notification">
+	xmlns:Notification="clr-namespace:BlitsMe.Agent.Components.Notification"
+	xmlns:FileSendNotification="clr-namespace:BlitsMe.Agent.Components.Functions.FileSend.Notification">
 	<!-- Resource dictionary entries should be defined here. -->
 	<DataTemplate DataType="{x:Type Notification:RDPNotification}">
 		<DockPanel HorizontalAlignment="Stretch" LastChildFill="true" Background="#FF1AAD45">
@@ -19,7 +20,7 @@
 			<TextBlock HorizontalAlignment="Left" Margin="8,11,0,8" Text="{Binding Path=Message, FallbackValue=Unknown Notification}" DockPanel.Dock="Left" Foreground="White" FontWeight="Bold"/>
 		</DockPanel>
 	</DataTemplate>
-	<DataTemplate DataType="{x:Type Notification:FileSendRequestNotification}">
+	<DataTemplate DataType="{x:Type FileSendNotification:FileSendRequestNotification}">
 		<DockPanel HorizontalAlignment="Stretch" LastChildFill="true" Background="#FF1AAD45">
 			<StackPanel Orientation="Horizontal" Margin="0,8,8,8" HorizontalAlignment="Right" DockPanel.Dock="Right">
 				<Button Content="Accept" HorizontalAlignment="Right" Width="75" Command="{Binding AnswerFileSendRequest}">

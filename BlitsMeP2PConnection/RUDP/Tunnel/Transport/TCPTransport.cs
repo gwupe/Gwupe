@@ -191,7 +191,7 @@ namespace BlitsMe.Communication.P2P.RUDP.Tunnel.Transport
                             Logger.Debug("Found a listener for " + packet.connectionName + " connecting local conn [" + localConnectionId + "] to remote conn [" + packet.ConnectionId + "]");
 #endif
 
-                            TcpOne4OneConnection connection = new TcpOne4OneConnection(this, localConnectionId);
+                            TcpTransportLayerOne4One connection = new TcpTransportLayerOne4One(this, localConnectionId);
                             // only add the connection if 
                             if (response.success = _listeningNamedTCPEndPoints[packet.connectionName].connectCallback(connection.socket))
                             {
@@ -233,7 +233,7 @@ namespace BlitsMe.Communication.P2P.RUDP.Tunnel.Transport
 #if(DEBUG)
                 Logger.Debug("Successfully connected to service " + endPoint + " local connection [" + connectionId + "], remote connection [" + remoteConnectionId + "]");
 #endif
-                ITcpConnection connection = new TcpOne4OneConnection(this, connectionId);
+                ITcpTransportLayer connection = new TcpTransportLayerOne4One(this, connectionId);
                 _activeTCPConnections.Add(connectionId, remoteConnectionId, connection);
                 _tcpConnectionHelper.AckConnectionResponse(connectionId, this);
                 connection.Open();
@@ -331,13 +331,13 @@ namespace BlitsMe.Communication.P2P.RUDP.Tunnel.Transport
      */
     internal class TcpConnectionHolder
     {
-        internal ITcpConnection Connection;
+        internal ITcpTransportLayer Connection;
         internal Object SendLock;
         internal Object ReceiveLock;
         internal byte RemoteConnectionId;
         internal byte ConnectionId;
 
-        internal TcpConnectionHolder(ITcpConnection conn, byte connectionId, byte remoteConnectionId)
+        internal TcpConnectionHolder(ITcpTransportLayer conn, byte connectionId, byte remoteConnectionId)
         {
             Connection = conn;
             RemoteConnectionId = remoteConnectionId;
@@ -363,7 +363,7 @@ namespace BlitsMe.Communication.P2P.RUDP.Tunnel.Transport
             _remoteLocalIdMap = new Dictionary<byte, byte>();
         }
 
-        internal void Add(byte localConnectionId, byte remoteConnectionId, ITcpConnection connection)
+        internal void Add(byte localConnectionId, byte remoteConnectionId, ITcpTransportLayer connection)
         {
             lock (_list)
             {

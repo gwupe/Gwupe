@@ -8,7 +8,7 @@ using BlitsMe.Communication.P2P.RUDP.Packet.API;
 
 namespace BlitsMe.Communication.P2P.RUDP.Tunnel.API
 {
-    public interface ITcpConnection : ITransportConnection
+    public interface ITcpTransportLayer : ITransportLayer
     {
         IInternalTcpOverUdptSocket socket { get; }
         int PacketCountReceiveAckValid { get; }

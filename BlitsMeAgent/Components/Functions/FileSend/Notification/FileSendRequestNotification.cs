@@ -1,24 +1,21 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Windows.Input;
+using BlitsMe.Agent.Components.Notification;
 using BlitsMe.Agent.Managers;
 
-namespace BlitsMe.Agent.Components.Notification
+namespace BlitsMe.Agent.Components.Functions.FileSend.Notification
 {
     internal delegate void FileSendEventHandler(object sender, FileSendEventArgs args);
 
     class FileSendRequestNotification : INotification
     {
-        public String Filename;
-        public String FileSendId;
+        internal FileSendInfo FileInfo;
 
         public event FileSendEventHandler ProcessAcceptFile;
 
         public void OnProcessFileResponse(bool accept)
         {
-            var e = new FileSendEventArgs() { Filename = Filename, FileSendId = FileSendId };
+            var e = new FileSendEventArgs() { FileInfo = FileInfo };
             FileSendEventHandler handler = accept ? ProcessAcceptFile : ProcessDenyFile;
             if (handler != null) handler(this, e);
         }

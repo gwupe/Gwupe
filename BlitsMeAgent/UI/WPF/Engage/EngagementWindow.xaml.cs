@@ -14,12 +14,14 @@ using BlitsMe.Agent.Annotations;
 using BlitsMe.Agent.Components;
 using BlitsMe.Agent.Components.Chat;
 using BlitsMe.Agent.Components.Functions;
+using BlitsMe.Agent.Components.Functions.FileSend;
+using BlitsMe.Agent.Components.Functions.RemoteDesktop;
 using BlitsMe.Agent.Components.Notification;
 using BlitsMe.Agent.Components.Person;
-using BlitsMe.Agent.Components.RDP;
 using BlitsMe.Communication.P2P.RUDP.Tunnel.API;
 using Microsoft.Win32;
 using log4net;
+using Function = BlitsMe.Agent.Components.Functions.FileSend.Function;
 
 namespace BlitsMe.Agent.UI.WPF.Engage
 {
@@ -42,8 +44,8 @@ namespace BlitsMe.Agent.UI.WPF.Engage
             engagement.PropertyChanged += EngagementOnPropertyChanged;
             try
             {
-                ((RemoteDesktop) Engagement.getFunction("RemoteDesktop")).RDPConnectionAccepted += EngagementOnRDPConnectionAccepted;
-                ((RemoteDesktop) Engagement.getFunction("RemoteDesktop")).RDPConnectionClosed += EngagementOnRDPConnectionClosed;
+                ((Components.Functions.RemoteDesktop.Function) Engagement.getFunction("RemoteDesktop")).RDPConnectionAccepted += EngagementOnRDPConnectionAccepted;
+                ((Components.Functions.RemoteDesktop.Function) Engagement.getFunction("RemoteDesktop")).RDPConnectionClosed += EngagementOnRDPConnectionClosed;
             }
             catch (Exception e)
             {
@@ -149,7 +151,7 @@ namespace BlitsMe.Agent.UI.WPF.Engage
             if(result == true)
             {
                 string filename = fileDialog.FileName;
-                ((FileSend) Engagement.getFunction("FileSend")).RequestFileSend(filename);
+                ((Function) Engagement.getFunction("FileSend")).RequestFileSend(filename);
             }
         }
 
@@ -158,7 +160,7 @@ namespace BlitsMe.Agent.UI.WPF.Engage
             // Request is asynchronous, we request and RDP session and then wait, acceptance on the users side will send a request to us
             try
             {
-                ((RemoteDesktop)Engagement.getFunction("RemoteDesktop")).RequestRDPSession();
+                ((Components.Functions.RemoteDesktop.Function)Engagement.getFunction("RemoteDesktop")).RequestRDPSession();
             } catch(Exception ex)
             {
                 Logger.Warn("Failed to get the client : " + ex.Message,ex);

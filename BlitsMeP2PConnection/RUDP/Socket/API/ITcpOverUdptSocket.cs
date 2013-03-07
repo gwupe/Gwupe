@@ -10,7 +10,7 @@ namespace BlitsMe.Communication.P2P.RUDP.Socket.API
 {
     public interface ITcpOverUdptSocket
     {
-        ITcpConnection Connection { get; }
+        ITcpTransportLayer Connection { get; }
         void Send(byte[] data, int timeout);
         int Read(byte[] data, int maxRead);
         bool Closed { get; }

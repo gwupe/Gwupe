@@ -16,7 +16,7 @@ namespace BlitsMe.Communication.P2P.RUDP.Connector
     public class ProxyTcpConnector : API.INamedConnector
     {
         private static readonly ILog logger = LogManager.GetLogger(typeof(ProxyTcpConnector));
-        private TcpListener _listener;
+        private System.Net.Sockets.TcpListener _listener;
         private Thread _listenThread;
         private readonly ITransportManager _transportManager;
         public bool Listening { get; private set; }
@@ -75,7 +75,7 @@ namespace BlitsMe.Communication.P2P.RUDP.Connector
             _openConnections = new List<ProxyConnection>();
         }
 
-        #region Listening Functionality
+        #region Normal TCP Listening Functionality
 
         public int ListenOnce()
         {
@@ -101,13 +101,13 @@ namespace BlitsMe.Communication.P2P.RUDP.Connector
         {
             if (!Listening)
             {
-                this._listener = new TcpListener(IPAddress.Loopback, port);
-                this._listener.Start();
-                this.Listening = true;
+                _listener = new System.Net.Sockets.TcpListener(IPAddress.Loopback, port);
+                _listener.Start();
+                Listening = true;
 #if DEBUG
-                logger.Debug("Started listening TCP connector on port " + ListenerEndpoint.Port + " for 1 connection");
+                logger.Debug("Started listening TCP connector on port " + ListenerEndpoint.Port + " for connections");
 #endif
-                _listenThread = new Thread(new ThreadStart(listenerMethod)) { IsBackground = true, Name = "_listenThread[" + Name + "]"};
+                _listenThread = new Thread(new ThreadStart(listenerMethod)) { IsBackground = true, Name = "_realTCPlistenThread[" + Name + "]"};
                 _listenThread.Start();
                 return ((IPEndPoint)_listener.LocalEndpoint).Port;
             }

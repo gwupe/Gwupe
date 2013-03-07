@@ -1,5 +1,6 @@
 using System;
 using BlitsMe.Agent.Components.Functions;
+using BlitsMe.Agent.Components.Functions.RemoteDesktop;
 using BlitsMe.Cloud.Messaging.API;
 using BlitsMe.Cloud.Messaging.Request;
 using BlitsMe.Cloud.Messaging.Response;
@@ -23,7 +24,7 @@ namespace BlitsMe.Agent.Components.Processors
             RDPRequestRs response = new RDPRequestRs();
             try
             {
-                ((RemoteDesktop)engagement.getFunction("RemoteDesktop")).ProcessIncomingRDPRequest(request.shortCode);
+                ((Function)engagement.getFunction("RemoteDesktop")).ProcessIncomingRDPRequest(request.shortCode);
             } catch (Exception e)
             {
                 Logger.Error("Failed to process incoming RDP request : " + e.Message,e);

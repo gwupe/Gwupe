@@ -150,10 +150,13 @@
     <Compile Include="Components\Engagement.cs" />
     <Compile Include="Components\EngagementActivityArgs.cs" />
     <Compile Include="Components\Functions\API\IFunction.cs" />
-    <Compile Include="Components\Functions\FileSend.cs" />
-    <Compile Include="Components\Functions\RemoteDesktop.cs" />
-    <Compile Include="Components\Notification\FileSendEventArgs.cs" />
-    <Compile Include="Components\Notification\FileSendRequestNotification.cs" />
+    <Compile Include="Components\Functions\FileSend\FileSendClient.cs" />
+    <Compile Include="Components\Functions\FileSend\FileSendInfo.cs" />
+    <Compile Include="Components\Functions\FileSend\FileSendListener.cs" />
+    <Compile Include="Components\Functions\FileSend\Function.cs" />
+    <Compile Include="Components\Functions\RemoteDesktop\Function.cs" />
+    <Compile Include="Components\Functions\FileSend\Notification\FileSendEventArgs.cs" />
+    <Compile Include="Components\Functions\FileSend\Notification\FileSendRequestNotification.cs" />
     <Compile Include="Components\Notification\InfoNotification.cs" />
     <Compile Include="Components\LoginDetails.cs" />
     <Compile Include="Components\Notification\INotification.cs" />
@@ -162,6 +165,7 @@
     <Compile Include="Components\Notification\RDPNotification.cs" />
     <Compile Include="Components\Processors\ChatMessageProcessor.cs" />
     <Compile Include="Components\Processors\FileSendRequestProcessor.cs" />
+    <Compile Include="Components\Processors\FileSendRequestResponseProcessor.cs" />
     <Compile Include="Components\Processors\RDPRequestResponseProcessor.cs" />
     <Compile Include="Components\Processors\RDPRequestProcessor.cs" />
     <Compile Include="Components\Processors\ListenHandshakeProcessor.cs" />
@@ -169,8 +173,8 @@
     <Compile Include="Components\Processors\UserToUserProcessor.cs" />
     <Compile Include="Components\Processors\PresenceChangeProcessor.cs" />
     <Compile Include="Exceptions\RDPSessionFailedException.cs" />
-    <Compile Include="Components\RDP\Client.cs" />
-    <Compile Include="Components\RDP\Server.cs" />
+    <Compile Include="Components\Functions\RemoteDesktop\Client.cs" />
+    <Compile Include="Components\Functions\RemoteDesktop\Server.cs" />
     <Compile Include="DispatchingCollection.cs" />
     <Compile Include="Managers\ConnectionManager.cs" />
     <Compile Include="Managers\EngagementManager.cs" />

@@ -25,17 +25,7 @@ namespace BlitsMe.Agent.Components.Processors
             var response = new PresenceChangeRs();
             try
             {
-                Person.Person servicePerson = _appContext.RosterManager.GetServicePerson(request.user);
-                if (servicePerson != null)
-                {
-                    servicePerson.Presence = new Presence(request.presence);
-                    Logger.Info("Presence change, " + request.user +
-                                (servicePerson.Presence.IsAvailable ? " is available " : " is no longer available"));
-                    if (request.shortCode != null)
-                    {
-                        servicePerson.ShortCode = request.shortCode;
-                    }
-                }
+                _appContext.RosterManager.ProcessPresenceChange(request);
             }
             catch (Exception e)
             {

@@ -14,9 +14,9 @@ using BlitsMe.Communication.P2P.Exceptions;
 
 namespace BlitsMe.Communication.P2P.RUDP.Tunnel
 {
-    public class TcpOne4OneConnection : ITcpConnection
+    public class TcpTransportLayerOne4One : ITcpTransportLayer
     {
-        private static readonly ILog Logger = LogManager.GetLogger(typeof(TcpOne4OneConnection));
+        private static readonly ILog Logger = LogManager.GetLogger(typeof(TcpTransportLayerOne4One));
         private readonly TCPTransport _transport;
         private readonly byte _connectionId;
         // Event Handlers
@@ -39,7 +39,7 @@ namespace BlitsMe.Communication.P2P.RUDP.Tunnel
         public int PacketCountTransmitDataFirst { get; private set; }
         public int PacketCountTransmitDataResend { get; private set; }
 
-        public TcpOne4OneConnection(TCPTransport transport, byte connectionId)
+        public TcpTransportLayerOne4One(TCPTransport transport, byte connectionId)
         {
             this._transport = transport;
             this._connectionId = connectionId;

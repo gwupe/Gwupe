@@ -1,5 +1,6 @@
 using System;
 using BlitsMe.Agent.Components.Functions;
+using BlitsMe.Agent.Components.Functions.FileSend;
 using BlitsMe.Agent.Components.Notification;
 using BlitsMe.Cloud.Messaging.API;
 using BlitsMe.Cloud.Messaging.Request;
@@ -22,7 +23,7 @@ namespace BlitsMe.Agent.Components.Processors
             FileSendRequestRs response = new FileSendRequestRs();
             try
             {
-                ((FileSend)engagement.getFunction("FileSend")).ProcessIncomingFileSendRequest(request.filename, request.fileSendId);
+                ((Function)engagement.getFunction("FileSend")).ProcessIncomingFileSendRequest(request.filename, request.fileSendId, request.fileSize);
             }
             catch (Exception e)
             {

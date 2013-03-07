@@ -9,19 +9,21 @@ using BlitsMe.Communication.P2P.RUDP.Tunnel;
 using System.IO;
 using System.Threading;
 using BlitsMe.Communication.P2P.Exceptions;
+using log4net;
 
 namespace BlitsMe.Communication.P2P.RUDP.Socket
 {
     public class StandardTcpOverUdptSocket : IInternalTcpOverUdptSocket
     {
-        public ITcpConnection Connection { get; private set; }
+        private static readonly ILog Logger = LogManager.GetLogger(typeof (StandardTcpOverUdptSocket));
+        public ITcpTransportLayer Connection { get; private set; }
         private readonly AutoResetEvent _dataReady = new AutoResetEvent(false);
         private readonly Queue<byte[]> _clientBuffer;
         private byte[] _workingBuffer;
         private const int BufferSize = 100;
         public bool Closed { get; private set; }
 
-        public StandardTcpOverUdptSocket(ITcpConnection connection)
+        public StandardTcpOverUdptSocket(ITcpTransportLayer connection)
         {
             this.Connection = connection;
             _clientBuffer = new Queue<byte[]>(BufferSize);
