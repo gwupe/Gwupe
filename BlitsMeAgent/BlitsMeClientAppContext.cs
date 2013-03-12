@@ -39,7 +39,13 @@ namespace BlitsMe.Agent
         {
             XmlConfigurator.Configure();
             Logger.Info("BlitsMe.Agent Starting up");
-            Assembly.GetExecutingAssembly().GetManifestResourceStream("BlitsMe.Agent.cacert.pem");
+#if DEBUG
+            foreach (var manifestResourceName in Assembly.GetExecutingAssembly().GetManifestResourceNames())
+            {
+                Logger.Debug("Embedded Resource : " + manifestResourceName);
+            }
+#endif
+            //Assembly.GetExecutingAssembly().GetManifestResourceStream("BlitsMe.Agent.cacert.pem");
             BlitsMeServiceProxy = new BlitsMeServiceDynProxy();
             ConnectionManager = new ConnectionManager(this);
             LoginManager = new LoginManager(this);

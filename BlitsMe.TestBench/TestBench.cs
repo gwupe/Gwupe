@@ -46,6 +46,14 @@ namespace BlitsMe.TestBench
             InitializeComponent();
             logger = LogManager.GetLogger(typeof(TestBench));
             log4net.Config.XmlConfigurator.Configure();
+            byte[] data = Encoding.UTF8.GetBytes("another string");
+            test(data);
+            
+        }
+
+        private void test(byte[] data)
+        {
+            data = Encoding.UTF8.GetBytes("the quick bornw");
         }
 
         private void runStats()

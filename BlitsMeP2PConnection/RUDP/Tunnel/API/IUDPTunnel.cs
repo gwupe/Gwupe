@@ -6,6 +6,8 @@ using BlitsMe.Communication.P2P.RUDP.Utils;
 namespace BlitsMe.Communication.P2P.RUDP.Tunnel.API
 {
     public delegate void ProcessPacket(byte[] data, String id);
+    public delegate void EncryptData(ref byte[] data);
+    public delegate void DecryptData(ref byte[] data);
     public delegate void ConnectionChangedEvent(object sender, EventArgs args);
 
     /* This interface is used for building classes which have the ability to establish and maintain
@@ -38,6 +40,9 @@ namespace BlitsMe.Communication.P2P.RUDP.Tunnel.API
         void SendData(byte[] data);
         // Receive a packet
         ProcessPacket ProcessData { get; set; }
+        // Encryption
+        EncryptData EncryptData { get; set; }
+        DecryptData DecryptData { get; set; }
         // close the tunnel
         void Close();
     }

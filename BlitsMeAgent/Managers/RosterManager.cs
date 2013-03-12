@@ -72,7 +72,7 @@ namespace BlitsMe.Agent.Managers
             {
                 servicePerson.Presence = presence;
                 Logger.Info("Presence change, " + user +
-                            (servicePerson.Presence.IsAvailable ? " is available " : " is no longer available"));
+                            (servicePerson.Presence.IsAvailable ? " is available " : " is no longer available") + "[" + servicePerson.Presence.Status + "]");
                 if (shortCode != null)
                 {
                     servicePerson.ShortCode = shortCode;

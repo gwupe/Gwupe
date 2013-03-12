@@ -115,6 +115,10 @@
     <CodeAnalysisRuleDirectories>;C:\Program Files\Microsoft Visual Studio 10.0\Team Tools\Static Analysis Tools\FxCop\\Rules</CodeAnalysisRuleDirectories>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="BlitsMe.Common">
+      <HintPath>..\BlitsMeCommon\bin\Debug\BlitsMe.Common.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
     <Reference Include="log4net, Version=1.2.11.0, Culture=neutral, PublicKeyToken=669e0ddf0bb1aa2a, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\BlitsMeCommon\log4net.dll</HintPath>
@@ -279,6 +283,8 @@
       <DependentUpon>Dashboard.cs</DependentUpon>
     </EmbeddedResource>
     <!-- <None Include="app.config" /> -->
+    <!--<None Include="env\Release\app.config" />
+    <None Include="env\Release\cacert.pem" />-->
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
@@ -301,20 +307,17 @@
       <SubType>Designer</SubType>
     </Page>
   </ItemGroup>
-  <!--
   <ItemGroup Condition=" '$(Configuration)' == 'Debug' ">
-    <Resource Include="env\Debug\cacert.pem" />
+    <EmbeddedResource Include="env\Debug\cacert.pem">
+      <LogicalName>BlitsMe.Agent.cacert.pem</LogicalName>
+    </EmbeddedResource>    
     <None Include="env\Debug\app.config" />
   </ItemGroup>
   <ItemGroup Condition=" '$(Configuration)' == 'Release' ">
     <None Include="env\Release\app.config" />
-    <Resource Include="env\Release\cacert.pem" />
-  </ItemGroup>
-  -->
-  <ItemGroup>
-    <None Include="env\$(Configuration)\app.config" />
-    <Resource Include="env\$(Configuration)\cacert.pem" />
-    <Resource Include="UI\WPF\Images\Upload.png" />
+    <EmbeddedResource Include="env\Release\cacert.pem">
+      <LogicalName>BlitsMe.Agent.cacert.pem</LogicalName>
+    </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
     <Resource Include="Images\1170492_woman_smiling_at_camera.jpg" />
@@ -376,10 +379,6 @@
       <Project>{751A6516-1FE8-47F4-A754-8AA5594FFB11}</Project>
       <Name>BlitsMeCloudClient</Name>
     </ProjectReference>
-    <ProjectReference Include="..\BlitsMeCommon\BlitsMeCommon.csproj">
-      <Project>{1B355F1C-9D50-4BAB-8CEB-E6CA72E6DE69}</Project>
-      <Name>BlitsMeCommon</Name>
-    </ProjectReference>
     <ProjectReference Include="..\BlitsMeP2PConnection\BlitsMeP2PConnection.csproj">
       <Project>{C8080119-3305-43B5-8944-592DBC960F12}</Project>
       <Name>BlitsMeP2PConnection</Name>
@@ -426,6 +425,7 @@
     <Resource Include="Icons\icon-main.ico" />
   </ItemGroup>
   <ItemGroup>
+    <EmbeddedResource Include="..\BlitsMeCommon\bin\$(Configuration)\BlitsMe.Common.dll" />
     <Content Include="icon-main.ico" />
     <Resource Include="UI\WPF\Images\arrow.png" />
     <Resource Include="UI\WPF\Images\arrow_limited_blue_bg.png" />

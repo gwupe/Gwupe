@@ -174,11 +174,11 @@ namespace BlitsMe.Cloud.Communication
 
         public void connect(Uri uri)
         {
-            connection = new WebSocketClientConnection();
+            connection = new WebSocketClientSSLConnection();
             connection.ConnectionClose += wsMessageHandler.onClose;
             connection.ConnectionOpen += wsMessageHandler.onOpen;
             connection.ConnectionRead += wsMessageHandler.onMessage;
-            if (!connection.Start(uri.Host, uri.Port.ToString(), uri.PathAndQuery, false, "", protocol))
+            if (!connection.Start(uri.Host, uri.Port.ToString(), uri.PathAndQuery, true, "", protocol))
             {
                 throw new IOException("Unknown error connecting to " + uri.ToString());
             }
@@ -200,6 +200,14 @@ namespace BlitsMe.Cloud.Communication
                 connection.Close(code, reason);
             }
             OnDisconnect(new EventArgs());
+        }
+    }
+
+    internal class WebSocketClientSSLConnection : WebSocketClientConnection
+    {
+        protected override bool validateServerCertificate(object sender, System.Security.Cryptography.X509Certificates.X509Certificate certificate, System.Security.Cryptography.X509Certificates.X509Chain chain, System.Net.Security.SslPolicyErrors sslPolicyErrors)
+        {
+            return true;
         }
     }
 }

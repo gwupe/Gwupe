@@ -18,7 +18,7 @@ namespace BlitsMe.Cloud.Communication
 #else
         private static List<string> defaultIPs = new List<String>(new String[] { "s1.i.blits.me", "s2.i.blits.me", "s3.i.blits.me" });
 #endif
-        private static List<int> defaultPorts = new List<int>(new int[] { 10230, 443, 80 });
+        private static List<int> defaultPorts = new List<int>(new int[] { 8443 });
         private LoginRq loginRq;
         public Messaging.Response.LoginRs loginRs { get; private set; }
         private ConnectionMaintainer _connectionMaintainer;

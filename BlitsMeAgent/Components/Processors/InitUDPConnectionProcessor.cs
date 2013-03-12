@@ -28,7 +28,7 @@ namespace BlitsMe.Agent.Components.Processors
             try
             {
                 // Hit the stun server
-                PeerInfo self = _appContext.P2PManager.SetupTunnel(request.uniqueId, new IPEndPoint(IPAddress.Parse(request.facilitatorIP), Convert.ToInt32(request.facilitatorPort)));
+                PeerInfo self = _appContext.P2PManager.SetupTunnel(request.uniqueId, new IPEndPoint(IPAddress.Parse(request.facilitatorIP), Convert.ToInt32(request.facilitatorPort)), request.encryptionKey);
                 response.setUDPPeerInfo(self);
             }
             catch (Exception e)

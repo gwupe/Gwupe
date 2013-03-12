@@ -83,7 +83,11 @@ namespace BlitsMe.Communication.P2P.RUDP.Tunnel
 
 
         // Method variables
-        public API.ProcessPacket ProcessData { get; set; } // this method will be called to process data packet
+        public API.ProcessPacket ProcessData { get; set; }
+        public EncryptData EncryptData { get; set; }
+        public DecryptData DecryptData { get; set; }
+
+// this method will be called to process data packet
 
         public IPAddress RemoteIp
         {
@@ -219,6 +223,17 @@ namespace BlitsMe.Communication.P2P.RUDP.Tunnel
         public void SendData(byte[] data)
         {
             StandardTunnelDataPacket packet = new StandardTunnelDataPacket();
+            if(EncryptData != null)
+            {
+                try
+                {
+                    EncryptData(ref data);
+                } catch(Exception e)
+                {
+                    Logger.Error("Encryption failed, shutting down tunnel : " + e.Message,e);
+                    this.Close();
+                }
+            }
             packet.data = data;
             SendPacket(packet);
         }
@@ -342,8 +357,21 @@ namespace BlitsMe.Communication.P2P.RUDP.Tunnel
                 {
                     try
                     {
+                        byte[] data = packet.data;
+                        if (DecryptData != null)
+                        {
+                            try
+                            {
+                                DecryptData(ref data);
+                            }
+                            catch (Exception e)
+                            {
+                                Logger.Error("Encryption failed, shutting down tunnel : " + e.Message, e);
+                                this.Close();
+                            }
+                        }
                         // a new thread needs to handle this upstream otherwise upstream can hang the whole process
-                        Thread processDataThread = new Thread(() => ProcessData(packet.data, id)) { IsBackground = true };
+                        Thread processDataThread = new Thread(() => ProcessData(data, id)) { IsBackground = true };
                         processDataThread.Name = "processDataThread[" + processDataThread.ManagedThreadId + "]";
                         processDataThread.Start();
                     }

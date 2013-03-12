@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Net;
+using System.Text;
 using BlitsMe.Communication.P2P.RUDP.Tunnel;
 using BlitsMe.Communication.P2P.RUDP.Tunnel.API;
 using BlitsMe.Communication.P2P.RUDP.Utils;
@@ -18,15 +19,31 @@ namespace BlitsMe.Agent.Managers
             _pendingTunnels = new Dictionary<string, IUDPTunnel>();
         }
 
-        public PeerInfo SetupTunnel(String uniqueId, IPEndPoint facilitatorEndPoint)
+        public PeerInfo SetupTunnel(String uniqueId, IPEndPoint facilitatorEndPoint, String encryptionKey)
         {
             IUDPTunnel tunnel = new UDPTunnel(0);
-            PeerInfo self = tunnel.Wave(facilitatorEndPoint,15000);
+            tunnel.EncryptData = delegate(ref byte[] data) { EncryptData(ref data, encryptionKey); };
+            tunnel.DecryptData = delegate(ref byte[] data) { DecryptData(ref data, encryptionKey); };
+            PeerInfo self = tunnel.Wave(facilitatorEndPoint, 15000);
 #if DEBUG
             Logger.Debug("Successfully waved to facilitator, my details are " + self.ToString());
 #endif
             _pendingTunnels.Add(uniqueId, tunnel);
             return self;
+        }
+
+        // For now, just xor encryption
+        private void DecryptData(ref byte[] data, String encryptionKey)
+        {
+            for (int i = 0; i < data.Length; i++)
+            {
+                data[i] ^= (byte)(encryptionKey[i%(encryptionKey.Length)]);
+            }
+        }
+
+        private void EncryptData(ref byte[] data, String encryptionKey)
+        {
+            DecryptData(ref data, encryptionKey);
         }
 
         public IUDPTunnel CompleteTunnel(string uniqueId)

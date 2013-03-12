@@ -22,6 +22,8 @@ namespace BlitsMe.Cloud.Messaging.Request
         public String uniqueId { get; set; }
         [DataMember]
         public String side { get; set; }
+        [DataMember]
+        public String encryptionKey { get; set; }
         public bool isClient { get { return side.Equals("CLIENT"); } }
         public bool isServer { get { return side.Equals("SERVER"); } }
     }

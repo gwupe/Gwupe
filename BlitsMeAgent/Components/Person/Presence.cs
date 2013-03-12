@@ -19,6 +19,11 @@ namespace BlitsMe.Agent.Components.Person
             get { return Type.Equals(AVAILABLE) && Mode.Equals(AVAILABLE); }
         }
 
+        public String Status
+        {
+            get { return Type.Equals(AVAILABLE) ? Mode : Type; }
+        }
+
         public Presence(PresenceElement presenceElement)
         {
             this.Mode = presenceElement.mode;
