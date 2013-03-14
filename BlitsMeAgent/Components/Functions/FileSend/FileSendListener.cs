@@ -18,6 +18,14 @@ namespace BlitsMe.Agent.Components.Functions.FileSend
         private FileStream _fileStream;
         private BinaryWriter _binWriter;
         private long _dataWriteSize;
+        public long DataWriteSize { get { return _dataWriteSize; } }
+        public event EventHandler DataRead;
+
+        public void OnDataRead(EventArgs e)
+        {
+            EventHandler handler = DataRead;
+            if (handler != null) handler(this, e);
+        }
 
         internal FileSendListener(ITransportManager transportManager, FileSendInfo fileInfo) : base(fileInfo.FileSendId, transportManager)
         {
@@ -84,6 +92,7 @@ namespace BlitsMe.Agent.Components.Functions.FileSend
                     return false;
                 }
                 _dataWriteSize += data.Length;
+                OnDataRead(EventArgs.Empty);
             }
             return true;
         }

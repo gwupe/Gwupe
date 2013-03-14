@@ -9,6 +9,7 @@ using BlitsMe.Agent.Components.Notification;
 using BlitsMe.Cloud.Messaging.API;
 using BlitsMe.Cloud.Messaging.Request;
 using BlitsMe.Common.Security;
+using BlitsMe.Communication.P2P.RUDP.Connector.API;
 using log4net;
 
 namespace BlitsMe.Agent.Components.Functions.FileSend
@@ -144,6 +145,7 @@ namespace BlitsMe.Agent.Components.Functions.FileSend
             try
             {
                 FileSendListener fileReceiver = new FileSendListener(_engagement.TransportManager, args.FileInfo);
+                ShowFileProgressNotification(args.FileInfo, fileReceiver);
                 fileReceiver.ListenOnce();
                 _appContext.ConnectionManager.Connection.RequestAsync(request, FileSendRequestResponseHandler);
             }
@@ -151,6 +153,27 @@ namespace BlitsMe.Agent.Components.Functions.FileSend
             {
                 Logger.Error("Failed to send a file acceptance request for file " + args.FileInfo.Filename + "[" + args.FileInfo.FileSendId + "] to " + _engagement.SecondParty.Username);
             }
+        }
+
+        private void ShowFileProgressNotification(FileSendInfo fileInfo, FileSendListener fileReceiver)
+        {
+            var notification = new FileSendProgressNotification()
+            {
+                From = _engagement.SecondParty.Username,
+                ProgressText = fileInfo.Filename,
+                FileInfo = fileInfo
+            };
+            notification.ProcessCancelFile += (sender, args) => NotificationOnProcessCancelFile(notification, sender, args);
+            _appContext.NotificationManager.AddNotification(notification);
+            fileReceiver.ConnectionClosed += delegate { _appContext.NotificationManager.DeleteNotification(notification); };
+            fileReceiver.DataRead += delegate
+                { notification.Progress = (int) ((fileReceiver.DataWriteSize*100)/fileInfo.FileSize); };
+        }
+
+        private void NotificationOnProcessCancelFile(FileSendProgressNotification notification, object sender, EventArgs eventArgs)
+        {
+            // cancel transfer here
+            _appContext.NotificationManager.DeleteNotification(notification);
         }
 
         public void ProcessFileSendRequestResponse(bool accepted, string fileSendId)
@@ -164,6 +187,7 @@ namespace BlitsMe.Agent.Components.Functions.FileSend
                     Logger.Info("File send of file " + filename + " accepted by " + _engagement.SecondParty.Name);
                     FileSendClient client = new FileSendClient(_engagement.TransportManager);
                     // this is hacky, but lets get it to work before we make it pretty
+                    client.SendFileComplete += ClientOnSendFileComplete;
                     Thread fileSendThread = new Thread(() => client.SendFile(filename, fileSendId)) { IsBackground = true };
                     fileSendThread.Start();
                 }
@@ -176,6 +200,11 @@ namespace BlitsMe.Agent.Components.Functions.FileSend
             {
                 throw new Exception("Got a file send request response with an invalid id [" + fileSendId + "]");
             }
+        }
+
+        private void ClientOnSendFileComplete(object sender, EventArgs eventArgs)
+        {
+            
         }
     }
 }

@@ -158,6 +158,7 @@
     <Compile Include="Components\Functions\FileSend\FileSendInfo.cs" />
     <Compile Include="Components\Functions\FileSend\FileSendListener.cs" />
     <Compile Include="Components\Functions\FileSend\Function.cs" />
+    <Compile Include="Components\Functions\FileSend\Notification\FileSendProgressNotification.cs" />
     <Compile Include="Components\Functions\RemoteDesktop\Function.cs" />
     <Compile Include="Components\Functions\FileSend\Notification\FileSendEventArgs.cs" />
     <Compile Include="Components\Functions\FileSend\Notification\FileSendRequestNotification.cs" />
@@ -255,6 +256,7 @@
       <DependentUpon>AddPersonControl.xaml</DependentUpon>
     </Compile>
     <Compile Include="UI\WPF\Roster\RosterList.cs" />
+    <Compile Include="UI\WPF\RectConverter.cs" />
     <Compile Include="UI\WPF\Utils\ObservableListMirror.cs" />
     <Compile Include="UI\WPF\RosterArea.xaml.cs">
       <DependentUpon>RosterArea.xaml</DependentUpon>
@@ -310,7 +312,7 @@
   <ItemGroup Condition=" '$(Configuration)' == 'Debug' ">
     <EmbeddedResource Include="env\Debug\cacert.pem">
       <LogicalName>BlitsMe.Agent.cacert.pem</LogicalName>
-    </EmbeddedResource>    
+    </EmbeddedResource>
     <None Include="env\Debug\app.config" />
   </ItemGroup>
   <ItemGroup Condition=" '$(Configuration)' == 'Release' ">

@@ -10,11 +10,19 @@ using log4net;
 
 namespace BlitsMe.Agent.Components.Functions.FileSend
 {
-    class FileSendClient
+    internal class FileSendClient
     {
         private static readonly ILog Logger = LogManager.GetLogger(typeof(FileSendClient));
         private readonly ITransportManager _transportManager;
         private DefaultTcpTransportConnection _transportConnection;
+
+        internal event EventHandler SendFileComplete;
+
+        private void OnSendFileComplete(FileSendCompleteEventArgs e)
+        {
+            EventHandler handler = SendFileComplete;
+            if (handler != null) handler(this, e);
+        }
 
         internal FileSendClient(ITransportManager transportManager)
         {
@@ -45,10 +53,12 @@ namespace BlitsMe.Agent.Components.Functions.FileSend
                             }
                         } while (read.Length > 0);
                         Logger.Debug("Completed file send of " + filePath);
+                        OnSendFileComplete(new FileSendCompleteEventArgs() { Success = true });
                     }
                     catch (Exception e)
                     {
                         Logger.Error("Failed to read " + filePath + " : " + e.Message,e);
+                        OnSendFileComplete(new FileSendCompleteEventArgs() { Error = "Failed to read the file", Success = false });
                     } finally
                     {
                         _transportConnection.Close();
@@ -57,7 +67,7 @@ namespace BlitsMe.Agent.Components.Functions.FileSend
                 catch (Exception e)
                 {
                     Logger.Error("Failed to connect to endpoint " + filename + " : " + e.Message, e);
-                    throw;
+                    OnSendFileComplete(new FileSendCompleteEventArgs() { Error = "Failed to connect to peer", Success = false });
                 }
                 finally
                 {
@@ -67,7 +77,7 @@ namespace BlitsMe.Agent.Components.Functions.FileSend
             catch (Exception e)
             {
                 Logger.Error("Failed to open the file " + filePath + " : " + e.Message, e);
-                throw;
+                OnSendFileComplete(new FileSendCompleteEventArgs() { Error = "Failed to open the local file", Success = false });
             }
         }
 
@@ -77,5 +87,11 @@ namespace BlitsMe.Agent.Components.Functions.FileSend
             throw new NotImplementedException();
         }
 
+    }
+
+    internal class FileSendCompleteEventArgs : EventArgs
+    {
+        internal String Error { get; set; }
+        internal bool Success = true;
     }
 }
