@@ -15,12 +15,26 @@ namespace BlitsMe.Agent.Components.Functions.FileSend
         private static readonly ILog Logger = LogManager.GetLogger(typeof(FileSendClient));
         private readonly ITransportManager _transportManager;
         private DefaultTcpTransportConnection _transportConnection;
+        private long _dataWriteSize;
+        private Boolean _proceed = true;
+        public long DataWriteSize
+        {
+            get { return _dataWriteSize; }
+        }
 
-        internal event EventHandler SendFileComplete;
+        internal event EventHandler DataWritten;
+
+        internal void OnDataWritten(EventArgs e)
+        {
+            EventHandler handler = DataWritten;
+            if (handler != null) handler(this, e);
+        }
+
+        internal event EventHandler<FileSendCompleteEventArgs> SendFileComplete;
 
         private void OnSendFileComplete(FileSendCompleteEventArgs e)
         {
-            EventHandler handler = SendFileComplete;
+            var handler = SendFileComplete;
             if (handler != null) handler(this, e);
         }
 
@@ -29,17 +43,16 @@ namespace BlitsMe.Agent.Components.Functions.FileSend
             _transportManager = transportManager;
         }
 
-        internal void SendFile(String filePath, String fileSendId)
+        internal void SendFile(FileSendInfo fileInfo)
         {
-            String filename = Path.GetFileName(filePath);
             try
             {
-                FileStream fs = File.Open(filePath, FileMode.Open);
+                FileStream fs = File.Open(fileInfo.FilePath, FileMode.Open);
                 BinaryReader binReader = new BinaryReader(fs);
                 try
                 {
                     _transportConnection =
-                        new DefaultTcpTransportConnection(_transportManager.TCPTransport.OpenConnection(fileSendId), ReadReply);
+                        new DefaultTcpTransportConnection(_transportManager.TCPTransport.OpenConnection(fileInfo.FileSendId), ReadReply);
                     _transportConnection.Start();
                     try
                     {
@@ -50,14 +63,23 @@ namespace BlitsMe.Agent.Components.Functions.FileSend
                             if (read.Length > 0)
                             {
                                 _transportConnection.SendDataToTransport(read);
+                                _dataWriteSize += read.Length;
+                                OnDataWritten(EventArgs.Empty);
                             }
-                        } while (read.Length > 0);
-                        Logger.Debug("Completed file send of " + filePath);
-                        OnSendFileComplete(new FileSendCompleteEventArgs() { Success = true });
+                        } while (read.Length > 0 && _proceed);
+                        if (_proceed)
+                        {
+                            Logger.Debug("Completed file send of " + fileInfo.Filename);
+                            OnSendFileComplete(new FileSendCompleteEventArgs() { Success = true });
+                        } else
+                        {
+                            Logger.Info("File transfer of " + fileInfo.Filename + " was cancelled");
+                            OnSendFileComplete(new FileSendCompleteEventArgs() { Success = false, Error = "File transfer was cancelled"});
+                        }
                     }
                     catch (Exception e)
                     {
-                        Logger.Error("Failed to read " + filePath + " : " + e.Message,e);
+                        Logger.Error("Failed to read " + fileInfo.FilePath + " : " + e.Message,e);
                         OnSendFileComplete(new FileSendCompleteEventArgs() { Error = "Failed to read the file", Success = false });
                     } finally
                     {
@@ -66,7 +88,7 @@ namespace BlitsMe.Agent.Components.Functions.FileSend
                 }
                 catch (Exception e)
                 {
-                    Logger.Error("Failed to connect to endpoint " + filename + " : " + e.Message, e);
+                    Logger.Error("Failed to connect to endpoint " + fileInfo.FileSendId + " : " + e.Message, e);
                     OnSendFileComplete(new FileSendCompleteEventArgs() { Error = "Failed to connect to peer", Success = false });
                 }
                 finally
@@ -76,7 +98,7 @@ namespace BlitsMe.Agent.Components.Functions.FileSend
             }
             catch (Exception e)
             {
-                Logger.Error("Failed to open the file " + filePath + " : " + e.Message, e);
+                Logger.Error("Failed to open the file " + fileInfo.FilePath + " : " + e.Message, e);
                 OnSendFileComplete(new FileSendCompleteEventArgs() { Error = "Failed to open the local file", Success = false });
             }
         }
@@ -87,7 +109,13 @@ namespace BlitsMe.Agent.Components.Functions.FileSend
             throw new NotImplementedException();
         }
 
+        internal void Close()
+        {
+            _proceed = false;
+        }
+
     }
+
 
     internal class FileSendCompleteEventArgs : EventArgs
     {

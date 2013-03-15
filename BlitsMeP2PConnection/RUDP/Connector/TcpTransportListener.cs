@@ -18,6 +18,7 @@ namespace BlitsMe.Communication.P2P.RUDP.Connector
         public String Name { get; private set; }
         private readonly ITransportManager _transportManager;
         private readonly List<TcpTransportConnection> _openConnections;
+        public bool Closing { get; private set; }
         //protected ProcessConnect ProcessConnect { get; set; }
 
         public TcpTransportListener(String name, ITransportManager transportManager)
@@ -67,6 +68,7 @@ namespace BlitsMe.Communication.P2P.RUDP.Connector
 
         public void Close()
         {
+            Closing = true;
             StopListening();
 #if DEBUG
             Logger.Debug("Stopping all active connections from named connection " + Name);
@@ -99,10 +101,13 @@ namespace BlitsMe.Communication.P2P.RUDP.Connector
 
         private void TcpConnectionOnClosed(object sender, EventArgs eventArgs)
         {
-            var proxyConnect = sender as TcpTransportConnection;
-            if (_openConnections.Contains(proxyConnect))
+            if (!Closing)
             {
-                _openConnections.Remove(proxyConnect);
+                var proxyConnect = sender as TcpTransportConnection;
+                if (_openConnections.Contains(proxyConnect))
+                {
+                    _openConnections.Remove(proxyConnect);
+                }
             }
             OnConnectionClosed();
         }

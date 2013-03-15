@@ -40,14 +40,14 @@ namespace BlitsMe.Agent.Components.Functions.FileSend
             if(_fileStream != null)
             {
                 _fileStream.Flush(true);
-                if(_dataWriteSize == _fileInfo.FileSize)
+                _binWriter.Close();
+                if (_dataWriteSize == _fileInfo.FileSize)
                 {
                     Logger.Debug("File transfer of " + _fileInfo.Filename + " complete, filesize looks good");
                 } else
                 {
                     Logger.Warn("File transfer of " + _fileInfo.Filename + " looks like it failed, expected file size is " + _fileInfo.FileSize + " but destination filesize is " + _dataWriteSize);
                 }
-                _binWriter.Close();
             }
             else
             {

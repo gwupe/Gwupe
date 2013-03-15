@@ -15,10 +15,15 @@ namespace BlitsMe.Agent.Components.Functions.FileSend.Notification
         public int Progress
         {
             get { return _progress; }
-            set { _progress = value; Logger.Debug("Progress: " + value);OnPropertyChanged(new PropertyChangedEventArgs("Progress")); }
+            set { _progress = value; OnPropertyChanged(new PropertyChangedEventArgs("Progress")); }
         }
 
-        public String ProgressText { get; set; }
+        public String ProgressText
+        {
+            get { return (FileInfo.Direction == FileSendDirection.Receive ? "Receiving " : "Sending ") + _progressText; }
+            set { _progressText = value; }
+        }
+
         public event EventHandler ProcessCancelFile;
 
         public void OnProcessCancelFile(EventArgs e)
@@ -29,6 +34,7 @@ namespace BlitsMe.Agent.Components.Functions.FileSend.Notification
 
         private ICommand _cancelFileSend;
         private int _progress;
+        private string _progressText;
 
         public ICommand CancelFileSend
         {
