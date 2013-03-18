@@ -3,7 +3,7 @@
 	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
 	xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
 	xmlns:ed="http://schemas.microsoft.com/expression/2010/drawing"
-	xmlns:ts="clr-namespace:BlitsMe.Agent.UI.WPF.Engage" 
+	xmlns:Utils="clr-namespace:BlitsMe.Agent.UI.WPF.Utils" 
 	xmlns:chat="clr-namespace:BlitsMe.Agent.Components.Chat" 
 	>
 
@@ -171,7 +171,7 @@
         <Setter Property="FontFamily" Value="Calibri" />
         <Setter Property="VerticalAlignment" Value="Top" />
     </Style>
-    <ts:RelativeMessageTimeConverter x:Key="relativeMessageTimeConverter" />
+    <Utils:RelativeMessageTimeConverter x:Key="relativeMessageTimeConverter" />
     <DataTemplate x:Key="DeliveryNotification">
         <ContentControl Name="DeliveryStatImage" ContentTemplate="{StaticResource TryingImage}" />
         <DataTemplate.Triggers>

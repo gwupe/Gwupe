@@ -13,27 +13,6 @@ namespace BlitsMe.Agent.UI.WPF.Roster
 	{
         public Person Person { get; set; }
 
-        public BitmapImage AvatarSource
-        {
-            get
-            {
-                BitmapImage image = new BitmapImage();
-                image.BeginInit();
-                image.StreamSource = new MemoryStream(Person.Avatar);
-                image.EndInit();
-                return image;
-
-            }
-        }
-
-        public int MissingStarCalc
-        {
-            get
-            {
-                return 75 - (Person.Rating * 75 / 100);
-            }
-        }
-
 		public RosterElement(Person person)
 		{
 			this.InitializeComponent();

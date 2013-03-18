@@ -29,6 +29,7 @@ namespace BlitsMe.Agent
         internal ConnectionManager ConnectionManager { get; private set; }
         internal EngagementManager EngagementManager { get; private set; }
         internal NotificationManager NotificationManager { get; private set; }
+        internal SearchManager SearchManager { get; private set; }
         internal Thread _dashboardUIThread;
         internal bool isShuttingDown { get; private set; }
 
@@ -45,7 +46,6 @@ namespace BlitsMe.Agent
                 Logger.Debug("Embedded Resource : " + manifestResourceName);
             }
 #endif
-            //Assembly.GetExecutingAssembly().GetManifestResourceStream("BlitsMe.Agent.cacert.pem");
             BlitsMeServiceProxy = new BlitsMeServiceDynProxy();
             ConnectionManager = new ConnectionManager(this);
             LoginManager = new LoginManager(this);
@@ -54,6 +54,7 @@ namespace BlitsMe.Agent
             RosterManager = new RosterManager(this);
             EngagementManager = new EngagementManager(this);
             NotificationManager = new NotificationManager(this);
+            SearchManager = new SearchManager(this);
             EngagementManager.NewActivity += OnNewEngagementActivity;
             _systray = new SystemTray(this);
         }
@@ -176,6 +177,8 @@ namespace BlitsMe.Agent
                 EngagementManager.Close();
             if(NotificationManager != null)
                 NotificationManager.Close();
+            if (SearchManager != null)
+                SearchManager.Close();
             // Done
             Logger.Info("BlitsMe.Agent has shut down");
             base.ExitThreadCore();

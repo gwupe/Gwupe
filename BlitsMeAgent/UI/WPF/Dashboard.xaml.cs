@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using System.ComponentModel;
+using System.Timers;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
@@ -10,8 +11,10 @@ using BlitsMe.Agent.Components;
 using BlitsMe.Agent.Components.Chat;
 using BlitsMe.Agent.Components.Notification;
 using BlitsMe.Agent.Components.Person;
+using BlitsMe.Agent.Components.Search;
 using BlitsMe.Agent.UI.WPF.Engage;
 using BlitsMe.Agent.UI.WPF.Roster;
+using BlitsMe.Agent.UI.WPF.Search;
 using log4net;
 
 namespace BlitsMe.Agent.UI.WPF
@@ -25,13 +28,16 @@ namespace BlitsMe.Agent.UI.WPF
         private readonly BlitsMeClientAppContext _appContext;
 
         // Observable mirror for engagements as engagement windows
-        private readonly EngagementWindowList _engagementWindows; 
+        private readonly EngagementWindowList _engagementWindows;
         // Observable mirror for Persons as RosterElements
         private readonly RosterList _rosterList;
         private readonly CollectionViewSource _notificationView;
         // Dispatching collection for notifications (to be used by everything)
         internal DispatchingCollection<ObservableCollection<INotification>, INotification> NotificationList { get; set; }
         private AddPersonControl _addPersonControl;
+        private SearchWindow _searchWindow;
+        private Timer _searchCountDown;
+        private readonly Object _searchLock = new Object();
 
         public Dashboard(BlitsMeClientAppContext appContext)
         {
@@ -53,9 +59,10 @@ namespace BlitsMe.Agent.UI.WPF
             try
             {
                 _engagementWindows.SetList(_appContext.EngagementManager.Engagements, "SecondPartyUsername");
-            } catch(Exception e)
+            }
+            catch (Exception e)
             {
-                Logger.Error("Failed to set the list : " + e.Message,e);
+                Logger.Error("Failed to set the list : " + e.Message, e);
             }
             _appContext.EngagementManager.NewActivity += EngagementManagerOnNewActivity;
         }
@@ -84,7 +91,7 @@ namespace BlitsMe.Agent.UI.WPF
         private void NotificationFilter(object sender, FilterEventArgs eventArgs)
         {
             INotification notification = eventArgs.Item as INotification;
-            if (notification != null && ( notification.From == null || notification.From.Equals("") ))
+            if (notification != null && (notification.From == null || notification.From.Equals("")))
             {
                 eventArgs.Accepted = true;
             }
@@ -135,10 +142,11 @@ namespace BlitsMe.Agent.UI.WPF
         private void ShowEngagement(Person person)
         {
             EngagementWindow egw = _engagementWindows.GetEngagementWindow(person);
-            if(egw != null)
+            if (egw != null)
             {
                 ActiveContent.Content = egw;
-            } else
+            }
+            else
             {
                 Logger.Error("Failed to find an engagement window for peron " + person);
             }
@@ -146,11 +154,82 @@ namespace BlitsMe.Agent.UI.WPF
 
         private void AddPersonClick(object sender, System.Windows.RoutedEventArgs e)
         {
-        	if(_addPersonControl == null)
-        	{
-        	    _addPersonControl = new AddPersonControl();
-        	}
+            if (_addPersonControl == null)
+            {
+                _addPersonControl = new AddPersonControl();
+            }
             ActiveContent.Content = _addPersonControl;
+        }
+
+        private void Search_TextChanged(object sender, System.Windows.Controls.TextChangedEventArgs e)
+        {
+            // This gets called on init (where appContext is null), but we don't want to search that anyway
+            if (_appContext != null)
+            {
+                if (!SearchBox.Text.Equals("") && !SearchBox.Text.Equals("Search"))
+                {
+                    lock (_searchLock)
+                    {
+                        // If its already enabled, reset it
+                        if (_searchCountDown.Enabled)
+                        {
+                            // Reset the timer
+                            _searchCountDown.Stop();
+                        }
+                        _searchCountDown.Start();
+                    }
+                }
+            }
+        }
+
+        private void SearchBox_GotFocus(object sender, System.Windows.RoutedEventArgs e)
+        {
+            if ("Search".Equals(SearchBox.Text))
+            {
+                SearchBox.Text = "";
+            }
+            if (_searchWindow == null)
+            {
+                _searchWindow = new SearchWindow(_appContext);
+                _searchCountDown = new Timer(500) { AutoReset = false };
+                _searchCountDown.Elapsed += ProcessSearch;
+            }
+            ActiveContent.Content = _searchWindow;
+        }
+
+        private void ProcessSearch(object sender, ElapsedEventArgs elapsedEventArgs)
+        {
+            lock (_searchLock)
+            {
+                try
+                {
+                    String searchQuery = "";
+                    if (Dispatcher.CheckAccess())
+                    {
+                        searchQuery = SearchBox.Text;
+                    }
+                    else
+                    {
+                        Dispatcher.Invoke(new Action(delegate { searchQuery = SearchBox.Text; }));
+                    }
+                    if (!searchQuery.Equals("") && !searchQuery.Equals("Search"))
+                    {
+                        _appContext.SearchManager.Search(searchQuery);
+                    }
+                }
+                catch (Exception e)
+                {
+                    Logger.Error("Failed to perform search : " + e.Message, e);
+                }
+            }
+        }
+
+        private void SearchBox_LostFocus(object sender, System.Windows.RoutedEventArgs e)
+        {
+            if ("".Equals(SearchBox.Text))
+            {
+                SearchBox.Text = "Search";
+            }
         }
 
         #endregion

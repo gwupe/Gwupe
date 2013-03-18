@@ -177,6 +177,7 @@
     <Compile Include="Components\Processors\InitUDPConnectionProcessor.cs" />
     <Compile Include="Components\Processors\UserToUserProcessor.cs" />
     <Compile Include="Components\Processors\PresenceChangeProcessor.cs" />
+    <Compile Include="Components\Search\SearchResult.cs" />
     <Compile Include="Exceptions\RDPSessionFailedException.cs" />
     <Compile Include="Components\Functions\RemoteDesktop\Client.cs" />
     <Compile Include="Components\Functions\RemoteDesktop\Server.cs" />
@@ -188,6 +189,7 @@
     <Compile Include="Managers\NotificationManager.cs" />
     <Compile Include="Managers\P2PManager.cs" />
     <Compile Include="Managers\RequestManager.cs" />
+    <Compile Include="Managers\SearchManager.cs" />
     <Compile Include="Misc\BLMRegistry.cs" />
     <Compile Include="Managers\RosterManager.cs" />
     <Compile Include="Properties\Annotations.cs" />
@@ -221,6 +223,14 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
+    <Page Include="UI\WPF\Search\SearchResultControl.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="UI\WPF\Search\SearchWindow.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
     <Page Include="UI\WPF\Style\EngagementStyle.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
@@ -230,6 +240,10 @@
       <SubType>Designer</SubType>
     </Page>
     <Page Include="UI\WPF\Style\RosterStyle.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="UI\WPF\Style\SearchStyle.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
@@ -248,7 +262,8 @@
       <DependentUpon>EngagementWindow.xaml</DependentUpon>
     </Compile>
     <Compile Include="UI\WPF\Engage\EngagementWindowList.cs" />
-    <Compile Include="UI\WPF\Engage\RelativeMessageTimeConverter.cs" />
+    <Compile Include="UI\WPF\Utils\ImageStreamReader.cs" />
+    <Compile Include="UI\WPF\Utils\RelativeMessageTimeConverter.cs" />
     <Compile Include="UI\WPF\LoginWindow.xaml.cs">
       <DependentUpon>LoginWindow.xaml</DependentUpon>
     </Compile>
@@ -257,6 +272,14 @@
     </Compile>
     <Compile Include="UI\WPF\Roster\RosterList.cs" />
     <Compile Include="UI\WPF\RectConverter.cs" />
+    <Compile Include="UI\WPF\Utils\StarRatingConverter.cs" />
+    <Compile Include="UI\WPF\Search\SearchResultControl.xaml.cs">
+      <DependentUpon>SearchResultControl.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="UI\WPF\Search\SearchResultControlList.cs" />
+    <Compile Include="UI\WPF\Search\SearchWindow.xaml.cs">
+      <DependentUpon>SearchWindow.xaml</DependentUpon>
+    </Compile>
     <Compile Include="UI\WPF\Utils\ObservableListMirror.cs" />
     <Compile Include="UI\WPF\RosterArea.xaml.cs">
       <DependentUpon>RosterArea.xaml</DependentUpon>
@@ -372,6 +395,7 @@
     <Resource Include="UI\WPF\Images\process.png" />
     <Resource Include="UI\WPF\Images\Search.png" />
     <Resource Include="UI\WPF\Images\tweet.png" />
+    <Resource Include="UI\WPF\Images\silhoette.png" />
   </ItemGroup>
   <ItemGroup>
     <WCFMetadata Include="Service References\" />

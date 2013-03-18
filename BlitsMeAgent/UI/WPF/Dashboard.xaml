@@ -27,7 +27,7 @@
 		<Grid HorizontalAlignment="Left" Width="178" Margin="10,10,0,10">
         <StackPanel>
             <Grid>
-				<TextBox Margin="5,5,0,0" TextWrapping="Wrap" Text="Search" VerticalAlignment="Top" FontFamily="Calibri" FontSize="16" HorizontalAlignment="Left" Width="145.333"/>
+				<TextBox x:Name="SearchBox" Margin="5,5,0,0" TextWrapping="Wrap" Text="Search" VerticalAlignment="Top" FontFamily="Calibri" FontSize="16" HorizontalAlignment="Left" Width="145.333" TextChanged="Search_TextChanged" GotFocus="SearchBox_GotFocus" LostFocus="SearchBox_LostFocus"/>
 				<Button ToolTip="Help" Margin="0,5,5,5" Width="25" HorizontalAlignment="Right">
             		<Image Source="Images/Search.png" Margin="1" />
 				</Button>

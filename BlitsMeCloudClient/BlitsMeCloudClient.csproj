@@ -64,7 +64,9 @@
     <Compile Include="Messaging\API\Response.cs" />
     <Compile Include="Messaging\API\UserToUserRequest.cs" />
     <Compile Include="Messaging\Elements\PresenceElement.cs" />
+    <Compile Include="Messaging\Elements\ResultElement.cs" />
     <Compile Include="Messaging\Elements\RosterElement.cs" />
+    <Compile Include="Messaging\Elements\UserElement.cs" />
     <Compile Include="Messaging\Request\ChatMessageRq.cs" />
     <Compile Include="Messaging\Request\FileSendRequestResponseRq.cs" />
     <Compile Include="Messaging\Request\FileSendRequestRq.cs" />
@@ -77,6 +79,8 @@
     <Compile Include="Messaging\Request\PingRq.cs" />
     <Compile Include="Messaging\Request\RDPRequestRq.cs" />
     <Compile Include="Messaging\Request\RosterRq.cs" />
+    <Compile Include="Messaging\Request\SearchRq.cs" />
+    <Compile Include="Messaging\Request\SubscribeRq.cs" />
     <Compile Include="Messaging\Request\VCardRq.cs" />
     <Compile Include="Messaging\Request\VersionRq.cs" />
     <Compile Include="Messaging\Response\ChatMessageRs.cs" />
@@ -92,6 +96,8 @@
     <Compile Include="Messaging\Response\PingRs.cs" />
     <Compile Include="Messaging\Response\RDPRequestRs.cs" />
     <Compile Include="Messaging\Response\RosterRs.cs" />
+    <Compile Include="Messaging\Response\SearchRs.cs" />
+    <Compile Include="Messaging\Response\SubscribeRs.cs" />
     <Compile Include="Messaging\Response\VCardRs.cs" />
     <Compile Include="Messaging\Response\VersionRs.cs" />
     <Compile Include="Messaging\WebSocketClient.cs" />

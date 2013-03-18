@@ -49,18 +49,17 @@ namespace BlitsMe.Agent.UI.WPF.Utils
 
         private void AddElement(TIncomingType listElement)
         {
-            TOutgoingType newElement;
             var lookupKey =
                 (String) (_sourceLookupProperty.GetValue(listElement, null));
             if (ListLookup.ContainsKey(lookupKey))
             {
-                newElement = ListLookup[lookupKey];
+                Logger.Warn("Requested to add item " + lookupKey + ", but it exists already in the list");
             }
             else
             {
                 try
                 {
-                    newElement = CreateNew(listElement);
+                    TOutgoingType newElement = CreateNew(listElement);
                     ListLookup.Add((String)_sourceLookupProperty.GetValue(listElement, null), newElement);
                     List.Add(newElement);
                 }
@@ -84,6 +83,21 @@ namespace BlitsMe.Agent.UI.WPF.Utils
             }
         }
 
+        private void RemoveElement(TIncomingType listElement)
+        {
+            var lookupKey =
+                (String) (_sourceLookupProperty.GetValue(listElement, null));
+            if (ListLookup.ContainsKey(lookupKey))
+            {
+                var element = ListLookup[lookupKey];
+                List.Remove(element);
+                ListLookup.Remove(lookupKey);
+            } else
+            {
+                Logger.Warn("Requested to remove item " + lookupKey + ", but it doesn't exist");
+            }
+        }
+
         private void ProcessAction(NotifyCollectionChangedEventArgs eventArgs)
         {
             switch (eventArgs.Action)
@@ -99,6 +113,18 @@ namespace BlitsMe.Agent.UI.WPF.Utils
                         }
                     }
                     break;
+                case NotifyCollectionChangedAction.Remove:
+                    {
+                        if(eventArgs.OldItems != null)
+                        {
+                            foreach(TIncomingType oldItem in eventArgs.OldItems)
+                            {
+                                RemoveElement(oldItem);
+                            }
+                        }
+
+                    }
+                    break;
                 case NotifyCollectionChangedAction.Reset:
                     {
                         List.Clear();
@@ -107,7 +133,7 @@ namespace BlitsMe.Agent.UI.WPF.Utils
                     break;
                 default:
                     {
-                        Logger.Warn("Roster changed with unhandled action " +
+                        Logger.Warn("List changed with unhandled action " +
                                     eventArgs.Action);
                     }
                     break;

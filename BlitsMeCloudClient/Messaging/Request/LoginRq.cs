@@ -7,7 +7,7 @@ using System.Runtime.Serialization;
 namespace BlitsMe.Cloud.Messaging.Request
 {
     [DataContract]
-    class LoginRq : BlitsMe.Cloud.Messaging.API.Request
+    class LoginRq : API.Request
     {
         public override String type
         {

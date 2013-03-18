@@ -4,6 +4,7 @@
 	xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
 	xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
 	xmlns:ed="http://schemas.microsoft.com/expression/2010/drawing"
+    xmlns:Utils="clr-namespace:BlitsMe.Agent.UI.WPF.Utils"
 	mc:Ignorable="d"
 	x:Class="BlitsMe.Agent.UI.WPF.Roster.RosterElement"
 	x:Name="UserControl">
@@ -18,16 +19,16 @@
 	<Grid x:Name="LayoutRoot" Margin="0,1">
             <Border Style="{StaticResource TeamMemberBorder}">
                 <Grid Margin="0">
-                    <Image Source="{Binding Path=AvatarSource}" Height="50" HorizontalAlignment="Left" Width="50" DataContext="{Binding}" />
-                    <StackPanel Margin="0,0,0,0">
+                    <Image Source="{Binding Path=Person.Avatar, Converter={StaticResource imageStreamReader}}" Height="50" HorizontalAlignment="Left" Width="50" DataContext="{Binding}" />
+                    <StackPanel Margin="53,0,0,0">
                         <TextBlock Style="{StaticResource TeamMemberNameText}" Text="{Binding Path=Person.Name, FallbackValue=FirstName LastName}" />
-                        <Grid Margin="53,0,0,0" Height="15" HorizontalAlignment="Center">
+                        <Grid Margin="0,0,0,0" Height="15" HorizontalAlignment="Center">
                             <ed:RegularPolygon Style="{StaticResource TeamMemberStarFull}" Margin="0,0,0,0" />
                             <ed:RegularPolygon Style="{StaticResource TeamMemberStarFull}" Margin="15,0,0,0" />
                             <ed:RegularPolygon Style="{StaticResource TeamMemberStarFull}" Margin="30,0,0,0" />
                             <ed:RegularPolygon Style="{StaticResource TeamMemberStarFull}" Margin="45,0,0,0" />
                             <ed:RegularPolygon Style="{StaticResource TeamMemberStarFull}" Margin="60,0,0,0" />
-                            <Rectangle Style="{StaticResource TeamMemberStarCover}" Width="{Binding Path=MissingStarCalc, FallbackValue=25}" />
+                            <Rectangle Style="{StaticResource TeamMemberStarCover}" Width="{Binding Path=Person.Rating, FallbackValue=25, Converter={StaticResource starRatingConverter}}" />
                             <ed:RegularPolygon Style="{StaticResource TeamMemberStarEmpty}" Margin="0,0,0,0" />
                             <ed:RegularPolygon Style="{StaticResource TeamMemberStarEmpty}" Margin="15,0,0,0" />
                             <ed:RegularPolygon Style="{StaticResource TeamMemberStarEmpty}" Margin="30,0,0,0" />

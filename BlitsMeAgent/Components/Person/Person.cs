@@ -16,6 +16,13 @@ namespace BlitsMe.Agent.Components.Person
             set { _name = value; OnPropertyChanged("Name"); }
         }
 
+        private string _description;
+        public String Description
+        {
+            get { return _description; }
+            set { _description = value; OnPropertyChanged("Description"); }
+        }
+
         private string _username;
         public string Username
         {
@@ -100,20 +107,30 @@ namespace BlitsMe.Agent.Components.Person
 
         }
 
-        public Person(RosterElement rosterElement)
+        public Person(RosterElement rosterElement) : this(rosterElement.userElement)
         {
             // Set backing field directly, no listeners yet
-            this._name = rosterElement.name;
-            this._shortCode = rosterElement.shortCode;
-            this._username = rosterElement.user.Split(new char[] { '@' })[0];
-            this._email = rosterElement.email;
-            this._location = rosterElement.location;
-            this._rating = rosterElement.rating;
-            this._joined = rosterElement.joined;
             this.Groups = rosterElement.groups;
+            this._shortCode = rosterElement.shortCode;
             this._presence = new Presence(rosterElement.presence);
-            this._status = rosterElement.status;
-            this._type = rosterElement.type;
+        }
+
+        public Person(UserElement userElement)
+        {
+            this._name = userElement.name;
+            this._username = userElement.user.Split(new char[] {'@'})[0];
+            this._email = userElement.email;
+            this._location = userElement.location;
+            this._rating = userElement.rating;
+            this._joined = userElement.joined;
+            this._status = userElement.status;
+            this._type = userElement.type;
+            _description = userElement.description;
+        }
+
+        public override string ToString()
+        {
+            return this._name + ", " + _location + ", " + _email + ", " + _rating;
         }
 
         private void OnPropertyChanged(String propertyName)

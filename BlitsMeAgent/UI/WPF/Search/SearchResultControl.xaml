@@ -1,0 +1,47 @@
+﻿<UserControl x:Class="BlitsMe.Agent.UI.WPF.Search.SearchResultControl"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+			 xmlns:ed="http://schemas.microsoft.com/expression/2010/drawing"
+             mc:Ignorable="d" 
+             >
+    <UserControl.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="../Style/RosterStyle.xaml" />
+                <ResourceDictionary Source="../Style/Style.xaml"/>
+                <ResourceDictionary Source="../Style/SearchStyle.xaml"/>
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+    </UserControl.Resources>
+    <ListBoxItem Padding="0,3,0,0">
+        <Border Style="{StaticResource TeamMemberBorder}">
+			<Grid>
+                <Image Source="/BlitsMe.Agent;component/UI/WPF/Images/silhoette.png" Height="50" HorizontalAlignment="Left" Width="50" Margin="0,0,5,0"/>
+                <StackPanel Margin="53,0,0,0" Width="150" HorizontalAlignment="Left" VerticalAlignment="Center">
+                    <TextBlock Style="{StaticResource TeamMemberNameText}" Text="{Binding Path=Person.Name, FallbackValue=FirstName LastName}" />
+                    <Grid Margin="0,0,0,0" Height="15" HorizontalAlignment="Center">
+                        <ed:RegularPolygon Style="{StaticResource TeamMemberStarFull}" Margin="0,0,0,0" />
+                        <ed:RegularPolygon Style="{StaticResource TeamMemberStarFull}" Margin="15,0,0,0" />
+                        <ed:RegularPolygon Style="{StaticResource TeamMemberStarFull}" Margin="30,0,0,0" />
+                        <ed:RegularPolygon Style="{StaticResource TeamMemberStarFull}" Margin="45,0,0,0" />
+                        <ed:RegularPolygon Style="{StaticResource TeamMemberStarFull}" Margin="60,0,0,0" />
+                        <Rectangle Style="{StaticResource TeamMemberStarCover}" Width="{Binding Path=Person.Rating, FallbackValue=25, Converter={StaticResource starRatingConverter}}" />
+                        <ed:RegularPolygon Style="{StaticResource TeamMemberStarEmpty}" Margin="0,0,0,0" />
+                        <ed:RegularPolygon Style="{StaticResource TeamMemberStarEmpty}" Margin="15,0,0,0" />
+                        <ed:RegularPolygon Style="{StaticResource TeamMemberStarEmpty}" Margin="30,0,0,0" />
+                        <ed:RegularPolygon Style="{StaticResource TeamMemberStarEmpty}" Margin="45,0,0,0" />
+                        <ed:RegularPolygon Style="{StaticResource TeamMemberStarEmpty}" Margin="60,0,0,0" />
+                    </Grid>
+                    <TextBlock Style="{StaticResource TeamMemberLocationText}" Text="{Binding Path=Person.Location, FallbackValue=Planet Earth}" />
+                </StackPanel>
+                <TextBlock Style="{DynamicResource ProspectDescription}" Text="{Binding Path=Person.Description, FallbackValue=Description of my skills.}" Margin="206,0,103,0" HorizontalAlignment="Stretch" />
+				<StackPanel HorizontalAlignment="Right" Width="100" VerticalAlignment="Center">
+					<Button x:Name="AddPersonButton" Content="Add" Margin="2"/>
+					<Button x:Name="ChatPersonButton" Content="Chat" Margin="2" />
+				</StackPanel>
+			</Grid>
+        </Border>
+    </ListBoxItem>
+</UserControl>

@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Threading;
 using BlitsMe.Agent.Components.Person;
+using BlitsMe.Cloud.Messaging.API;
 using BlitsMe.Cloud.Messaging.Elements;
 using BlitsMe.Cloud.Messaging.Request;
 using BlitsMe.Cloud.Messaging.Response;
@@ -156,5 +157,32 @@ namespace BlitsMe.Agent.Managers
             }
         }
 
+        public void AddPerson(Person person)
+        {
+            // Lets add this person to the roster
+            Logger.Debug("Attempting to add " + person + " to " + _appContext.LoginManager.LoginDetails.username + "'s Team");
+            if(ServicePersonLookup.ContainsKey(person.Username))
+            {
+                Logger.Error("Will not add " + person.Username + " to list, he/she already exists");
+            } else
+            {
+                _appContext.ConnectionManager.Connection.RequestAsync(new SubscribeRq() { username = person.Username, subscribe = true },
+                                                                      (request, response) =>
+                                                                      ResponseHandler(request, response, person));
+            }
+        }
+
+        private void ResponseHandler(Request rq, Response rs, Person person)
+        {
+            var request = rq as SubscribeRq;
+            var response = rs as SubscribeRs;
+            if(rs.isValid())
+            {
+                Logger.Debug("Succeeded in sending subscribe request for " + person.Username);
+            } else
+            {
+                Logger.Error("Failed to subscribe to " + person.Username + " : " + rs.errorMessage);
+            }
+        }
     }
 }
