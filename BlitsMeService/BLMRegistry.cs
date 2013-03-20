@@ -9,5 +9,6 @@ namespace BlitsMe.Service
     {
         public const String root = @"SOFTWARE\BlitsMe";
         public const String serverIPsKey = "serverIPs";
+        public const String version = "version";
     }
 }

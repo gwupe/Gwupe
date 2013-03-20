@@ -38,7 +38,6 @@ namespace BlitsMe.Agent
         /// </summary>
         public BlitsMeClientAppContext()
         {
-            XmlConfigurator.Configure();
             Logger.Info("BlitsMe.Agent Starting up");
 #if DEBUG
             foreach (var manifestResourceName in Assembly.GetExecutingAssembly().GetManifestResourceNames())

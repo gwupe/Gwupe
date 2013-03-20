@@ -108,6 +108,10 @@
     <CodeAnalysisRuleDirectories>;C:\Program Files\Microsoft Visual Studio 10.0\Team Tools\Static Analysis Tools\FxCop\\Rules</CodeAnalysisRuleDirectories>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="log4net, Version=1.2.11.0, Culture=neutral, PublicKeyToken=669e0ddf0bb1aa2a, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\BlitsMeCommon\log4net.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Configuration.Install" />
     <Reference Include="System.Core" />
@@ -173,27 +177,24 @@
       <Install>true</Install>
     </BootstrapperPackage>
   </ItemGroup>
-  <ItemGroup>
-    <None Include="app.config" />
+  <ItemGroup Condition=" '$(Configuration)' == 'Debug' ">
+    <None Include="env\Debug\app.config" />
+  </ItemGroup>
+  <ItemGroup Condition=" '$(Configuration)' == 'Release' ">
+    <None Include="env\Release\app.config" />
+  </ItemGroup>  <ItemGroup>
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
     </None>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\BlitsMeCloudClient\BlitsMeCloudClient.csproj">
-      <Project>{751A6516-1FE8-47F4-A754-8AA5594FFB11}</Project>
-      <Name>BlitsMeCloudClient</Name>
-    </ProjectReference>
     <ProjectReference Include="..\BlitsMeServiceHost\BlitsMeServiceHost.csproj">
       <Project>{3D791A7A-2044-42A0-902A-FC86EDE214D4}</Project>
       <Name>BlitsMeServiceHost</Name>
     </ProjectReference>
-    <ProjectReference Include="..\ClassLibrary1\BlitsMeLogger.csproj">
-      <Project>{24EF159F-EBCB-41E5-8E63-5C99E9FE6DD2}</Project>
-      <Name>BlitsMeLogger</Name>
-    </ProjectReference>
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

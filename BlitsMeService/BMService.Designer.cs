@@ -1,7 +1,13 @@
-﻿namespace BlitsMe.Service
+﻿using System;
+using System.Net;
+using System.Timers;
+using log4net;
+
+namespace BlitsMe.Service
 {
     partial class BMService
     {
+
         /// <summary> 
         /// Required designer variable.
         /// </summary>
@@ -32,7 +38,9 @@
             // BlitsMe
             // 
             this.ServiceName = "BlitsMeService";
+
         }
+
 
         #endregion
     }

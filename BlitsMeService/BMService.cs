@@ -1,25 +1,67 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
 using System.Diagnostics;
-using System.Linq;
+using System.Net;
+using System.Reflection;
 using System.ServiceProcess;
-using System.Text;
-using BlitsMe.Cloud.Communication;
+using System.Timers;
 using Microsoft.Win32;
 using BlitsMe.Service.ServiceHost;
+using log4net;
 
 namespace BlitsMe.Service
 {
     public partial class BMService : ServiceBase
     {
-        private CloudConnection connection;
+        private static readonly ILog Logger = LogManager.GetLogger(typeof(BMService));
+        private WebClient webClient;
+        private Timer updateCheck;
+
         public List<String> servers;
         private System.ServiceModel.ServiceHost serviceHost;
         public BMService()
         {
             InitializeComponent();
+            Logger.Info("BlitsMeService Starting Up");
+            updateCheck = new Timer(30000);
+            updateCheck.Elapsed += CheckForNewVersion;
+            updateCheck.Start();
+        }
+
+        private void CheckForNewVersion(object sender, ElapsedEventArgs elapsedEventArgs)
+        {
+            if (webClient == null)
+            {
+                webClient = new WebClient();
+            }
+            try
+            {
+                String versionInfomation = webClient.DownloadString("http://s1.i.dev.blits.me/updates/update.txt");
+                String[] versionParts = versionInfomation.Split('\n')[0].Split(':');
+                Version assemblyVersion = new Version(FileVersionInfo.GetVersionInfo(Assembly.GetExecutingAssembly().Location).ProductVersion);
+                Version updateVersion = new Version(versionParts[0]);
+                if (assemblyVersion.CompareTo(updateVersion) < 0)
+                {
+                    Logger.Debug("Upgrade Available : " + assemblyVersion + " => " + updateVersion);
+                    try
+                    {
+                        Logger.Info("Downloading update " + versionParts[1]);
+                        webClient.DownloadFile("http://s1.i.dev.blits.me/updates/" + versionParts[1], System.IO.Path.GetTempPath() + "/" + versionParts[1]);
+                        Logger.Info("Downloaded update " + versionParts[1]);
+                    }
+                    catch (Exception e)
+                    {
+                        Logger.Error("Failed to download update : " + e.Message, e);
+                    }
+                } else
+                {
+                    Logger.Debug("No update available, current version " + assemblyVersion + ", available version " + updateVersion);
+                }
+            }
+            catch (Exception e)
+            {
+                Logger.Error("Failed to check for update : " + e.Message, e);
+            }
         }
 
         protected override void OnStart(string[] args)
@@ -73,7 +115,6 @@ namespace BlitsMe.Service
         protected override void OnStop()
         {
             serviceHost.Close();
-            connection.close();
             // TODO log something to event log
             // BlitsMeLog.logger.WriteEntry("BlitsMe Service Shutting Down");
         }

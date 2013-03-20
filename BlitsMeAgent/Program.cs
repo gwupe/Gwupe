@@ -5,6 +5,7 @@ using System.Reflection;
 using System.Threading;
 using System.Windows.Forms;
 using MutexManager;
+using log4net.Config;
 
 namespace BlitsMe.Agent
 {
@@ -22,6 +23,7 @@ namespace BlitsMe.Agent
                 MessageBox.Show("BlitsMe Already Running", "BlitsMe", MessageBoxButtons.OK);
                 return;
             }
+            XmlConfigurator.Configure();
             // Make sure we load certain namespaces as resources (they are embedded dll's)
             AppDomain.CurrentDomain.AssemblyResolve += (sender, args) =>
             {
