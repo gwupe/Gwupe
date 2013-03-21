@@ -32,6 +32,15 @@ namespace BlitsMe.Service.ServiceProxy
             ((IClientChannel)channel).Close();
         }
 
+        public bool tvncStartService()
+        {
+            IBlitsMeService channel = channelFactory.CreateChannel();
+            bool rv = channel.tvncStartService();
+            ((IClientChannel)channel).Close();
+
+            return rv;
+        }
+
         ~BlitsMeServiceDynProxy()
         {
             this.close();

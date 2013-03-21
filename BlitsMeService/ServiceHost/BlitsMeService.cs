@@ -26,5 +26,10 @@ namespace BlitsMe.Service.ServiceHost
             service.saveServerIPs(servers);
         }
 
+        public bool tvncStartService()
+        {
+            return service.tvncStartService();
+        }
+
     }
 }

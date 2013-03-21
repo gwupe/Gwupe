@@ -63,7 +63,14 @@ namespace BlitsMe.Agent.Components.Functions.RemoteDesktop
             _engagement.Chat.LogSystemMessage("You accepted the desktop assistance request from " + _engagement.SecondParty.Name);
             try
             {
-                Server.Start();
+                if (_appContext.BlitsMeServiceProxy.tvncStartService())
+                {
+                    Server.Start();
+                }
+                else
+                {
+                    Logger.Error("Failed to start the TVN Service. FIXME - not enough info.");
+                }
             }
             catch (Exception e)
             {

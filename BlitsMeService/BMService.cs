@@ -17,6 +17,9 @@ namespace BlitsMe.Service
         private static readonly ILog Logger = LogManager.GetLogger(typeof(BMService));
         private readonly WebClient _webClient;
         private readonly Timer _updateCheck;
+        // FIXME: Move this to a global config file at some point
+        private const string tvncServiceName = "tvnserver";
+        private const int tvnTimeoutMS = 30000;
 
         public List<String> Servers;
         private System.ServiceModel.ServiceHost serviceHost;
@@ -90,7 +93,7 @@ namespace BlitsMe.Service
             }
         }
 
-        public static List<String> getServerIPs()
+        public List<String> getServerIPs()
         {
             RegistryKey bmKey = Registry.LocalMachine.OpenSubKey(BLMRegistry.root);
             String ipKey = (String)bmKey.GetValue(BLMRegistry.serverIPsKey);
@@ -112,6 +115,25 @@ namespace BlitsMe.Service
             }
         }
 
+        public bool tvncStartService()
+        {
+            ServiceController service = new ServiceController(tvncServiceName);
+
+            try
+            {
+                TimeSpan timeout = TimeSpan.FromMilliseconds(tvnTimeoutMS);
+
+                service.Start();
+                service.WaitForStatus(ServiceControllerStatus.Running, timeout);
+            }
+            catch
+            {
+                Logger.Error("TightVNC service failed to start in a reasonable time");
+                return false;
+            }
+
+            return true;
+        }
 
         protected override void OnStop()
         {
