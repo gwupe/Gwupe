@@ -13,30 +13,31 @@ namespace BlitsMe.Service
 {
     public partial class BMService : ServiceBase
     {
+        private const int _updateCheckInterval = 3600;
         private static readonly ILog Logger = LogManager.GetLogger(typeof(BMService));
-        private WebClient webClient;
-        private Timer updateCheck;
+        private readonly WebClient _webClient;
+        private readonly Timer _updateCheck;
 
-        public List<String> servers;
+        public List<String> Servers;
         private System.ServiceModel.ServiceHost serviceHost;
         public BMService()
         {
             InitializeComponent();
             Logger.Info("BlitsMeService Starting Up");
-            updateCheck = new Timer(30000);
-            updateCheck.Elapsed += CheckForNewVersion;
-            updateCheck.Start();
+            // Check for update on startup
+            _webClient = new WebClient();
+            CheckForNewVersion();
+            // check for updates every interval
+            _updateCheck = new Timer(_updateCheckInterval*1000);
+            _updateCheck.Elapsed += delegate { CheckForNewVersion(); };
+            _updateCheck.Start();
         }
 
-        private void CheckForNewVersion(object sender, ElapsedEventArgs elapsedEventArgs)
+        private void CheckForNewVersion()
         {
-            if (webClient == null)
-            {
-                webClient = new WebClient();
-            }
             try
             {
-                String versionInfomation = webClient.DownloadString("http://s1.i.dev.blits.me/updates/update.txt");
+                String versionInfomation = _webClient.DownloadString("http://s1.i.dev.blits.me/updates/update.txt");
                 String[] versionParts = versionInfomation.Split('\n')[0].Split(':');
                 Version assemblyVersion = new Version(FileVersionInfo.GetVersionInfo(Assembly.GetExecutingAssembly().Location).ProductVersion);
                 Version updateVersion = new Version(versionParts[0]);
@@ -46,7 +47,7 @@ namespace BlitsMe.Service
                     try
                     {
                         Logger.Info("Downloading update " + versionParts[1]);
-                        webClient.DownloadFile("http://s1.i.dev.blits.me/updates/" + versionParts[1], System.IO.Path.GetTempPath() + "/" + versionParts[1]);
+                        _webClient.DownloadFile("http://s1.i.dev.blits.me/updates/" + versionParts[1], System.IO.Path.GetTempPath() + "/" + versionParts[1]);
                         Logger.Info("Downloaded update " + versionParts[1]);
                     }
                     catch (Exception e)
@@ -55,7 +56,7 @@ namespace BlitsMe.Service
                     }
                 } else
                 {
-                    Logger.Debug("No update available, current version " + assemblyVersion + ", available version " + updateVersion);
+                    Logger.Debug("No update available, current version " + assemblyVersion + ", available version " + updateVersion + ", checking again in " + (_updateCheckInterval/60) + " minutes.");
                 }
             }
             catch (Exception e)
@@ -75,12 +76,12 @@ namespace BlitsMe.Service
 
         private void initServers()
         {
-            if (servers == null || servers.Count == 0)
+            if (Servers == null || Servers.Count == 0)
             {
                 try
                 {
-                    servers = getServerIPs();
-                    saveServerIPs(servers);
+                    Servers = getServerIPs();
+                    saveServerIPs(Servers);
                 }
                 catch (Exception e)
                 {

@@ -18,7 +18,7 @@ namespace BlitsMe.Service.ServiceHost
 
         public List<String> getServers()
         {
-            return service.servers;
+            return service.Servers;
         }
 
         public void saveServers(List<String> servers)
