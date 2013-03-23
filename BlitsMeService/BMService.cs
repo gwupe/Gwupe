@@ -121,14 +121,20 @@ namespace BlitsMe.Service
 
             try
             {
-                TimeSpan timeout = TimeSpan.FromMilliseconds(tvnTimeoutMS);
-
-                service.Start();
-                service.WaitForStatus(ServiceControllerStatus.Running, timeout);
+                if (service.Status != ServiceControllerStatus.Running)
+                {
+                    service.Start();
+                    service.WaitForStatus(ServiceControllerStatus.Running, TimeSpan.FromMilliseconds(tvnTimeoutMS));
+                }
             }
-            catch
+            catch (System.ServiceProcess.TimeoutException e)
             {
-                Logger.Error("TightVNC service failed to start in a reasonable time");
+                Logger.Error("TightVNC service failed to start in a reasonable time : " + e.Message,e);
+                return false;
+            }
+            catch (Exception e)
+            {
+                Logger.Error("TightVNC service failed to start : " + e.Message, e);
                 return false;
             }
 
