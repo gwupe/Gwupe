@@ -5,7 +5,7 @@
 	xmlns:Notification="clr-namespace:BlitsMe.Agent.Components.Notification"
 	xmlns:FileSendNotification="clr-namespace:BlitsMe.Agent.Components.Functions.FileSend.Notification"
 	xmlns:wpf="clr-namespace:BlitsMe.Agent.UI.WPF"
-	>
+	xmlns:RDPNotification="clr-namespace:BlitsMe.Agent.Components.Functions.RemoteDesktop.Notification">
 
     <wpf:RectConverter x:Key="rectConverter" />
 
@@ -21,7 +21,25 @@
              Style="{DynamicResource MyProgressBarStyle}" />
         </DockPanel>
     </DataTemplate>
-    <DataTemplate DataType="{x:Type Notification:RDPNotification}">
+    <DataTemplate DataType="{x:Type Notification:AddBuddyNotification}">
+        <DockPanel HorizontalAlignment="Stretch" LastChildFill="true" Background="#FF1AAD45">
+            <StackPanel Orientation="Horizontal" Margin="0,8,8,8" HorizontalAlignment="Right" DockPanel.Dock="Right">
+                <Button Content="Add" HorizontalAlignment="Right" Width="75" Command="{Binding AnswerTrueFalse}">
+                    <Button.CommandParameter>
+                        <s:Boolean>True</s:Boolean>
+                    </Button.CommandParameter>
+                </Button>
+                <Button Content="Reject" HorizontalAlignment="Right" Width="75" Command="{Binding AnswerTrueFalse}" >
+                    <Button.CommandParameter>
+                        <s:Boolean>False</s:Boolean>
+                    </Button.CommandParameter>
+                </Button>
+                <Button Content="X" HorizontalAlignment="Right" Width="20" Command="{Binding DeleteNotification}" />
+            </StackPanel>
+            <TextBlock HorizontalAlignment="Left" Margin="8,11,0,8" Text="{Binding Path=Message, FallbackValue=Unknown Notification}" DockPanel.Dock="Left" Foreground="White" FontWeight="Bold"/>
+        </DockPanel>
+    </DataTemplate>
+    <DataTemplate DataType="{x:Type RDPNotification:RDPNotification}">
         <DockPanel HorizontalAlignment="Stretch" LastChildFill="true" Background="#FF1AAD45">
             <StackPanel Orientation="Horizontal" Margin="0,8,8,8" HorizontalAlignment="Right" DockPanel.Dock="Right">
                 <Button Content="Accept" HorizontalAlignment="Right" Width="75" Command="{Binding AnswerRDP}">

@@ -24,8 +24,6 @@ namespace BlitsMe.Cloud.Communication
         public event ConnectionEvent Disconnect;
         public event ConnectionEvent Connect;
 
-        public bool isLoggedIn { get; set; }
-
         public AutoResetEvent connectionOpenEvent = new AutoResetEvent(false);
         public AutoResetEvent connectionCloseEvent = new AutoResetEvent(false);
         public AutoResetEvent wakeupManager = new AutoResetEvent(false);

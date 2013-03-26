@@ -1,10 +1,11 @@
-﻿using System;
+using System;
 using System.Windows.Input;
+using BlitsMe.Agent.Components.Notification;
 using BlitsMe.Agent.Managers;
 
-namespace BlitsMe.Agent.Components.Notification
+namespace BlitsMe.Agent.Components.Functions.RemoteDesktop.Notification
 {
-    class RDPNotification : INotification
+    class RDPNotification : Components.Notification.Notification
     {
         public event EventHandler ProcessAcceptRDP;
 

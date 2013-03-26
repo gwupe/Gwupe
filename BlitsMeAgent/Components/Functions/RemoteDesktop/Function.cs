@@ -3,6 +3,7 @@ using System.Diagnostics;
 using BlitsMe.Agent.Components.Chat;
 using BlitsMe.Agent.Components.Functions.API;
 using BlitsMe.Agent.Components.Functions.FileSend;
+using BlitsMe.Agent.Components.Functions.RemoteDesktop.Notification;
 using BlitsMe.Agent.Components.Notification;
 using BlitsMe.Cloud.Messaging.API;
 using BlitsMe.Cloud.Messaging.Request;

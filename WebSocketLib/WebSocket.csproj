@@ -5,8 +5,8 @@
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">x86</Platform>
     <OutputType>Library</OutputType>
-    <RootNamespace>WebSocketLib</RootNamespace>
-    <AssemblyName>WebSocket</AssemblyName>
+    <RootNamespace>Bauglir.Ex</RootNamespace>
+    <AssemblyName>Bauglir.Ex</AssemblyName>
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <TargetFrameworkProfile>Client</TargetFrameworkProfile>

@@ -115,13 +115,10 @@
     <CodeAnalysisRuleDirectories>;C:\Program Files\Microsoft Visual Studio 10.0\Team Tools\Static Analysis Tools\FxCop\\Rules</CodeAnalysisRuleDirectories>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="BlitsMe.Common">
-      <HintPath>..\BlitsMeCommon\bin\Debug\BlitsMe.Common.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
     <Reference Include="log4net, Version=1.2.11.0, Culture=neutral, PublicKeyToken=669e0ddf0bb1aa2a, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\BlitsMeCommon\log4net.dll</HintPath>
+      <Private>True</Private>
     </Reference>
     <Reference Include="Microsoft.Expression.Drawing" />
     <Reference Include="Microsoft.Expression.Effects" />
@@ -162,12 +159,15 @@
     <Compile Include="Components\Functions\RemoteDesktop\Function.cs" />
     <Compile Include="Components\Functions\FileSend\Notification\FileSendEventArgs.cs" />
     <Compile Include="Components\Functions\FileSend\Notification\FileSendRequestNotification.cs" />
+    <Compile Include="Components\Functions\RemoteDesktop\Notification\RDPNotification.cs" />
+    <Compile Include="Components\Notification\AnswerTrueFalseCommand.cs" />
     <Compile Include="Components\Notification\InfoNotification.cs" />
     <Compile Include="Components\LoginDetails.cs" />
-    <Compile Include="Components\Notification\INotification.cs" />
+    <Compile Include="Components\Notification\Notification.cs" />
+    <Compile Include="Components\Notification\AddBuddyNotification.cs" />
+    <Compile Include="Components\Notification\TrueFalseNotification.cs" />
     <Compile Include="Components\Person\Person.cs" />
     <Compile Include="Components\Person\Presence.cs" />
-    <Compile Include="Components\Notification\RDPNotification.cs" />
     <Compile Include="Components\Processors\ChatMessageProcessor.cs" />
     <Compile Include="Components\Processors\FileSendRequestProcessor.cs" />
     <Compile Include="Components\Processors\FileSendRequestResponseProcessor.cs" />
@@ -175,9 +175,11 @@
     <Compile Include="Components\Processors\RDPRequestProcessor.cs" />
     <Compile Include="Components\Processors\ListenHandshakeProcessor.cs" />
     <Compile Include="Components\Processors\InitUDPConnectionProcessor.cs" />
+    <Compile Include="Components\Processors\SubscribeProcessor.cs" />
     <Compile Include="Components\Processors\UserToUserProcessor.cs" />
     <Compile Include="Components\Processors\PresenceChangeProcessor.cs" />
     <Compile Include="Components\Search\SearchResult.cs" />
+    <Compile Include="Exceptions\LoginException.cs" />
     <Compile Include="Exceptions\RDPSessionFailedException.cs" />
     <Compile Include="Components\Functions\RemoteDesktop\Client.cs" />
     <Compile Include="Components\Functions\RemoteDesktop\Server.cs" />
@@ -231,6 +233,10 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
+    <Page Include="UI\WPF\SignUpWindow.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
     <Page Include="UI\WPF\Style\EngagementStyle.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
@@ -262,6 +268,9 @@
       <DependentUpon>EngagementWindow.xaml</DependentUpon>
     </Compile>
     <Compile Include="UI\WPF\Engage\EngagementWindowList.cs" />
+    <Compile Include="UI\WPF\SignUpWindow.xaml.cs">
+      <DependentUpon>SignUpWindow.xaml</DependentUpon>
+    </Compile>
     <Compile Include="UI\WPF\Utils\ImageStreamReader.cs" />
     <Compile Include="UI\WPF\Utils\RelativeMessageTimeConverter.cs" />
     <Compile Include="UI\WPF\LoginWindow.xaml.cs">
@@ -346,10 +355,6 @@
   </ItemGroup>
   <ItemGroup>
     <Resource Include="Images\1170492_woman_smiling_at_camera.jpg" />
-    <Resource Include="Images\dashan-not-smiling-281x300.jpg" />
-    <Resource Include="Images\friendly-customer-service.jpg" />
-    <Resource Include="Images\nerdy_vicky.jpg" />
-    <Resource Include="Images\woman smiling.jpg" />
     <Resource Include="Icons\icon-pulse-0.ico">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Resource>
@@ -383,7 +388,6 @@
     <Resource Include="Icons\icon-pulse-90.ico">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Resource>
-    <Resource Include="Images\Blitsmewording200.png" />
     <Resource Include="UI\WPF\Images\1359662466_Add.png" />
     <Resource Include="UI\WPF\Images\1360201178_speech_bubble.png" />
     <Resource Include="UI\WPF\Images\BLITSME.png" />
@@ -398,28 +402,35 @@
     <Resource Include="UI\WPF\Images\silhoette.png" />
   </ItemGroup>
   <ItemGroup>
-    <WCFMetadata Include="Service References\" />
-  </ItemGroup>
-  <ItemGroup>
     <ProjectReference Include="..\BlitsMeCloudClient\BlitsMeCloudClient.csproj">
-      <Project>{751A6516-1FE8-47F4-A754-8AA5594FFB11}</Project>
+      <Project>{751a6516-1fe8-47f4-a754-8aa5594ffb11}</Project>
       <Name>BlitsMeCloudClient</Name>
+      <Private>False</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\BlitsMeCommon\BlitsMeCommon.csproj">
+      <Project>{1b355f1c-9d50-4bab-8ceb-e6ca72e6de69}</Project>
+      <Name>BlitsMeCommon</Name>
+      <Private>False</Private>
     </ProjectReference>
     <ProjectReference Include="..\BlitsMeP2PConnection\BlitsMeP2PConnection.csproj">
-      <Project>{C8080119-3305-43B5-8944-592DBC960F12}</Project>
+      <Project>{c8080119-3305-43b5-8944-592dbc960f12}</Project>
       <Name>BlitsMeP2PConnection</Name>
+      <Private>False</Private>
     </ProjectReference>
     <ProjectReference Include="..\BlitsMeServiceHost\BlitsMeServiceHost.csproj">
       <Project>{3D791A7A-2044-42A0-902A-FC86EDE214D4}</Project>
       <Name>BlitsMeServiceHost</Name>
+      <Private>False</Private>
     </ProjectReference>
     <ProjectReference Include="..\BlitsMeServiceProxy\BlitsMeServiceProxy.csproj">
       <Project>{22BB8667-895C-449A-9DCC-90CB1900F8CB}</Project>
       <Name>BlitsMeServiceProxy</Name>
+      <Private>False</Private>
     </ProjectReference>
-    <ProjectReference Include="..\MutexManager\MutexManager.csproj">
-      <Project>{CE119D2D-F9B6-4FCF-B527-40CAEAEF029C}</Project>
-      <Name>MutexManager</Name>
+    <ProjectReference Include="..\WebSocketLib\WebSocket.csproj">
+      <Project>{18413b76-a1fd-450d-989c-30b9f448f966}</Project>
+      <Name>WebSocket</Name>
+      <Private>False</Private>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
@@ -444,14 +455,19 @@
       <Install>true</Install>
     </BootstrapperPackage>
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Data\" />
-  </ItemGroup>
+  <ItemGroup />
   <ItemGroup>
     <Resource Include="Icons\icon-main.ico" />
   </ItemGroup>
   <ItemGroup>
+    <Resource Include="UI\WPF\Images\Blitsmewording200.png" />
     <EmbeddedResource Include="..\BlitsMeCommon\bin\$(Configuration)\BlitsMe.Common.dll" />
+    <EmbeddedResource Include="..\BlitsMeCloudClient\bin\$(Configuration)\BlitsMe.Cloud.dll" />
+    <EmbeddedResource Include="..\BlitsMeP2PConnection\bin\$(Configuration)\BlitsMe.Communication.P2P.dll" />
+    <EmbeddedResource Include="..\BlitsMeServiceHost\bin\$(Configuration)\BlitsMe.ServiceHost.dll" />
+    <EmbeddedResource Include="..\BlitsMeServiceProxy\bin\$(Configuration)\BlitsMe.ServiceProxy.dll" />
+    <EmbeddedResource Include="..\BlitsMeCommon\log4net.dll" />
+    <EmbeddedResource Include="..\WebSocketLib\bin\$(Configuration)\Bauglir.Ex.dll" />
     <Content Include="icon-main.ico" />
     <Resource Include="UI\WPF\Images\arrow.png" />
     <Resource Include="UI\WPF\Images\arrow_limited_blue_bg.png" />
@@ -462,7 +478,6 @@
     <Resource Include="UI\WPF\Images\1337424537_System.png" />
     <Resource Include="UI\WPF\Images\1337424609_Stats.png" />
     <Resource Include="UI\WPF\Images\1337425212_02.png" />
-    <Resource Include="UI\WPF\Images\5_Star_Streak.png" />
     <Resource Include="UI\WPF\Images\brushedsteel1366x1024.jpg" />
     <Resource Include="UI\WPF\Images\Speech Left.png" />
     <Resource Include="UI\WPF\Images\Star_max-b-10px.png" />

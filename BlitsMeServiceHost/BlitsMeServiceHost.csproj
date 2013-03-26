@@ -8,8 +8,8 @@
     <ProjectGuid>{3D791A7A-2044-42A0-902A-FC86EDE214D4}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>BlitsMe.Service.ServiceHost</RootNamespace>
-    <AssemblyName>BlitsMe.Service.ServiceHost</AssemblyName>
+    <RootNamespace>BlitsMe.ServiceHost</RootNamespace>
+    <AssemblyName>BlitsMe.ServiceHost</AssemblyName>
     <ProjectTypeGuids>{3D9AD99F-2412-4246-B90B-4EAA41C64699};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
     <StartArguments>/client:"WcfTestClient.exe"</StartArguments>
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>

@@ -48,7 +48,7 @@ namespace BlitsMe.Agent.UI.WPF.Roster
         private void RosterFilter(object sender, FilterEventArgs eventArgs)
         {
             RosterElement rosterElement = eventArgs.Item as RosterElement;
-            if (rosterElement != null && rosterElement.Person.Presence.IsOnline)
+            if (rosterElement != null && rosterElement.Person != null && rosterElement.Person.Presence != null && rosterElement.Person.Presence.IsOnline)
             {
                 eventArgs.Accepted = true;
             }

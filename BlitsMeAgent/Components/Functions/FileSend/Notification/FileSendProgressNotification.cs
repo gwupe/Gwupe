@@ -7,7 +7,7 @@ using log4net;
 
 namespace BlitsMe.Agent.Components.Functions.FileSend.Notification
 {
-    class FileSendProgressNotification : INotification, INotifyPropertyChanged
+    class FileSendProgressNotification : Components.Notification.Notification, INotifyPropertyChanged
     {
         private static readonly ILog Logger = LogManager.GetLogger(typeof (FileSendProgressNotification));
         public FileSendInfo FileInfo;

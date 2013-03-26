@@ -1,9 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using System.ServiceProcess;
-using System.Text;
-using log4net.Config;
 
 namespace BlitsMe.Service
 {
@@ -14,7 +12,6 @@ namespace BlitsMe.Service
         /// </summary>
         static void Main()
         {
-            XmlConfigurator.Configure();
             ServiceBase[] ServicesToRun;
             ServicesToRun = new ServiceBase[] 
 			{ 

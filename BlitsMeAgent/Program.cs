@@ -1,31 +1,55 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Threading;
 using System.Windows.Forms;
-using MutexManager;
-using log4net.Config;
 
 namespace BlitsMe.Agent
 {
     static class Program
     {
+        private const string AppGuid = "BlitsMe.Agent.Application";
+
         /// <summary>
         /// The main entry point for the application.
         /// </summary>
         [STAThread]
         static void Main()
         {
-            // don't want more than 1 started
-            if (!SingleInstance.Start())
+            using (Mutex mutex = new Mutex(false, AppGuid))
             {
-                MessageBox.Show("BlitsMe Already Running", "BlitsMe", MessageBoxButtons.OK);
-                return;
+                if (!mutex.WaitOne(0, false))
+                {
+                    MessageBox.Show("BlitsMe Is already running.");
+                    return;
+                }
+
+                GC.Collect();
+                // Make sure we load certain namespaces as resources (they are embedded dll's)
+                AppDomain.CurrentDomain.AssemblyResolve += EmbeddedAssemblyResolver;
+                try
+                {
+                    Thread.CurrentThread.Name = "MAIN";
+                    Application.EnableVisualStyles();
+                    Application.SetCompatibleTextRenderingDefault(false);
+                    Application.Run(new BlitsMeClientAppContext());
+                }
+
+                catch
+                    (Exception
+                    ex)
+                {
+
+                    MessageBox.Show(ex.Message + (ex.InnerException != null ? " : " + ex.InnerException.Message : ""),
+                                    "Program Terminated Unexpectedly",
+                                    MessageBoxButtons.OK, MessageBoxIcon.Error);
+                }
             }
-            XmlConfigurator.Configure();
-            // Make sure we load certain namespaces as resources (they are embedded dll's)
-            AppDomain.CurrentDomain.AssemblyResolve += (sender, args) =>
+        }
+
+        private static Assembly EmbeddedAssemblyResolver(object sender, ResolveEventArgs args)
+        {
+            try
             {
                 String resourceName = Assembly.GetExecutingAssembly().FullName.Split(',').First() + "." + new AssemblyName(args.Name).Name + ".dll";
                 using (var stream = Assembly.GetExecutingAssembly().GetManifestResourceStream(resourceName))
@@ -36,25 +60,15 @@ namespace BlitsMe.Agent
                         stream.Read(assemblyData, 0, assemblyData.Length);
                         return Assembly.Load(assemblyData);
                     }
-                    return null;
                 }
-            };
-
-            Thread.CurrentThread.Name = "MAIN";
-            Application.EnableVisualStyles();
-            Application.SetCompatibleTextRenderingDefault(false);
-            try
-            {
-                var applicationContext = new BlitsMeClientAppContext();
-                Application.Run(applicationContext);
             }
-
             catch (Exception ex)
             {
 
-                MessageBox.Show(ex.Message + (ex.InnerException != null ? " : " + ex.InnerException.Message : ""), "Program Terminated Unexpectedly",
-                    MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show(ex.Message + (ex.InnerException != null ? " : " + ex.InnerException.Message : ""), "Program Failed to access Assembly " + args.Name,
+                                MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
+            return null;
         }
     }
 }

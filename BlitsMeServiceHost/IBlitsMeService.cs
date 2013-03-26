@@ -5,7 +5,7 @@ using System.Runtime.Serialization;
 using System.ServiceModel;
 using System.Text;
 
-namespace BlitsMe.Service.ServiceHost
+namespace BlitsMe.ServiceHost
 {
     [ServiceContract]
     public interface IBlitsMeService

@@ -1,14 +1,5 @@
 using System;
-using System.Linq;
-using System.Net;
-using System.Reflection;
-using System.Threading;
-using BlitsMe.Agent.Components;
 using BlitsMe.Agent.Components.Processors;
-using BlitsMe.Cloud.Messaging;
-using BlitsMe.Cloud.Messaging.Request;
-using BlitsMe.Cloud.Messaging.Response;
-using BlitsMe.Communication.P2P.RUDP.Utils;
 using log4net;
 
 namespace BlitsMe.Agent.Managers
@@ -25,14 +16,16 @@ namespace BlitsMe.Agent.Managers
             this._appContext = appContext;
             // Link into the hooks so we can receive requests
 
-            _appContext.ConnectionManager.Connection.webSocketServer.RegisterProcessor("PresenceChange",new PresenceChangeProcessor(_appContext));
-            _appContext.ConnectionManager.Connection.webSocketServer.RegisterProcessor("ChatMessage",new ChatMessageProcessor(_appContext));
-            _appContext.ConnectionManager.Connection.webSocketServer.RegisterProcessor("InitUDPConnection", new InitUDPConnectionProcessor(_appContext));
-            _appContext.ConnectionManager.Connection.webSocketServer.RegisterProcessor("ListenHandshake", new ListenHandshakeProcessor(_appContext));
-            _appContext.ConnectionManager.Connection.webSocketServer.RegisterProcessor("RDPRequest", new RDPRequestProcessor(_appContext));
-            _appContext.ConnectionManager.Connection.webSocketServer.RegisterProcessor("RDPRequestResponse", new RDPRequestResponseProcessor(_appContext));
-            _appContext.ConnectionManager.Connection.webSocketServer.RegisterProcessor("FileSendRequest", new FileSendRequestProcessor(_appContext));
-            _appContext.ConnectionManager.Connection.webSocketServer.RegisterProcessor("FileSendRequestResponse", new FileSendRequestResponseProcessor(_appContext));
+            _appContext.ConnectionManager.Connection.WebSocketServer.RegisterProcessor("PresenceChange",new PresenceChangeProcessor(_appContext));
+            _appContext.ConnectionManager.Connection.WebSocketServer.RegisterProcessor("ChatMessage",new ChatMessageProcessor(_appContext));
+            _appContext.ConnectionManager.Connection.WebSocketServer.RegisterProcessor("InitUDPConnection", new InitUDPConnectionProcessor(_appContext));
+            _appContext.ConnectionManager.Connection.WebSocketServer.RegisterProcessor("ListenHandshake", new ListenHandshakeProcessor(_appContext));
+            _appContext.ConnectionManager.Connection.WebSocketServer.RegisterProcessor("RDPRequest", new RDPRequestProcessor(_appContext));
+            _appContext.ConnectionManager.Connection.WebSocketServer.RegisterProcessor("RDPRequestResponse", new RDPRequestResponseProcessor(_appContext));
+            _appContext.ConnectionManager.Connection.WebSocketServer.RegisterProcessor("FileSendRequest", new FileSendRequestProcessor(_appContext));
+            _appContext.ConnectionManager.Connection.WebSocketServer.RegisterProcessor("FileSendRequestResponse", new FileSendRequestResponseProcessor(_appContext));
+            _appContext.ConnectionManager.Connection.WebSocketServer.RegisterProcessor("Subscribe", new SubscribeProcessor(_appContext));
+
         }
     }
 }

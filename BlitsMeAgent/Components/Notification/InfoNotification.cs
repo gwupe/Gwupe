@@ -1,6 +1,6 @@
 ﻿namespace BlitsMe.Agent.Components.Notification
 {
-    internal class InfoNotification : INotification
+    internal class InfoNotification : Notification
     {
     }
 }

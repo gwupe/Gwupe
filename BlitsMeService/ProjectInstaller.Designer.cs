@@ -1,4 +1,4 @@
-﻿namespace BlitsMe
+﻿namespace BlitsMe.Service
 {
     partial class ProjectInstaller
     {

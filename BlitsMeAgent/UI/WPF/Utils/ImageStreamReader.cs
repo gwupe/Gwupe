@@ -3,6 +3,7 @@ using System.Globalization;
 using System.IO;
 using System.Windows.Data;
 using System.Windows.Media.Imaging;
+using BlitsMe.Agent.Properties;
 
 namespace BlitsMe.Agent.UI.WPF.Utils
 {
@@ -10,9 +11,17 @@ namespace BlitsMe.Agent.UI.WPF.Utils
     {
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
-            BitmapImage image = new BitmapImage();
+            BitmapImage image;
+            image = new BitmapImage();
             image.BeginInit();
-            image.StreamSource = new MemoryStream((byte[])value);
+            if (value == null)
+            {
+                // default image
+                image.UriSource = new Uri("pack://application:,,,/UI/WPF/Images/silhoette.png", UriKind.RelativeOrAbsolute);
+                image.CacheOption = BitmapCacheOption.OnLoad;
+            } else {
+                image.StreamSource = new MemoryStream((byte[]) value);
+            }
             image.EndInit();
             return image;
         }

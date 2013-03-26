@@ -7,7 +7,7 @@
 	Title="Login" Height="288" Width="235" WindowStartupLocation="CenterScreen" ResizeMode="NoResize" Closing="hideIfClosing" StateChanged="windowStateChanged">
 
 	<Grid x:Name="LayoutRoot" HorizontalAlignment="Left" Width="218" Height="248" VerticalAlignment="Top">
-        <Image HorizontalAlignment="Left" Height="53" Margin="8,8,0,0" Source="/BlitsMe.Agent;component/Images/Blitsmewording200.png" Stretch="Fill" VerticalAlignment="Top" Width="200"/>
+        <Image HorizontalAlignment="Left" Height="53" Margin="8,8,0,0" Source="/UI\WPF\Images\Blitsmewording200.png" Stretch="Fill" VerticalAlignment="Top" Width="200"/>
 		<Label Content="Username" HorizontalAlignment="Left" Margin="10,104.96,0,0" VerticalAlignment="Top"/>
 		<TextBox HorizontalAlignment="Left" Margin="77.296,104.96,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="132.704" Height="25.96" Name="username" KeyDown="username_KeyDown" />
 		<Label Content="Password" HorizontalAlignment="Left" Margin="10,142.96,0,0" VerticalAlignment="Top" Name="passwordLabel" />

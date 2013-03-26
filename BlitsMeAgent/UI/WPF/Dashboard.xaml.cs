@@ -33,7 +33,7 @@ namespace BlitsMe.Agent.UI.WPF
         private readonly RosterList _rosterList;
         private readonly CollectionViewSource _notificationView;
         // Dispatching collection for notifications (to be used by everything)
-        internal DispatchingCollection<ObservableCollection<INotification>, INotification> NotificationList { get; set; }
+        internal DispatchingCollection<ObservableCollection<Notification>, Notification> NotificationList { get; set; }
         private AddPersonControl _addPersonControl;
         private SearchWindow _searchWindow;
         private Timer _searchCountDown;
@@ -44,7 +44,7 @@ namespace BlitsMe.Agent.UI.WPF
             this.InitializeComponent();
             this._appContext = appContext;
             // Handle the notifications
-            NotificationList = new DispatchingCollection<ObservableCollection<INotification>, INotification>(_appContext.NotificationManager.Notifications, Dispatcher);
+            NotificationList = new DispatchingCollection<ObservableCollection<Notification>, Notification>(_appContext.NotificationManager.Notifications, Dispatcher);
             _notificationView = new CollectionViewSource { Source = NotificationList };
             _notificationView.Filter += NotificationFilter;
             Notifications.ItemsSource = _notificationView.View;
@@ -90,7 +90,7 @@ namespace BlitsMe.Agent.UI.WPF
 
         private void NotificationFilter(object sender, FilterEventArgs eventArgs)
         {
-            INotification notification = eventArgs.Item as INotification;
+            Notification notification = eventArgs.Item as Notification;
             if (notification != null && (notification.From == null || notification.From.Equals("")))
             {
                 eventArgs.Accepted = true;
@@ -99,6 +99,11 @@ namespace BlitsMe.Agent.UI.WPF
             {
                 eventArgs.Accepted = false;
             }
+        }
+
+        public void Logout(object sender, EventArgs e)
+        {
+            _appContext.LoginManager.Logout(true);
         }
 
         #region Windowing Stuff

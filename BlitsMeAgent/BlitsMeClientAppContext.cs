@@ -8,7 +8,7 @@ using BlitsMe.Agent.Managers;
 using BlitsMe.Agent.UI;
 using BlitsMe.Cloud.Messaging.Request;
 using BlitsMe.Cloud.Messaging.Response;
-using BlitsMe.Service.ServiceProxy;
+using BlitsMe.ServiceProxy;
 using log4net;
 using log4net.Config;
 using Dashboard = BlitsMe.Agent.UI.WPF.Dashboard;
@@ -18,7 +18,7 @@ namespace BlitsMe.Agent
     public class BlitsMeClientAppContext : ApplicationContext
     {
         private static readonly ILog Logger = LogManager.GetLogger(typeof(BlitsMeClientAppContext));
-        internal readonly BlitsMeServiceDynProxy BlitsMeServiceProxy;
+        internal readonly BlitsMeServiceProxy BlitsMeServiceProxy;
         private readonly SystemTray _systray;
         private UI.WinForms.Dashboard _debugDashboard;
         public Dashboard UIDashBoard;
@@ -38,6 +38,7 @@ namespace BlitsMe.Agent
         /// </summary>
         public BlitsMeClientAppContext()
         {
+            XmlConfigurator.Configure();
             Logger.Info("BlitsMe.Agent Starting up");
 #if DEBUG
             foreach (var manifestResourceName in Assembly.GetExecutingAssembly().GetManifestResourceNames())
@@ -45,7 +46,7 @@ namespace BlitsMe.Agent
                 Logger.Debug("Embedded Resource : " + manifestResourceName);
             }
 #endif
-            BlitsMeServiceProxy = new BlitsMeServiceDynProxy();
+            BlitsMeServiceProxy = new BlitsMeServiceProxy();
             ConnectionManager = new ConnectionManager(this);
             LoginManager = new LoginManager(this);
             _requestManager = new RequestManager(this);
@@ -61,7 +62,6 @@ namespace BlitsMe.Agent
         private void OnNewEngagementActivity(object sender, EngagementActivityArgs args)
         {
             bool runEventManually = (UIDashBoard == null);
-            SetupAndRunDashboard();
             ShowDashboard();
             // If we started up the dashboard with this event, it won't obviously have received it, so lets manually send it
             if (runEventManually)
@@ -82,7 +82,7 @@ namespace BlitsMe.Agent
             }
         }
 
-        public BlitsMeServiceDynProxy BlitsMeService
+        public BlitsMeServiceProxy BlitsMeService
         {
             get { return BlitsMeServiceProxy; }
         }
@@ -94,24 +94,54 @@ namespace BlitsMe.Agent
 
         public void OnIconClickLaunchDashboard(object sender, EventArgs e)
         {
-            SetupAndRunDashboard();
-            ShowDashboard();
+            if (ConnectionManager.Connection.isEstablished())
+            {
+                if (LoginManager.IsLoggedIn)
+                {
+                    ShowDashboard();
+                }
+                else
+                {
+                    LoginManager.ShowLoginWindow();
+                }
+            }
         }
 
-        private void ShowDashboard()
+        internal void HideDashboard()
         {
-            if (UIDashBoard.Dispatcher.CheckAccess())
+            if(UIDashBoard != null)
             {
-                UIDashBoard.Show();
-                UIDashBoard.Activate();
+                if (UIDashBoard.Dispatcher.CheckAccess())
+                    UIDashBoard.Hide();
+                else
+                    UIDashBoard.Dispatcher.Invoke(new Action(() => UIDashBoard.Hide()));
             }
-            else
+        }
+
+        internal void ShowDashboard()
+        {
+            if (LoginManager.IsLoggedIn)
             {
-                UIDashBoard.Dispatcher.Invoke(new Action(() =>
-                                                             {
-                                                                 UIDashBoard.Show();
-                                                                 UIDashBoard.Activate();
-                                                             }));
+                SetupAndRunDashboard();
+                if (UIDashBoard.Dispatcher.CheckAccess())
+                {
+                    UIDashBoard.Show();
+                    UIDashBoard.Activate();
+                    UIDashBoard.Topmost = true;
+                    UIDashBoard.Topmost = false;
+                    UIDashBoard.Focus();
+                }
+                else
+                {
+                    UIDashBoard.Dispatcher.Invoke(new Action(() =>
+                        {
+                            UIDashBoard.Show();
+                            UIDashBoard.Activate();
+                            UIDashBoard.Topmost = true;
+                            UIDashBoard.Topmost = false;
+                            UIDashBoard.Focus();
+                        }));
+                }
             }
         }
 

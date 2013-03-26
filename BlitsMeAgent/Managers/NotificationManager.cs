@@ -11,19 +11,19 @@ namespace BlitsMe.Agent.Managers
     {
         private static readonly ILog Logger = LogManager.GetLogger(typeof(NotificationManager));
         private readonly BlitsMeClientAppContext _appContext;
-        public ObservableCollection<INotification> Notifications;
+        public ObservableCollection<Notification> Notifications;
         private readonly System.Timers.Timer _removerTimer;
 
         internal NotificationManager(BlitsMeClientAppContext appContext)
         {
             this._appContext = appContext;
-            Notifications = new ObservableCollection<INotification>();
+            Notifications = new ObservableCollection<Notification>();
             _removerTimer = new System.Timers.Timer { Interval = 1000 };
             _removerTimer.Elapsed += RemoveAfterTimeoutRunner;
             _removerTimer.Start();
         }
 
-        internal void DeleteNotification(INotification notification)
+        internal void DeleteNotification(Notification notification)
         {
             lock (Notifications)
             {
@@ -42,7 +42,7 @@ namespace BlitsMe.Agent.Managers
             }
         }
 
-        internal void AddNotification(INotification notification)
+        internal void AddNotification(Notification notification)
         {
             notification.Manager = this;
             lock (Notifications)
@@ -66,19 +66,22 @@ namespace BlitsMe.Agent.Managers
         private void RemoveAfterTimeoutRunner(object sender, ElapsedEventArgs e)
         {
             long nowTime = DateTime.Now.Ticks;
-            INotification[] localNotifications;
+            Notification[] localNotifications;
             lock (Notifications)
             {
-                localNotifications = new INotification[Notifications.Count];
+                localNotifications = new Notification[Notifications.Count];
                 Notifications.CopyTo(localNotifications, 0);
             }
 
-            foreach (INotification notification in localNotifications)
+            foreach (Notification notification in localNotifications)
             {
-                TimeSpan elapsed = new TimeSpan(nowTime - notification.NotifyTime);
-                if (elapsed.TotalSeconds > notification.DeleteTimeout)
+                if (notification.DeleteTimeout > 0)
                 {
-                    this.DeleteNotification(notification);
+                    TimeSpan elapsed = new TimeSpan(nowTime - notification.NotifyTime);
+                    if (elapsed.TotalSeconds > notification.DeleteTimeout)
+                    {
+                        this.DeleteNotification(notification);
+                    }
                 }
             }
         }

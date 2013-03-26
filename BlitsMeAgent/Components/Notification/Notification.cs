@@ -4,18 +4,18 @@ using BlitsMe.Agent.Managers;
 
 namespace BlitsMe.Agent.Components.Notification
 {
-    internal abstract class INotification
+    internal abstract class Notification
     {
         private ICommand _deleteNotification;
         public NotificationManager Manager { get; set; }
-        public event EventHandler ProcessDeleteNotification;
+        public event EventHandler Deleted;
         public String From { get; set; }
         public int DeleteTimeout { get; set; }
         public readonly long NotifyTime;
 
         public void OnProcessDeleteCommand(EventArgs e)
         {
-            EventHandler handler = ProcessDeleteNotification;
+            EventHandler handler = Deleted;
             if (handler != null) handler(this, e);
         }
 
@@ -24,10 +24,10 @@ namespace BlitsMe.Agent.Components.Notification
             get { return _deleteNotification ?? (_deleteNotification = new DeleteNotificationCommand(Manager, this)); }
         }
 
-        internal INotification()
+        internal Notification()
         {
             NotifyTime = DateTime.Now.Ticks;
-            DeleteTimeout = 10;
+            DeleteTimeout = 0;
         }
 
         public String Message { get; set; }
@@ -41,9 +41,9 @@ namespace BlitsMe.Agent.Components.Notification
     internal class DeleteNotificationCommand : ICommand
     {
         private readonly NotificationManager _notificationManager;
-        private readonly INotification _notification;
+        private readonly Notification _notification;
 
-        internal DeleteNotificationCommand(NotificationManager manager, INotification notification)
+        internal DeleteNotificationCommand(NotificationManager manager, Notification notification)
         {
             this._notificationManager = manager;
             this._notification = notification;

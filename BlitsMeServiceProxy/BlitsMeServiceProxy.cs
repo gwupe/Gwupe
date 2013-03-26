@@ -1,18 +1,16 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.ServiceModel;
-using BlitsMe.Service.ServiceHost;
+using BlitsMe.ServiceHost;
 
-namespace BlitsMe.Service.ServiceProxy
+namespace BlitsMe.ServiceProxy
 {
-    public class BlitsMeServiceDynProxy : IBlitsMeService
+    public class BlitsMeServiceProxy : IBlitsMeService
     {
         private NetNamedPipeBinding binding = new NetNamedPipeBinding();
         private EndpointAddress endpoint = new EndpointAddress("net.pipe://localhost/BlitsMeService");
         private ChannelFactory<IBlitsMeService> channelFactory;
-        public BlitsMeServiceDynProxy()
+        public BlitsMeServiceProxy()
         {
             channelFactory = new ChannelFactory<IBlitsMeService>(binding, endpoint);
         }
@@ -41,7 +39,7 @@ namespace BlitsMe.Service.ServiceProxy
             return rv;
         }
 
-        ~BlitsMeServiceDynProxy()
+        ~BlitsMeServiceProxy()
         {
             this.close();
         }

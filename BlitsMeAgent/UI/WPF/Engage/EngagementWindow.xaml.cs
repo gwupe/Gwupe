@@ -36,7 +36,7 @@ namespace BlitsMe.Agent.UI.WPF.Engage
         private static readonly ILog Logger = LogManager.GetLogger(typeof (EngagementWindow));
         private readonly CollectionViewSource _notificationView;
 
-        internal EngagementWindow(BlitsMeClientAppContext appContext, DispatchingCollection<ObservableCollection<INotification>,INotification> notificationList, Engagement engagement)
+        internal EngagementWindow(BlitsMeClientAppContext appContext, DispatchingCollection<ObservableCollection<Notification>,Notification> notificationList, Engagement engagement)
         {
             InitializeComponent();
             _appContext = appContext;
@@ -184,7 +184,7 @@ namespace BlitsMe.Agent.UI.WPF.Engage
 
         private void NotificationFilter(object sender, FilterEventArgs eventArgs)
         {
-            INotification notification = eventArgs.Item as INotification;
+            Notification notification = eventArgs.Item as Notification;
             if (notification != null && notification.From != null && notification.From.Equals(Engagement.SecondParty.Username))
             {
                 eventArgs.Accepted = true;

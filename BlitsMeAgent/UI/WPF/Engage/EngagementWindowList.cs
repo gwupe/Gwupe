@@ -14,9 +14,9 @@ namespace BlitsMe.Agent.UI.WPF.Engage
     {
         private static readonly ILog Logger = LogManager.GetLogger(typeof(EngagementWindowList));
         private readonly BlitsMeClientAppContext _appContext;
-        private readonly DispatchingCollection<ObservableCollection<INotification>, INotification> _notificationList;
+        private readonly DispatchingCollection<ObservableCollection<Notification>, Notification> _notificationList;
 
-        public EngagementWindowList(BlitsMeClientAppContext appContext, DispatchingCollection<ObservableCollection<INotification>,INotification> notificationList, Dispatcher dispatcher) : base(dispatcher)
+        public EngagementWindowList(BlitsMeClientAppContext appContext, DispatchingCollection<ObservableCollection<Notification>,Notification> notificationList, Dispatcher dispatcher) : base(dispatcher)
         {
             this._appContext = appContext;
             this._notificationList = notificationList;

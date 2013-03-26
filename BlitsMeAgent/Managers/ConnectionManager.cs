@@ -47,7 +47,7 @@ namespace BlitsMe.Agent.Managers
             X509Certificate2 cert = new X509Certificate2(certificateData);
             Logger.Info("Will use certificate from CA " + cert.GetNameInfo(X509NameType.SimpleName,true) + ", verified? " + cert.Verify());
             _connection = new CloudConnection(GetServers());
-            SaveServers(_connection.servers);
+            SaveServers(_connection.Servers);
         }
 
         private void SaveServers(List<string> servers)
@@ -80,14 +80,14 @@ namespace BlitsMe.Agent.Managers
 
         public bool IsOnline()
         {
-            return _connection != null && _connection.isLoggedIn;
+            return _connection != null && _appContext.LoginManager.IsLoggedIn;
         }
 
         public void Close()
         {
             if (_connection != null)
             {
-                _connection.close();
+                _connection.Close();
             }
         }
 

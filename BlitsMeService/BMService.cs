@@ -8,6 +8,7 @@ using System.Timers;
 using Microsoft.Win32;
 using BlitsMe.Service.ServiceHost;
 using log4net;
+using log4net.Config;
 
 namespace BlitsMe.Service
 {
@@ -25,6 +26,7 @@ namespace BlitsMe.Service
         private System.ServiceModel.ServiceHost serviceHost;
         public BMService()
         {
+            XmlConfigurator.Configure();
             InitializeComponent();
             Logger.Info("BlitsMeService Starting Up");
             // Check for update on startup

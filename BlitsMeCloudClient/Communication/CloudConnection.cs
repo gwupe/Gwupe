@@ -12,31 +12,41 @@ namespace BlitsMe.Cloud.Communication
 {
     public class CloudConnection
     {
-        private static readonly ILog logger = LogManager.GetLogger(typeof(CloudConnection));
+        private static readonly ILog Logger = LogManager.GetLogger(typeof(CloudConnection));
 #if DEBUG
-        private static List<string> defaultIPs = new List<String>(new String[] { "s1.i.dev.blits.me", "s2.i.dev.blits.me", "s3.i.dev.blits.me" });
+        private static readonly List<string> DefaultIPs = new List<String>(new String[] { "s1.i.dev.blits.me", "s2.i.dev.blits.me", "s3.i.dev.blits.me" });
 #else
-        private static List<string> defaultIPs = new List<String>(new String[] { "s1.i.blits.me", "s2.i.blits.me", "s3.i.blits.me" });
+        private static readonly List<string> DefaultIPs = new List<String>(new String[] { "s1.i.blits.me", "s2.i.blits.me", "s3.i.blits.me" });
 #endif
-        private static List<int> defaultPorts = new List<int>(new int[] { 8443 });
-        private LoginRq loginRq;
-        public Messaging.Response.LoginRs loginRs { get; private set; }
-        private ConnectionMaintainer _connectionMaintainer;
-        public bool isLoggedIn;
-        private readonly Thread _connectionManagerThread;
-        public List<string> servers;
-        public List<int> ports;
+        private static readonly List<int> DefaultPorts = new List<int>(new int[] { 8443 });
+        private readonly ConnectionMaintainer _connectionMaintainer;
+        private readonly Thread _connectionMaintainerThread;
+        public List<string> Servers;
+        public List<int> Ports;
         public event ConnectionEvent Disconnect;
+
+        public void OnDisconnect(EventArgs e)
+        {
+            ConnectionEvent handler = Disconnect;
+            if (handler != null) handler(this, e);
+        }
+
         public event ConnectionEvent Connect;
 
-        private WebSocketClient webSocketClient
+        public void OnConnect(EventArgs e)
+        {
+            ConnectionEvent handler = Connect;
+            if (handler != null) handler(this, e);
+        }
+
+        private WebSocketClient WebSocketClient
         {
             get
             {
                 return _connectionMaintainer.webSocketClient;
             }
         }
-        public WebSocketServer webSocketServer
+        public WebSocketServer WebSocketServer
         {
             get
             {
@@ -45,44 +55,31 @@ namespace BlitsMe.Cloud.Communication
         }
 
         public CloudConnection()
-            : this(defaultIPs, defaultPorts)
+            : this(DefaultIPs, DefaultPorts)
         {
         }
 
         public CloudConnection(List<string> servers)
-            : this(servers, defaultPorts)
+            : this(servers, DefaultPorts)
         {
         }
 
 
         public CloudConnection(List<string> connectServers, List<int> connectPorts)
         {
-            servers = (connectServers == null || connectServers.Count == 0) ? defaultIPs : connectServers;
-            ports = (connectPorts == null || connectPorts.Count == 0) ? defaultPorts : connectPorts;
+            Servers = (connectServers == null || connectServers.Count == 0) ? DefaultIPs : connectServers;
+            Ports = (connectPorts == null || connectPorts.Count == 0) ? DefaultPorts : connectPorts;
 #if DEBUG
-            logger.Debug("Setting up communication with the cloud servers");
+            Logger.Debug("Setting up communication with the cloud servers");
 #endif
-            _connectionMaintainer = new ConnectionMaintainer(servers, ports);
-            _connectionMaintainer.Disconnect += disconnected;
-            _connectionMaintainer.Connect += connected;
-            _connectionManagerThread = new Thread(_connectionMaintainer.run) { IsBackground = true, Name = "_connectionManagerThread"};
+            _connectionMaintainer = new ConnectionMaintainer(Servers, Ports);
+            _connectionMaintainer.Disconnect += (sender, args) => OnDisconnect(args);
+            _connectionMaintainer.Connect += (sender, args) => OnConnect(args);
+            _connectionMaintainerThread = new Thread(_connectionMaintainer.run) { IsBackground = true, Name = "_connectionMaintainerThread"};
 #if DEBUG
-            logger.Debug("Starting connection manager");
+            Logger.Debug("Starting connection manager");
 #endif
-            _connectionManagerThread.Start();
-        }
-
-        private void disconnected(object sender, EventArgs e) {
-#if DEBUG
-            logger.Debug("Connection was disconnected");
-#endif
-            this.isLoggedIn = false;
-            Disconnect(this, e);
-        }
-
-        private void connected(object sender, EventArgs e)
-        {
-            Connect(this, e);
+            _connectionMaintainerThread.Start();
         }
 
         public bool isEstablished()
@@ -96,10 +93,6 @@ namespace BlitsMe.Cloud.Communication
             {
                 throw new ConnectionException("Cannot send request, connection not established");
             }
-            if (!isLoggedIn)
-            {
-                throw new ConnectionException("Cannot send request, not logged in");
-            }
             return _sendRequest(req);
         }
 
@@ -108,10 +101,6 @@ namespace BlitsMe.Cloud.Communication
             if (!isEstablished())
             {
                 throw new ConnectionException("Cannot send request, connection not established");
-            }
-            if (!isLoggedIn)
-            {
-                throw new ConnectionException("Cannot send request, not logged in");
             }
             Thread asyncThread = new Thread(() =>
                 {
@@ -123,11 +112,11 @@ namespace BlitsMe.Cloud.Communication
                             responseHandler(req, res);
                         } catch (Exception e)
                         {
-                          logger.Error("Assigned response handler threw an exception : " + e.Message,e);
+                          Logger.Error("Assigned response handler threw an exception : " + e.Message,e);
                         }
                     } catch(Exception e)
                     {
-                        logger.Error("Failed to run response handler for request",e);
+                        Logger.Error("Failed to run response handler for request",e);
                         responseHandler(req,new ErrorRs() { error = "REQUEST_ERROR", errorMessage = e.Message });
                     }
                 });
@@ -137,40 +126,14 @@ namespace BlitsMe.Cloud.Communication
 
         private Response _sendRequest(Request req)
         {
-            Response response = webSocketClient.SendRequest(req);
+            Response response = WebSocketClient.SendRequest(req);
             return response;
         }
 
-
-        public void login(String username, String profile, String workstation, String passwordHash)
-        {
-            loginRq = new LoginRq();
-            loginRq.passwordDigest = passwordHash;
-            loginRq.username = username;
-            loginRq.profile = profile;
-            loginRq.workstation = workstation;
-            login();
-        }
-
-        private void login()
-        {
-            if (!isEstablished())
-            {
-                throw new ConnectionException("Cannot send login request, connection not established");
-            }
-            var loginRs = (Messaging.Response.LoginRs)_sendRequest(loginRq);
-            if (!loginRs.loggedIn)
-            {
-                throw new LoginException("Failed to login, server responded with : " + loginRs.errorMessage, loginRs.error);
-            }
-            this.loginRs = loginRs;
-            isLoggedIn = true;
-        }
-
-        public void close()
+        public void Close()
         {
             _connectionMaintainer.disconnect();
-            _connectionManagerThread.Join();
+            _connectionMaintainerThread.Join();
         }
 
 

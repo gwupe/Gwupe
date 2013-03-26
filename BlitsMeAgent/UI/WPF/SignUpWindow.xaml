@@ -1,0 +1,26 @@
+﻿<Window
+	xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+	x:Class="BlitsMe.Agent.UI.WPF.SignUpWindow"
+	x:Name="Window"
+	Title="SignUpWindow" Height="293" Width="228">
+
+	<Grid x:Name="LayoutRoot" HorizontalAlignment="Left" Width="223" Height="257" VerticalAlignment="Top">
+        <Image HorizontalAlignment="Left" Height="53" Margin="8,8,0,0" Source="/UI\WPF\Images\Blitsmewording200.png" Stretch="Fill" VerticalAlignment="Top" Width="200"/>
+		<TextBlock HorizontalAlignment="Center" Margin="61.652,66,62.505,0" TextWrapping="Wrap" Text="Fill in your details" VerticalAlignment="Top" Width="98.843"/>
+
+		<Label Content="Username" HorizontalAlignment="Left" Margin="8,86.96,0,0" VerticalAlignment="Top"/>
+		<TextBox HorizontalAlignment="Left" Margin="75.296,86.96,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="132.704" Height="25.96" Name="username" KeyDown="username_KeyDown" />
+
+		<Label Content="Password" HorizontalAlignment="Left" Margin="8,117.92,0,0" VerticalAlignment="Top" Name="passwordLabel" />
+		<PasswordBox HorizontalAlignment="Left" Margin="75.296,117.92,0,0" VerticalAlignment="Top" Width="132.704" Height="25.96" Name="password" KeyDown="password_KeyDown" />
+
+		<Label Content="Location" HorizontalAlignment="Left" Margin="8,148.88,0,0" VerticalAlignment="Top" Name="LocationLabel" />
+		<TextBox Text="City, Country" HorizontalAlignment="Left" Margin="75.296,148.88,0,0" VerticalAlignment="Top" Width="132.704" Height="25.96" Name="location" />
+
+		<Label Content="Email" HorizontalAlignment="Left" Margin="8,177.08,0,0" VerticalAlignment="Top" Name="EmailLabel" />
+		<TextBox HorizontalAlignment="Left" Margin="75.296,177.08,0,0" VerticalAlignment="Top" Width="132.704" Height="25.96" Name="email" />
+
+		<Button Content="Sign Up" Margin="75,221.913,75,0" VerticalAlignment="Top" Name="signin" Click="signin_click" />
+	</Grid>
+</Window>

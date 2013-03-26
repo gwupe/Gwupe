@@ -41,7 +41,7 @@
 				<Button ToolTip="Help">
             		<Image Source="Images/Help.png" Margin="1"/>
 				</Button>
-				<Button ToolTip="Logout">
+				<Button ToolTip="Logout" Click="Logout">
             		<Image Source="Images/Log Out.png" Margin="1"/>
 				</Button>
             </StackPanel>
