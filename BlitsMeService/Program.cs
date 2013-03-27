@@ -1,5 +1,4 @@
-﻿using System;
-using System.Linq;
+﻿using System.Configuration.Install;
 using System.Reflection;
 using System.ServiceProcess;
 
@@ -13,10 +12,10 @@ namespace BlitsMe.Service
         static void Main()
         {
             ServiceBase[] ServicesToRun;
-            ServicesToRun = new ServiceBase[] 
-			{ 
-				new BMService() 
-			};
+            ServicesToRun = new ServiceBase[]
+                {
+                    new BMService()
+                };
             ServiceBase.Run(ServicesToRun);
         }
     }

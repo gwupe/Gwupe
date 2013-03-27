@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Wix xmlns="http://schemas.microsoft.com/wix/2006/wi">
+  <Product Id="*" Name="BlitsMeSetup" Language="1033" Version="1.0.0.1" Manufacturer="BlitsMe Corp" UpgradeCode="6ba76b28-9e91-47b8-a81d-4930c453354c">
+    <Package InstallerVersion="200" Compressed="yes" InstallScope="perMachine" />
+
+    <MajorUpgrade DowngradeErrorMessage="A newer version of BlitsMe is already installed." />
+    <MediaTemplate EmbedCab="yes" />
+
+    <Feature Id="ProductFeature" Title="BlitsMeSetup" Level="1">
+      <ComponentGroupRef Id="ProductComponents" />
+    </Feature>
+  </Product>
+
+  <Fragment>
+    <Directory Id="TARGETDIR" Name="SourceDir">
+      <Directory Id="ProgramFilesFolder">
+        <Directory Id="INSTALLFOLDER" Name="BlitsMe" />
+      </Directory>
+    </Directory>
+  </Fragment>
+
+  <Fragment>
+    <ComponentGroup Id="ProductComponents" Directory="INSTALLFOLDER">
+      <!-- TODO: Remove the comments around this Component element and the ComponentRef below in order to add resources to this installer. -->
+      <Component Id="BlitsmeAgent">
+        <File Source="$(var.BlitsMeAgent.TargetPath)" />
+      </Component>
+      <Component Id='c_BlitsMeService' Guid='62ed8518-b644-4943-be63-9eaf665941da'>
+        <File Id='f_BlitsMeService' Name='BlitsMeService.exe' Vital='yes' Source="$(var.BlitsMeService.TargetPath)" KeyPath='yes'/>
+        <ServiceInstall 
+          Id='BlitsMeService.exe' 
+          Type='ownProcess'
+          Name="BlitsMeService"
+          DisplayName="BlitsMe Service"
+          Description="Part of the BlitsMe Application Suite version 2"
+          Interactive='no' 
+          Start='auto' 
+          Vital='yes' 
+          Account="[SERVICEACCOUNT]"
+          Password="[SERVICEPASSWORD]"
+          ErrorControl='normal'
+         />
+        <ServiceControl Id="StartService" Start="install" Stop="both" Remove="uninstall" Name="BlitsMeService" Wait="yes" />
+      </Component>
+    </ComponentGroup>
+  </Fragment>
+</Wix>
