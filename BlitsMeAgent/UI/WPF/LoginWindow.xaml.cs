@@ -24,25 +24,36 @@ namespace BlitsMe.Agent.UI.WPF
 	public partial class LoginWindow : Window
 	{
         private static readonly ILog logger = LogManager.GetLogger(typeof(LoginWindow));
-        private LoginDetails loginDetails;
+	    private readonly BlitsMeClientAppContext _appContext;
+	    private LoginDetails loginDetails;
         public AutoResetEvent signinEvent;
 
-		public LoginWindow(LoginDetails details, AutoResetEvent signinEvent)
+		public LoginWindow(BlitsMeClientAppContext appContext, LoginDetails details, AutoResetEvent signinEvent)
 		{
 			this.InitializeComponent();
-            this.loginDetails = details;
+		    _appContext = appContext;
+		    this.loginDetails = details;
             this.signinEvent = signinEvent;
 		}
 
-        public void forgotPassword(object sender, RequestNavigateEventArgs e)
+        public void ForgotPassword(object sender, RequestNavigateEventArgs e)
         {
         }
 
-        public void newUserCreate(object sender, RequestNavigateEventArgs e)
+        public void NewUserCreate(object sender, RequestNavigateEventArgs e)
         {
+            logger.Debug("Launching signupWindow");
+            var signUpWindow = new SignUpWindow(_appContext) {Owner = this};
+            try
+            {
+                signUpWindow.ShowDialog();
+            } catch (Exception ex)
+            {
+                logger.Error("SignupWindow failed : " + ex.Message,ex);
+            }
         }
 
-        private void checkGuest(object sender, RoutedEventArgs e)
+        private void CheckGuest(object sender, RoutedEventArgs e)
         {
             username.Background = new SolidColorBrush(Colors.White);
             username.Text = "guest";
@@ -51,14 +62,14 @@ namespace BlitsMe.Agent.UI.WPF
             password.IsEnabled = false;
         }
 
-        private void uncheckGuest(object sender, RoutedEventArgs e)
+        private void UncheckGuest(object sender, RoutedEventArgs e)
         {
             username.Background = new SolidColorBrush(Colors.White);
             username.IsEnabled = true;
             password.IsEnabled = true;
         }
 
-        public void loginFailed()
+        public void LoginFailed()
         {
             passwordLabel.Foreground = new SolidColorBrush(Colors.Red);
             password.Background = new SolidColorBrush(Colors.MistyRose);
@@ -66,10 +77,10 @@ namespace BlitsMe.Agent.UI.WPF
 
         private void signin_click(object sender, RoutedEventArgs e)
         {
-            processSignin();
+            ProcessSignin();
         }
 
-        private void processSignin() {
+        private void ProcessSignin() {
             bool fail = false;
             if (username.Text == null || username.Text.Equals(""))
             {
@@ -99,12 +110,12 @@ namespace BlitsMe.Agent.UI.WPF
             }
         }
 
-        private void windowStateChanged(object sender, EventArgs e)
+        private void WindowStateChanged(object sender, EventArgs e)
         {
-            hideIfMinimized(sender, e);
+            HideIfMinimized(sender, e);
         }
 
-        private void hideIfMinimized(object sender, EventArgs e)
+        private void HideIfMinimized(object sender, EventArgs e)
         {
             if (WindowState.Minimized == this.WindowState)
             {
@@ -112,7 +123,7 @@ namespace BlitsMe.Agent.UI.WPF
             }
         }
 
-        private void hideIfClosing(object sender, CancelEventArgs e)
+        private void HideIfClosing(object sender, CancelEventArgs e)
         {
             e.Cancel = true;
             this.Hide();
@@ -130,7 +141,7 @@ namespace BlitsMe.Agent.UI.WPF
         {
             if (e.Key == Key.Return)
             {
-                processSignin();
+                ProcessSignin();
             }
         }
 

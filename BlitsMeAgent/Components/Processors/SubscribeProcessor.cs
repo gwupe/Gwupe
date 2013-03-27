@@ -38,16 +38,16 @@ namespace BlitsMe.Agent.Components.Processors
             if(answer)
             {
                 SubscribeRq request = new SubscribeRq {subscribe = true, username = username};
-                _appContext.ConnectionManager.Connection.RequestAsync(request, SubscribeRequestResponseHandler);
+                _appContext.ConnectionManager.Connection.RequestAsync<SubscribeRq,SubscribeRs>(request, SubscribeRequestResponseHandler);
             }
         }
 
-        private void SubscribeRequestResponseHandler(Request request, Response response)
+        private void SubscribeRequestResponseHandler(SubscribeRq request, SubscribeRs response, Exception e)
         {
-            if(!response.isValid())
+            if(e != null)
             {
-                Logger.Error("Failed to send subscribe to " + ((SubscribeRq) request).username + " : " +
-                             response.errorMessage);
+                Logger.Error("Failed to send subscribe to " + request.username + " : " +
+                             e.Message,e);
             }
         }
     }

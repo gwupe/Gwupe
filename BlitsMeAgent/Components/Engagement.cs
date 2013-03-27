@@ -213,7 +213,7 @@ namespace BlitsMe.Agent.Components
             var initRq = new InitP2PConnectionRq { shortCode = SecondParty.ShortCode };
             try
             {
-                var response = (InitP2PConnectionRs)_appContext.ConnectionManager.Connection.Request(initRq);
+                var response = _appContext.ConnectionManager.Connection.Request<InitP2PConnectionRq,InitP2PConnectionRs>(initRq);
 #if DEBUG
                 Logger.Debug("Got response from p2p connection request");
 #endif

@@ -87,16 +87,18 @@ namespace BlitsMe.Cloud.Communication
             return _connectionMaintainer.isConnectionEstablished();
         }
 
-        public Response Request(Request req)
+        public TRs Request<TRq, TRs>(TRq req)
+            where TRq : Request
+            where TRs : Response
         {
             if (!isEstablished())
             {
                 throw new ConnectionException("Cannot send request, connection not established");
             }
-            return _sendRequest(req);
+            return _sendRequest<TRq,TRs>(req);
         }
 
-        public void RequestAsync(Request req, Action<Request,Response> responseHandler)
+        public void RequestAsync<TRq,TRs>(TRq req, Action<TRq,TRs,Exception> responseHandler) where TRq : Request where TRs : Response
         {
             if (!isEstablished())
             {
@@ -106,10 +108,10 @@ namespace BlitsMe.Cloud.Communication
                 {
                     try
                     {
-                        Response res = _sendRequest(req);
+                        TRs res = _sendRequest<TRq,TRs>(req);
                         try
                         {
-                            responseHandler(req, res);
+                            responseHandler(req, res, null);
                         } catch (Exception e)
                         {
                           Logger.Error("Assigned response handler threw an exception : " + e.Message,e);
@@ -117,16 +119,16 @@ namespace BlitsMe.Cloud.Communication
                     } catch(Exception e)
                     {
                         Logger.Error("Failed to run response handler for request",e);
-                        responseHandler(req,new ErrorRs() { error = "REQUEST_ERROR", errorMessage = e.Message });
+                        responseHandler(req,null,e);
                     }
                 });
             asyncThread.IsBackground = true;
             asyncThread.Start();
         }
 
-        private Response _sendRequest(Request req)
+        private TRs _sendRequest<TRq,TRs>(TRq req) where TRq : Request where TRs : Response
         {
-            Response response = WebSocketClient.SendRequest(req);
+            TRs response = WebSocketClient.SendRequest<TRq,TRs>(req);
             return response;
         }
 

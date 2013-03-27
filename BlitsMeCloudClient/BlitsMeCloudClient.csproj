@@ -80,6 +80,7 @@
     <Compile Include="Messaging\Request\RDPRequestRq.cs" />
     <Compile Include="Messaging\Request\RosterRq.cs" />
     <Compile Include="Messaging\Request\SearchRq.cs" />
+    <Compile Include="Messaging\Request\SignupRq.cs" />
     <Compile Include="Messaging\Request\SubscribeRq.cs" />
     <Compile Include="Messaging\Request\VCardRq.cs" />
     <Compile Include="Messaging\Request\VersionRq.cs" />
@@ -98,6 +99,7 @@
     <Compile Include="Messaging\Response\RDPRequestRs.cs" />
     <Compile Include="Messaging\Response\RosterRs.cs" />
     <Compile Include="Messaging\Response\SearchRs.cs" />
+    <Compile Include="Messaging\Response\SignupRs.cs" />
     <Compile Include="Messaging\Response\SubscribeRs.cs" />
     <Compile Include="Messaging\Response\VCardRs.cs" />
     <Compile Include="Messaging\Response\VersionRs.cs" />

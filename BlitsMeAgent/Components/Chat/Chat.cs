@@ -7,6 +7,7 @@ using System.Threading;
 using BlitsMe.Cloud.Exceptions;
 using BlitsMe.Cloud.Messaging.API;
 using BlitsMe.Cloud.Messaging.Request;
+using BlitsMe.Cloud.Messaging.Response;
 using log4net;
 
 namespace BlitsMe.Agent.Components.Chat
@@ -73,7 +74,7 @@ namespace BlitsMe.Agent.Components.Chat
                             };
                         try
                         {
-                            Response response = _appContext.ConnectionManager.Connection.Request(chatMessageRq);
+                            Response response = _appContext.ConnectionManager.Connection.Request<ChatMessageRq,ChatMessageRs>(chatMessageRq);
                             chatElement.DeliveryState = ChatDeliveryState.Delivered;
                             _chatQueue.TryDequeue(out chatElement);
                         }
@@ -164,11 +165,6 @@ namespace BlitsMe.Agent.Components.Chat
                         To = _to,
                         Message = message
                     });
-            }
-            catch (MessageException e)
-            {
-                Logger.Error("Failed to send change message to " + _to + " : " + e.Message, e);
-                this.LogSystemMessage("Message Send Failure");
             }
             catch (Exception e)
             {

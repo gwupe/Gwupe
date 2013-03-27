@@ -6,6 +6,7 @@ using BlitsMe.Cloud.Messaging.Request;
 using BlitsMe.Cloud.Messaging.API;
 using Bauglir.Ex;
 using System.IO;
+using BlitsMe.Cloud.Messaging.Response;
 using log4net;
 
 namespace BlitsMe.Cloud.Communication
@@ -140,18 +141,11 @@ namespace BlitsMe.Cloud.Communication
             try
             {
                 long startTime = DateTime.Now.Ticks;
-                Response pong = webSocketClient.SendRequest(new PingRq());
-                if (pong is Messaging.Response.PingRs)
-                {
+                PingRs pong = webSocketClient.SendRequest<PingRq, PingRs>(new PingRq());
 #if DEBUG
-                    logger.Debug("Ping succeeded, round trip " + ((DateTime.Now.Ticks - startTime) / 10000) + " ms");
+                logger.Debug("Ping succeeded, round trip " + ((DateTime.Now.Ticks - startTime) / 10000) + " ms");
 #endif
-                    return true;
-                }
-                else
-                {
-                    logger.Error("Expected a pong from my ping, got a " + pong.ToString());
-                }
+                return true;
             }
             catch (Exception e)
             {

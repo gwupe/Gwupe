@@ -31,19 +31,17 @@ namespace BlitsMe.Agent.Managers
             SearchRq request = new SearchRq() { query = search };
             if (_appContext.ConnectionManager.IsOnline())
             {
-                _appContext.ConnectionManager.Connection.RequestAsync(request, ResponseHandler);
+                _appContext.ConnectionManager.Connection.RequestAsync<SearchRq,SearchRs>(request, ResponseHandler);
             } else
             {
                 Logger.Warn("Cannot search, not online");
             }
         }
 
-        private void ResponseHandler(Request req, Response res)
+        private void ResponseHandler(SearchRq request, SearchRs response, Exception e)
         {
-            if (res.isValid())
+            if (e == null)
             {
-                SearchRs response = (SearchRs) res;
-                SearchRq request = (SearchRq) req;
                 // populate the list
                 lock (_listWriteLock)
                 {
@@ -58,7 +56,7 @@ namespace BlitsMe.Agent.Managers
                 }
             } else
             {
-                Logger.Error("Search returned an error : " + res.errorMessage);
+                Logger.Error("Search returned an error : " + e.Message,e);
             }
         }
 

@@ -27,9 +27,10 @@ namespace BlitsMe.Cloud.Messaging
         {
             this._responseStore = new Dictionary<string, API.Response>();
             this._responseWaiters = new Dictionary<string, AutoResetEvent>();
+            
         }
 
-        public API.Response SendRequest(API.Request request)
+        public TRs SendRequest<TRq, TRs>(TRq request) where TRq : API.Request where TRs : API.Response
         {
             request.date = DateTime.Now;
             try
@@ -49,9 +50,9 @@ namespace BlitsMe.Cloud.Messaging
             if (!response.isValid())
             {
                 Logger.Error("Messaging error sending message [" + request.id + " - " + request.type + "] : [" + response.error + "] " + response.errorMessage);
-                throw new MessageException(response.errorMessage, response.error);
+                throw new MessageException<TRs>((TRs)response);
             }
-            return response;
+            return (TRs)response;
         }
 
         private API.Response AwaitResponse(API.Request request)

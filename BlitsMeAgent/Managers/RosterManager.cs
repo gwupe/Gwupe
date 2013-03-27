@@ -109,7 +109,7 @@ namespace BlitsMe.Agent.Managers
 #endif
                     try
                     {
-                        RosterRs response = (RosterRs)_appContext.ConnectionManager.Connection.Request(_rosterRequest);
+                        RosterRs response = _appContext.ConnectionManager.Connection.Request<RosterRq,RosterRs>(_rosterRequest);
                         if (response.rosterElements != null)
                         {
                             foreach (RosterElement rosterElement in response.rosterElements)
@@ -157,7 +157,7 @@ namespace BlitsMe.Agent.Managers
         {
             try
             {
-                VCardRs cardRs = (VCardRs) _appContext.ConnectionManager.Connection.Request(new VCardRq(username));
+                VCardRs cardRs = _appContext.ConnectionManager.Connection.Request<VCardRq,VCardRs>(new VCardRq(username));
                 Person person = new Person(cardRs.userElement);
                 if (cardRs.avatarData != null && !cardRs.avatarData.Equals(""))
                 {
@@ -185,22 +185,20 @@ namespace BlitsMe.Agent.Managers
                 Logger.Error("Will not add " + person.Username + " to list, he/she already exists");
             } else
             {
-                _appContext.ConnectionManager.Connection.RequestAsync(new SubscribeRq() { username = person.Username, subscribe = true },
-                                                                      (request, response) =>
-                                                                      ResponseHandler(request, response, person));
+                _appContext.ConnectionManager.Connection.RequestAsync<SubscribeRq,SubscribeRs>(new SubscribeRq() { username = person.Username, subscribe = true },
+                                                                      (request, response, ex) =>
+                                                                      ResponseHandler(request, response, ex, person));
             }
         }
 
-        private void ResponseHandler(Request rq, Response rs, Person person)
+        private void ResponseHandler(SubscribeRq request, SubscribeRs response, Exception e, Person person)
         {
-            var request = rq as SubscribeRq;
-            var response = rs as SubscribeRs;
-            if(rs.isValid())
+            if(e != null)
             {
                 Logger.Debug("Succeeded in sending subscribe request for " + person.Username);
             } else
             {
-                Logger.Error("Failed to subscribe to " + person.Username + " : " + rs.errorMessage);
+                Logger.Error("Failed to subscribe to " + person.Username + " : " + e.Message,e);
             }
         }
     }

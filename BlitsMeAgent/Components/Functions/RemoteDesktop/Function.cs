@@ -80,7 +80,7 @@ namespace BlitsMe.Agent.Components.Functions.RemoteDesktop
             RDPRequestResponseRq request = new RDPRequestResponseRq() { accepted = true, shortCode = _engagement.SecondParty.ShortCode, username = _engagement.SecondParty.Username };
             try
             {
-                _appContext.ConnectionManager.Connection.RequestAsync(request, delegate { });
+                _appContext.ConnectionManager.Connection.RequestAsync<RDPRequestResponseRq,RDPRequestResponseRs>(request, delegate { });
             }
             catch (Exception e)
             {
@@ -94,7 +94,7 @@ namespace BlitsMe.Agent.Components.Functions.RemoteDesktop
             RDPRequestResponseRq request = new RDPRequestResponseRq() { accepted = false, shortCode = _engagement.SecondParty.ShortCode, username = _engagement.SecondParty.Username };
             try
             {
-                _appContext.ConnectionManager.Connection.RequestAsync(request, delegate {  });
+                _appContext.ConnectionManager.Connection.RequestAsync<RDPRequestResponseRq,RDPRequestResponseRs>(request, delegate {  });
             }
             catch (Exception e)
             {
@@ -142,7 +142,7 @@ namespace BlitsMe.Agent.Components.Functions.RemoteDesktop
             try
             {
                 ChatElement chatElement = _engagement.Chat.LogSystemMessage("You sent " + _engagement.SecondParty.Name + " a request to control their desktop.");
-                _appContext.ConnectionManager.Connection.RequestAsync(request, (req, res) => ProcessRequestRDPSessionResponse(req, res, chatElement));
+                _appContext.ConnectionManager.Connection.RequestAsync<RDPRequestRq,RDPRequestRs>(request, (req, res, ex) => ProcessRequestRDPSessionResponse(req, res, ex, chatElement));
             }
             catch (Exception ex)
             {
@@ -151,11 +151,11 @@ namespace BlitsMe.Agent.Components.Functions.RemoteDesktop
             }
         }
 
-        private void ProcessRequestRDPSessionResponse(Request request, Response response, ChatElement chatElement)
+        private void ProcessRequestRDPSessionResponse(RDPRequestRq request, RDPRequestRs response, Exception e, ChatElement chatElement)
         {
-            if (response is ErrorRs || !response.isValid())
+            if (e != null)
             {
-                Logger.Error("Received a async response to " + request.id + " that is an error");
+                Logger.Error("Received a async response to " + request.id + " that is an error",e);
                 chatElement.DeliveryState = ChatDeliveryState.Failed;
             }
             else

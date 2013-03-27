@@ -400,6 +400,7 @@
     <Resource Include="UI\WPF\Images\Search.png" />
     <Resource Include="UI\WPF\Images\tweet.png" />
     <Resource Include="UI\WPF\Images\silhoette.png" />
+    <Resource Include="UI\WPF\Images\Upload.png" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\BlitsMeCloudClient\BlitsMeCloudClient.csproj">

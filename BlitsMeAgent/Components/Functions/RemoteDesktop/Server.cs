@@ -54,7 +54,7 @@ namespace BlitsMe.Agent.Components.Functions.RemoteDesktop
 
         internal void Start()
         {
-            _vncListener = new ProxyTcpTransportListener("RDP", new IPEndPoint(IPAddress.Loopback, 5900), _transportManager);
+            _vncListener = new ProxyTcpTransportListener("RDP", new IPEndPoint(IPAddress.Loopback, 10230), _transportManager);
             _vncListener.ConnectionAccepted += VNCListenerOnConnectionAccepted;
             _vncListener.ConnectionClosed += VNCListenerOnConnectionClosed;
             _vncListener.ListenOnce();

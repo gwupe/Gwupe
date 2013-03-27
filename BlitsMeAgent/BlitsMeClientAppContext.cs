@@ -194,12 +194,12 @@ namespace BlitsMe.Agent
             }
             if (BlitsMeServiceProxy != null)
                 BlitsMeServiceProxy.close();
+            if (LoginManager != null)
+                LoginManager.Close();
             if (ConnectionManager != null)
                 ConnectionManager.Close();
             if (_systray != null)
                 _systray.close();
-            if (LoginManager != null)
-                LoginManager.Close();
             if (RosterManager != null)
                 RosterManager.Close();
             if (EngagementManager != null)

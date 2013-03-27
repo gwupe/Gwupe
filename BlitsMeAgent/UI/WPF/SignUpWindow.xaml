@@ -3,24 +3,39 @@
 	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
 	x:Class="BlitsMe.Agent.UI.WPF.SignUpWindow"
 	x:Name="Window"
-	Title="SignUpWindow" Height="293" Width="228">
+	Title="Enter the BlitsMe World" Height="451.834" Width="314" WindowStartupLocation="CenterOwner">
 
-	<Grid x:Name="LayoutRoot" HorizontalAlignment="Left" Width="223" Height="257" VerticalAlignment="Top">
-        <Image HorizontalAlignment="Left" Height="53" Margin="8,8,0,0" Source="/UI\WPF\Images\Blitsmewording200.png" Stretch="Fill" VerticalAlignment="Top" Width="200"/>
-		<TextBlock HorizontalAlignment="Center" Margin="61.652,66,62.505,0" TextWrapping="Wrap" Text="Fill in your details" VerticalAlignment="Top" Width="98.843"/>
+    <Grid x:Name="LayoutRoot" Margin="27.666,18.5,22.333,-9.38" HorizontalAlignment="Center" VerticalAlignment="Top" Height="406.047">
+        <Image HorizontalAlignment="Center" Height="53" Margin="8,8,0,0" Source="/UI\WPF\Images\Blitsmewording200.png" Stretch="Fill" VerticalAlignment="Top" Width="200"/>
+        <TextBlock Margin="60,66,60,0" TextWrapping="Wrap" Text="Fill in your details" VerticalAlignment="Top" TextAlignment="Center"/>
+        <TextBlock x:Name="ErrorText" Margin="10,86.96,10,0" TextWrapping="Wrap" Text="Error" VerticalAlignment="Top" TextAlignment="Center" Foreground="Red" Visibility="Hidden"/>
+        <Grid Margin="0,99,0.001,0" HorizontalAlignment="Center" Width="256" VerticalAlignment="Top" Height="231.841">
+	        <Label Content="Name" x:Name="NameLabel" HorizontalAlignment="Left" Margin="10,8.371,0,0" VerticalAlignment="Top" Width="68.123"/>
+            <TextBox HorizontalAlignment="Left" Margin="83.123,10.371,0,0" TextWrapping="Wrap" VerticalAlignment="Top" x:Name="Firstname" GotFocus="Firstname_GotFocus" LostFocus="Firstname_LostFocus" Width="75" Text="First" />
+            <TextBox HorizontalAlignment="Left" Margin="163.123,10.371,0,0" TextWrapping="Wrap" VerticalAlignment="Top" x:Name="Lastname" GotFocus="Lastname_GotFocus" LostFocus="Lastname_LostFocus" Width="82.877" Text="Last" />
 
-		<Label Content="Username" HorizontalAlignment="Left" Margin="8,86.96,0,0" VerticalAlignment="Top"/>
-		<TextBox HorizontalAlignment="Left" Margin="75.296,86.96,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="132.704" Height="25.96" Name="username" KeyDown="username_KeyDown" />
+            <Label Content="Username" Name="UsernameLabel" HorizontalAlignment="Left" Margin="10,35.331,0,0" VerticalAlignment="Top" Width="68.123"/>
+            <TextBox HorizontalAlignment="Left" Margin="83.123,37.331,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Name="Username" KeyDown="username_KeyDown" Width="162.877" />
 
-		<Label Content="Password" HorizontalAlignment="Left" Margin="8,117.92,0,0" VerticalAlignment="Top" Name="passwordLabel" />
-		<PasswordBox HorizontalAlignment="Left" Margin="75.296,117.92,0,0" VerticalAlignment="Top" Width="132.704" Height="25.96" Name="password" KeyDown="password_KeyDown" />
+            <Label Content="Password" HorizontalAlignment="Left" Margin="10,62.291,0,0" VerticalAlignment="Top" Name="PasswordLabel" Width="68.123" />
+            <PasswordBox HorizontalAlignment="Left" Margin="83.123,64.291,0,0" VerticalAlignment="Top" Width="162.877" Name="Password" KeyDown="password_KeyDown" FontFamily="Segoe UI" />
 
-		<Label Content="Location" HorizontalAlignment="Left" Margin="8,148.88,0,0" VerticalAlignment="Top" Name="LocationLabel" />
-		<TextBox Text="City, Country" HorizontalAlignment="Left" Margin="75.296,148.88,0,0" VerticalAlignment="Top" Width="132.704" Height="25.96" Name="location" />
+            <Label Content="Location" HorizontalAlignment="Left" Margin="10,89.251,0,0" VerticalAlignment="Top" Name="LocationLabel" Width="68.123" />
+            <TextBox Text="City, Country" HorizontalAlignment="Left" Margin="83.123,91.253,0,0" VerticalAlignment="Top" Width="162.877" Height="23.2" Name="Location" GotFocus="location_GotFocus" LostFocus="location_LostFocus" />
 
-		<Label Content="Email" HorizontalAlignment="Left" Margin="8,177.08,0,0" VerticalAlignment="Top" Name="EmailLabel" />
-		<TextBox HorizontalAlignment="Left" Margin="75.296,177.08,0,0" VerticalAlignment="Top" Width="132.704" Height="25.96" Name="email" />
+            <Label Content="Email" HorizontalAlignment="Left" Margin="10,117.451,0,0" VerticalAlignment="Top" Name="EmailLabel" Width="68.123" />
+            <TextBox HorizontalAlignment="Left" Margin="83.123,119.451,0,0" VerticalAlignment="Top" Width="162.877" Name="Email" />
 
-		<Button Content="Sign Up" Margin="75,221.913,75,0" VerticalAlignment="Top" Name="signin" Click="signin_click" />
-	</Grid>
+            <Button Content="Sign Up" Margin="75,167.371,75,0" VerticalAlignment="Top" Name="Signin" Click="signin_click" />
+	        <TextBlock x:Name="ValidateInstructions" Margin="10,194.331,10,-13.077" TextWrapping="Wrap" Text="Please check your email and enter your validation key in the space below" VerticalAlignment="Top" TextAlignment="Center" Foreground="#FF244489" FontWeight="Bold" Visibility="Hidden"/>
+	        <CheckBox x:Name="Supporter" Content="I offer IT support" HorizontalAlignment="Center" Margin="0,146.411,0,0" VerticalAlignment="Top"/>
+
+        </Grid>
+        <Grid Margin="0.001,324.047,0,0" Height="72" VerticalAlignment="Top" HorizontalAlignment="Center" Width="256">
+
+            <Label Content="Validate" HorizontalAlignment="Left" Margin="10,8,0,0" VerticalAlignment="Top" x:Name="ValidateLabel" IsEnabled="False" Width="68.123" Height="25.96" />
+            <TextBox HorizontalAlignment="Left" Margin="82.894,10,0,0" VerticalAlignment="Top" Width="163.106" Height="24.04" x:Name="Validate" IsEnabled="False" />
+            <Button Content="Confirm" Margin="75.394,38.96,74.606,0" VerticalAlignment="Top" x:Name="Confirm" IsEnabled="False" Click="Confirm_Click" />
+        </Grid>
+    </Grid>
 </Window>

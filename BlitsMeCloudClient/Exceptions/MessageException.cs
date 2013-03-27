@@ -2,21 +2,21 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using BlitsMe.Cloud.Messaging.API;
 
 namespace BlitsMe.Cloud.Exceptions
 {
-    public class MessageException : Exception
+    public class MessageException<T> : Exception where T : Response
     {
         // there is a message coming back which is details an error of some sort with the handling of the message
         public String ErrorCode;
-        public MessageException(String message)
-            : base(message)
-        {
-        }
+        public T Response;
 
-        public MessageException(String message, String errorCode) : base("[" + errorCode + "] " + message)
+        public MessageException(T response)
+            : base("[" + response.error + "] " + response.errorMessage)
         {
-            this.ErrorCode = errorCode;
+            Response = response;
+            ErrorCode = response.error;
         }
     }
 }

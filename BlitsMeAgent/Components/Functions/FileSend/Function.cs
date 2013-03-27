@@ -8,6 +8,7 @@ using BlitsMe.Agent.Components.Functions.FileSend.Notification;
 using BlitsMe.Agent.Components.Notification;
 using BlitsMe.Cloud.Messaging.API;
 using BlitsMe.Cloud.Messaging.Request;
+using BlitsMe.Cloud.Messaging.Response;
 using BlitsMe.Common.Security;
 using BlitsMe.Communication.P2P.RUDP.Connector.API;
 using log4net;
@@ -56,9 +57,9 @@ namespace BlitsMe.Agent.Components.Functions.FileSend
                     ChatElement chatElement =
                         _engagement.Chat.LogSystemMessage("You sent " + _engagement.SecondParty.Name +
                                                           " a request to send the file " + filename);
-                    _appContext.ConnectionManager.Connection.RequestAsync(request,
-                                                                          (req, res) =>
-                                                                          ProcessRequestFileSendResponse(req, res,
+                    _appContext.ConnectionManager.Connection.RequestAsync<FileSendRequestRq,FileSendRequestRs>(request,
+                                                                          (req, res, ex) =>
+                                                                          ProcessRequestFileSendResponse(req, res, ex,
                                                                                                          fileInfo));
                 }
                 catch (Exception ex)
@@ -75,15 +76,14 @@ namespace BlitsMe.Agent.Components.Functions.FileSend
             }
         }
 
-        private void ProcessRequestFileSendResponse(Request req, Response res, FileSendInfo fileInfo)
+        private void ProcessRequestFileSendResponse(FileSendRequestRq request, FileSendRequestRs res, Exception e, FileSendInfo fileInfo)
         {
-            if (!res.isValid())
+            if (e != null)
             {
                 _engagement.Chat.LogSystemMessage("An error occured trying to send " + _engagement.SecondParty.Name + " a request to send them a file.");
             }
             else
             {
-                FileSendRequestRq request = (FileSendRequestRq)req;
                 Logger.Info("Requested to send " + fileInfo.Filename + " to " + _engagement.SecondParty.Name);
                 _pendingFileSends.Add(request.fileSendId, fileInfo);
             }
@@ -123,7 +123,7 @@ namespace BlitsMe.Agent.Components.Functions.FileSend
                 };
             try
             {
-                _appContext.ConnectionManager.Connection.RequestAsync(request, FileSendRequestResponseHandler);
+                _appContext.ConnectionManager.Connection.RequestAsync<FileSendRequestResponseRq,FileSendRequestResponseRs>(request, FileSendRequestResponseHandler);
             }
             catch (Exception e)
             {
@@ -131,11 +131,11 @@ namespace BlitsMe.Agent.Components.Functions.FileSend
             }
         }
 
-        private void FileSendRequestResponseHandler(Request request, Response response)
+        private void FileSendRequestResponseHandler(FileSendRequestResponseRq request, FileSendRequestResponseRs response, Exception e)
         {
-            if (!response.isValid())
+            if (e != null)
             {
-                Logger.Error("Failed to send the FileSendRequestResponse for file " + ((FileSendRequestResponseRq)request).fileSendId + " : " + response.errorMessage);
+                Logger.Error("Failed to send the FileSendRequestResponse for file " + request.fileSendId + " : " + e.Message,e);
             }
         }
 
@@ -159,7 +159,7 @@ namespace BlitsMe.Agent.Components.Functions.FileSend
                 fileReceiver.DataRead += delegate
                 { notification.Progress = (int)((fileReceiver.DataWriteSize * 100) / args.FileInfo.FileSize); };
                 fileReceiver.ListenOnce();
-                _appContext.ConnectionManager.Connection.RequestAsync(request, FileSendRequestResponseHandler);
+                _appContext.ConnectionManager.Connection.RequestAsync<FileSendRequestResponseRq,FileSendRequestResponseRs>(request, FileSendRequestResponseHandler);
             }
             catch (Exception e)
             {

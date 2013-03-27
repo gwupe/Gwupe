@@ -4,7 +4,7 @@
 	xmlns:d="http://schemas.microsoft.com/expression/blend/2008" xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" mc:Ignorable="d"
 	x:Class="BlitsMe.Agent.UI.WPF.LoginWindow"
 	x:Name="Window"
-	Title="Login" Height="288" Width="235" WindowStartupLocation="CenterScreen" ResizeMode="NoResize" Closing="hideIfClosing" StateChanged="windowStateChanged">
+	Title="Login" Height="288" Width="235" WindowStartupLocation="CenterScreen" ResizeMode="NoResize" Closing="HideIfClosing" StateChanged="WindowStateChanged">
 
 	<Grid x:Name="LayoutRoot" HorizontalAlignment="Left" Width="218" Height="248" VerticalAlignment="Top">
         <Image HorizontalAlignment="Left" Height="53" Margin="8,8,0,0" Source="/UI\WPF\Images\Blitsmewording200.png" Stretch="Fill" VerticalAlignment="Top" Width="200"/>
@@ -12,9 +12,16 @@
 		<TextBox HorizontalAlignment="Left" Margin="77.296,104.96,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="132.704" Height="25.96" Name="username" KeyDown="username_KeyDown" />
 		<Label Content="Password" HorizontalAlignment="Left" Margin="10,142.96,0,0" VerticalAlignment="Top" Name="passwordLabel" />
 		<PasswordBox HorizontalAlignment="Left" Margin="77.296,142.96,0,0" VerticalAlignment="Top" Width="132.704" Height="25.96" Name="password" KeyDown="password_KeyDown" />
-		<CheckBox Content="Sign in as guest" HorizontalAlignment="Left" Margin="56.296,61,0,0" VerticalAlignment="Top" Unchecked="uncheckGuest" Checked="checkGuest" Name="guest" />
+		<CheckBox Content="Sign in as guest" HorizontalAlignment="Left" Margin="56.296,61,0,0" VerticalAlignment="Top" Unchecked="UncheckGuest" Checked="CheckGuest" Name="guest" />
 		<Button Content="Sign In" Margin="75.296,179.08,67.704,0" VerticalAlignment="Top" Name="signin" Click="signin_click" />
-		<TextBlock HorizontalAlignment="Left" Margin="8,206.04,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Height="37.92" Width="136.61"><Hyperlink RequestNavigate="newUserCreate"><Run Language="en-za" Text="I am a new user"/></Hyperlink><LineBreak/><Hyperlink RequestNavigate="forgotPassword"><Run Language="en-za" Text="I forgot my password"/></Hyperlink></TextBlock>
+		<TextBlock HorizontalAlignment="Left" Margin="8,206.04,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Height="37.92" Width="136.61">
+			<Hyperlink RequestNavigate="NewUserCreate" NavigateUri="">
+				I am a new user
+			</Hyperlink><LineBreak/>
+			<Hyperlink RequestNavigate="ForgotPassword" NavigateUri="">
+				<Run Language="en-za" Text="I forgot my password"/>
+			</Hyperlink>
+		</TextBlock>
 		<TextBlock HorizontalAlignment="Left" Margin="106,81.96,0,0" TextWrapping="Wrap" Text="OR" VerticalAlignment="Top"/>
 	</Grid>
 </Window>
