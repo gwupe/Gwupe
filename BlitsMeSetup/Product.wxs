@@ -1,14 +1,28 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Wix xmlns="http://schemas.microsoft.com/wix/2006/wi">
-  <Product Id="*" Name="BlitsMeSetup" Language="1033" Version="1.0.0.1" Manufacturer="BlitsMe Corp" UpgradeCode="6ba76b28-9e91-47b8-a81d-4930c453354c">
+  <Product Id="*" Name="BlitsMe" Language="1033" Version="!(bind.FileVersion.$(var.BlitsMeAgent.TargetFileName))"
+           Manufacturer="BlitsMe Corp" UpgradeCode="6ba76b28-9e91-47b8-a81d-4930c453354c">
     <Package InstallerVersion="200" Compressed="yes" InstallScope="perMachine" />
 
-    <MajorUpgrade DowngradeErrorMessage="A newer version of BlitsMe is already installed." />
+    <!--    <MajorUpgrade DowngradeErrorMessage="A newer version of BlitsMe is already installed." /> -->
     <MediaTemplate EmbedCab="yes" />
 
-    <Feature Id="ProductFeature" Title="BlitsMeSetup" Level="1">
+    <Property Id="PREVIOUSVERSIONSINSTALLED" Secure="yes" />
+    <Upgrade Id="64915D23-E23A-4F80-BA79-B40C0240AFD1">
+      <UpgradeVersion
+         Minimum="1.0.0.0" Maximum="99.0.0.0"
+         Property="PREVIOUSVERSIONSINSTALLED"
+         IncludeMinimum="yes" IncludeMaximum="no" />
+    </Upgrade>
+
+    <Feature Id="ProductFeature" Title="Application" Level="1">
       <ComponentGroupRef Id="ProductComponents" />
     </Feature>
+    <Icon Id="icon.ico" SourceFile="$(var.BlitsMeAgent.ProjectDir)/icon-main.ico"/>
+    <Property Id="ARPPRODUCTICON" Value="icon.ico" />
+    <InstallExecuteSequence>
+      <RemoveExistingProducts After="InstallInitialize" />
+    </InstallExecuteSequence>
   </Product>
 
   <Fragment>
@@ -25,17 +39,20 @@
       <Component Id="BlitsmeAgent">
         <File Source="$(var.BlitsMeAgent.TargetPath)" />
       </Component>
+      <Component Id="BlitsMeAgentSupportScreen">
+        <File Source="$(var.BlitsMeAgent.TargetDir)/bmss.exe" />
+      </Component>
       <Component Id='c_BlitsMeService' Guid='62ed8518-b644-4943-be63-9eaf665941da'>
         <File Id='f_BlitsMeService' Name='BlitsMeService.exe' Vital='yes' Source="$(var.BlitsMeService.TargetPath)" KeyPath='yes'/>
-        <ServiceInstall 
-          Id='BlitsMeService.exe' 
+        <ServiceInstall
+          Id='BlitsMeService.exe'
           Type='ownProcess'
           Name="BlitsMeService"
           DisplayName="BlitsMe Service"
-          Description="Part of the BlitsMe Application Suite version 2"
-          Interactive='no' 
-          Start='auto' 
-          Vital='yes' 
+          Description="Part of the BlitsMe Application Suite"
+          Interactive='no'
+          Start='auto'
+          Vital='yes'
           Account="[SERVICEACCOUNT]"
           Password="[SERVICEPASSWORD]"
           ErrorControl='normal'

@@ -26,9 +26,16 @@ namespace BlitsMe.Service
         private System.ServiceModel.ServiceHost serviceHost;
         public BMService()
         {
-            XmlConfigurator.Configure();
             InitializeComponent();
+            XmlConfigurator.Configure();
+            XmlConfigurator.Configure(Assembly.GetExecutingAssembly().GetManifestResourceStream("BlitsMe.Service.log4net.xml"));
             Logger.Info("BlitsMeService Starting Up");
+#if DEBUG
+            foreach (var manifestResourceName in Assembly.GetExecutingAssembly().GetManifestResourceNames())
+            {
+                Logger.Debug("Embedded Resource : " + manifestResourceName);
+            }
+#endif
             // Check for update on startup
             _webClient = new WebClient();
             CheckForNewVersion();

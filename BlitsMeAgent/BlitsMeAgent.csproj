@@ -14,6 +14,8 @@
     <TargetFrameworkProfile>Client</TargetFrameworkProfile>
     <FileAlignment>512</FileAlignment>
     <IsWebBootstrapper>false</IsWebBootstrapper>
+    <Utf8Output>true</Utf8Output>
+    <ExpressionBlendVersion>5.2.30810.0</ExpressionBlendVersion>
     <PublishUrl>publish\</PublishUrl>
     <Install>true</Install>
     <InstallFrom>Disk</InstallFrom>
@@ -24,12 +26,10 @@
     <UpdatePeriodically>false</UpdatePeriodically>
     <UpdateRequired>false</UpdateRequired>
     <MapFileExtensions>true</MapFileExtensions>
-    <ApplicationRevision>0</ApplicationRevision>
+    <ApplicationRevision>1</ApplicationRevision>
     <ApplicationVersion>1.0.0.%2a</ApplicationVersion>
     <UseApplicationTrust>false</UseApplicationTrust>
     <BootstrapperEnabled>true</BootstrapperEnabled>
-    <Utf8Output>true</Utf8Output>
-    <ExpressionBlendVersion>5.2.30810.0</ExpressionBlendVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|x86' ">
     <PlatformTarget>x86</PlatformTarget>
@@ -118,11 +118,14 @@
     <Reference Include="log4net, Version=1.2.11.0, Culture=neutral, PublicKeyToken=669e0ddf0bb1aa2a, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\BlitsMeCommon\log4net.dll</HintPath>
-      <Private>True</Private>
+      <Private>False</Private>
     </Reference>
-    <Reference Include="Microsoft.Expression.Drawing" />
-    <Reference Include="Microsoft.Expression.Effects" />
-    <Reference Include="Microsoft.Expression.Interactions" />
+    <Reference Include="Microsoft.Expression.Drawing">
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="Microsoft.Expression.Effects">
+      <Private>False</Private>
+    </Reference>
     <Reference Include="PresentationCore" />
     <Reference Include="PresentationFramework" />
     <Reference Include="System" />
@@ -131,7 +134,6 @@
     <Reference Include="System.Runtime.Serialization" />
     <Reference Include="System.ServiceModel" />
     <Reference Include="System.ServiceProcess" />
-    <Reference Include="System.Windows.Interactivity" />
     <Reference Include="System.Xaml" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
@@ -156,10 +158,14 @@
     <Compile Include="Components\Functions\FileSend\FileSendListener.cs" />
     <Compile Include="Components\Functions\FileSend\Function.cs" />
     <Compile Include="Components\Functions\FileSend\Notification\FileSendProgressNotification.cs" />
+    <Compile Include="Components\Functions\FileSend\Processors\FileSendRequestProcessor.cs" />
+    <Compile Include="Components\Functions\FileSend\Processors\FileSendRequestResponseProcessor.cs" />
     <Compile Include="Components\Functions\RemoteDesktop\Function.cs" />
     <Compile Include="Components\Functions\FileSend\Notification\FileSendEventArgs.cs" />
     <Compile Include="Components\Functions\FileSend\Notification\FileSendRequestNotification.cs" />
     <Compile Include="Components\Functions\RemoteDesktop\Notification\RDPNotification.cs" />
+    <Compile Include="Components\Functions\RemoteDesktop\Processors\RDPRequestProcessor.cs" />
+    <Compile Include="Components\Functions\RemoteDesktop\Processors\RDPRequestResponseProcessor.cs" />
     <Compile Include="Components\Notification\AnswerTrueFalseCommand.cs" />
     <Compile Include="Components\Notification\InfoNotification.cs" />
     <Compile Include="Components\LoginDetails.cs" />
@@ -169,10 +175,6 @@
     <Compile Include="Components\Person\Person.cs" />
     <Compile Include="Components\Person\Presence.cs" />
     <Compile Include="Components\Processors\ChatMessageProcessor.cs" />
-    <Compile Include="Components\Processors\FileSendRequestProcessor.cs" />
-    <Compile Include="Components\Processors\FileSendRequestResponseProcessor.cs" />
-    <Compile Include="Components\Processors\RDPRequestResponseProcessor.cs" />
-    <Compile Include="Components\Processors\RDPRequestProcessor.cs" />
     <Compile Include="Components\Processors\ListenHandshakeProcessor.cs" />
     <Compile Include="Components\Processors\InitUDPConnectionProcessor.cs" />
     <Compile Include="Components\Processors\SubscribeProcessor.cs" />
@@ -196,12 +198,6 @@
     <Compile Include="Managers\RosterManager.cs" />
     <Compile Include="Properties\Annotations.cs" />
     <Compile Include="UI\SystemTray.cs" />
-    <Compile Include="UI\WinForms\Dashboard.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="UI\WinForms\Dashboard.Designer.cs">
-      <DependentUpon>Dashboard.cs</DependentUpon>
-    </Compile>
     <Compile Include="UI\WPF\Dashboard.xaml.cs">
       <DependentUpon>Dashboard.xaml</DependentUpon>
     </Compile>
@@ -313,12 +309,6 @@
       <DependentUpon>Resources.resx</DependentUpon>
       <DesignTime>True</DesignTime>
     </Compile>
-    <EmbeddedResource Include="UI\WinForms\Dashboard.resx">
-      <DependentUpon>Dashboard.cs</DependentUpon>
-    </EmbeddedResource>
-    <!-- <None Include="app.config" /> -->
-    <!--<None Include="env\Release\app.config" />
-    <None Include="env\Release\cacert.pem" />-->
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
@@ -345,15 +335,20 @@
     <EmbeddedResource Include="env\Debug\cacert.pem">
       <LogicalName>BlitsMe.Agent.cacert.pem</LogicalName>
     </EmbeddedResource>
-    <None Include="env\Debug\app.config" />
+    <EmbeddedResource Include="env\Debug\log4net.xml">
+      <LogicalName>BlitsMe.Agent.log4net.xml</LogicalName>
+    </EmbeddedResource>
   </ItemGroup>
   <ItemGroup Condition=" '$(Configuration)' == 'Release' ">
-    <None Include="env\Release\app.config" />
+    <EmbeddedResource Include="env\Release\log4net.xml">
+      <LogicalName>BlitsMe.Agent.log4net.xml</LogicalName>
+    </EmbeddedResource>
     <EmbeddedResource Include="env\Release\cacert.pem">
       <LogicalName>BlitsMe.Agent.cacert.pem</LogicalName>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
+    <EmbeddedResource Include="app.config" />
     <Resource Include="Images\1170492_woman_smiling_at_camera.jpg" />
     <Resource Include="Icons\icon-pulse-0.ico">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
@@ -461,6 +456,7 @@
     <Resource Include="Icons\icon-main.ico" />
   </ItemGroup>
   <ItemGroup>
+    <EmbeddedResource Include="env\Debug\log4net.xml" />
     <Resource Include="UI\WPF\Images\Blitsmewording200.png" />
     <EmbeddedResource Include="..\BlitsMeCommon\bin\$(Configuration)\BlitsMe.Common.dll" />
     <EmbeddedResource Include="..\BlitsMeCloudClient\bin\$(Configuration)\BlitsMe.Cloud.dll" />
@@ -469,6 +465,12 @@
     <EmbeddedResource Include="..\BlitsMeServiceProxy\bin\$(Configuration)\BlitsMe.ServiceProxy.dll" />
     <EmbeddedResource Include="..\BlitsMeCommon\log4net.dll" />
     <EmbeddedResource Include="..\WebSocketLib\bin\$(Configuration)\Bauglir.Ex.dll" />
+    <EmbeddedResource Include="$(ProgramFiles)\Microsoft SDKs\Expression\Blend\.NETFramework\v4.0\Libraries\Microsoft.Expression.Drawing.dll" />
+    <EmbeddedResource Include="$(ProgramFiles)\Microsoft SDKs\Expression\Blend\.NETFramework\v4.0\Libraries\Microsoft.Expression.Effects.dll" />
+    <None Include="bmss.exe">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      <CustomToolNamespace>BlitsMe.Agent</CustomToolNamespace>
+    </None>
     <Content Include="icon-main.ico" />
     <Resource Include="UI\WPF\Images\arrow.png" />
     <Resource Include="UI\WPF\Images\arrow_limited_blue_bg.png" />
@@ -479,7 +481,6 @@
     <Resource Include="UI\WPF\Images\1337424537_System.png" />
     <Resource Include="UI\WPF\Images\1337424609_Stats.png" />
     <Resource Include="UI\WPF\Images\1337425212_02.png" />
-    <Resource Include="UI\WPF\Images\brushedsteel1366x1024.jpg" />
     <Resource Include="UI\WPF\Images\Speech Left.png" />
     <Resource Include="UI\WPF\Images\Star_max-b-10px.png" />
     <Resource Include="UI\WPF\Images\Star_max-b-15px.png" />

@@ -20,7 +20,6 @@ namespace BlitsMe.Agent
         private static readonly ILog Logger = LogManager.GetLogger(typeof(BlitsMeClientAppContext));
         internal readonly BlitsMeServiceProxy BlitsMeServiceProxy;
         private readonly SystemTray _systray;
-        private UI.WinForms.Dashboard _debugDashboard;
         public Dashboard UIDashBoard;
         public P2PManager P2PManager;
         private RequestManager _requestManager;
@@ -38,7 +37,7 @@ namespace BlitsMe.Agent
         /// </summary>
         public BlitsMeClientAppContext()
         {
-            XmlConfigurator.Configure();
+            XmlConfigurator.Configure(Assembly.GetExecutingAssembly().GetManifestResourceStream("BlitsMe.Agent.log4net.xml"));
             Logger.Info("BlitsMe.Agent Starting up");
 #if DEBUG
             foreach (var manifestResourceName in Assembly.GetExecutingAssembly().GetManifestResourceNames())
@@ -145,16 +144,6 @@ namespace BlitsMe.Agent
             }
         }
 
-        public void LaunchDebugDashboard(object sender, EventArgs e)
-        {
-            if (_debugDashboard == null)
-            {
-                _debugDashboard = new UI.WinForms.Dashboard(this);
-            }
-            _debugDashboard.Show();
-            _debugDashboard.WindowState = FormWindowState.Normal;
-        }
-
         private void RunDashboard()
         {
             UIDashBoard = new Dashboard(this);
@@ -185,8 +174,6 @@ namespace BlitsMe.Agent
         {
             this.isShuttingDown = true;
             // before we exit, lets cleanup
-            if (_debugDashboard != null)
-                _debugDashboard.Dispose();
             if (_dashboardUIThread != null)
             {
                 UIDashBoard.Dispatcher.InvokeShutdown();

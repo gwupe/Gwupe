@@ -1,26 +1,11 @@
 <?xml version="1.0"?>
-<configuration>
-  <!--
-  <startup><supportedRuntime version="v4.0" sku=".NETFramework,Version=v4.0,Profile=Client"/></startup>
-  -->
-  <configSections>
-    <section name="log4net" type="log4net.Config.Log4NetConfigurationSectionHandler,Log4net"/>
-  </configSections>
   <log4net>
-<!--
-    <logger name="BlitsMe.Cloud.Messaging.WebSocketMessageHandler" additivity="false">
-      <level value="INFO" />
-    </logger>
--->
-    <logger name="BlitsMe.Communication.P2P.RUDP.Tunnel.UDPTunnel" additivity="true">
-      <level value="INFO" />
-    </logger> 
     <root>
       <level value="DEBUG" />
       <appender-ref ref="LogFileAppender" />
     </root>
     <appender name="LogFileAppender" type="log4net.Appender.RollingFileAppender" >
-      <param name="File" value="${USERPROFILE}\BlitsMeAgent.txt" />
+      <param name="File" value="c:\\windows\\temp\\BlitsMeService.txt" />
       <param name="AppendToFile" value="true" />
       <rollingStyle value="Size" />
       <maxSizeRollBackups value="10" />
@@ -31,4 +16,3 @@
       </layout>
     </appender>
   </log4net>
-</configuration>
