@@ -117,10 +117,6 @@ namespace BlitsMe.Agent.UI
         {
             e.Cancel = false;
             notifyIcon.ContextMenuStrip.Items.Clear();
-            notifyIcon.ContextMenuStrip.Items.Add(Utils.generateItem("&Search for Help", null));
-            notifyIcon.ContextMenuStrip.Items.Add(Utils.generateItem("&Favourites", null));
-            notifyIcon.ContextMenuStrip.Items.Add(Utils.generateItem("&Dashboard", appContext.LaunchDebugDashboard));
-            notifyIcon.ContextMenuStrip.Items.Add(new ToolStripSeparator());
             notifyIcon.ContextMenuStrip.Items.Add(Utils.generateItem("&Exit", exitItem_Click));
         }
 

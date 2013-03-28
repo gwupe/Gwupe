@@ -1,7 +1,8 @@
 ﻿<Window
 	xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
 	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-	xmlns:d="http://schemas.microsoft.com/expression/blend/2008" xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" xmlns:ee="http://schemas.microsoft.com/expression/2010/effects" 
+	xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+	xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
 	 mc:Ignorable="d"
 	x:Class="BlitsMe.Agent.UI.WPF.Dashboard"
 	x:Name="Main"
@@ -27,10 +28,7 @@
 		<Grid HorizontalAlignment="Left" Width="178" Margin="10,10,0,10">
         <StackPanel>
             <Grid>
-				<TextBox x:Name="SearchBox" Margin="5,5,0,0" TextWrapping="Wrap" Text="Search" VerticalAlignment="Top" FontFamily="Calibri" FontSize="16" HorizontalAlignment="Left" Width="145.333" TextChanged="Search_TextChanged" GotFocus="SearchBox_GotFocus" LostFocus="SearchBox_LostFocus"/>
-				<Button ToolTip="Help" Margin="0,5,5,5" Width="25" HorizontalAlignment="Right">
-            		<Image Source="Images/Search.png" Margin="1" />
-				</Button>
+				<TextBox x:Name="SearchBox" Margin="5,5,10,0" TextWrapping="Wrap" Text="Search" VerticalAlignment="Top" FontFamily="Calibri" FontSize="16" TextChanged="Search_TextChanged" GotFocus="SearchBox_GotFocus" LostFocus="SearchBox_LostFocus" Background="#FF2B519B" Foreground="White"/>
 			</Grid>
             <StackPanel Margin="5" Orientation="Horizontal" Height="32" HorizontalAlignment="Center" >
 				<StackPanel.Resources>

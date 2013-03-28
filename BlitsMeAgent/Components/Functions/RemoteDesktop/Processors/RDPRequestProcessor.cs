@@ -1,12 +1,11 @@
 using System;
-using BlitsMe.Agent.Components.Functions;
-using BlitsMe.Agent.Components.Functions.RemoteDesktop;
+using BlitsMe.Agent.Components.Processors;
 using BlitsMe.Cloud.Messaging.API;
 using BlitsMe.Cloud.Messaging.Request;
 using BlitsMe.Cloud.Messaging.Response;
 using log4net;
 
-namespace BlitsMe.Agent.Components.Processors
+namespace BlitsMe.Agent.Components.Functions.RemoteDesktop.Processors
 {
     internal class RDPRequestProcessor : UserToUserProcessor
     {

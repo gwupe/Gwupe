@@ -1,4 +1,6 @@
 using System;
+using BlitsMe.Agent.Components.Functions.FileSend.Processors;
+using BlitsMe.Agent.Components.Functions.RemoteDesktop.Processors;
 using BlitsMe.Agent.Components.Processors;
 using log4net;
 

@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Diagnostics;
+using System.Reflection;
+using System.Windows;
 using BlitsMe.Agent.Components.Chat;
 using BlitsMe.Agent.Components.Functions.API;
 using BlitsMe.Agent.Components.Functions.FileSend;
@@ -172,7 +174,10 @@ namespace BlitsMe.Agent.Components.Functions.RemoteDesktop
                 try
                 {
                     int port = Client.Start();
-                    Process.Start("c:\\Program Files\\TightVNC\\tvnviewer.exe", "127.0.0.1:" + port);
+                    String viewerExe = System.IO.Path.GetDirectoryName(Environment.GetCommandLineArgs()[0]) +
+                                       "\\bmss.exe";
+                    Logger.Debug("Checking the following location for the exe " + viewerExe);
+                    Process.Start(viewerExe, "-username=\"" + _engagement.SecondParty.Name + "\" 127.0.0.1:" + port);
                 }
                 catch (Exception e)
                 {

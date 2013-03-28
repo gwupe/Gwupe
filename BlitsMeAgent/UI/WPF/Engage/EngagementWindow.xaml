@@ -3,8 +3,8 @@
 	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
 	xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
 	xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-	xmlns:local="clr-namespace:BlitsMe.Agent.UI.WPF.Engage"
 	xmlns:ed="http://schemas.microsoft.com/expression/2010/drawing"
+	xmlns:local="clr-namespace:BlitsMe.Agent.UI.WPF.Engage"
 	mc:Ignorable="d"
 	x:Class="BlitsMe.Agent.UI.WPF.Engage.EngagementWindow"
 	d:DesignWidth="600" d:DesignHeight="480" >
