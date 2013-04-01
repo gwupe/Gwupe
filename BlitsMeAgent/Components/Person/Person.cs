@@ -9,6 +9,20 @@ namespace BlitsMe.Agent.Components.Person
     public class Person : INotifyPropertyChanged
     {
         private static readonly ILog Logger = LogManager.GetLogger(typeof(Person));
+        private string _firstname;
+        public String Firstname
+        {
+            get { return _firstname; }
+            set { _firstname = value; OnPropertyChanged("Firstname"); }
+        }
+
+        private string _lastname;
+        public String Lastname
+        {
+            get { return _lastname; }
+            set { _lastname = value; OnPropertyChanged("Lastname"); }
+        }
+
         private string _name;
         public String Name
         {
@@ -51,8 +65,8 @@ namespace BlitsMe.Agent.Components.Person
             set { _rating = value; OnPropertyChanged("Rating"); }
         }
 
-        private DateTime _joined;
-        public DateTime Joined
+        private DateTime? _joined;
+        public DateTime? Joined
         {
             get { return _joined; }
             set { _joined = value; OnPropertyChanged("Joined"); }
@@ -125,7 +139,25 @@ namespace BlitsMe.Agent.Components.Person
             this._joined = userElement.joined;
             this._status = userElement.status;
             this._type = userElement.type;
+            _firstname = userElement.firstname;
+            _lastname = userElement.lastname;
             _description = userElement.description;
+            if(userElement.avatarData != null)
+            {
+                try
+                {
+                    SetAvatarData(userElement.avatarData);
+                }catch (Exception e)
+                {
+                    Logger.Error("Failed to decode avatar from avatar data",e);
+                }
+            }
+            
+        }
+
+        private void SetAvatarData(string avatarData)
+        {
+            Avatar = Convert.FromBase64String(avatarData);
         }
 
         public override string ToString()

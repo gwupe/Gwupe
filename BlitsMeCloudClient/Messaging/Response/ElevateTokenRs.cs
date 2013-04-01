@@ -3,19 +3,19 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.Serialization;
 using System.Text;
-using BlitsMe.Cloud.Messaging.Elements;
 
 namespace BlitsMe.Cloud.Messaging.Response
 {
     [DataContract]
-    public class VCardRs : API.Response
+    public class ElevateTokenRs : API.Response
     {
-        public override String type
+        public override string type
         {
-            get { return "VCard-RS"; }
+            get { return "ElevateToken-RS"; }
             set { }
         }
 
-        [DataMember] public UserElement userElement;
+        [DataMember] public String tokenId;
+        [DataMember] public String token;
     }
 }

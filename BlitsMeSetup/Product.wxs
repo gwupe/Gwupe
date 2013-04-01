@@ -1,28 +1,24 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Wix xmlns="http://schemas.microsoft.com/wix/2006/wi">
-  <Product Id="*" Name="BlitsMe" Language="1033" Version="!(bind.FileVersion.$(var.BlitsMeAgent.TargetFileName))"
-           Manufacturer="BlitsMe Corp" UpgradeCode="6ba76b28-9e91-47b8-a81d-4930c453354c">
+  <Product Id="*" Name="BlitsMe" Language="1033"
+           Version="!(bind.FileVersion.$(var.BlitsMeAgent.TargetFileName))"
+           Manufacturer="BlitsMe Pty (Ltd)"
+           UpgradeCode="53404183-1482-4C07-BBD0-F4F4FB6B3BEF">
     <Package InstallerVersion="200" Compressed="yes" InstallScope="perMachine" />
 
-    <!--    <MajorUpgrade DowngradeErrorMessage="A newer version of BlitsMe is already installed." /> -->
+    <MajorUpgrade
+      DowngradeErrorMessage="A newer version of BlitsMe is already installed."
+      Schedule="afterInstallInitialize"
+    />
     <MediaTemplate EmbedCab="yes" />
-
-    <Property Id="PREVIOUSVERSIONSINSTALLED" Secure="yes" />
-    <Upgrade Id="64915D23-E23A-4F80-BA79-B40C0240AFD1">
-      <UpgradeVersion
-         Minimum="1.0.0.0" Maximum="99.0.0.0"
-         Property="PREVIOUSVERSIONSINSTALLED"
-         IncludeMinimum="yes" IncludeMaximum="no" />
-    </Upgrade>
 
     <Feature Id="ProductFeature" Title="Application" Level="1">
       <ComponentGroupRef Id="ProductComponents" />
     </Feature>
     <Icon Id="icon.ico" SourceFile="$(var.BlitsMeAgent.ProjectDir)/icon-main.ico"/>
     <Property Id="ARPPRODUCTICON" Value="icon.ico" />
-    <InstallExecuteSequence>
-      <RemoveExistingProducts After="InstallInitialize" />
-    </InstallExecuteSequence>
+    <Property Id="ARPNOMODIFY" Value="yes" Secure="yes" />
+    <Property Id="START_VIA_REGISTRY">1</Property>
   </Product>
 
   <Fragment>
@@ -37,10 +33,10 @@
     <ComponentGroup Id="ProductComponents" Directory="INSTALLFOLDER">
       <!-- TODO: Remove the comments around this Component element and the ComponentRef below in order to add resources to this installer. -->
       <Component Id="BlitsmeAgent">
-        <File Source="$(var.BlitsMeAgent.TargetPath)" />
+        <File Source="$(var.BlitsMeAgent.TargetPath)" KeyPath="yes" />
       </Component>
       <Component Id="BlitsMeAgentSupportScreen">
-        <File Source="$(var.BlitsMeAgent.TargetDir)/bmss.exe" />
+        <File Source="$(var.BlitsMeAgent.TargetDir)/bmss.exe" KeyPath="yes" />
       </Component>
       <Component Id='c_BlitsMeService' Guid='62ed8518-b644-4943-be63-9eaf665941da'>
         <File Id='f_BlitsMeService' Name='BlitsMeService.exe' Vital='yes' Source="$(var.BlitsMeService.TargetPath)" KeyPath='yes'/>
@@ -58,6 +54,23 @@
           ErrorControl='normal'
          />
         <ServiceControl Id="StartService" Start="install" Stop="both" Remove="uninstall" Name="BlitsMeService" Wait="yes" />
+      </Component>
+      <Component Id="RegistryEntries">
+        <RegistryKey Root="HKLM"
+                     Key="Software\BlitsMe"
+              >
+          <RegistryValue Type="string" Name="Version" Value="[ProductVersion]" KeyPath="yes"/>
+        </RegistryKey>
+      </Component>
+
+      <!-- Auto-start via Registry -->
+      <Component Id="BlitsMeAutoStart" Guid="BC963821-18DF-492F-B95A-F7FBEB7DE8BD">
+        <RegistryValue Id="BMAuthoStart.Reg" Root="HKMU" Action="write"
+                       Key="Software\Microsoft\Windows\CurrentVersion\Run"
+                       Name="BlitsMe Agent"
+                       Value="[INSTALLFOLDER]BlitsMe.Agent.exe"
+                       Type="string" />
+            <Condition>START_VIA_REGISTRY</Condition>
       </Component>
     </ComponentGroup>
   </Fragment>

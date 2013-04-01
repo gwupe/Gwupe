@@ -8,14 +8,17 @@ using BlitsMe.Cloud.Messaging.Elements;
 namespace BlitsMe.Cloud.Messaging.Response
 {
     [DataContract]
-    public class VCardRs : API.Response
+    public class CurrentUserRs : API.Response
     {
-        public override String type
+        public override string type
         {
-            get { return "VCard-RS"; }
+            get { return "CurrentUser-RS"; }
             set { }
         }
 
-        [DataMember] public UserElement userElement;
+        [DataMember]
+        public UserElement userElement;
+
+        [DataMember] public String avatarData;
     }
 }

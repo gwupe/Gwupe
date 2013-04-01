@@ -6,7 +6,7 @@
 	 mc:Ignorable="d"
 	x:Class="BlitsMe.Agent.UI.WPF.Dashboard"
 	x:Name="Main"
-	Title="BlitsMe"
+	Title="{Binding Path=Title, FallbackValue=BlitsMe}"
 	WindowStartupLocation="CenterScreen" 
 	Closing="HideIfClosing" StateChanged="WindowStateChanged" Width="800" Height="600" MinWidth="640" MinHeight="480"
 	>
@@ -36,11 +36,14 @@
                         <Setter Property="Margin" Value="0,0,2,0"/>
                     </Style>
                 </StackPanel.Resources>
-				<Button ToolTip="Help">
-            		<Image Source="Images/Help.png" Margin="1"/>
+				<Button x:Name="UserInfo" ToolTip="My Details" Background="White" BorderThickness="0" Click="UserInfo_Click">
+            		<Image Source="Images/User.png" Margin="1"/>
 				</Button>
-				<Button ToolTip="Logout" Click="Logout">
-            		<Image Source="Images/Log Out.png" Margin="1"/>
+				<Button ToolTip="Logout" Click="Logout" Background="White" BorderThickness="0">
+            		<Image Source="Images/Logoff.png" Margin="1"/>
+				</Button>
+				<Button ToolTip="Quit" Click="ExitApplication" Background="White" BorderThickness="0">
+            		<Image Source="Images/exit.png" Margin="1"/>
 				</Button>
             </StackPanel>
             <!-- This is the Roster section -->

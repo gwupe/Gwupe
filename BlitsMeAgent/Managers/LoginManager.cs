@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Threading;
+using System.Windows;
 using System.Windows.Threading;
 using BlitsMe.Agent.Components;
 using BlitsMe.Agent.Misc;
@@ -153,7 +154,7 @@ namespace BlitsMe.Agent.Managers
 #if DEBUG
                 Logger.Debug("Login window signalled login");
 #endif
-                HideLoginWindow();
+                _loginWindow.SignalLoggingIn();
             }
             LoginDetails.profile = _reg.profile;
             LoginDetails.workstation = _reg.workstation;
@@ -171,20 +172,26 @@ namespace BlitsMe.Agent.Managers
                     {
                         // get the username from the UI ( show the login window )
                         ShowLoginWindow();
+                        _loginWindow.SignalPleaseLogin();
                         _signinEvent.WaitOne();
 #if DEBUG
                         Logger.Debug("Login window signalled login");
 #endif
                         // hide the login window
-                        HideLoginWindow();
+                        _loginWindow.SignalLoggingIn();
                     }
                     try
                     {
                         Login();
-                        HideLoginWindow();
+                        if (_loginWindow.Visibility == Visibility.Visible)
+                        {
+                            HideLoginWindow();
+                            _appContext.ShowDashboard();
+                        }
                     }
                     catch (LoginException e)
                     {
+                        _loginWindow.SignalPleaseLogin();
                         Logger.Warn("Login has failed : " + e.Message);
                         // Login failed with authfailure, we reset the password so it will be prompted for again, otherwise we just try login again
                         if (e.authFailure)
@@ -204,7 +211,7 @@ namespace BlitsMe.Agent.Managers
                     catch (Exception e)
                     {
                         // Do nothing here, just try keep connecting
-                        Logger.Warn("Login has failed : " + e.Message);
+                        Logger.Warn("Login has failed : " + e.Message,e);
                         Thread.Sleep(10000);
                     }
                 }
@@ -223,9 +230,14 @@ namespace BlitsMe.Agent.Managers
         {
             _appContext.HideDashboard();
             if (_loginWindow.Dispatcher.CheckAccess())
+            {
                 _loginWindow.Show();
+                _loginWindow.Topmost = true;
+                _loginWindow.Topmost = false;
+                _loginWindow.Focus();
+            }
             else
-                _loginWindow.Dispatcher.Invoke(new Action(() => _loginWindow.Show()));
+                _loginWindow.Dispatcher.Invoke(new Action(ShowLoginWindow));
         }
 
 
@@ -240,11 +252,20 @@ namespace BlitsMe.Agent.Managers
                         profile = LoginDetails.profile,
                         workstation = LoginDetails.workstation
                     };
-                var loginRs = _appContext.ConnectionManager.Connection.Request<LoginRq,LoginRs>(loginRq);
-                if (!loginRs.loggedIn)
+                LoginRs loginRs = null;
+                try
                 {
-                    throw new LoginException("Failed to login, server responded with : " + loginRs.errorMessage,
-                                             loginRs.error);
+                    loginRs = _appContext.ConnectionManager.Connection.Request<LoginRq,LoginRs>(loginRq);
+                    _appContext.CurrentUserManager.SetUser(loginRs.userElement);
+                }
+                catch (MessageException<LoginRs> e)
+                {
+                    if (!e.Response.loggedIn)
+                    {
+                        throw new LoginException("Failed to login, server responded with : " + e.Response.errorMessage,
+                                                 e.Response.error);
+                    }
+                    throw;
                 }
                 // Exception not thrown, login success, save details
                 _reg.username = LoginDetails.username;

@@ -37,9 +37,9 @@ namespace BlitsMe.Common.Security
             return builder.ToString();
         }
 
-        public String hashPassword(string password)
+        public String hashPassword(string password, string token = "")
         {
-            byte[] passwordBytes = System.Text.Encoding.UTF8.GetBytes(password);
+            byte[] passwordBytes = System.Text.Encoding.UTF8.GetBytes(password + token);
             byte[] result;
             SHA256 shaM = new SHA256Managed();
             result = shaM.ComputeHash(passwordBytes);

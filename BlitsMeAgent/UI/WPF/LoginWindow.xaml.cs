@@ -18,61 +18,54 @@ using log4net;
 
 namespace BlitsMe.Agent.UI.WPF
 {
-	/// <summary>
-	/// Interaction logic for Login.xaml
-	/// </summary>
-	public partial class LoginWindow : Window
-	{
+    /// <summary>
+    /// Interaction logic for Login.xaml
+    /// </summary>
+    public partial class LoginWindow : Window
+    {
         private static readonly ILog logger = LogManager.GetLogger(typeof(LoginWindow));
-	    private readonly BlitsMeClientAppContext _appContext;
-	    private LoginDetails loginDetails;
+        private readonly BlitsMeClientAppContext _appContext;
+        private LoginDetails loginDetails;
         public AutoResetEvent signinEvent;
 
-		public LoginWindow(BlitsMeClientAppContext appContext, LoginDetails details, AutoResetEvent signinEvent)
-		{
-			this.InitializeComponent();
-		    _appContext = appContext;
-		    this.loginDetails = details;
+        public LoginWindow(BlitsMeClientAppContext appContext, LoginDetails details, AutoResetEvent signinEvent)
+        {
+            InitializeComponent();
+            _appContext = appContext;
+            loginDetails = details;
+            if(loginDetails != null)
+            {
+                username.Text = loginDetails.username;
+            }
             this.signinEvent = signinEvent;
-		}
+        }
 
-        public void ForgotPassword(object sender, RequestNavigateEventArgs e)
+        public void Click_ForgotPassword(object sender, RequestNavigateEventArgs e)
         {
         }
 
         public void NewUserCreate(object sender, RequestNavigateEventArgs e)
         {
             logger.Debug("Launching signupWindow");
-            var signUpWindow = new SignUpWindow(_appContext) {Owner = this};
+            var signUpWindow = new SignUpWindow(_appContext) { Owner = this };
             try
             {
                 signUpWindow.ShowDialog();
-            } catch (Exception ex)
-            {
-                logger.Error("SignupWindow failed : " + ex.Message,ex);
+                username.Text = signUpWindow.Username.Text;
+                password.Password = signUpWindow.Password.Password;
+                ProcessSignin();
             }
-        }
-
-        private void CheckGuest(object sender, RoutedEventArgs e)
-        {
-            username.Background = new SolidColorBrush(Colors.White);
-            username.Text = "guest";
-            password.Password = "";
-            username.IsEnabled = false;
-            password.IsEnabled = false;
-        }
-
-        private void UncheckGuest(object sender, RoutedEventArgs e)
-        {
-            username.Background = new SolidColorBrush(Colors.White);
-            username.IsEnabled = true;
-            password.IsEnabled = true;
+            catch (Exception ex)
+            {
+                logger.Error("SignupWindow failed : " + ex.Message, ex);
+            }
         }
 
         public void LoginFailed()
         {
             passwordLabel.Foreground = new SolidColorBrush(Colors.Red);
             password.Background = new SolidColorBrush(Colors.MistyRose);
+            password.Password = "";
         }
 
         private void signin_click(object sender, RoutedEventArgs e)
@@ -80,11 +73,13 @@ namespace BlitsMe.Agent.UI.WPF
             ProcessSignin();
         }
 
-        private void ProcessSignin() {
+        private void ProcessSignin()
+        {
             bool fail = false;
             if (username.Text == null || username.Text.Equals(""))
             {
                 username.Background = new SolidColorBrush(Colors.MistyRose);
+                username.Focus();
                 fail = true;
             }
             else
@@ -94,11 +89,12 @@ namespace BlitsMe.Agent.UI.WPF
             if ((password.Password == null || password.Password.Equals("")) && (username.Text == null || !username.Text.Equals("guest")))
             {
                 password.Background = new SolidColorBrush(Colors.MistyRose);
+                if(!username.IsFocused) password.Focus();
                 fail = true;
             }
             else
             {
-                passwordLabel.Foreground = new SolidColorBrush(Colors.White);
+                passwordLabel.Foreground = new SolidColorBrush(Colors.Black);
                 password.Background = new SolidColorBrush(Colors.White);
             }
             if (!fail)
@@ -145,5 +141,38 @@ namespace BlitsMe.Agent.UI.WPF
             }
         }
 
-	}
+        public void SignalLoggingIn()
+        {
+            if (Dispatcher.CheckAccess())
+            {
+                NewUser.IsEnabled = false;
+                username.IsEnabled = false;
+                password.IsEnabled = false;
+                ForgotPassword.IsEnabled = false;
+                signin.Content = "Logging In";
+                signin.IsEnabled = false;
+            }
+            else
+            {
+                Dispatcher.Invoke(new Action(SignalLoggingIn));
+            }
+        }
+
+        public void SignalPleaseLogin()
+        {
+            if (Dispatcher.CheckAccess())
+            {
+                NewUser.IsEnabled = true;
+                username.IsEnabled = true;
+                password.IsEnabled = true;
+                ForgotPassword.IsEnabled = true;
+                signin.Content = "Sign In";
+                signin.IsEnabled = true;
+            }
+            else
+            {
+                Dispatcher.Invoke(new Action(SignalPleaseLogin));
+            }
+        }
+    }
 }

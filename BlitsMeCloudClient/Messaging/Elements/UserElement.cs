@@ -10,6 +10,10 @@ namespace BlitsMe.Cloud.Messaging.Elements
     public class UserElement
     {
         [DataMember]
+        public String firstname;
+        [DataMember]
+        public String lastname;
+        [DataMember]
         public String name;
         [DataMember]
         public String status;
@@ -26,7 +30,9 @@ namespace BlitsMe.Cloud.Messaging.Elements
         [DataMember]
         public int rating;
         [DataMember]
-        public DateTime joined;
+        public DateTime? joined;
+        [DataMember]
+        public String avatarData;
 
     }
 }

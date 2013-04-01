@@ -70,7 +70,7 @@ namespace BlitsMe.Agent.Managers
         {
             if(!ServicePersonLookup.ContainsKey(user)){
                 // if we are getting presence alerts, we need to create this user
-                AddPersonToPersonList(user,presence);
+                AddUsernameToList(user,presence);
             }
             Person servicePerson = _appContext.RosterManager.GetServicePerson(user);
             if (servicePerson != null)
@@ -115,7 +115,7 @@ namespace BlitsMe.Agent.Managers
                             foreach (RosterElement rosterElement in response.rosterElements)
                             {
                                 // Add each buddy to the list
-                                AddPersonToPersonList(rosterElement.userElement.user);
+                                AddUserElementToList(rosterElement.userElement, new Presence(rosterElement.presence));
                             }
                             // Process the queued changes
                             while(_queuedPresenceChanges.Count > 0)
@@ -148,32 +148,28 @@ namespace BlitsMe.Agent.Managers
         }
 
 
-        private void AddPersonToPersonList(string username)
-        {
-            AddPersonToPersonList(username, null);
-        }
-
-        private void AddPersonToPersonList(String username, Presence presence)
+        private void AddUsernameToList(String username, Presence presence)
         {
             try
             {
                 VCardRs cardRs = _appContext.ConnectionManager.Connection.Request<VCardRq,VCardRs>(new VCardRq(username));
-                Person person = new Person(cardRs.userElement);
-                if (cardRs.avatarData != null && !cardRs.avatarData.Equals(""))
-                {
-                    person.Avatar = Convert.FromBase64String(cardRs.avatarData);
-                }
-                if(presence != null)
-                {
-                    person.Presence = presence;
-                }
-                ServicePersonList.Add(person);
-                ServicePersonLookup[person.Username] = person;
+                AddUserElementToList(cardRs.userElement, presence);
             }
             catch (Exception e)
             {
                 Logger.Error("Failed to get VCard information for " + username + " : " + e.Message, e);
             }
+        }
+
+        private void AddUserElementToList(UserElement userElement, Presence presence = null)
+        {
+            Person person = new Person(userElement);
+            if (presence != null)
+            {
+                person.Presence = presence;
+            }
+            ServicePersonList.Add(person);
+            ServicePersonLookup[person.Username] = person;
         }
 
         public void AddPerson(Person person)
@@ -193,7 +189,7 @@ namespace BlitsMe.Agent.Managers
 
         private void ResponseHandler(SubscribeRq request, SubscribeRs response, Exception e, Person person)
         {
-            if(e != null)
+            if(e == null)
             {
                 Logger.Debug("Succeeded in sending subscribe request for " + person.Username);
             } else

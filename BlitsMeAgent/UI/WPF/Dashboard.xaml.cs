@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using System.ComponentModel;
+using System.Threading;
 using System.Timers;
 using System.Windows;
 using System.Windows.Controls;
@@ -16,6 +17,7 @@ using BlitsMe.Agent.UI.WPF.Engage;
 using BlitsMe.Agent.UI.WPF.Roster;
 using BlitsMe.Agent.UI.WPF.Search;
 using log4net;
+using Timer = System.Timers.Timer;
 
 namespace BlitsMe.Agent.UI.WPF
 {
@@ -34,10 +36,12 @@ namespace BlitsMe.Agent.UI.WPF
         private readonly CollectionViewSource _notificationView;
         // Dispatching collection for notifications (to be used by everything)
         internal DispatchingCollection<ObservableCollection<Notification>, Notification> NotificationList { get; set; }
-        private AddPersonControl _addPersonControl;
         private SearchWindow _searchWindow;
+        private UserInfoWindow _userInfoWindow;
         private Timer _searchCountDown;
         private readonly Object _searchLock = new Object();
+        internal DashboardDataContext DashboardData;
+
 
         public Dashboard(BlitsMeClientAppContext appContext)
         {
@@ -54,6 +58,10 @@ namespace BlitsMe.Agent.UI.WPF
             _rosterList.SetList(_appContext.RosterManager.ServicePersonList, "Username");
             Team.LostFocus += Team_LostFocus;
             Team.DataContext = _rosterList.RosterViewSource;
+            DashboardData = new DashboardDataContext();
+            DataContext = DashboardData;
+            SetupCurrentUserListener();
+            _appContext.CurrentUserManager.CurrentUserChanged += delegate { SetupCurrentUserListener(); };
             // Setup the engagementWindow list as a mirror of the engagements
             _engagementWindows = new EngagementWindowList(_appContext, NotificationList, Dispatcher);
             try
@@ -65,6 +73,34 @@ namespace BlitsMe.Agent.UI.WPF
                 Logger.Error("Failed to set the list : " + e.Message, e);
             }
             _appContext.EngagementManager.NewActivity += EngagementManagerOnNewActivity;
+        }
+
+        private void SetupCurrentUserListener()
+        {
+            Logger.Debug("Setting up new listener for " + _appContext.CurrentUserManager.CurrentUser.Name);
+            _appContext.CurrentUserManager.CurrentUser.PropertyChanged += CurrentUserOnPropertyChanged;
+            if (Dispatcher.CheckAccess())
+            {
+                DashboardData.Title = _appContext.CurrentUserManager.CurrentUser.Name;
+            } else
+            {
+                Dispatcher.Invoke(
+                    new Action(() => { DashboardData.Title = _appContext.CurrentUserManager.CurrentUser.Name; }));
+            }
+        }
+
+        private void CurrentUserOnPropertyChanged(object sender, PropertyChangedEventArgs propertyChangedEventArgs)
+        {
+            if (Dispatcher.CheckAccess())
+            {
+                if (propertyChangedEventArgs.PropertyName.Equals("Name"))
+                {
+                    Logger.Debug("Name has changed : " + _appContext.CurrentUserManager.CurrentUser.Name);
+                    DashboardData.Title = _appContext.CurrentUserManager.CurrentUser.Name;
+                }
+            }
+            else
+                Dispatcher.Invoke(new Action(() => CurrentUserOnPropertyChanged(sender, propertyChangedEventArgs)));
         }
 
         private void NotificationsOnCollectionChanged(object sender, NotifyCollectionChangedEventArgs notifyCollectionChangedEventArgs)
@@ -157,15 +193,6 @@ namespace BlitsMe.Agent.UI.WPF
             }
         }
 
-        private void AddPersonClick(object sender, System.Windows.RoutedEventArgs e)
-        {
-            if (_addPersonControl == null)
-            {
-                _addPersonControl = new AddPersonControl();
-            }
-            ActiveContent.Content = _addPersonControl;
-        }
-
         private void Search_TextChanged(object sender, System.Windows.Controls.TextChangedEventArgs e)
         {
             // This gets called on init (where appContext is null), but we don't want to search that anyway
@@ -237,7 +264,43 @@ namespace BlitsMe.Agent.UI.WPF
             }
         }
 
+        private void UserInfo_Click(object sender, System.Windows.RoutedEventArgs e)
+        {
+            if (_appContext.ConnectionManager.IsOnline())
+            {
+                if (_userInfoWindow == null)
+                {
+                    _userInfoWindow = new UserInfoWindow(_appContext);
+                }
+                ActiveContent.Content = _userInfoWindow;
+            }
+        }
+
         #endregion
+
+        private void ExitApplication(object sender, RoutedEventArgs e)
+        {
+            Thread shutdownThread = new Thread(_appContext.Shutdown) { IsBackground = true };
+            shutdownThread.Start();
+        }
+    }
+
+    internal class DashboardDataContext : INotifyPropertyChanged
+    {
+        private string _customTitle;
+        public String Title
+        {
+            get { return "BlitsMe - " + _customTitle; }
+            set { _customTitle = value; OnPropertyChanged("Title"); }
+        }
+
+        public event PropertyChangedEventHandler PropertyChanged;
+
+        protected virtual void OnPropertyChanged(string propertyName)
+        {
+            PropertyChangedEventHandler handler = PropertyChanged;
+            if (handler != null) handler(this, new PropertyChangedEventArgs(propertyName));
+        }
     }
 
 }

@@ -11,11 +11,11 @@ namespace BlitsMe.Cloud.Messaging.API
     [DataContract]
     public abstract class Message
     {
-        [DataMember(Order = 0)]
+        [DataMember(IsRequired = true,Order = 0)]
         public abstract String type { get; set; }
-        [DataMember(Order = 1)]
+        [DataMember(IsRequired = true,Order = 1)]
         public String id { get; set; }
-        [DataMember]
+        [DataMember(IsRequired = true)]
         public DateTime date { get; set; }
     }
 }

@@ -55,6 +55,7 @@
     <Compile Include="Exceptions\MessageException.cs" />
     <Compile Include="Exceptions\ProtocolException.cs" />
     <Compile Include="Exceptions\RemoteException.cs" />
+    <Compile Include="Messaging\API\ElevatedRequest.cs" />
     <Compile Include="Messaging\API\UserToUserResponse.cs" />
     <Compile Include="Messaging\API\Processor.cs" />
     <Compile Include="Messaging\API\Message.cs" />
@@ -67,6 +68,8 @@
     <Compile Include="Messaging\Elements\RosterElement.cs" />
     <Compile Include="Messaging\Elements\UserElement.cs" />
     <Compile Include="Messaging\Request\ChatMessageRq.cs" />
+    <Compile Include="Messaging\Request\CurrentUserRq.cs" />
+    <Compile Include="Messaging\Request\ElevateTokenRq.cs" />
     <Compile Include="Messaging\Request\FileSendRequestResponseRq.cs" />
     <Compile Include="Messaging\Request\FileSendRequestRq.cs" />
     <Compile Include="Messaging\Request\LogoutRq.cs" />
@@ -82,9 +85,12 @@
     <Compile Include="Messaging\Request\SearchRq.cs" />
     <Compile Include="Messaging\Request\SignupRq.cs" />
     <Compile Include="Messaging\Request\SubscribeRq.cs" />
+    <Compile Include="Messaging\Request\UpdateUserRq.cs" />
     <Compile Include="Messaging\Request\VCardRq.cs" />
     <Compile Include="Messaging\Request\VersionRq.cs" />
     <Compile Include="Messaging\Response\ChatMessageRs.cs" />
+    <Compile Include="Messaging\Response\CurrentUserRs.cs" />
+    <Compile Include="Messaging\Response\ElevateTokenRs.cs" />
     <Compile Include="Messaging\Response\FileSendRequestResponseRs.cs" />
     <Compile Include="Messaging\Response\FileSendRequestRs.cs" />
     <Compile Include="Messaging\Response\LogoutRs.cs" />
@@ -101,6 +107,7 @@
     <Compile Include="Messaging\Response\SearchRs.cs" />
     <Compile Include="Messaging\Response\SignupRs.cs" />
     <Compile Include="Messaging\Response\SubscribeRs.cs" />
+    <Compile Include="Messaging\Response\UpdateUserRs.cs" />
     <Compile Include="Messaging\Response\VCardRs.cs" />
     <Compile Include="Messaging\Response\VersionRs.cs" />
     <Compile Include="Messaging\WebSocketClient.cs" />

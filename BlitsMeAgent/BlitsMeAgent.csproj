@@ -187,6 +187,7 @@
     <Compile Include="Components\Functions\RemoteDesktop\Server.cs" />
     <Compile Include="DispatchingCollection.cs" />
     <Compile Include="Managers\ConnectionManager.cs" />
+    <Compile Include="Managers\CurrentUserManager.cs" />
     <Compile Include="Managers\EngagementManager.cs" />
     <Compile Include="Managers\LoginEventArgs.cs" />
     <Compile Include="Managers\LoginManager.cs" />
@@ -198,9 +199,20 @@
     <Compile Include="Managers\RosterManager.cs" />
     <Compile Include="Properties\Annotations.cs" />
     <Compile Include="UI\SystemTray.cs" />
+    <Compile Include="UI\WPF\ConfirmPasswordWindow.xaml.cs">
+      <DependentUpon>ConfirmPasswordWindow.xaml</DependentUpon>
+    </Compile>
     <Compile Include="UI\WPF\Dashboard.xaml.cs">
       <DependentUpon>Dashboard.xaml</DependentUpon>
     </Compile>
+    <Page Include="UI\WPF\ConfirmPasswordWindow.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="UI\WPF\ElevateApprovalWindow.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
     <Page Include="UI\WPF\Engage\ChatWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
@@ -257,6 +269,9 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
+    <Compile Include="UI\WPF\ElevateApprovalWindow.xaml.cs">
+      <DependentUpon>ElevateApprovalWindow.xaml</DependentUpon>
+    </Compile>
     <Compile Include="UI\WPF\Engage\ChatWindow.xaml.cs">
       <DependentUpon>ChatWindow.xaml</DependentUpon>
     </Compile>
@@ -266,6 +281,9 @@
     <Compile Include="UI\WPF\Engage\EngagementWindowList.cs" />
     <Compile Include="UI\WPF\SignUpWindow.xaml.cs">
       <DependentUpon>SignUpWindow.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="UI\WPF\UserInfoWindow.xaml.cs">
+      <DependentUpon>UserInfoWindow.xaml</DependentUpon>
     </Compile>
     <Compile Include="UI\WPF\Utils\ImageStreamReader.cs" />
     <Compile Include="UI\WPF\Utils\RelativeMessageTimeConverter.cs" />
@@ -330,6 +348,10 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
+    <Page Include="UI\WPF\UserInfoWindow.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
   </ItemGroup>
   <ItemGroup Condition=" '$(Configuration)' == 'Debug' ">
     <EmbeddedResource Include="env\Debug\cacert.pem">
@@ -385,6 +407,9 @@
     </Resource>
     <Resource Include="UI\WPF\Images\1359662466_Add.png" />
     <Resource Include="UI\WPF\Images\1360201178_speech_bubble.png" />
+    <Resource Include="UI\WPF\Images\1364864637_alert.png" />
+    <Resource Include="UI\WPF\Images\exit.png" />
+    <Resource Include="UI\WPF\Images\Logoff.png" />
     <Resource Include="UI\WPF\Images\BLITSME.png" />
     <Resource Include="UI\WPF\Images\Check.png" />
     <Resource Include="UI\WPF\Images\facebook-like.png" />
@@ -396,6 +421,7 @@
     <Resource Include="UI\WPF\Images\tweet.png" />
     <Resource Include="UI\WPF\Images\silhoette.png" />
     <Resource Include="UI\WPF\Images\Upload.png" />
+    <Resource Include="UI\WPF\Images\User.png" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\BlitsMeCloudClient\BlitsMeCloudClient.csproj">

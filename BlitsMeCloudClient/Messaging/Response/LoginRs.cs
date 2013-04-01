@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Runtime.Serialization;
+using BlitsMe.Cloud.Messaging.Elements;
 
 namespace BlitsMe.Cloud.Messaging.Response
 {
@@ -20,5 +21,7 @@ namespace BlitsMe.Cloud.Messaging.Response
         public String profileId { get; set; }
         [DataMember]
         public String shortCode { get; set; }
+        [DataMember]
+        public UserElement userElement { get; set; }
     }
 }

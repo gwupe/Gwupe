@@ -24,6 +24,11 @@ namespace BlitsMe.Agent.UI.WPF.Search
             DataContext = SearchResult;
             AddPersonButton.Command = new AddPerson(_appContext, SearchResult.Person);
         }
+
+        private void ChatPersonButton_Click(object sender, System.Windows.RoutedEventArgs e)
+        {
+        	_appContext.EngagementManager.GetNewEngagement(SearchResult.Username);
+        }
     }
 
     // Command which send messages

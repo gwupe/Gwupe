@@ -9,7 +9,7 @@ namespace BlitsMe.Agent.UI
 {
     public class SystemTray
     {
-        private BlitsMeClientAppContext appContext;
+        private readonly BlitsMeClientAppContext _appContext;
         private static readonly Icon IconConnected = Properties.Resources.icon_main;
         private bool pulseUp = true;
         private int pulseLocation = 0;
@@ -33,7 +33,7 @@ namespace BlitsMe.Agent.UI
 
         public SystemTray(BlitsMeClientAppContext appContext)
         {
-            this.appContext = appContext;
+            this._appContext = appContext;
             components = new System.ComponentModel.Container();
             notifyIcon = new NotifyIcon(components)
             {
@@ -60,7 +60,7 @@ namespace BlitsMe.Agent.UI
         public void launchDashboardLeftClick(object sender, EventArgs e)
         {
             if(((MouseEventArgs)e).Button.Equals(MouseButtons.Left)) {
-                appContext.OnIconClickLaunchDashboard(sender, e);
+                _appContext.OnIconClickLaunchDashboard(sender, e);
             }
         }
 
@@ -92,7 +92,7 @@ namespace BlitsMe.Agent.UI
 
         public void offlineSearch(object sender, EventArgs e)
         {
-            if (appContext.ConnectionManager.IsOnline())
+            if (_appContext.ConnectionManager.IsOnline())
             {
                 if (!notifyIcon.Icon.Equals(IconConnected))
                 {
@@ -109,7 +109,7 @@ namespace BlitsMe.Agent.UI
 
         private void exitItem_Click(object sender, EventArgs e)
         {
-            appContext.Shutdown();
+            _appContext.Shutdown();
         }
 
         // This is the event handler for a left click on the icon

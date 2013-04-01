@@ -54,25 +54,25 @@ namespace BlitsMe.Cloud.Communication
             }
         }
 
-        public CloudConnection()
-            : this(DefaultIPs, DefaultPorts)
+        public CloudConnection(String version)
+            : this(version, DefaultIPs, DefaultPorts)
         {
         }
 
-        public CloudConnection(List<string> servers)
-            : this(servers, DefaultPorts)
+        public CloudConnection(String version, List<string> servers)
+            : this(version, servers, DefaultPorts)
         {
         }
 
 
-        public CloudConnection(List<string> connectServers, List<int> connectPorts)
+        public CloudConnection(String version, List<string> connectServers, List<int> connectPorts)
         {
             Servers = (connectServers == null || connectServers.Count == 0) ? DefaultIPs : connectServers;
             Ports = (connectPorts == null || connectPorts.Count == 0) ? DefaultPorts : connectPorts;
 #if DEBUG
             Logger.Debug("Setting up communication with the cloud servers");
 #endif
-            _connectionMaintainer = new ConnectionMaintainer(Servers, Ports);
+            _connectionMaintainer = new ConnectionMaintainer(version, Servers, Ports);
             _connectionMaintainer.Disconnect += (sender, args) => OnDisconnect(args);
             _connectionMaintainer.Connect += (sender, args) => OnConnect(args);
             _connectionMaintainerThread = new Thread(_connectionMaintainer.run) { IsBackground = true, Name = "_connectionMaintainerThread"};

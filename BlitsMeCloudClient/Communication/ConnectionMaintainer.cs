@@ -45,7 +45,7 @@ namespace BlitsMe.Cloud.Communication
             }
         }
 
-        public ConnectionMaintainer(List<String> destinations, List<Int32> ports)
+        public ConnectionMaintainer(String version, List<String> destinations, List<Int32> ports)
         {
             this.protocol = "message";
             servers = new List<Uri>();
@@ -53,7 +53,7 @@ namespace BlitsMe.Cloud.Communication
             {
                 foreach (String destination in destinations)
                 {
-                    String uriString = "ws://" + destination + ":" + port + "/blitsme/ws";
+                    String uriString = "ws://" + destination + ":" + port + "/blitsme/" + version + "/ws";
                     try
                     {
                         Uri uri = new Uri(uriString);

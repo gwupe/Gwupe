@@ -5,24 +5,22 @@
 	xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" mc:Ignorable="d"
 	x:Class="BlitsMe.Agent.UI.WPF.LoginWindow"
 	x:Name="Window"
-	Title="Login" Height="288" Width="235" WindowStartupLocation="CenterScreen" ResizeMode="NoResize" Closing="HideIfClosing" StateChanged="WindowStateChanged">
+	Title="Login to BlitsMe" Height="245.5" Width="227" WindowStartupLocation="CenterScreen" ResizeMode="NoResize" Closing="HideIfClosing" StateChanged="WindowStateChanged">
 
-	<Grid x:Name="LayoutRoot" HorizontalAlignment="Left" Width="218" Height="248" VerticalAlignment="Top">
+	<Grid x:Name="LayoutRoot" HorizontalAlignment="Left" Width="227" Margin="0,0,-6,7">
         <Image HorizontalAlignment="Left" Height="53" Margin="8,8,0,0" Source="/UI\WPF\Images\Blitsmewording200.png" Stretch="Fill" VerticalAlignment="Top" Width="200"/>
-		<Label Content="Username" HorizontalAlignment="Left" Margin="10,104.96,0,0" VerticalAlignment="Top"/>
-		<TextBox HorizontalAlignment="Left" Margin="77.296,104.96,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="132.704" Height="25.96" Name="username" KeyDown="username_KeyDown" />
-		<Label Content="Password" HorizontalAlignment="Left" Margin="10,142.96,0,0" VerticalAlignment="Top" Name="passwordLabel" />
-		<PasswordBox HorizontalAlignment="Left" Margin="77.296,142.96,0,0" VerticalAlignment="Top" Width="132.704" Height="25.96" Name="password" KeyDown="password_KeyDown" />
-		<CheckBox Content="Sign in as guest" HorizontalAlignment="Left" Margin="56.296,61,0,0" VerticalAlignment="Top" Unchecked="UncheckGuest" Checked="CheckGuest" Name="guest" />
-		<Button Content="Sign In" Margin="75.296,179.08,67.704,0" VerticalAlignment="Top" Name="signin" Click="signin_click" />
-		<TextBlock HorizontalAlignment="Left" Margin="8,206.04,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Height="37.92" Width="136.61">
-			<Hyperlink RequestNavigate="NewUserCreate" NavigateUri="">
+		<Label Content="Username" HorizontalAlignment="Left" Margin="9.814,62.96,0,0" VerticalAlignment="Top"/>
+		<TextBox HorizontalAlignment="Left" Margin="77.11,62.96,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="132.704" Height="25.96" Name="username" KeyDown="username_KeyDown" IsEnabled="False" />
+		<Label Content="Password" HorizontalAlignment="Left" Margin="9.814,100.96,0,0" VerticalAlignment="Top" Name="passwordLabel" />
+		<PasswordBox HorizontalAlignment="Left" Margin="77.11,100.96,0,0" VerticalAlignment="Top" Width="132.704" Height="25.96" Name="password" KeyDown="password_KeyDown" IsEnabled="False" />
+		<Button Content="Sign In" Margin="75.11,137.08,67.89,0" VerticalAlignment="Top" Name="signin" Click="signin_click" IsEnabled="False" />
+		<TextBlock HorizontalAlignment="Left" Margin="8,164.04,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Height="37.92" Width="136.61">
+			<Hyperlink Name="NewUser" RequestNavigate="NewUserCreate" NavigateUri="" IsEnabled="False">
 				I am a new user
 			</Hyperlink><LineBreak/>
-			<Hyperlink RequestNavigate="ForgotPassword" NavigateUri="">
+			<Hyperlink Name="ForgotPassword" RequestNavigate="Click_ForgotPassword" NavigateUri="" IsEnabled="False">
 				<Run Language="en-za" Text="I forgot my password"/>
 			</Hyperlink>
 		</TextBlock>
-		<TextBlock HorizontalAlignment="Left" Margin="106,81.96,0,0" TextWrapping="Wrap" Text="OR" VerticalAlignment="Top"/>
 	</Grid>
 </Window>

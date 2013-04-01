@@ -52,6 +52,23 @@ namespace BlitsMe.Agent.UI.WPF
             {
                 if (_appContext.ConnectionManager.Connection.isEstablished())
                 {
+                    ConfirmPasswordWindow confirmPasswordWindow = new ConfirmPasswordWindow { Owner = this };
+                    confirmPasswordWindow.ShowDialog();
+                    if (!confirmPasswordWindow.Cancelled)
+                    {
+                        // OK, password will be changed
+                        if (!confirmPasswordWindow.ConfirmPassword.Password.Equals(Password.Password))
+                        {
+                            Password.Background = new SolidColorBrush(Colors.MistyRose);
+                            PasswordLabel.Foreground = new SolidColorBrush(Colors.Red);
+                            setError("Passwords don't match");
+                            return;
+                        }
+                    }
+                    else
+                    {
+                        return;
+                    }
                     var request = new SignupRq
                         {
                             email = Email.Text.Trim(),
@@ -62,17 +79,10 @@ namespace BlitsMe.Agent.UI.WPF
                             lastname = Lastname.Text.Trim(),
                             supporter = Supporter.IsChecked != null && (bool) Supporter.IsChecked
                         };
-                    try {
-                        SignupRs response = _appContext.ConnectionManager.Connection.Request<SignupRq,SignupRs>(request);
-                        ValidateLabel.IsEnabled = true;
-                        Validate.IsEnabled = true;
-                        Confirm.IsEnabled = true;
-                        Username.IsEnabled = false;
-                        Password.IsEnabled = false;
-                        Location.IsEnabled = false;
-                        Email.IsEnabled = false;
-                        Signin.IsEnabled = false;
-                        ValidateInstructions.Visibility = Visibility.Visible;
+                    try
+                    {
+                        SignupRs response = _appContext.ConnectionManager.Connection.Request<SignupRq, SignupRs>(request);
+                        Close();
                     } catch (MessageException<SignupRs> ex)
                     {
                         Logger.Warn("Failed to signup : " + ex.Message);
@@ -202,11 +212,6 @@ namespace BlitsMe.Agent.UI.WPF
             {
                 Lastname.Text = "Last";
             }
-        }
-
-        private void Confirm_Click(object sender, System.Windows.RoutedEventArgs e)
-        {
-            // TODO: Add event handler implementation here.
         }
     }
 }

@@ -20,7 +20,7 @@
 			<Grid>
                 <Image Source="/BlitsMe.Agent;component/UI/WPF/Images/silhoette.png" Height="50" HorizontalAlignment="Left" Width="50" Margin="0,0,5,0"/>
                 <StackPanel Margin="53,0,0,0" Width="150" HorizontalAlignment="Left" VerticalAlignment="Center">
-                    <TextBlock Style="{StaticResource TeamMemberNameText}" Text="{Binding Path=Person.Name, FallbackValue=FirstName LastName}" />
+                    <TextBlock Style="{StaticResource TeamMemberNameText}" Text="{Binding Path=Person.Name, FallbackValue=FirstName LastName}" Width="150" TextAlignment="Center" />
                     <Grid Margin="0,0,0,0" Height="15" HorizontalAlignment="Center">
                         <ed:RegularPolygon Style="{StaticResource TeamMemberStarFull}" Margin="0,0,0,0" />
                         <ed:RegularPolygon Style="{StaticResource TeamMemberStarFull}" Margin="15,0,0,0" />
@@ -34,12 +34,12 @@
                         <ed:RegularPolygon Style="{StaticResource TeamMemberStarEmpty}" Margin="45,0,0,0" />
                         <ed:RegularPolygon Style="{StaticResource TeamMemberStarEmpty}" Margin="60,0,0,0" />
                     </Grid>
-                    <TextBlock Style="{StaticResource TeamMemberLocationText}" Text="{Binding Path=Person.Location, FallbackValue=Planet Earth}" />
+                    <TextBlock Style="{StaticResource TeamMemberLocationText}" Text="{Binding Path=Person.Location, FallbackValue=Planet Earth}" Width="150" TextAlignment="Center" />
                 </StackPanel>
                 <TextBlock Style="{DynamicResource ProspectDescription}" Text="{Binding Path=Person.Description, FallbackValue=Description of my skills.}" Margin="206,0,103,0" HorizontalAlignment="Stretch" />
 				<StackPanel HorizontalAlignment="Right" Width="100" VerticalAlignment="Center">
 					<Button x:Name="AddPersonButton" Content="Add" Margin="2"/>
-					<Button x:Name="ChatPersonButton" Content="Chat" Margin="2" />
+					<Button x:Name="ChatPersonButton" Content="Chat" Margin="2" Click="ChatPersonButton_Click" />
 				</StackPanel>
 			</Grid>
         </Border>

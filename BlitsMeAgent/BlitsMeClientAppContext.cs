@@ -1,13 +1,19 @@
 ﻿using System;
+using System.Diagnostics;
 using System.Reflection;
 using System.Threading;
+using System.Windows;
 using System.Windows.Forms;
 using System.Windows.Threading;
 using BlitsMe.Agent.Components;
 using BlitsMe.Agent.Managers;
+using BlitsMe.Agent.Misc;
 using BlitsMe.Agent.UI;
+using BlitsMe.Agent.UI.WPF;
+using BlitsMe.Cloud.Messaging.API;
 using BlitsMe.Cloud.Messaging.Request;
 using BlitsMe.Cloud.Messaging.Response;
+using BlitsMe.Common.Security;
 using BlitsMe.ServiceProxy;
 using log4net;
 using log4net.Config;
@@ -23,6 +29,7 @@ namespace BlitsMe.Agent
         public Dashboard UIDashBoard;
         public P2PManager P2PManager;
         private RequestManager _requestManager;
+        internal CurrentUserManager CurrentUserManager { get; private set; }
         internal RosterManager RosterManager { get; private set; }
         internal LoginManager LoginManager { get; private set; }
         internal ConnectionManager ConnectionManager { get; private set; }
@@ -31,6 +38,7 @@ namespace BlitsMe.Agent
         internal SearchManager SearchManager { get; private set; }
         internal Thread _dashboardUIThread;
         internal bool isShuttingDown { get; private set; }
+        private readonly BLMRegistry _reg = new BLMRegistry();
 
         /// <summary>
         /// This class should be created and passed into Application.Run( ... )
@@ -54,8 +62,18 @@ namespace BlitsMe.Agent
             EngagementManager = new EngagementManager(this);
             NotificationManager = new NotificationManager(this);
             SearchManager = new SearchManager(this);
+            CurrentUserManager = new CurrentUserManager(this);
             EngagementManager.NewActivity += OnNewEngagementActivity;
             _systray = new SystemTray(this);
+        }
+
+        public String Version
+        {
+            get
+            {
+                var fullVersion = new Version(FileVersionInfo.GetVersionInfo(Assembly.GetExecutingAssembly().Location).FileVersion);
+                return fullVersion.Major + "." + fullVersion.Minor;
+            }
         }
 
         private void OnNewEngagementActivity(object sender, EngagementActivityArgs args)
@@ -148,6 +166,33 @@ namespace BlitsMe.Agent
         {
             UIDashBoard = new Dashboard(this);
             Dispatcher.Run();
+        }
+
+        public bool Elevate(Window parentWindow, out String tokenId, out String securityKey)
+        {
+            ElevateTokenRq erq = new ElevateTokenRq();
+            ElevateTokenRs ers = ConnectionManager.Connection.Request<ElevateTokenRq, ElevateTokenRs>(erq);
+            ElevateApprovalWindow approvalWindow = new ElevateApprovalWindow();
+            approvalWindow.Owner = parentWindow;
+            parentWindow.IsEnabled = false;
+            approvalWindow.ShowDialog();
+            parentWindow.IsEnabled = true;
+            if (!approvalWindow.Cancelled)
+            {
+                tokenId = ers.tokenId;
+                securityKey = Util.getSingleton().hashPassword(approvalWindow.ConfirmPassword.Password, ers.token);
+                if (approvalWindow.Dispatcher.CheckAccess())
+                    approvalWindow.ConfirmPassword.Password = "";
+                else
+                    approvalWindow.Dispatcher.Invoke(new Action(() => approvalWindow.ConfirmPassword.Password = ""));
+            }
+            else
+            {
+                tokenId = null;
+                securityKey = null;
+                return false;
+            }
+            return true;
         }
 
         internal void SetupAndRunDashboard()

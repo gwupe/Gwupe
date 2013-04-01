@@ -47,10 +47,10 @@ namespace BlitsMe.Agent.Misc
             setRegValue(serverIPsKey, String.Join(",", newIPs.ToArray()));
         }
 
-        private string getRegValue(String regKey) {
+        private string getRegValue(String regKey, bool hklm = false) {
             try
             {
-                RegistryKey bmKey = Registry.CurrentUser.OpenSubKey(root);
+                RegistryKey bmKey = hklm ? Registry.LocalMachine.OpenSubKey(root) : Registry.CurrentUser.OpenSubKey(root);
                 String regValue = (String)bmKey.GetValue(regKey);
                 return regValue;
             }
