@@ -1,12 +1,11 @@
 ﻿<ResourceDictionary
 	xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" 
 	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-	xmlns:Utils="clr-namespace:BlitsMe.Agent.UI.WPF.Utils">
+	>
 	<!-- Resource dictionary entries should be defined here. -->
 	<ResourceDictionary.MergedDictionaries>
         <ResourceDictionary Source="./Style.xaml" />
     </ResourceDictionary.MergedDictionaries>
-	<Utils:StarRatingConverter x:Key="starRatingConverter" />
 	<Style x:Key="ProspectDescription" TargetType="{x:Type TextBlock}">
 		<Setter Property="HorizontalAlignment" Value="Left" />
         <Setter Property="Foreground" Value="White" />

@@ -1,0 +1,36 @@
+﻿<Window
+	xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+	xmlns:PresentationOptions="http://schemas.microsoft.com/winfx/2006/xaml/presentation/options"
+	x:Class="BlitsMe.Agent.UI.WPF.AvatarImageWindow"
+	x:Name="Window"
+	Title="Choose your Image"
+	Width="328" Height="409"
+	ResizeMode="NoResize" WindowStartupLocation="CenterOwner">
+
+    <Grid x:Name="LayoutRoot">
+        <Rectangle x:Name="ImageContainer"
+      Width="300" Height="300" 
+      Stroke="MediumBlue" StrokeThickness="1" VerticalAlignment="Top" HorizontalAlignment="Left" Margin="10,10,0,0">
+            <Rectangle.Fill>
+                <ImageBrush
+          Stretch="Uniform" ImageSource="Images/silhoette.png"
+          PresentationOptions:Freeze="True" />
+            </Rectangle.Fill>
+        </Rectangle>
+        <StackPanel Margin="0,315,0,0" Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Top">
+            <Button x:Name="WebcamButton" Background="White" HorizontalAlignment="Left" Margin="3,0" VerticalAlignment="Top" Width="30" Height="30" Click="WebcamButton_Click" ToolTip="Use Webcam">
+				<Image Source="Images/webcam.png"></Image>
+			</Button>
+            <Button x:Name="FileButton" Background="White" HorizontalAlignment="Left" Margin="3,0" VerticalAlignment="Top" Width="30" Height="30" Click="FileButton_Click" ToolTip="Use Image">
+				<Image Source="Images/stock_insert_image.png"></Image>
+			</Button>
+	       <Button x:Name="SaveButton" Background="White" Margin="3,0" VerticalAlignment="Top" Width="30" Height="30" Click="SaveButton_Click" ToolTip="Save">
+				<Image Source="Images/floppy_unmount.png"></Image>
+			</Button>
+        </StackPanel>
+        <TextBlock x:Name="ErrorText" HorizontalAlignment="Left" Margin="10,350,0,0" TextWrapping="Wrap" Text="" VerticalAlignment="Top" Width="302" Height="21" TextAlignment="Center" Foreground="Red" Visibility="Hidden"/>
+        <TextBlock x:Name="StatusText" HorizontalAlignment="Left" Margin="10,350,0,0" TextWrapping="Wrap" Text="" VerticalAlignment="Top" Width="302" Height="21" TextAlignment="Center" Foreground="#FF2B519B" Visibility="Hidden"/>
+
+    </Grid>
+</Window>

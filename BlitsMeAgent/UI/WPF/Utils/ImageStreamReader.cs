@@ -11,6 +11,11 @@ namespace BlitsMe.Agent.UI.WPF.Utils
     {
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
+            return CreateBitmapImage((byte[])value);
+        }
+
+        internal static BitmapImage CreateBitmapImage(byte[] value)
+        {
             BitmapImage image;
             image = new BitmapImage();
             image.BeginInit();
@@ -19,8 +24,10 @@ namespace BlitsMe.Agent.UI.WPF.Utils
                 // default image
                 image.UriSource = new Uri("pack://application:,,,/UI/WPF/Images/silhoette.png", UriKind.RelativeOrAbsolute);
                 image.CacheOption = BitmapCacheOption.OnLoad;
-            } else {
-                image.StreamSource = new MemoryStream((byte[]) value);
+            }
+            else
+            {
+                image.StreamSource = new MemoryStream(value);
             }
             image.EndInit();
             return image;

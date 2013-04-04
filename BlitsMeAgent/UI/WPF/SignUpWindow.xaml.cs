@@ -4,6 +4,7 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
+using BlitsMe.Agent.UI.WPF.Utils;
 using BlitsMe.Cloud.Exceptions;
 using BlitsMe.Cloud.Messaging.Request;
 using BlitsMe.Cloud.Messaging.Response;
@@ -19,11 +20,13 @@ namespace BlitsMe.Agent.UI.WPF
         private static readonly ILog Logger = LogManager.GetLogger(typeof(SignUpWindow));
         private readonly BlitsMeClientAppContext _appContext;
         private bool isSigningUp = false;
+        private InputValidator validator;
 
         public SignUpWindow(BlitsMeClientAppContext appContext)
         {
             _appContext = appContext;
             this.InitializeComponent();
+            validator = new InputValidator(StatusText,ErrorText);
 
             // Insert code required on object creation below this point.
         }
@@ -38,15 +41,15 @@ namespace BlitsMe.Agent.UI.WPF
 
         private void signin_click(object sender, RoutedEventArgs e)
         {
-            resetError();
+            ResetStatus();
 
             bool dataOK = true;
-            dataOK = ValidateFieldNonEmpty(Email, Email.Text, EmailLabel, "Please enter your email address") && ValidateEmail() && dataOK;
-            dataOK = ValidateFieldNonEmpty(Location, Location.Text, LocationLabel, "Please enter your location", "City, Country") && dataOK;
-            dataOK = ValidateFieldNonEmpty(Password, Password.Password, PasswordLabel, "Please enter your password") && dataOK;
-            dataOK = ValidateFieldNonEmpty(Username, Username.Text, UsernameLabel, "Please enter your preferred username") && dataOK;
-            dataOK = ValidateFieldNonEmpty(Lastname, Lastname.Text, NameLabel, "Please enter your last name", "Last") && dataOK;
-            dataOK = ValidateFieldNonEmpty(Firstname, Firstname.Text, NameLabel, "Please enter your first name", "First") && dataOK;
+            dataOK = validator.ValidateFieldNonEmpty(Email, Email.Text, EmailLabel, "Please enter your email address") && validator.ValidateEmail(Email,EmailLabel) && dataOK;
+            dataOK = validator.ValidateFieldNonEmpty(Location, Location.Text, LocationLabel, "Please enter your location", "City, Country") && dataOK;
+            dataOK = validator.ValidateFieldNonEmpty(Password, Password.Password, PasswordLabel, "Please enter your password") && dataOK;
+            dataOK = validator.ValidateFieldNonEmpty(Username, Username.Text, UsernameLabel, "Please enter your preferred username") && dataOK;
+            dataOK = validator.ValidateFieldNonEmpty(Lastname, Lastname.Text, NameLabel, "Please enter your last name", "Last") && dataOK;
+            dataOK = validator.ValidateFieldNonEmpty(Firstname, Firstname.Text, NameLabel, "Please enter your first name", "First") && dataOK;
 
             if (dataOK)
             {
@@ -61,7 +64,7 @@ namespace BlitsMe.Agent.UI.WPF
                         {
                             Password.Background = new SolidColorBrush(Colors.MistyRose);
                             PasswordLabel.Foreground = new SolidColorBrush(Colors.Red);
-                            setError("Passwords don't match");
+                            validator.setError("Passwords don't match");
                             return;
                         }
                     }
@@ -86,7 +89,7 @@ namespace BlitsMe.Agent.UI.WPF
                     } catch (MessageException<SignupRs> ex)
                     {
                         Logger.Warn("Failed to signup : " + ex.Message);
-                        setError(ex.Response.errorMessage);
+                        validator.setError(ex.Response.errorMessage);
                         if (ex.Response.error.Equals(SignupRs.SignupErrorEmailAddressInUse))
                         {
                             Email.Background = new SolidColorBrush(Colors.MistyRose);
@@ -105,32 +108,21 @@ namespace BlitsMe.Agent.UI.WPF
                     } catch (Exception ex)
                     {
                         Logger.Warn("Failed to signup : " + ex.Message);
-                        setError("An unknown error occured during signup");
+                        validator.setError("An unknown error occured during signup");
                     }
                 }
                 else
                 {
-                    setError("Cannot sign up, BlitsMe is not connected.");
+                    validator.setError("Cannot sign up, BlitsMe is not connected.");
                 }
             }
         }
 
-        private void resetError()
+        private void ResetStatus()
         {
-            Email.Background = new SolidColorBrush(Colors.White);
-            EmailLabel.Foreground = new SolidColorBrush(Colors.Black);
-            Username.Background = new SolidColorBrush(Colors.White);
-            UsernameLabel.Foreground = new SolidColorBrush(Colors.Black);
-            Password.Background = new SolidColorBrush(Colors.White);
-            PasswordLabel.Foreground = new SolidColorBrush(Colors.Black);
-            Location.Background = new SolidColorBrush(Colors.White);
-            LocationLabel.Foreground = new SolidColorBrush(Colors.Black);
-            Firstname.Background = new SolidColorBrush(Colors.White);
-            Lastname.Background = new SolidColorBrush(Colors.White);
-            NameLabel.Foreground = new SolidColorBrush(Colors.Black);
-            ErrorText.Visibility = Visibility.Hidden;
+            validator.ResetStatus(new Control[] {Email,Username,Password,Location,Firstname,Lastname}, new[] {EmailLabel,UsernameLabel,PasswordLabel,LocationLabel,NameLabel,null} );
         }
-
+/*
         private bool ValidateEmail()
         {
             bool dataOK = true;
@@ -165,7 +157,7 @@ namespace BlitsMe.Agent.UI.WPF
             ErrorText.Text = errorText;
             ErrorText.Visibility = Visibility.Visible;
         }
-
+*/
         private void location_GotFocus(object sender, RoutedEventArgs e)
         {
             if (Location.Text.Equals("City, Country"))

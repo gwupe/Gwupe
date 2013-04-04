@@ -2,10 +2,7 @@
 	xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" 
 	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
 	xmlns:ed="http://schemas.microsoft.com/expression/2010/drawing"
-	xmlns:Utils="clr-namespace:BlitsMe.Agent.UI.WPF.Utils"
 	>
-	<Utils:StarRatingConverter x:Key="starRatingConverter" />
-	<Utils:ImageStreamReader x:Key="imageStreamReader" />
     <!-- Resource dictionary entries should be defined here. -->
     <Style x:Key="RosterStyle" TargetType="Grid">
         <Setter Property="HorizontalAlignment" Value="Left" />
@@ -60,6 +57,7 @@
         <Setter Property="HorizontalAlignment" Value="Right" />
     </Style>
 	<!-- This is the template for a roster item, it references the above styles -->
+	<!--
     <DataTemplate x:Key="RosterItemTemplate">
         <ListBoxItem Padding="0,3,0,0">
             <Border Style="{StaticResource TeamMemberBorder}">
@@ -85,5 +83,5 @@
                 </StackPanel>
             </Border>
         </ListBoxItem>
-    </DataTemplate>
+    </DataTemplate> -->
 </ResourceDictionary>

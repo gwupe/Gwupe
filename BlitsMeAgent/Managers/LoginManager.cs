@@ -150,6 +150,7 @@ namespace BlitsMe.Agent.Managers
             {
                 // get the username from the UI
                 ShowLoginWindow();
+                _loginWindow.SignalPleaseLogin();
                 _signinEvent.WaitOne();
 #if DEBUG
                 Logger.Debug("Login window signalled login");

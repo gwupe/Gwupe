@@ -1,17 +1,15 @@
 ﻿using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
-using System.Resources;
 
 // General Information about an assembly is controlled through the following 
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
-[assembly: AssemblyTitle("BlitsMeClient")]
-[assembly: AssemblyDescription("BlitsMe Remote Cloud Services")]
-[assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("BlitsMe")]
-[assembly: AssemblyProduct("BlitsMeClient")]
-[assembly: AssemblyCopyright("Copyright ©  2011")]
+[assembly: AssemblyTitle("BlitsMeSetupCustomAction")]
+[assembly: AssemblyDescription("")]
+[assembly: AssemblyCompany("")]
+[assembly: AssemblyProduct("BlitsMeSetupCustomAction")]
+[assembly: AssemblyCopyright("Copyright ©  2013")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 
@@ -21,7 +19,7 @@ using System.Resources;
 [assembly: ComVisible(false)]
 
 // The following GUID is for the ID of the typelib if this project is exposed to COM
-[assembly: Guid("54354a50-ad85-4a50-bc12-09791ccc9e6f")]
+[assembly: Guid("d946009f-984b-49f7-9b35-f057e29c68dc")]
 
 // Version information for an assembly consists of the following four values:
 //
@@ -33,6 +31,5 @@ using System.Resources;
 // You can specify all the values or you can default the Build and Revision Numbers 
 // by using the '*' as shown below:
 // [assembly: AssemblyVersion("1.0.*")]
-[assembly: AssemblyVersion("0.1.*")]
-[assembly: AssemblyFileVersion("0.1.8.0")]
-[assembly: NeutralResourcesLanguageAttribute("en-ZA")]
+[assembly: AssemblyVersion("1.0.0.0")]
+[assembly: AssemblyFileVersion("1.0.0.0")]

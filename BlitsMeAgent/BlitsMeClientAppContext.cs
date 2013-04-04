@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Diagnostics;
+using System.IO;
 using System.Reflection;
 using System.Threading;
+using System.Timers;
 using System.Windows;
 using System.Windows.Forms;
 using System.Windows.Threading;
@@ -17,6 +19,7 @@ using BlitsMe.Common.Security;
 using BlitsMe.ServiceProxy;
 using log4net;
 using log4net.Config;
+using Timer = System.Timers.Timer;
 using Dashboard = BlitsMe.Agent.UI.WPF.Dashboard;
 
 namespace BlitsMe.Agent
@@ -39,6 +42,8 @@ namespace BlitsMe.Agent
         internal Thread _dashboardUIThread;
         internal bool isShuttingDown { get; private set; }
         private readonly BLMRegistry _reg = new BLMRegistry();
+        private readonly Timer _upgradeCheckTimer;
+        private Version _startupVersion;
 
         /// <summary>
         /// This class should be created and passed into Application.Run( ... )
@@ -65,6 +70,31 @@ namespace BlitsMe.Agent
             CurrentUserManager = new CurrentUserManager(this);
             EngagementManager.NewActivity += OnNewEngagementActivity;
             _systray = new SystemTray(this);
+            _startupVersion = new Version(FileVersionInfo.GetVersionInfo(Assembly.GetExecutingAssembly().Location).FileVersion);
+            _upgradeCheckTimer = new Timer(60000);
+            _upgradeCheckTimer.Elapsed += UpgradeCheckTimerOnElapsed;
+            _upgradeCheckTimer.Enabled = true;
+        }
+
+        private void UpgradeCheckTimerOnElapsed(object sender, ElapsedEventArgs elapsedEventArgs)
+        {
+            try
+            {
+                var regVersion = new Version(_reg.getRegValue("Version",true));
+                //var fileVersion = new Version(FileVersionInfo.GetVersionInfo(Assembly.GetExecutingAssembly().Location).FileVersion);
+                Logger.Debug("Checking for agent upgrade " + _startupVersion + " vs " + regVersion);
+                if (regVersion.CompareTo(_startupVersion) != 0)
+                {
+                    Logger.Info("My file version has changed " + _startupVersion + " => " + regVersion +
+                                ", closing to re-open as new version.");
+                    Process.Start(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location) +
+                                  "\\BlitsMe.Agent.Upgrade.exe");
+                    Shutdown();
+                }
+            } catch(Exception e)
+            {
+                Logger.Error("Failed to check version and act : " + e.Message,e);
+            }
         }
 
         public String Version

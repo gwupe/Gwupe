@@ -9,6 +9,7 @@
     <MajorUpgrade
       DowngradeErrorMessage="A newer version of BlitsMe is already installed."
       Schedule="afterInstallInitialize"
+      
     />
     <MediaTemplate EmbedCab="yes" />
 
@@ -19,6 +20,29 @@
     <Property Id="ARPPRODUCTICON" Value="icon.ico" />
     <Property Id="ARPNOMODIFY" Value="yes" Secure="yes" />
     <Property Id="START_VIA_REGISTRY">1</Property>
+    <Property Id="MSIDISABLERMRESTART">0</Property>
+    <Binary Id="BlitsMeSetupCustomAction.dll"
+      SourceFile="$(var.BlitsMeSetupCustomAction.TargetDir)\BlitsMeSetupCustomAction.CA.dll" />
+    <CustomAction Id="CloseApps"
+      Return="check"
+      Execute="immediate"
+      BinaryKey="BlitsMeSetupCustomAction.dll"
+      DllEntry="CloseBlitsMeAgents" />
+    <CustomAction Id="StartAgent"
+      FileKey= "BlitsMe.Agent.exe"
+      ExeCommand="[INSTALLFOLDER]BlitsMe.Agent.exe"
+      Execute="immediate"
+      Return="asyncNoWait" />
+    <InstallExecuteSequence>
+      <!--
+      <Custom Action="CloseApps" Before="InstallValidate">
+        NOT(LogonUser=SYSTEM)
+      </Custom>
+      -->
+      <Custom Action="StartAgent" After="InstallFinalize">
+        NOT(LogonUser="SYSTEM")
+      </Custom>
+    </InstallExecuteSequence>
   </Product>
 
   <Fragment>
@@ -26,19 +50,36 @@
       <Directory Id="ProgramFilesFolder">
         <Directory Id="INSTALLFOLDER" Name="BlitsMe" />
       </Directory>
+      <Directory Id="ProgramMenuFolder">
+        <Directory Id="ApplicationProgramsFolder" Name="BlitsMe"/>
+      </Directory>
     </Directory>
-  </Fragment>
+    <DirectoryRef Id="ApplicationProgramsFolder">
+      <Component Id="ApplicationShortcut" Guid="a791d4fc-9be8-11e2-8dbf-12313b124ae5">
+        <Shortcut Id="ApplicationStartMenuShortcut"
+                  Name="BlitsMe"
+                  Description="BlitsMe"
+                  Target="[INSTALLFOLDER]BlitsMe.Agent.exe"
+                  WorkingDirectory="INSTALLFOLDER"/>
+        <RemoveFolder Id="ApplicationProgramsFolder" On="uninstall"/>
+        <RegistryValue Root="HKCU" Key="Software\Microsoft\BlitsMe" Name="installed" Type="integer" Value="1" KeyPath="yes"/>
+      </Component>
+    </DirectoryRef>
 
+  </Fragment>
   <Fragment>
     <ComponentGroup Id="ProductComponents" Directory="INSTALLFOLDER">
       <!-- TODO: Remove the comments around this Component element and the ComponentRef below in order to add resources to this installer. -->
       <Component Id="BlitsmeAgent">
-        <File Source="$(var.BlitsMeAgent.TargetPath)" KeyPath="yes" />
+        <File Id="BlitsMe.Agent.exe" Source="$(var.BlitsMeAgent.TargetPath)" KeyPath="yes" />
+      </Component>
+      <Component Id="BlitsMeUpgradeAgent">
+        <File Id="BlitsMe.Agent.Upgrade.exe" Source="$(var.BlitsMeUpgradeAgent.TargetPath)" KeyPath="yes" />
       </Component>
       <Component Id="BlitsMeAgentSupportScreen">
         <File Source="$(var.BlitsMeAgent.TargetDir)/bmss.exe" KeyPath="yes" />
       </Component>
-      <Component Id='c_BlitsMeService' Guid='62ed8518-b644-4943-be63-9eaf665941da'>
+      <Component Id='c_BlitsMeService' Guid="f55c56ab-9bc3-11e2-8dbf-12313b124ae5">
         <File Id='f_BlitsMeService' Name='BlitsMeService.exe' Vital='yes' Source="$(var.BlitsMeService.TargetPath)" KeyPath='yes'/>
         <ServiceInstall
           Id='BlitsMeService.exe'
@@ -55,6 +96,24 @@
          />
         <ServiceControl Id="StartService" Start="install" Stop="both" Remove="uninstall" Name="BlitsMeService" Wait="yes" />
       </Component>
+      <Component Id='c_BlitsMeSupportService' Guid="31C6FA52-DAA1-4E24-BBE2-85E64DC44B76">
+        <File Id='f_BlitsMeSupportService' Name='bmserver.exe' Vital='yes' Source="$(var.BlitsMeService.TargetDir)/bmserver.exe" KeyPath='yes'/>
+        <ServiceInstall
+          Id='bmserver.exe'
+          Type='ownProcess'
+          Arguments='-service'
+          Name="BlitsMeSupportService"
+          DisplayName="BlitsMe Support Service"
+          Description="Part of the BlitsMe Application Suite"
+          Interactive='no'
+          Start='auto'
+          Vital='yes'
+          Account="[SERVICEACCOUNT]"
+          Password="[SERVICEPASSWORD]"
+          ErrorControl='normal'
+         />
+        <ServiceControl Id="StartSupportService" Start="install" Stop="both" Remove="uninstall" Name="BlitsMeSupportService" Wait="yes" />
+      </Component>
       <Component Id="RegistryEntries">
         <RegistryKey Root="HKLM"
                      Key="Software\BlitsMe"
@@ -63,6 +122,7 @@
         </RegistryKey>
       </Component>
 
+      <ComponentRef Id="ApplicationShortcut" />
       <!-- Auto-start via Registry -->
       <Component Id="BlitsMeAutoStart" Guid="BC963821-18DF-492F-B95A-F7FBEB7DE8BD">
         <RegistryValue Id="BMAuthoStart.Reg" Root="HKMU" Action="write"
@@ -70,7 +130,34 @@
                        Name="BlitsMe Agent"
                        Value="[INSTALLFOLDER]BlitsMe.Agent.exe"
                        Type="string" />
-            <Condition>START_VIA_REGISTRY</Condition>
+        <Condition>START_VIA_REGISTRY</Condition>
+      </Component>
+      <Component Id="BlitsMeServerSettings" Guid="b8fe6dd9-9bcf-11e2-8dbf-12313b124ae5">
+        <RegistryValue Id="AcceptHttpConnections.Reg" Root="HKLM" Action="write"
+                     Key="Software\BlitsMe\Server"
+                     Name="AcceptHttpConnections"
+                     Value="0"
+                     Type="integer" />
+        <RegistryValue Id="AllowLoopback.Reg" Root="HKLM" Action="write"
+                       Key="Software\BlitsMe\Server"
+                       Name="AllowLoopback"
+                       Value="1"
+                       Type="integer" />
+        <RegistryValue Id="LoopbackOnly.Reg" Root="HKLM" Action="write"
+                       Key="Software\BlitsMe\Server"
+                       Name="LoopbackOnly"
+                       Value="1"
+                       Type="integer" />
+        <RegistryValue Id="RfbPort.Reg" Root="HKLM" Action="write"
+                       Key="Software\BlitsMe\Server"
+                       Name="RfbPort"
+                       Value="10230"
+                       Type="integer" />
+        <RegistryValue Id="UseVncAuthentication.Reg" Root="HKLM" Action="write"
+                       Key="Software\BlitsMe\Server"
+                       Name="UseVncAuthentication"
+                       Value="0"
+                       Type="integer" />
       </Component>
     </ComponentGroup>
   </Fragment>

@@ -16,6 +16,8 @@ namespace BlitsMe.Agent
         [STAThread]
         static void Main()
         {
+            // never run as system user
+            if (System.Environment.UserName.Equals("SYSTEM")) return;
             using (Mutex mutex = new Mutex(false, AppGuid))
             {
                 if (!mutex.WaitOne(0, false))

@@ -1,8 +1,11 @@
 ﻿using System;
+using System.IO;
 using System.Text.RegularExpressions;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
+using System.Windows.Media.Imaging;
+using BlitsMe.Agent.UI.WPF.Utils;
 using BlitsMe.Cloud.Exceptions;
 using BlitsMe.Cloud.Messaging.API;
 using BlitsMe.Cloud.Messaging.Response;
@@ -17,10 +20,12 @@ namespace BlitsMe.Agent.UI.WPF
     {
         private static readonly ILog Logger = LogManager.GetLogger(typeof(UserInfoWindow));
         private readonly BlitsMeClientAppContext _appContext;
+        private InputValidator validator;
 
         public UserInfoWindow(BlitsMeClientAppContext appContext)
         {
             this.InitializeComponent();
+            validator = new InputValidator(StatusText, ErrorText);
             _appContext = appContext;
             DataContext = _appContext.CurrentUserManager.CurrentUser;
             _appContext.CurrentUserManager.CurrentUserChanged += CurrentUserManagerOnCurrentUserChanged;
@@ -40,17 +45,17 @@ namespace BlitsMe.Agent.UI.WPF
 
         private void SaveChanges_Click(object sender, RoutedEventArgs e)
         {
-            resetError();
+            ResetStatus();
 
             bool dataOK = true;
-            dataOK = ValidateFieldNonEmpty(Email, Email.Text, EmailLabel, "Please enter your email address") && ValidateEmail() && dataOK;
-            dataOK = ValidateFieldNonEmpty(Location, Location.Text, LocationLabel, "Please enter your location", "City, Country") && dataOK;
+            dataOK = validator.ValidateFieldNonEmpty(Email, Email.Text, EmailLabel, "Please enter your email address") && validator.ValidateEmail(Email,EmailLabel) && dataOK;
+            dataOK = validator.ValidateFieldNonEmpty(Location, Location.Text, LocationLabel, "Please enter your location", "City, Country") && dataOK;
             if (PasswordChange != null && (bool)PasswordChange.IsChecked)
             {
-                dataOK = ValidateFieldNonEmpty(Password, Password.Password, PasswordLabel, "Please enter your password") && dataOK;
+                dataOK = validator.ValidateFieldNonEmpty(Password, Password.Password, PasswordLabel, "Please enter your password") && dataOK;
             }
-            dataOK = ValidateFieldNonEmpty(Lastname, Lastname.Text, NameLabel, "Please enter your last name", "Last") && dataOK;
-            dataOK = ValidateFieldNonEmpty(Firstname, Firstname.Text, NameLabel, "Please enter your first name", "First") && dataOK;
+            dataOK = validator.ValidateFieldNonEmpty(Lastname, Lastname.Text, NameLabel, "Please enter your last name", "Last") && dataOK;
+            dataOK = validator.ValidateFieldNonEmpty(Firstname, Firstname.Text, NameLabel, "Please enter your first name", "First") && dataOK;
 
             if (dataOK)
             {
@@ -67,7 +72,7 @@ namespace BlitsMe.Agent.UI.WPF
                             {
                                 Password.Background = new SolidColorBrush(Colors.MistyRose);
                                 PasswordLabel.Foreground = new SolidColorBrush(Colors.Red);
-                                setError("Cannot save changes, passwords don't match");
+                                validator.setError("Cannot save changes, passwords don't match");
                                 return;
                             }
                         }
@@ -97,28 +102,28 @@ namespace BlitsMe.Agent.UI.WPF
                                 Logger.Error("Attempt to update user failed : " + ex.Message, ex);
                                 if ("WILL_NOT_PROCESS_AUTH".Equals(ex.Response.error))
                                 {
-                                    setError("Incorrect password, please try again");
+                                    validator.setError("Incorrect password, please try again");
                                 }
                                 else
                                 {
-                                    setError("Failed to save changes to server");
+                                    validator.setError("Failed to save changes to server");
                                 }
                             }
                             catch (Exception ex)
                             {
                                 Logger.Error("Failed to save the current user : " + ex.Message, ex);
-                                setError("Failed to save changes to server");
+                                validator.setError("Failed to save changes to server");
                             }
                         }
                         else
                         {
-                            setError("Failed to authorise user details change");
+                            validator.setError("Failed to authorise user details change");
                         }
                     }
-                    catch(Exception ex)
+                    catch (Exception ex)
                     {
-                        Logger.Error("Failed to elevate privileges for user details change : " + ex.Message,ex);
-                        setError("Failed to elevate privileges to change details");
+                        Logger.Error("Failed to elevate privileges for user details change : " + ex.Message, ex);
+                        validator.setError("Failed to elevate privileges to change details");
                     }
                 }
             }
@@ -126,7 +131,7 @@ namespace BlitsMe.Agent.UI.WPF
 
         private void CancelChanges_Click(object sender, RoutedEventArgs e)
         {
-            resetError();
+            ResetStatus();
             try
             {
                 _appContext.CurrentUserManager.ReloadCurrentUser();
@@ -150,57 +155,15 @@ namespace BlitsMe.Agent.UI.WPF
             }
         }
 
-        private bool ValidateEmail()
+        private void ResetStatus()
         {
-            bool dataOK = true;
-            if (!Regex.IsMatch(Email.Text.Trim(),
-                               @"^(?("")(""[^""]+?""@)|(([0-9a-z]((\.(?!\.))|[-!#\$%&'\*\+/=\?\^`\{\}\|~\w])*)(?<=[0-9a-z])@))" +
-                               @"(?(\[)(\[(\d{1,3}\.){3}\d{1,3}\])|(([0-9a-z][-\w]*[0-9a-z]*\.)+[a-z0-9]{2,17}))$",
-                               RegexOptions.IgnoreCase))
-            {
-                setError("Please enter a valid email address");
-                Email.Background = new SolidColorBrush(Colors.MistyRose);
-                EmailLabel.Foreground = new SolidColorBrush(Colors.Red);
-                dataOK = false;
-            }
-            ;
-            return dataOK;
+            validator.ResetStatus(new Control[] { Email, Location, Password, Lastname, Firstname }, new[] { EmailLabel, LocationLabel, PasswordLabel, NameLabel, null });
         }
 
-        private bool ValidateFieldNonEmpty(Control textBox, string text, Label textLabel, string errorText, string defaultValue = "")
+        private void AvatarImage_Click(object sender, RoutedEventArgs e)
         {
-            if (text.Equals(defaultValue) || String.IsNullOrWhiteSpace(text))
-            {
-                textBox.Background = new SolidColorBrush(Colors.MistyRose);
-                textLabel.Foreground = new SolidColorBrush(Colors.Red);
-                setError(errorText);
-                return false;
-            }
-            return true;
-        }
-
-        private void setError(string errorText)
-        {
-            StatusText.Visibility = Visibility.Hidden;
-            ErrorText.Text = errorText;
-            ErrorText.Visibility = Visibility.Visible;
-        }
-
-        private void resetError()
-        {
-            StatusText.Visibility = Visibility.Hidden;
-            Email.Background = new SolidColorBrush(Colors.White);
-            EmailLabel.Foreground = new SolidColorBrush(Colors.Black);
-            Username.Background = new SolidColorBrush(Colors.White);
-            UsernameLabel.Foreground = new SolidColorBrush(Colors.Black);
-            Password.Background = new SolidColorBrush(Colors.White);
-            PasswordLabel.Foreground = new SolidColorBrush(Colors.Black);
-            Location.Background = new SolidColorBrush(Colors.White);
-            LocationLabel.Foreground = new SolidColorBrush(Colors.Black);
-            Firstname.Background = new SolidColorBrush(Colors.White);
-            Lastname.Background = new SolidColorBrush(Colors.White);
-            NameLabel.Foreground = new SolidColorBrush(Colors.Black);
-            ErrorText.Visibility = Visibility.Hidden;
+            var avatarWindow = new AvatarImageWindow(_appContext) { Owner = _appContext.UIDashBoard, ProfileImage = ImageStreamReader.CreateBitmapImage(_appContext.CurrentUserManager.CurrentUser.Avatar) };
+            avatarWindow.ShowDialog();
         }
     }
 }

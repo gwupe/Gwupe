@@ -17,7 +17,9 @@
     <Grid x:Name="LayoutRoot" Background="#FF2B519B">
         <Border Style="{StaticResource PersonBorder}" Width="450" Margin="0" VerticalAlignment="Center">
             <Grid Margin="4,0" HorizontalAlignment="Center" MinWidth="384.5" Background="White" Width="430" Height="327" VerticalAlignment="Top">
-                <Image Margin="10,21.5,0,0" Source="Images/silhoette.png" Width="150.5" VerticalAlignment="Top" HorizontalAlignment="Left" Height="150.5"/>
+                <Button  Margin="10,21.5,0,0" Width="150" VerticalAlignment="Top" HorizontalAlignment="Left" Height="150" Background="White"  Click="AvatarImage_Click">
+					<Image x:Name="AvatarImage" Source="{Binding Path=Avatar, Converter={StaticResource imageStreamReader}}" />
+				</Button>
                 <Grid Margin="0,10,0,0" HorizontalAlignment="Right" Width="266" VerticalAlignment="Top" Height="170.047">
                     <Label Content="Name" x:Name="NameLabel" HorizontalAlignment="Left" Margin="10,8.371,0,0" VerticalAlignment="Top" Width="68.123"/>
                     <TextBox Text="{Binding Firstname}" HorizontalAlignment="Left" Margin="83.123,10.371,0,0" TextWrapping="Wrap" VerticalAlignment="Top" x:Name="Firstname" Width="75" />
@@ -43,7 +45,7 @@
                 <TextBox Name="Description" HorizontalAlignment="Left" Height="66.04" TextWrapping="Wrap" Text="{Binding Description}" VerticalAlignment="Top" Width="410" Margin="10,202.96,0,0"/>
                 <TextBlock x:Name="ErrorText" Text="" Margin="10,274,10,0" VerticalAlignment="Top" Width="410" Foreground="Red" Height="17" TextAlignment="Center"/>
                 <TextBlock x:Name="StatusText" Text="" Margin="10,274,10,0" VerticalAlignment="Top" Width="410" Foreground="#FF2B519B" Height="17" TextAlignment="Center" FontWeight="Bold"/>
-                <Button Content="Revert Changes" Margin="108,0,222,9.04" VerticalAlignment="Bottom" Name="CancelChanges" Click="CancelChanges_Click" />
+                <Button Content="Reload Info" Margin="108,0,222,9.04" VerticalAlignment="Bottom" Name="CancelChanges" Click="CancelChanges_Click" />
                 <Button Content="Save Changes" Margin="213,0,117,9.04" VerticalAlignment="Bottom" x:Name="SaveChanges" Click="SaveChanges_Click" />
             </Grid>
         </Border>

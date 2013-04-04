@@ -155,9 +155,14 @@ namespace BlitsMe.Agent.Components.Person
             
         }
 
-        private void SetAvatarData(string avatarData)
+        public void SetAvatarData(string avatarData)
         {
-            Avatar = Convert.FromBase64String(avatarData);
+            Avatar = avatarData == null ? null : Convert.FromBase64String(avatarData);
+        }
+
+        public String GetAvatarData()
+        {
+            return _avatar == null ? null : Convert.ToBase64String(_avatar);
         }
 
         public override string ToString()

@@ -40,6 +40,22 @@
       <RefProjectOutputGroups>Binaries;Content;Satellites</RefProjectOutputGroups>
       <RefTargetDir>INSTALLFOLDER</RefTargetDir>
     </ProjectReference>
+    <ProjectReference Include="..\BlitsMeSetupCustomAction\BlitsMeSetupCustomAction.csproj">
+      <Name>BlitsMeSetupCustomAction</Name>
+      <Project>{8266da82-5594-4cea-bf14-413bd5fa95e5}</Project>
+      <Private>True</Private>
+      <DoNotHarvest>True</DoNotHarvest>
+      <RefProjectOutputGroups>Binaries;Content;Satellites</RefProjectOutputGroups>
+      <RefTargetDir>INSTALLFOLDER</RefTargetDir>
+    </ProjectReference>
+    <ProjectReference Include="..\BlitsMeUpgradeAgent\BlitsMeUpgradeAgent.csproj">
+      <Name>BlitsMeUpgradeAgent</Name>
+      <Project>{6702e385-f3b9-4b63-b094-70eeb5c6126b}</Project>
+      <Private>True</Private>
+      <DoNotHarvest>True</DoNotHarvest>
+      <RefProjectOutputGroups>Binaries;Content;Satellites</RefProjectOutputGroups>
+      <RefTargetDir>INSTALLFOLDER</RefTargetDir>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(WixTargetsPath)" />
   <!--

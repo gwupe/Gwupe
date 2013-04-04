@@ -47,10 +47,11 @@ namespace BlitsMe.Agent.Misc
             setRegValue(serverIPsKey, String.Join(",", newIPs.ToArray()));
         }
 
-        private string getRegValue(String regKey, bool hklm = false) {
+        public string getRegValue(String regKey, bool hklm = false) {
             try
             {
-                RegistryKey bmKey = hklm ? Registry.LocalMachine.OpenSubKey(root) : Registry.CurrentUser.OpenSubKey(root);
+                RegistryKey bmKey = hklm ? RegistryKey.OpenBaseKey(RegistryHive.LocalMachine, RegistryView.Registry32).OpenSubKey(root) : 
+                    RegistryKey.OpenBaseKey(RegistryHive.CurrentUser, RegistryView.Registry32).OpenSubKey(root);
                 String regValue = (String)bmKey.GetValue(regKey);
                 return regValue;
             }
@@ -63,7 +64,7 @@ namespace BlitsMe.Agent.Misc
 
         private void setRegValue(string regKey, string regValue) {
             try {
-                RegistryKey bmKey = Registry.CurrentUser.CreateSubKey(root, RegistryKeyPermissionCheck.ReadWriteSubTree);
+                RegistryKey bmKey = RegistryKey.OpenBaseKey(RegistryHive.CurrentUser, RegistryView.Registry32).CreateSubKey(root, RegistryKeyPermissionCheck.ReadWriteSubTree);
                 bmKey.SetValue(regKey, regValue);
             }
             catch (Exception e)

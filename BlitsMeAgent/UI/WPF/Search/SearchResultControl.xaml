@@ -18,7 +18,7 @@
     <ListBoxItem Padding="0,3,0,0">
         <Border Style="{StaticResource TeamMemberBorder}">
 			<Grid>
-                <Image Source="/BlitsMe.Agent;component/UI/WPF/Images/silhoette.png" Height="50" HorizontalAlignment="Left" Width="50" Margin="0,0,5,0"/>
+                <Image Source="{Binding Path=Person.Avatar, Converter={StaticResource imageStreamReader}}" Height="50" HorizontalAlignment="Left" Width="50" Margin="0,0,5,0" DataContext="{Binding}" />
                 <StackPanel Margin="53,0,0,0" Width="150" HorizontalAlignment="Left" VerticalAlignment="Center">
                     <TextBlock Style="{StaticResource TeamMemberNameText}" Text="{Binding Path=Person.Name, FallbackValue=FirstName LastName}" Width="150" TextAlignment="Center" />
                     <Grid Margin="0,0,0,0" Height="15" HorizontalAlignment="Center">

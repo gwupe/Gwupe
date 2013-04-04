@@ -1,27 +1,17 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using System.ComponentModel;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
-using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Shapes;
-using System.Windows.Threading;
-using BlitsMe.Agent.Annotations;
 using BlitsMe.Agent.Components;
-using BlitsMe.Agent.Components.Chat;
-using BlitsMe.Agent.Components.Functions;
-using BlitsMe.Agent.Components.Functions.FileSend;
-using BlitsMe.Agent.Components.Functions.RemoteDesktop;
 using BlitsMe.Agent.Components.Notification;
-using BlitsMe.Agent.Components.Person;
 using BlitsMe.Communication.P2P.RUDP.Tunnel.API;
 using Microsoft.Win32;
 using log4net;
-using Function = BlitsMe.Agent.Components.Functions.FileSend.Function;
 
 namespace BlitsMe.Agent.UI.WPF.Engage
 {
@@ -147,11 +137,11 @@ namespace BlitsMe.Agent.UI.WPF.Engage
         private void SendFileButtonClick(object sender, RoutedEventArgs e)
         {
             var fileDialog = new OpenFileDialog();
-            Nullable<bool> result = fileDialog.ShowDialog();
+            Nullable<bool> result = fileDialog.ShowDialog(_appContext.UIDashBoard);
             if(result == true)
             {
                 string filename = fileDialog.FileName;
-                ((Function) Engagement.getFunction("FileSend")).RequestFileSend(filename);
+                ((Components.Functions.FileSend.Function) Engagement.getFunction("FileSend")).RequestFileSend(filename);
             }
         }
 

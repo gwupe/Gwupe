@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.IO;
 using System.Net;
 using System.Reflection;
 using System.ServiceProcess;
@@ -14,12 +15,18 @@ namespace BlitsMe.Service
 {
     public partial class BMService : ServiceBase
     {
-        private const int _updateCheckInterval = 3600;
         private static readonly ILog Logger = LogManager.GetLogger(typeof(BMService));
         private readonly WebClient _webClient;
         private readonly Timer _updateCheck;
+#if DEBUG
+        private String updateServer = "s1.i.dev.blits.me";
+        private const int _updateCheckInterval = 120;
+#else
+        private String updateServer = "s1.i.blits.me";
+        private const int _updateCheckInterval = 3600;
+#endif
         // FIXME: Move this to a global config file at some point
-        private const string tvncServiceName = "tvnserver";
+        private const string tvncServiceName = "BlitsMeSupportService";
         private const int tvnTimeoutMS = 30000;
 
         public List<String> Servers;
@@ -29,7 +36,7 @@ namespace BlitsMe.Service
             InitializeComponent();
             XmlConfigurator.Configure();
             XmlConfigurator.Configure(Assembly.GetExecutingAssembly().GetManifestResourceStream("BlitsMe.Service.log4net.xml"));
-            Logger.Info("BlitsMeService Starting Up");
+            Logger.Info("BlitsMeService Starting Up [" + System.Environment.UserName + "]");
 #if DEBUG
             foreach (var manifestResourceName in Assembly.GetExecutingAssembly().GetManifestResourceNames())
             {
@@ -49,18 +56,23 @@ namespace BlitsMe.Service
         {
             try
             {
-                String versionInfomation = _webClient.DownloadString("http://s1.i.dev.blits.me/updates/update.txt");
+                Version assemblyVersion = new Version(FileVersionInfo.GetVersionInfo(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location) + "/BlitsMe.Agent.exe").FileVersion);
+                String versionInfomation = _webClient.DownloadString("http://" + updateServer + "/updates/update.txt?ver=" + assemblyVersion);
                 String[] versionParts = versionInfomation.Split('\n')[0].Split(':');
-                Version assemblyVersion = new Version(FileVersionInfo.GetVersionInfo(Assembly.GetExecutingAssembly().Location).ProductVersion);
                 Version updateVersion = new Version(versionParts[0]);
                 if (assemblyVersion.CompareTo(updateVersion) < 0)
                 {
                     Logger.Debug("Upgrade Available : " + assemblyVersion + " => " + updateVersion);
                     try
                     {
+                        
                         Logger.Info("Downloading update " + versionParts[1]);
-                        _webClient.DownloadFile("http://s1.i.dev.blits.me/updates/" + versionParts[1], System.IO.Path.GetTempPath() + "/" + versionParts[1]);
+                        String fileLocation = Path.GetTempPath() + versionParts[1];
+                        _webClient.DownloadFile("http://" + updateServer + "/updates/" + versionParts[1], fileLocation);
                         Logger.Info("Downloaded update " + versionParts[1]);
+                        String logfile = Path.GetTempPath() + "BlitsMeInstall.log";
+                        Logger.Info("Executing " + fileLocation + ", log file is " + logfile);
+                        Process.Start(fileLocation, "/qn /lvx " + logfile);
                     }
                     catch (Exception e)
                     {
@@ -97,14 +109,14 @@ namespace BlitsMe.Service
                 }
                 catch (Exception e)
                 {
-                    // TODO Log something here to event log
+                    Logger.Error("Failed to get the server IP's : " + e.Message,e);
                 }
             }
         }
 
         public List<String> getServerIPs()
         {
-            RegistryKey bmKey = Registry.LocalMachine.OpenSubKey(BLMRegistry.root);
+            RegistryKey bmKey = RegistryKey.OpenBaseKey(RegistryHive.LocalMachine, RegistryView.Registry32).OpenSubKey(BLMRegistry.root);
             String ipKey = (String)bmKey.GetValue(BLMRegistry.serverIPsKey);
             return new List<String>(ipKey.Split(','));
         }
@@ -114,13 +126,13 @@ namespace BlitsMe.Service
             // Lets add some
             try
             {
-                RegistryKey ips = Registry.LocalMachine.CreateSubKey(BLMRegistry.root, RegistryKeyPermissionCheck.ReadWriteSubTree);
+                RegistryKey ips = RegistryKey.OpenBaseKey(RegistryHive.LocalMachine, RegistryView.Registry32).CreateSubKey(BLMRegistry.root, RegistryKeyPermissionCheck.ReadWriteSubTree);
                 ips.SetValue(BLMRegistry.serverIPsKey, String.Join(",", newIPs.ToArray()));
             }
             catch (Exception e2)
             {
                 // TODO log something to event log
-                // BlitsMeLog.logger.WriteEntry("Failed to determine server IP's from the registry [" + e2.GetType() + "] : " + e2.Message);
+                Logger.Error("Failed to determine server IP's from the registry [" + e2.GetType() + "] : " + e2.Message,e2);
             }
         }
 
@@ -150,11 +162,11 @@ namespace BlitsMe.Service
             return true;
         }
 
+
         protected override void OnStop()
         {
             serviceHost.Close();
-            // TODO log something to event log
-            // BlitsMeLog.logger.WriteEntry("BlitsMe Service Shutting Down");
+            Logger.Info("BlitsMe Service Shutting Down");
         }
 
     }

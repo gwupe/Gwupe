@@ -4,7 +4,6 @@
 	xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
 	xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
 	xmlns:ed="http://schemas.microsoft.com/expression/2010/drawing"
-    xmlns:Utils="clr-namespace:BlitsMe.Agent.UI.WPF.Utils"
 	mc:Ignorable="d"
 	x:Class="BlitsMe.Agent.UI.WPF.Roster.RosterElement"
 	x:Name="UserControl">
@@ -12,6 +11,7 @@
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
                 <ResourceDictionary Source="../Style/RosterStyle.xaml" />
+                <ResourceDictionary Source="../Style/Style.xaml" />
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>
     </UserControl.Resources>

@@ -50,6 +50,7 @@ namespace BlitsMe.Agent.Managers
                             email = CurrentUser.Email,
                             user = CurrentUser.Username,
                             location = CurrentUser.Location,
+                            avatarData = CurrentUser.GetAvatarData()
                         },
                         tokenId = elevateTokenId,
                         securityKey = securityString,
