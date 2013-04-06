@@ -3,6 +3,7 @@ using System.Collections.ObjectModel;
 using System.Windows.Controls;
 using System.Windows.Input;
 using BlitsMe.Agent.Components.Chat;
+using BlitsMe.Agent.Components.Person;
 using log4net;
 
 namespace BlitsMe.Agent.UI.WPF.Engage
@@ -54,12 +55,14 @@ namespace BlitsMe.Agent.UI.WPF.Engage
         private SendMessageCommand _sendMessage;
         private readonly BlitsMeClientAppContext _appContext;
         private readonly ChatWindow _chatWindow;
+        public Person Self { get; private set; }
         public DispatchingCollection<ObservableCollection<ChatElement>, ChatElement> Exchange { get; private set; }
 
         public ChatWindowDataContext(BlitsMeClientAppContext appContext, ChatWindow chatWindow)
         {
             this._appContext = appContext;
             this._chatWindow = chatWindow;
+            Self = _appContext.CurrentUserManager.CurrentUser;
             this.Exchange =
                 new DispatchingCollection<ObservableCollection<ChatElement>, ChatElement>(
                     _chatWindow._chat.Conversation.Exchange, chatWindow.Dispatcher);

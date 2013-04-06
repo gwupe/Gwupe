@@ -30,10 +30,10 @@ namespace BlitsMe.ServiceProxy
             ((IClientChannel)channel).Close();
         }
 
-        public bool tvncStartService()
+        public bool VNCStartService()
         {
             IBlitsMeService channel = channelFactory.CreateChannel();
-            bool rv = channel.tvncStartService();
+            bool rv = channel.VNCStartService();
             ((IClientChannel)channel).Close();
 
             return rv;

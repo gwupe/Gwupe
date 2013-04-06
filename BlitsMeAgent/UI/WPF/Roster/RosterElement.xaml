@@ -4,6 +4,7 @@
 	xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
 	xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
 	xmlns:ed="http://schemas.microsoft.com/expression/2010/drawing"
+	xmlns:PresentationOptions="http://schemas.microsoft.com/winfx/2006/xaml/presentation/options"
 	mc:Ignorable="d"
 	x:Class="BlitsMe.Agent.UI.WPF.Roster.RosterElement"
 	x:Name="UserControl">
@@ -19,7 +20,14 @@
 	<Grid x:Name="LayoutRoot" Margin="0,1">
             <Border Style="{StaticResource TeamMemberBorder}">
                 <Grid Margin="0">
-                    <Image Source="{Binding Path=Person.Avatar, Converter={StaticResource imageStreamReader}}" Height="50" HorizontalAlignment="Left" Width="50" DataContext="{Binding}" />
+					<Rectangle x:Name="ImageContainer"
+      Width="50" Height="50" StrokeThickness="0" VerticalAlignment="center" HorizontalAlignment="Left" Margin="0">
+            <Rectangle.Fill>
+                <ImageBrush
+          Stretch="Uniform" ImageSource="{Binding Path=Person.Avatar, Converter={StaticResource imageStreamReader}}"
+          PresentationOptions:Freeze="True" />
+            </Rectangle.Fill>
+        </Rectangle>
                     <StackPanel Margin="53,0,0,0">
                         <TextBlock Style="{StaticResource TeamMemberNameText}" Text="{Binding Path=Person.Name, FallbackValue=FirstName LastName}" />
                         <Grid Margin="0,0,0,0" Height="15" HorizontalAlignment="Center">

@@ -9,6 +9,7 @@ using System.Windows.Media;
 using System.Windows.Shapes;
 using BlitsMe.Agent.Components;
 using BlitsMe.Agent.Components.Notification;
+using BlitsMe.Agent.Components.Person;
 using BlitsMe.Communication.P2P.RUDP.Tunnel.API;
 using Microsoft.Win32;
 using log4net;
@@ -23,10 +24,11 @@ namespace BlitsMe.Agent.UI.WPF.Engage
         internal Engagement Engagement { get; set; }
         private readonly BlitsMeClientAppContext _appContext;
         private ChatWindow _chatWindow;
-        private static readonly ILog Logger = LogManager.GetLogger(typeof (EngagementWindow));
+        private static readonly ILog Logger = LogManager.GetLogger(typeof(EngagementWindow));
         private readonly CollectionViewSource _notificationView;
+        private readonly EngagementWindowDataContext _ewDataContext;
 
-        internal EngagementWindow(BlitsMeClientAppContext appContext, DispatchingCollection<ObservableCollection<Notification>,Notification> notificationList, Engagement engagement)
+        internal EngagementWindow(BlitsMeClientAppContext appContext, DispatchingCollection<ObservableCollection<Notification>, Notification> notificationList, Engagement engagement)
         {
             InitializeComponent();
             _appContext = appContext;
@@ -34,12 +36,12 @@ namespace BlitsMe.Agent.UI.WPF.Engage
             engagement.PropertyChanged += EngagementOnPropertyChanged;
             try
             {
-                ((Components.Functions.RemoteDesktop.Function) Engagement.getFunction("RemoteDesktop")).RDPConnectionAccepted += EngagementOnRDPConnectionAccepted;
-                ((Components.Functions.RemoteDesktop.Function) Engagement.getFunction("RemoteDesktop")).RDPConnectionClosed += EngagementOnRDPConnectionClosed;
+                ((Components.Functions.RemoteDesktop.Function)Engagement.getFunction("RemoteDesktop")).RDPConnectionAccepted += EngagementOnRDPConnectionAccepted;
+                ((Components.Functions.RemoteDesktop.Function)Engagement.getFunction("RemoteDesktop")).RDPConnectionClosed += EngagementOnRDPConnectionClosed;
             }
             catch (Exception e)
             {
-                Logger.Error("Failed to link into function RemoteDesktop : " + e.Message,e);
+                Logger.Error("Failed to link into function RemoteDesktop : " + e.Message, e);
             }
             _notificationView = new CollectionViewSource { Source = notificationList };
             _notificationView.Filter += NotificationFilter;
@@ -49,6 +51,8 @@ namespace BlitsMe.Agent.UI.WPF.Engage
             SetTunnelIndicator(Engagement.IncomingTunnel, IncomingTunnelIndicator);
             SetTunnelIndicator(Engagement.OutgoingTunnel, OutgoingTunnelIndicator);
             ShowChat();
+            _ewDataContext = new EngagementWindowDataContext(_appContext, engagement);
+            DataContext = _ewDataContext;
         }
 
         private void EngagementOnRDPConnectionClosed(object sender, EventArgs eventArgs)
@@ -138,10 +142,10 @@ namespace BlitsMe.Agent.UI.WPF.Engage
         {
             var fileDialog = new OpenFileDialog();
             Nullable<bool> result = fileDialog.ShowDialog(_appContext.UIDashBoard);
-            if(result == true)
+            if (result == true)
             {
                 string filename = fileDialog.FileName;
-                ((Components.Functions.FileSend.Function) Engagement.getFunction("FileSend")).RequestFileSend(filename);
+                ((Components.Functions.FileSend.Function)Engagement.getFunction("FileSend")).RequestFileSend(filename);
             }
         }
 
@@ -151,9 +155,10 @@ namespace BlitsMe.Agent.UI.WPF.Engage
             try
             {
                 ((Components.Functions.RemoteDesktop.Function)Engagement.getFunction("RemoteDesktop")).RequestRDPSession();
-            } catch(Exception ex)
+            }
+            catch (Exception ex)
             {
-                Logger.Warn("Failed to get the client : " + ex.Message,ex);
+                Logger.Warn("Failed to get the client : " + ex.Message, ex);
             }
         }
 
@@ -183,6 +188,22 @@ namespace BlitsMe.Agent.UI.WPF.Engage
             {
                 eventArgs.Accepted = false;
             }
+        }
+    }
+
+    internal class EngagementWindowDataContext
+    {
+        private readonly BlitsMeClientAppContext _appContext;
+        public Person SecondParty { get; private set; }
+        private static readonly ILog Logger = LogManager.GetLogger(typeof(EngagementWindowDataContext));
+
+        public Engagement Engagement { get; private set; }
+
+        public EngagementWindowDataContext(BlitsMeClientAppContext appContext, Engagement engagement)
+        {
+            _appContext = appContext;
+            Engagement = engagement;
+            SecondParty = Engagement.SecondParty;
         }
     }
 }

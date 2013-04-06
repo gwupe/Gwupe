@@ -372,6 +372,7 @@
   <ItemGroup Condition=" '$(Configuration)' == 'Release' ">
     <EmbeddedResource Include="env\Release\log4net.xml">
       <LogicalName>BlitsMe.Agent.log4net.xml</LogicalName>
+      <SubType>Designer</SubType>
     </EmbeddedResource>
     <EmbeddedResource Include="env\Release\cacert.pem">
       <LogicalName>BlitsMe.Agent.cacert.pem</LogicalName>
@@ -494,7 +495,6 @@
     <Resource Include="Icons\icon-main.ico" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="env\Debug\log4net.xml" />
     <Resource Include="UI\WPF\Images\Blitsmewording200.png" />
     <EmbeddedResource Include="..\BlitsMeCommon\bin\$(Configuration)\BlitsMe.Common.dll" />
     <EmbeddedResource Include="..\BlitsMeCloudClient\bin\$(Configuration)\BlitsMe.Cloud.dll" />

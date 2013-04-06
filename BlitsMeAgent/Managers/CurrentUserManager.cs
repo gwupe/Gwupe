@@ -6,11 +6,13 @@ using BlitsMe.Agent.Components.Person;
 using BlitsMe.Cloud.Messaging.Elements;
 using BlitsMe.Cloud.Messaging.Request;
 using BlitsMe.Cloud.Messaging.Response;
+using log4net;
 
 namespace BlitsMe.Agent.Managers
 {
     internal class CurrentUserManager
     {
+        private static readonly ILog Logger = LogManager.GetLogger(typeof (CurrentUserManager));
         private readonly BlitsMeClientAppContext _appContext;
         private Person _currentUser;
         public event EventHandler CurrentUserChanged;
@@ -25,9 +27,16 @@ namespace BlitsMe.Agent.Managers
             _appContext = appContext;
         }
 
-        internal void SetUser(UserElement userElement)
+        internal void SetUser(UserElement userElement, String avatarData = null)
         {
             _currentUser = new Person(userElement);
+            try
+            {
+                if (!String.IsNullOrWhiteSpace(avatarData)) _currentUser.SetAvatarData(avatarData);
+            } catch(Exception e)
+            {
+                Logger.Error("Failed to set avatar data : " + e.Message,e);
+            }
             OnCurrentUserChanged(EventArgs.Empty);
         }
 
@@ -35,7 +44,7 @@ namespace BlitsMe.Agent.Managers
         {
             CurrentUserRq request = new CurrentUserRq();
             CurrentUserRs response = _appContext.ConnectionManager.Connection.Request<CurrentUserRq, CurrentUserRs>(request);
-            SetUser(response.userElement);
+            SetUser(response.userElement, response.avatarData);
         }
 
         internal void SaveCurrentUser(String elevateTokenId, String securityString, String password = null)

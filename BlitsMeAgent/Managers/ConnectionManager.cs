@@ -1,13 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Reflection;
 using System.Security.Cryptography.X509Certificates;
-using System.Text;
-using System.Threading;
 using BlitsMe.Agent.Misc;
 using BlitsMe.Cloud.Communication;
-using BlitsMe.Communication.P2P.Exceptions;
 using log4net;
 
 namespace BlitsMe.Agent.Managers
@@ -46,7 +42,7 @@ namespace BlitsMe.Agent.Managers
             stream.Read(certificateData, 0, certificateData.Length);
             X509Certificate2 cert = new X509Certificate2(certificateData);
             Logger.Info("Will use certificate from CA " + cert.GetNameInfo(X509NameType.SimpleName,true) + ", verified? " + cert.Verify());
-            _connection = new CloudConnection(_appContext.Version,GetServers());
+            _connection = new CloudConnection(_appContext.Version);//,GetServers());
             SaveServers(_connection.Servers);
         }
 

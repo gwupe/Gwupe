@@ -17,7 +17,7 @@ namespace BlitsMe.ServiceHost
         void saveServers(List<string> servers);
 
         [OperationContract]
-        bool tvncStartService();
+        bool VNCStartService();
     }
 
     public interface IBlitsMeServiceChannel : IBlitsMeService, System.ServiceModel.IClientChannel

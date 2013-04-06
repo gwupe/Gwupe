@@ -51,7 +51,8 @@ namespace BlitsMe.Agent
         public BlitsMeClientAppContext()
         {
             XmlConfigurator.Configure(Assembly.GetExecutingAssembly().GetManifestResourceStream("BlitsMe.Agent.log4net.xml"));
-            Logger.Info("BlitsMe.Agent Starting up");
+            _startupVersion = new Version(FileVersionInfo.GetVersionInfo(Assembly.GetExecutingAssembly().Location).FileVersion);
+            Logger.Info("BlitsMe.Agent Starting up [" + _startupVersion + "]");
 #if DEBUG
             foreach (var manifestResourceName in Assembly.GetExecutingAssembly().GetManifestResourceNames())
             {
@@ -70,7 +71,6 @@ namespace BlitsMe.Agent
             CurrentUserManager = new CurrentUserManager(this);
             EngagementManager.NewActivity += OnNewEngagementActivity;
             _systray = new SystemTray(this);
-            _startupVersion = new Version(FileVersionInfo.GetVersionInfo(Assembly.GetExecutingAssembly().Location).FileVersion);
             _upgradeCheckTimer = new Timer(60000);
             _upgradeCheckTimer.Elapsed += UpgradeCheckTimerOnElapsed;
             _upgradeCheckTimer.Enabled = true;

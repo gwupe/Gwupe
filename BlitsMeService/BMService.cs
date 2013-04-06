@@ -19,24 +19,26 @@ namespace BlitsMe.Service
         private readonly WebClient _webClient;
         private readonly Timer _updateCheck;
 #if DEBUG
-        private String updateServer = "s1.i.dev.blits.me";
-        private const int _updateCheckInterval = 120;
+        private const String UpdateServer = "s1.i.dev.blits.me";
+        private const int UpdateCheckInterval = 120;
+        private const String BuildMarker = "_Dev";
 #else
-        private String updateServer = "s1.i.blits.me";
-        private const int _updateCheckInterval = 3600;
+        private const String UpdateServer = "s1.i.blits.me";
+        private const int UpdateCheckInterval = 3600;
+        private const String BuildMarker = "";
 #endif
         // FIXME: Move this to a global config file at some point
-        private const string tvncServiceName = "BlitsMeSupportService";
-        private const int tvnTimeoutMS = 30000;
+        private const string VncServiceName = "BlitsMeSupportService" + BuildMarker;
+        private const int VncServiceTimeoutMs = 30000;
 
         public List<String> Servers;
-        private System.ServiceModel.ServiceHost serviceHost;
+        private System.ServiceModel.ServiceHost _serviceHost;
         public BMService()
         {
             InitializeComponent();
             XmlConfigurator.Configure();
             XmlConfigurator.Configure(Assembly.GetExecutingAssembly().GetManifestResourceStream("BlitsMe.Service.log4net.xml"));
-            Logger.Info("BlitsMeService Starting Up [" + System.Environment.UserName + "]");
+            Logger.Info("BlitsMeService Starting Up [" + System.Environment.UserName + ", " + new Version(FileVersionInfo.GetVersionInfo(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location) + "/BlitsMe.Agent.exe").FileVersion) +"]");
 #if DEBUG
             foreach (var manifestResourceName in Assembly.GetExecutingAssembly().GetManifestResourceNames())
             {
@@ -47,7 +49,7 @@ namespace BlitsMe.Service
             _webClient = new WebClient();
             CheckForNewVersion();
             // check for updates every interval
-            _updateCheck = new Timer(_updateCheckInterval*1000);
+            _updateCheck = new Timer(UpdateCheckInterval*1000);
             _updateCheck.Elapsed += delegate { CheckForNewVersion(); };
             _updateCheck.Start();
         }
@@ -57,7 +59,7 @@ namespace BlitsMe.Service
             try
             {
                 Version assemblyVersion = new Version(FileVersionInfo.GetVersionInfo(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location) + "/BlitsMe.Agent.exe").FileVersion);
-                String versionInfomation = _webClient.DownloadString("http://" + updateServer + "/updates/update.txt?ver=" + assemblyVersion);
+                String versionInfomation = _webClient.DownloadString("http://" + UpdateServer + "/updates/update.txt?ver=" + assemblyVersion);
                 String[] versionParts = versionInfomation.Split('\n')[0].Split(':');
                 Version updateVersion = new Version(versionParts[0]);
                 if (assemblyVersion.CompareTo(updateVersion) < 0)
@@ -68,7 +70,7 @@ namespace BlitsMe.Service
                         
                         Logger.Info("Downloading update " + versionParts[1]);
                         String fileLocation = Path.GetTempPath() + versionParts[1];
-                        _webClient.DownloadFile("http://" + updateServer + "/updates/" + versionParts[1], fileLocation);
+                        _webClient.DownloadFile("http://" + UpdateServer + "/updates/" + versionParts[1], fileLocation);
                         Logger.Info("Downloaded update " + versionParts[1]);
                         String logfile = Path.GetTempPath() + "BlitsMeInstall.log";
                         Logger.Info("Executing " + fileLocation + ", log file is " + logfile);
@@ -80,12 +82,12 @@ namespace BlitsMe.Service
                     }
                 } else
                 {
-                    Logger.Debug("No update available, current version " + assemblyVersion + ", available version " + updateVersion + ", checking again in " + (_updateCheckInterval/60) + " minutes.");
+                    Logger.Debug("No update available, current version " + assemblyVersion + ", available version " + updateVersion + ", checking again in " + (UpdateCheckInterval/60) + " minutes.");
                 }
             }
             catch (Exception e)
             {
-                Logger.Error("Failed to check for update : " + e.Message, e);
+                Logger.Warn("Failed to check for update : " + e.Message, e);
             }
         }
 
@@ -94,8 +96,8 @@ namespace BlitsMe.Service
             initServers();
             // do we need this connection?
             //connection = new CloudConnection(servers);
-            serviceHost = new System.ServiceModel.ServiceHost(new BlitsMeService(this), new Uri("net.pipe://localhost/BlitsMeService"));
-            serviceHost.Open();
+            _serviceHost = new System.ServiceModel.ServiceHost(new BlitsMeService(this), new Uri("net.pipe://localhost/BlitsMeService" + BuildMarker));
+            _serviceHost.Open();
         }
 
         private void initServers()
@@ -136,26 +138,26 @@ namespace BlitsMe.Service
             }
         }
 
-        public bool tvncStartService()
+        public bool VNCStartService()
         {
-            ServiceController service = new ServiceController(tvncServiceName);
+            ServiceController service = new ServiceController(VncServiceName);
 
             try
             {
                 if (service.Status != ServiceControllerStatus.Running)
                 {
                     service.Start();
-                    service.WaitForStatus(ServiceControllerStatus.Running, TimeSpan.FromMilliseconds(tvnTimeoutMS));
+                    service.WaitForStatus(ServiceControllerStatus.Running, TimeSpan.FromMilliseconds(VncServiceTimeoutMs));
                 }
             }
             catch (System.ServiceProcess.TimeoutException e)
             {
-                Logger.Error("TightVNC service failed to start in a reasonable time : " + e.Message,e);
+                Logger.Error("VNCServer service failed to start in a reasonable time : " + e.Message,e);
                 return false;
             }
             catch (Exception e)
             {
-                Logger.Error("TightVNC service failed to start : " + e.Message, e);
+                Logger.Error("VNCServer service failed to start : " + e.Message, e);
                 return false;
             }
 
@@ -165,7 +167,7 @@ namespace BlitsMe.Service
 
         protected override void OnStop()
         {
-            serviceHost.Close();
+            _serviceHost.Close();
             Logger.Info("BlitsMe Service Shutting Down");
         }
 

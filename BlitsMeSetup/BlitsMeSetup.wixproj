@@ -14,11 +14,16 @@
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|x86' ">
     <OutputPath>bin\$(Configuration)\</OutputPath>
     <IntermediateOutputPath>obj\$(Configuration)\</IntermediateOutputPath>
-    <DefineConstants>Debug</DefineConstants>
+    <DefineConstants>Debug;env=Debug;upgradeCode=60D58491-8172-4BF9-B2C5-CA405A5EA269;buildMarker=_Dev</DefineConstants>
+    <WixVariables>
+    </WixVariables>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|x86' ">
     <OutputPath>bin\$(Configuration)\</OutputPath>
     <IntermediateOutputPath>obj\$(Configuration)\</IntermediateOutputPath>
+    <WixVariables>
+    </WixVariables>
+    <DefineConstants>env=Release;upgradeCode=53404183-1482-4C07-BBD0-F4F4FB6B3BEF;buildMarker=</DefineConstants>
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="Product.wxs" />

@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <log4net>
     <root>
-      <level value="DEBUG" />
+      <level value="INFO" />
       <appender-ref ref="LogFileAppender" />
     </root>
     <appender name="LogFileAppender" type="log4net.Appender.RollingFileAppender" >

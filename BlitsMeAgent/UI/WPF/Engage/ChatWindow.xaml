@@ -3,6 +3,7 @@
 	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
 	xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
 	xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+	xmlns:PresentationOptions="http://schemas.microsoft.com/winfx/2006/xaml/presentation/options"
 	mc:Ignorable="d"
 	x:Class="BlitsMe.Agent.UI.WPF.Engage.ChatWindow"
 	x:Name="UserControl"
@@ -68,7 +69,14 @@
                     <DropShadowEffect/>
                 </Image.Effect>
             </Image>
-            <Image Height="50" Width="50" HorizontalAlignment="Right" Margin="0,0,12,23" VerticalAlignment="Bottom" Source="/BlitsMe.Agent;component/Images/1170492_woman_smiling_at_camera.jpg"/>
+			<Rectangle x:Name="ImageContainer"
+      Width="50" Height="50" StrokeThickness="0" HorizontalAlignment="Right" Margin="0,0,12,23" VerticalAlignment="Bottom">
+            <Rectangle.Fill>
+                <ImageBrush
+          Stretch="Uniform" ImageSource="{Binding Path=Self.Avatar, Converter={StaticResource imageStreamReader}}"
+          PresentationOptions:Freeze="True" />
+            </Rectangle.Fill>
+        </Rectangle>
             <TextBox x:Name="messageBox" Margin="20,19,144,23" BorderThickness="0" SpellCheck.IsEnabled="True" VerticalScrollBarVisibility="Auto">
                 <TextBox.InputBindings>
                     <KeyBinding Key="Enter" Command="{Binding SendMessage}" />

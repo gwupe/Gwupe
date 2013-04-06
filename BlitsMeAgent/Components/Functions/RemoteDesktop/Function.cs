@@ -66,7 +66,7 @@ namespace BlitsMe.Agent.Components.Functions.RemoteDesktop
             _engagement.Chat.LogSystemMessage("You accepted the desktop assistance request from " + _engagement.SecondParty.Name);
             try
             {
-                if (_appContext.BlitsMeServiceProxy.tvncStartService())
+                if (_appContext.BlitsMeServiceProxy.VNCStartService())
                 {
                     Server.Start();
                 }

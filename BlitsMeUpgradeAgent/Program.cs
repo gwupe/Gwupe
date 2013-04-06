@@ -20,7 +20,6 @@ namespace BlitsMe.Agent.Upgrade
             if (System.Environment.UserName.Equals("SYSTEM")) return;
             Process[] prs = Process.GetProcesses();
 
-            Console.Out.WriteLine("TEST");
             foreach (Process pr in prs)
             {
                 if (pr.ProcessName == "BlitsMe.Agent" && (Environment.UserDomainName + "\\" + Environment.UserName).Equals(GetProcessOwner(pr.Id)))
