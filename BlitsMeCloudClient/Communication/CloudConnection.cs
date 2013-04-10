@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Security.Cryptography.X509Certificates;
 using System.Threading;
 using BlitsMe.Cloud.Messaging.API;
 using BlitsMe.Cloud.Exceptions;
@@ -18,7 +19,7 @@ namespace BlitsMe.Cloud.Communication
 #else
         private static readonly List<string> DefaultIPs = new List<String>(new String[] { "s1.i.blits.me", "s2.i.blits.me", "s3.i.blits.me" });
 #endif
-        private static readonly List<int> DefaultPorts = new List<int>(new int[] { 8443 });
+        private static readonly List<int> DefaultPorts = new List<int>(new int[] { 443 });
         private readonly ConnectionMaintainer _connectionMaintainer;
         private readonly Thread _connectionMaintainerThread;
         public List<string> Servers;
@@ -54,25 +55,25 @@ namespace BlitsMe.Cloud.Communication
             }
         }
 
-        public CloudConnection(String version)
-            : this(version, DefaultIPs, DefaultPorts)
+        public CloudConnection(String version, X509Certificate2 cert)
+            : this(version, DefaultIPs, DefaultPorts, cert)
         {
         }
 
-        public CloudConnection(String version, List<string> servers)
-            : this(version, servers, DefaultPorts)
+        public CloudConnection(String version, List<string> servers, X509Certificate2 cert)
+            : this(version, servers, DefaultPorts, cert)
         {
         }
 
 
-        public CloudConnection(String version, List<string> connectServers, List<int> connectPorts)
+        public CloudConnection(String version, List<string> connectServers, List<int> connectPorts, X509Certificate2 cert)
         {
             Servers = (connectServers == null || connectServers.Count == 0) ? DefaultIPs : connectServers;
             Ports = (connectPorts == null || connectPorts.Count == 0) ? DefaultPorts : connectPorts;
 #if DEBUG
             Logger.Debug("Setting up communication with the cloud servers");
 #endif
-            _connectionMaintainer = new ConnectionMaintainer(version, Servers, Ports);
+            _connectionMaintainer = new ConnectionMaintainer(version, Servers, Ports, cert);
             _connectionMaintainer.Disconnect += (sender, args) => OnDisconnect(args);
             _connectionMaintainer.Connect += (sender, args) => OnConnect(args);
             _connectionMaintainerThread = new Thread(_connectionMaintainer.run) { IsBackground = true, Name = "_connectionMaintainerThread"};

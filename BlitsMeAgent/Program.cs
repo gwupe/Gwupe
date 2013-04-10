@@ -8,7 +8,12 @@ namespace BlitsMe.Agent
 {
     static class Program
     {
-        private const string AppGuid = "BlitsMe.Agent.Application";
+#if DEBUG
+        public const String BuildMarker = "_Dev";
+#else
+        public const String BuildMarker = "";
+#endif
+        private const string AppGuid = "BlitsMe.Agent" + BuildMarker + ".Application";
 
         /// <summary>
         /// The main entry point for the application.
@@ -17,12 +22,12 @@ namespace BlitsMe.Agent
         static void Main()
         {
             // never run as system user
-            if (System.Environment.UserName.Equals("SYSTEM")) return;
+            if (Environment.UserName.Equals("SYSTEM")) return;
             using (Mutex mutex = new Mutex(false, AppGuid))
             {
                 if (!mutex.WaitOne(0, false))
                 {
-                    MessageBox.Show("BlitsMe Is already running.");
+                    MessageBox.Show("BlitsMe" + BuildMarker + " Is already running.");
                     return;
                 }
 

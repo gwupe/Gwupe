@@ -1,5 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Net.Security;
+using System.Reflection;
+using System.Security.Cryptography.X509Certificates;
 using System.Threading;
 using BlitsMe.Cloud.Messaging;
 using BlitsMe.Cloud.Messaging.Request;
@@ -24,6 +27,7 @@ namespace BlitsMe.Cloud.Communication
         private List<Uri> servers;
         public event ConnectionEvent Disconnect;
         public event ConnectionEvent Connect;
+        private X509Certificate2 cacert;
 
         public AutoResetEvent connectionOpenEvent = new AutoResetEvent(false);
         public AutoResetEvent connectionCloseEvent = new AutoResetEvent(false);
@@ -45,9 +49,10 @@ namespace BlitsMe.Cloud.Communication
             }
         }
 
-        public ConnectionMaintainer(String version, List<String> destinations, List<Int32> ports)
+        public ConnectionMaintainer(String version, List<String> destinations, List<Int32> ports, X509Certificate2 cert)
         {
             this.protocol = "message";
+            cacert = cert;
             servers = new List<Uri>();
             foreach (Int32 port in ports)
             {
@@ -166,13 +171,20 @@ namespace BlitsMe.Cloud.Communication
 
         public void connect(Uri uri)
         {
-            connection = new WebSocketClientSSLConnection();
+            connection = new WebSocketClientSSLConnection(cacert);
             connection.ConnectionClose += wsMessageHandler.onClose;
             connection.ConnectionOpen += wsMessageHandler.onOpen;
             connection.ConnectionRead += wsMessageHandler.onMessage;
-            if (!connection.Start(uri.Host, uri.Port.ToString(), uri.PathAndQuery, true, "", protocol))
+            try
             {
-                throw new IOException("Unknown error connecting to " + uri.ToString());
+                if (!connection.Start(uri.Host, uri.Port.ToString(), uri.PathAndQuery, true, "", protocol))
+                {
+                    throw new IOException("Unknown error connecting to " + uri.ToString());
+                }
+            } catch(Exception e)
+            {
+                logger.Error("Failed to connect to server [" + uri +"] : " + e.Message);
+                throw new IOException("Failed to connect to server [" + uri + "] : " + e.Message, e);
             }
             connectionEstablished = true;
             OnConnect(new EventArgs());
@@ -197,9 +209,27 @@ namespace BlitsMe.Cloud.Communication
 
     internal class WebSocketClientSSLConnection : WebSocketClientConnection
     {
+        private readonly X509Certificate2 _cacert;
+
+        public WebSocketClientSSLConnection(X509Certificate2 cacert) : base()
+        {
+            _cacert = cacert;
+        }
+
+
         protected override bool validateServerCertificate(object sender, System.Security.Cryptography.X509Certificates.X509Certificate certificate, System.Security.Cryptography.X509Certificates.X509Chain chain, System.Net.Security.SslPolicyErrors sslPolicyErrors)
         {
-            return true;
+            bool isValid = false;
+            if (sslPolicyErrors == SslPolicyErrors.RemoteCertificateChainErrors)
+            {
+                X509Chain chain0 = new X509Chain();
+                chain0.ChainPolicy.RevocationMode = X509RevocationMode.NoCheck;
+                // add all your extra certificate chain
+                chain0.ChainPolicy.ExtraStore.Add(new X509Certificate2(_cacert));
+                chain0.ChainPolicy.VerificationFlags = X509VerificationFlags.AllowUnknownCertificateAuthority;
+                isValid = chain0.Build((X509Certificate2)certificate);
+            }
+            return isValid;
         }
     }
 }

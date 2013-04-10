@@ -52,7 +52,7 @@ namespace BlitsMe.Agent.Managers
             this._appContext = appContext;
             LoginOccurredLock = new Object();
             LogoutOccurredLock = new Object();
-            LoginDetails = new LoginDetails(_reg.username, _reg.passwordHash);
+            LoginDetails = new LoginDetails(_reg.Username, _reg.PasswordHash);
             // Event Handlers
             _appContext.ConnectionManager.Connect += Connected;
             _appContext.ConnectionManager.Disconnect += Disconnected;
@@ -157,8 +157,8 @@ namespace BlitsMe.Agent.Managers
 #endif
                 _loginWindow.SignalLoggingIn();
             }
-            LoginDetails.profile = _reg.profile;
-            LoginDetails.workstation = _reg.workstation;
+            LoginDetails.profile = _reg.Profile;
+            LoginDetails.workstation = _reg.Workstation;
             while (true)
             {
                 // Lets wait for the login required event
@@ -269,9 +269,9 @@ namespace BlitsMe.Agent.Managers
                     throw;
                 }
                 // Exception not thrown, login success, save details
-                _reg.username = LoginDetails.username;
-                _reg.passwordHash = LoginDetails.passwordHash;
-                _reg.profile = LoginDetails.profile = loginRs.profileId;
+                _reg.Username = LoginDetails.username;
+                _reg.PasswordHash = LoginDetails.passwordHash;
+                _reg.Profile = LoginDetails.profile = loginRs.profileId;
                 LoginDetails.shortCode = loginRs.shortCode;
                 IsLoggedIn = true;
                 // Notify all threads waiting for login

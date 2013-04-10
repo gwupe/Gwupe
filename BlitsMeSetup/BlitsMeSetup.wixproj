@@ -14,7 +14,7 @@
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|x86' ">
     <OutputPath>bin\$(Configuration)\</OutputPath>
     <IntermediateOutputPath>obj\$(Configuration)\</IntermediateOutputPath>
-    <DefineConstants>Debug;env=Debug;upgradeCode=60D58491-8172-4BF9-B2C5-CA405A5EA269;buildMarker=_Dev</DefineConstants>
+    <DefineConstants>Debug;env=Debug;upgradeCode=60D58491-8172-4BF9-B2C5-CA405A5EA269;buildMarker=_Dev;VNCServerPort=10231</DefineConstants>
     <WixVariables>
     </WixVariables>
   </PropertyGroup>
@@ -23,7 +23,7 @@
     <IntermediateOutputPath>obj\$(Configuration)\</IntermediateOutputPath>
     <WixVariables>
     </WixVariables>
-    <DefineConstants>env=Release;upgradeCode=53404183-1482-4C07-BBD0-F4F4FB6B3BEF;buildMarker=</DefineConstants>
+    <DefineConstants>env=Release;upgradeCode=53404183-1482-4C07-BBD0-F4F4FB6B3BEF;buildMarker=;VNCServerPort=10230</DefineConstants>
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="Product.wxs" />
@@ -71,4 +71,21 @@
 	<Target Name="AfterBuild">
 	</Target>
 	-->
+  <Target Name="BeforeBuild">
+    <GetAssemblyIdentity AssemblyFiles="$(SolutionDir)BlitsMeAgent\bin\$(Configuration)\BlitsMe.Agent.exe">
+      <Output TaskParameter="Assemblies" ItemName="AssemblyVersions" />
+    </GetAssemblyIdentity>
+    <FormatVersion Version="%(AssemblyVersions.Version)" Revision="0">
+      <Output TaskParameter="OutputVersion" PropertyName="RealVersion" />
+    </FormatVersion>
+    <CreateProperty Value="$(OutputName)-$(RealVersion)">
+      <Output TaskParameter="Value" PropertyName="TargetName" />
+    </CreateProperty>
+    <CreateProperty Value="$(TargetName)$(TargetExt)">
+      <Output TaskParameter="Value" PropertyName="TargetFileName" />
+    </CreateProperty>
+    <CreateProperty Value="$(TargetDir)$(TargetFileName)">
+      <Output TaskParameter="Value" PropertyName="TargetPath" />
+    </CreateProperty>
+  </Target>
 </Project>

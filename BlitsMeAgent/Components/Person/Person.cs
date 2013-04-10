@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using BlitsMe.Agent.Components.Person.Presence;
 using BlitsMe.Cloud.Messaging.Elements;
 using log4net;
 
@@ -72,11 +73,10 @@ namespace BlitsMe.Agent.Components.Person
             set { _joined = value; OnPropertyChanged("Joined"); }
         }
 
-        private Presence _presence;
-        public Presence Presence
+        private readonly MultiPresence _presence;
+        internal IPresence Presence
         {
             get { return _presence; }
-            set { _presence = value; OnPropertyChanged("Presence"); }
         }
 
         public IList<String> Groups { get; set; }
@@ -118,7 +118,7 @@ namespace BlitsMe.Agent.Components.Person
 
         public Person()
         {
-
+            this._presence = new MultiPresence();
         }
 
         public Person(RosterElement rosterElement) : this(rosterElement.userElement)
@@ -126,10 +126,10 @@ namespace BlitsMe.Agent.Components.Person
             // Set backing field directly, no listeners yet
             this.Groups = rosterElement.groups;
             this._shortCode = rosterElement.shortCode;
-            this._presence = new Presence(rosterElement.presence);
+            _presence.AddPresence("default",new Presence.Presence(rosterElement.presence));
         }
 
-        public Person(UserElement userElement)
+        public Person(UserElement userElement) : this()
         {
             this._name = userElement.name;
             this._username = userElement.user.Split(new char[] {'@'})[0];
@@ -153,6 +153,12 @@ namespace BlitsMe.Agent.Components.Person
                 }
             }
             
+        }
+
+        internal void SetPresence(String resource, IPresence presence)
+        {
+            _presence.AddPresence(resource,presence);
+            OnPropertyChanged("Presence");
         }
 
         public void SetAvatarData(string avatarData)

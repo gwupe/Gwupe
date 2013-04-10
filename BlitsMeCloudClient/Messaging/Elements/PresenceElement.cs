@@ -12,5 +12,6 @@ namespace BlitsMe.Cloud.Messaging.Elements
         [DataMember] public String type;
         [DataMember] public String mode;
         [DataMember] public String status;
+        [DataMember] public int priority;
     }
 }

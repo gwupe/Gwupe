@@ -159,6 +159,11 @@
     <EmbeddedResource Include="..\BlitsMeCommon\log4net.dll" />
   </ItemGroup>
   <ItemGroup>
+    <AvailableItemName Include="RootContent">
+      <Visible>false</Visible>
+    </AvailableItemName>
+  </ItemGroup>
+  <ItemGroup>
     <BootstrapperPackage Include=".NETFramework,Version=v4.0,Profile=Client">
       <Visible>False</Visible>
       <ProductName>Microsoft .NET Framework 4 Client Profile %28x86 and x64%29</ProductName>
@@ -184,11 +189,13 @@
     <EmbeddedResource Include="env\Debug\log4net.xml">
       <LogicalName>BlitsMe.Service.log4net.xml</LogicalName>
     </EmbeddedResource>
+    <RootContent Include="env\Debug\bmserver.exe" />
   </ItemGroup>
   <ItemGroup Condition=" '$(Configuration)' == 'Release' ">
     <EmbeddedResource Include="env\Release\log4net.xml">
       <LogicalName>BlitsMe.Service.log4net.xml</LogicalName>
     </EmbeddedResource>
+    <RootContent Include="env\Release\bmserver.exe" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Properties\Settings.settings">
@@ -203,11 +210,6 @@
       <Private>False</Private>
     </ProjectReference>
   </ItemGroup>
-  <ItemGroup>
-    <Content Include="bmserver.exe">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
@@ -216,4 +218,7 @@
   <Target Name="AfterBuild">
   </Target>
   -->
+  <Target Name="AfterBuild">
+    <Copy DestinationFolder="$(OutputPath)" SourceFiles="@(RootContent)" SkipUnchangedFiles="true" />
+  </Target>
 </Project>

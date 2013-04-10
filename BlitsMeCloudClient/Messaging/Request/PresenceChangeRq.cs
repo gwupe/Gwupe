@@ -23,5 +23,8 @@ namespace BlitsMe.Cloud.Messaging.Request
 
         [DataMember]
         public String shortCode { get; set; }
+
+        [DataMember]
+        public String resource { get; set; }
     }
 }

@@ -5,6 +5,7 @@ using System.IO;
 using System.Net;
 using System.Reflection;
 using System.ServiceProcess;
+using System.Text.RegularExpressions;
 using System.Timers;
 using Microsoft.Win32;
 using BlitsMe.Service.ServiceHost;
@@ -21,24 +22,27 @@ namespace BlitsMe.Service
 #if DEBUG
         private const String UpdateServer = "s1.i.dev.blits.me";
         private const int UpdateCheckInterval = 120;
-        private const String BuildMarker = "_Dev";
+        public const String BuildMarker = "_Dev";
 #else
         private const String UpdateServer = "s1.i.blits.me";
         private const int UpdateCheckInterval = 3600;
-        private const String BuildMarker = "";
+        public const String BuildMarker = "";
 #endif
         // FIXME: Move this to a global config file at some point
         private const string VncServiceName = "BlitsMeSupportService" + BuildMarker;
         private const int VncServiceTimeoutMs = 30000;
+        private String _version;
 
         public List<String> Servers;
         private System.ServiceModel.ServiceHost _serviceHost;
         public BMService()
         {
             InitializeComponent();
-            XmlConfigurator.Configure();
             XmlConfigurator.Configure(Assembly.GetExecutingAssembly().GetManifestResourceStream("BlitsMe.Service.log4net.xml"));
-            Logger.Info("BlitsMeService Starting Up [" + System.Environment.UserName + ", " + new Version(FileVersionInfo.GetVersionInfo(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location) + "/BlitsMe.Agent.exe").FileVersion) +"]");
+            _version = Regex.Replace(FileVersionInfo.GetVersionInfo(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location) +
+                                                   "/BlitsMe.Agent.exe").FileVersion, "\\.[0-9]+$", "");
+            Logger.Info("BlitsMeService Starting Up [" + System.Environment.UserName + ", " + _version + "]");
+            SaveVersion();
 #if DEBUG
             foreach (var manifestResourceName in Assembly.GetExecutingAssembly().GetManifestResourceNames())
             {
@@ -58,8 +62,8 @@ namespace BlitsMe.Service
         {
             try
             {
-                Version assemblyVersion = new Version(FileVersionInfo.GetVersionInfo(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location) + "/BlitsMe.Agent.exe").FileVersion);
-                String versionInfomation = _webClient.DownloadString("http://" + UpdateServer + "/updates/update.txt?ver=" + assemblyVersion);
+                Version assemblyVersion = new Version(_version);
+                String versionInfomation = _webClient.DownloadString("http://" + UpdateServer + "/updates/update.php?ver=" + assemblyVersion);
                 String[] versionParts = versionInfomation.Split('\n')[0].Split(':');
                 Version updateVersion = new Version(versionParts[0]);
                 if (assemblyVersion.CompareTo(updateVersion) < 0)
@@ -121,6 +125,19 @@ namespace BlitsMe.Service
             RegistryKey bmKey = RegistryKey.OpenBaseKey(RegistryHive.LocalMachine, RegistryView.Registry32).OpenSubKey(BLMRegistry.root);
             String ipKey = (String)bmKey.GetValue(BLMRegistry.serverIPsKey);
             return new List<String>(ipKey.Split(','));
+        }
+
+        private void SaveVersion()
+        {
+            try
+            {
+                RegistryKey root = RegistryKey.OpenBaseKey(RegistryHive.LocalMachine, RegistryView.Registry32).CreateSubKey(BLMRegistry.root, RegistryKeyPermissionCheck.ReadWriteSubTree);
+                root.SetValue(BLMRegistry.version, _version);
+            }
+            catch (Exception e)
+            {
+                Logger.Error("Failed to save version to registry : " + e.Message,e);
+            }
         }
 
         public void saveServerIPs(List<String> newIPs)

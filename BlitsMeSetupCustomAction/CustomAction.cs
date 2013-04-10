@@ -1,18 +1,18 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Diagnostics;
-using System.IO;
 using System.Linq;
 using System.Management;
-using System.Reflection;
-using System.Text;
-using System.Threading;
 using Microsoft.Deployment.WindowsInstaller;
 
 namespace BlitsMeSetupCustomAction
 {
     public class CustomActions
     {
+#if DEBUG
+        public const String BuildMarker = "_Dev";
+#else
+        public const String BuildMarker = "";
+#endif
         [CustomAction]
         public static ActionResult OpenBlitsMeAgentIfNotOpen(Session session)
         {
@@ -20,16 +20,25 @@ namespace BlitsMeSetupCustomAction
 
             foreach (Process pr in prs)
             {
-                if (pr.ProcessName == "BlitsMe.Agent" &&
-                    (Environment.UserDomainName + "\\" + Environment.UserName).Equals(GetProcessOwner(pr.Id)))
+                try
                 {
-                    return ActionResult.Success;
+                    if (pr.ProcessName == "BlitsMe.Agent" &&
+                        (ProgramFilesx86() + "\\BlitsMe" + BuildMarker + "\\BlitsMe.Agent.exe")
+                            .Equals(GetMainModuleFilepath(pr.Id)) &&
+                        (Environment.UserDomainName + "\\" + Environment.UserName).Equals(GetProcessOwner(pr.Id)))
+                    {
+                        return ActionResult.Success;
+                    }
+                }
+                catch (Exception e)
+                {
+                    session.Log("Problem accessing " + pr.ProcessName + " : " + e.Message);
                 }
             }
             // Now start BlitsMe
             try
             {
-                Process.Start(ProgramFilesx86() + "\\BlitsMe\\BlitsMe.Agent.exe");
+                Process.Start(ProgramFilesx86() + "\\BlitsMe" + BuildMarker + "\\BlitsMe.Agent.exe");
             }
             catch
             {
@@ -46,38 +55,56 @@ namespace BlitsMeSetupCustomAction
 
             foreach (Process pr in prs)
             {
-                if (pr.ProcessName == "BlitsMe.Agent")
+                try
                 {
-                    try
+                    if (pr.ProcessName == "BlitsMe.Agent" &&
+                        (ProgramFilesx86() + "\\BlitsMe" + BuildMarker + "\\BlitsMe.Agent.exe")
+                            .Equals(GetMainModuleFilepath(pr.Id)))
                     {
-                        pr.CloseMainWindow();
-                        pr.Close();
+                        try
+                        {
+                            pr.CloseMainWindow();
+                            pr.Close();
+                        }
+                        catch (Exception e)
+                        {
+                            session.Log("Exception caught: " + e.Message);
+                        }
                     }
-                    catch (Exception e)
-                    {
-                        session.Log("Exception caught: " + e.Message);
-                    }
+                }
+                catch (Exception e)
+                {
+                    session.Log("Problem accessing " + pr.ProcessName + " : " + e.Message);
                 }
             }
 
             prs = Process.GetProcesses();
             foreach (Process pr in prs)
             {
-                if (pr.ProcessName == "BlitsMe.Agent")
+                try
                 {
-                    session.Log("Agent is still alive and kicking so we gonna kill 'im after 5 seconds");
-                    if (!pr.WaitForExit(5000))
+                    if (pr.ProcessName == "BlitsMe.Agent" &&
+                        (ProgramFilesx86() + "\\BlitsMe" + BuildMarker + "\\BlitsMe.Agent.exe")
+                            .Equals(GetMainModuleFilepath(pr.Id)))
                     {
-                        session.Log("Agent: times up");
-                        try
+                        session.Log("Agent is still alive and kicking so we gonna kill 'im after 5 seconds");
+                        if (!pr.WaitForExit(5000))
                         {
-                            pr.Kill();
-                        }
-                        catch (Exception e)
-                        {
-                            session.Log("Exception caught: Failed to kill process");
+                            session.Log("Agent: times up");
+                            try
+                            {
+                                pr.Kill();
+                            }
+                            catch (Exception e)
+                            {
+                                session.Log("Exception caught: Failed to kill process");
+                            }
                         }
                     }
+                }
+                catch (Exception e)
+                {
+                    session.Log("Problem accessing " + pr.ProcessName + " : " + e.Message);
                 }
             }
 
@@ -113,6 +140,23 @@ namespace BlitsMeSetupCustomAction
             }
 
             return "NO OWNER";
+        }
+
+        private static string GetMainModuleFilepath(int processId)
+        {
+            string wmiQueryString = "SELECT ProcessId, ExecutablePath FROM Win32_Process WHERE ProcessId = " + processId;
+            using (var searcher = new ManagementObjectSearcher(wmiQueryString))
+            {
+                using (var results = searcher.Get())
+                {
+                    ManagementObject mo = results.Cast<ManagementObject>().FirstOrDefault();
+                    if (mo != null)
+                    {
+                        return (string)mo["ExecutablePath"];
+                    }
+                }
+            }
+            return null;
         }
     }
 }

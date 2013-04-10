@@ -177,7 +177,7 @@ namespace BlitsMe.Agent.Components.Functions.RemoteDesktop
                     String viewerExe = System.IO.Path.GetDirectoryName(Environment.GetCommandLineArgs()[0]) +
                                        "\\bmss.exe";
                     Logger.Debug("Checking the following location for the exe " + viewerExe);
-                    Process.Start(viewerExe, "-username=\"" + _engagement.SecondParty.Name + "\" 127.0.0.1:" + port);
+                    Process.Start(viewerExe, "-username=\"" + _engagement.SecondParty.Name + "\" -scale=auto 127.0.0.1:" + port);
                 }
                 catch (Exception e)
                 {

@@ -26,7 +26,7 @@ namespace BlitsMe.Agent.UI
                                                       Properties.Resources.icon_pulse_90,
                                                       Properties.Resources.icon_pulse_100
                                                   };
-        private static readonly string DefaultTooltip = "BlitsMe (Offline)";
+        private static readonly string DefaultTooltip = "BlitsMe" + Program.BuildMarker + " (Offline)";
         private System.ComponentModel.IContainer components;
         public NotifyIcon notifyIcon { get; set; }
         private Timer linkDownIconBlinker;
@@ -97,13 +97,20 @@ namespace BlitsMe.Agent.UI
                 if (!notifyIcon.Icon.Equals(IconConnected))
                 {
                     notifyIcon.Icon = IconConnected;
-                    notifyIcon.Text = "BlitsMe (Online)";
+                    notifyIcon.Text = "BlitsMe" + Program.BuildMarker + " (Online)";
                 }
             }
             else
             {
-                notifyIcon.Text = "BlitsMe (Connecting)";
-                notifyIcon.Icon = pulseIcon();
+                if (_appContext.ConnectionManager.Connection.isEstablished())
+                {
+                    notifyIcon.Text = "BlitsMe" + Program.BuildMarker + " (Logging In)";
+                    notifyIcon.Icon = pulseIcon();
+                } else
+                {
+                    notifyIcon.Text = "BlitsMe" + Program.BuildMarker + " (Connecting)";
+                    notifyIcon.Icon = pulseIcon();
+                }
             }
         }
 

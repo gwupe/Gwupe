@@ -173,7 +173,9 @@
     <Compile Include="Components\Notification\AddBuddyNotification.cs" />
     <Compile Include="Components\Notification\TrueFalseNotification.cs" />
     <Compile Include="Components\Person\Person.cs" />
-    <Compile Include="Components\Person\Presence.cs" />
+    <Compile Include="Components\Person\Presence\IPresence.cs" />
+    <Compile Include="Components\Person\Presence\MultiPresence.cs" />
+    <Compile Include="Components\Person\Presence\Presence.cs" />
     <Compile Include="Components\Processors\ChatMessageProcessor.cs" />
     <Compile Include="Components\Processors\ListenHandshakeProcessor.cs" />
     <Compile Include="Components\Processors\InitUDPConnectionProcessor.cs" />
@@ -361,6 +363,11 @@
       <SubType>Designer</SubType>
     </Page>
   </ItemGroup>
+  <ItemGroup>
+    <AvailableItemName Include="RootContent">
+      <Visible>false</Visible>
+    </AvailableItemName>
+  </ItemGroup>
   <ItemGroup Condition=" '$(Configuration)' == 'Debug' ">
     <EmbeddedResource Include="env\Debug\cacert.pem">
       <LogicalName>BlitsMe.Agent.cacert.pem</LogicalName>
@@ -368,6 +375,9 @@
     <EmbeddedResource Include="env\Debug\log4net.xml">
       <LogicalName>BlitsMe.Agent.log4net.xml</LogicalName>
     </EmbeddedResource>
+    <RootContent Include="env\Debug\bmss.exe">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </RootContent>
   </ItemGroup>
   <ItemGroup Condition=" '$(Configuration)' == 'Release' ">
     <EmbeddedResource Include="env\Release\log4net.xml">
@@ -377,6 +387,9 @@
     <EmbeddedResource Include="env\Release\cacert.pem">
       <LogicalName>BlitsMe.Agent.cacert.pem</LogicalName>
     </EmbeddedResource>
+    <RootContent Include="env\Release\bmss.exe">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </RootContent>
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="app.config" />
@@ -505,10 +518,6 @@
     <EmbeddedResource Include="..\WebSocketLib\bin\$(Configuration)\Bauglir.Ex.dll" />
     <EmbeddedResource Include="$(ProgramFiles)\Microsoft SDKs\Expression\Blend\.NETFramework\v4.0\Libraries\Microsoft.Expression.Drawing.dll" />
     <EmbeddedResource Include="$(ProgramFiles)\Microsoft SDKs\Expression\Blend\.NETFramework\v4.0\Libraries\Microsoft.Expression.Effects.dll" />
-    <None Include="bmss.exe">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-      <CustomToolNamespace>BlitsMe.Agent</CustomToolNamespace>
-    </None>
     <Content Include="icon-main.ico" />
     <Resource Include="UI\WPF\Images\arrow.png" />
     <Resource Include="UI\WPF\Images\arrow_limited_blue_bg.png" />
@@ -538,4 +547,11 @@
   <Target Name="AfterBuild">
   </Target>
   -->
+  <Target Name="AfterBuild">
+    <Copy
+        DestinationFolder="$(OutputPath)"
+        SourceFiles="@(RootContent)"
+        SkipUnchangedFiles="true"
+        />
+  </Target>
 </Project>

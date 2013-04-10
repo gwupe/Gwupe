@@ -2,6 +2,7 @@
 using System.Diagnostics;
 using System.IO;
 using System.Reflection;
+using System.Text.RegularExpressions;
 using System.Threading;
 using System.Timers;
 using System.Windows;
@@ -43,7 +44,7 @@ namespace BlitsMe.Agent
         internal bool isShuttingDown { get; private set; }
         private readonly BLMRegistry _reg = new BLMRegistry();
         private readonly Timer _upgradeCheckTimer;
-        private Version _startupVersion;
+        private readonly String _startupVersion;
 
         /// <summary>
         /// This class should be created and passed into Application.Run( ... )
@@ -51,8 +52,8 @@ namespace BlitsMe.Agent
         public BlitsMeClientAppContext()
         {
             XmlConfigurator.Configure(Assembly.GetExecutingAssembly().GetManifestResourceStream("BlitsMe.Agent.log4net.xml"));
-            _startupVersion = new Version(FileVersionInfo.GetVersionInfo(Assembly.GetExecutingAssembly().Location).FileVersion);
-            Logger.Info("BlitsMe.Agent Starting up [" + _startupVersion + "]");
+            _startupVersion = Regex.Replace(FileVersionInfo.GetVersionInfo(Assembly.GetExecutingAssembly().Location).FileVersion, "\\.[0-9]+$", "");
+            Logger.Info("BlitsMe" + Program.BuildMarker + ".Agent Starting up [" + _startupVersion + "]");
 #if DEBUG
             foreach (var manifestResourceName in Assembly.GetExecutingAssembly().GetManifestResourceNames())
             {
@@ -80,10 +81,9 @@ namespace BlitsMe.Agent
         {
             try
             {
-                var regVersion = new Version(_reg.getRegValue("Version",true));
-                //var fileVersion = new Version(FileVersionInfo.GetVersionInfo(Assembly.GetExecutingAssembly().Location).FileVersion);
+                var regVersion = _reg.getRegValue("Version", true);
                 Logger.Debug("Checking for agent upgrade " + _startupVersion + " vs " + regVersion);
-                if (regVersion.CompareTo(_startupVersion) != 0)
+                if (new Version(regVersion).CompareTo(new Version(_startupVersion)) != 0)
                 {
                     Logger.Info("My file version has changed " + _startupVersion + " => " + regVersion +
                                 ", closing to re-open as new version.");

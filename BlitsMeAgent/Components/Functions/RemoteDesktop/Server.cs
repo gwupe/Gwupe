@@ -10,7 +10,11 @@ namespace BlitsMe.Agent.Components.Functions.RemoteDesktop
     {
         private ProxyTcpTransportListener _vncListener;
         private readonly ITransportManager _transportManager;
-
+#if DEBUG
+        private const int VNCPort = 10231;
+#else
+        private const int VNCPort = 10230;
+#endif
         #region Event Handling
 
         public event EventHandler ConnectionClosed;
@@ -54,7 +58,7 @@ namespace BlitsMe.Agent.Components.Functions.RemoteDesktop
 
         internal void Start()
         {
-            _vncListener = new ProxyTcpTransportListener("RDP", new IPEndPoint(IPAddress.Loopback, 10230), _transportManager);
+            _vncListener = new ProxyTcpTransportListener("RDP", new IPEndPoint(IPAddress.Loopback, VNCPort), _transportManager);
             _vncListener.ConnectionAccepted += VNCListenerOnConnectionAccepted;
             _vncListener.ConnectionClosed += VNCListenerOnConnectionClosed;
             _vncListener.ListenOnce();

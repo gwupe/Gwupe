@@ -47,7 +47,6 @@
       <Custom Action="StartAgent" After="InstallFinalize">
         NOT(LogonUser="SYSTEM")
       </Custom>
-      
     </InstallExecuteSequence>
   </Product>
 
@@ -63,8 +62,8 @@
     <DirectoryRef Id="ApplicationProgramsFolder">
       <Component Id="ApplicationShortcut">
         <Shortcut Id="ApplicationStartMenuShortcut"
-                  Name="BlitsMe"
-                  Description="BlitsMe"
+                  Name="BlitsMe$(var.buildMarker)"
+                  Description="BlitsMe$(var.buildMarker)"
                   Target="[INSTALLFOLDER]BlitsMe.Agent.exe"
                   WorkingDirectory="INSTALLFOLDER" />
         <RemoveFolder Id="ApplicationProgramsFolder" On="uninstall"/>
@@ -83,7 +82,7 @@
         <File Id="BlitsMe.Agent.Upgrade.exe" Source="$(var.BlitsMeUpgradeAgent.TargetPath)" KeyPath="yes" />
       </Component>
       <Component Id="BlitsMeAgentSupportScreen">
-        <File Source="$(var.BlitsMeAgent.TargetDir)/bmss.exe" KeyPath="yes" />
+        <File Source="$(var.BlitsMeAgent.TargetDir)\\bmss.exe" KeyPath="yes" />
       </Component>
       <Component Id='c_BlitsMeService'>
         <File Id='f_BlitsMeService' Name='BlitsMeService.exe' Vital='yes' Source="$(var.BlitsMeService.TargetPath)" KeyPath='yes'/>
@@ -120,6 +119,7 @@
          />
         <ServiceControl Id="StartSupportService" Start="install" Stop="both" Remove="uninstall" Name="BlitsMeSupportService$(var.buildMarker)" Wait="yes" />
       </Component>
+<!--
       <Component Id="RegistryEntries">
         <RegistryKey Root="HKLM"
                      Key="Software\BlitsMe$(var.buildMarker)"
@@ -127,7 +127,7 @@
           <RegistryValue Type="string" Name="Version" Value="[ProductVersion]" KeyPath="yes"/>
         </RegistryKey>
       </Component>
-
+-->
       <ComponentRef Id="ApplicationShortcut" />
       <!-- Auto-start via Registry -->
       <Component Id="BlitsMeAutoStart">
@@ -157,7 +157,7 @@
         <RegistryValue Id="RfbPort.Reg" Root="HKLM" Action="write"
                        Key="Software\BlitsMe$(var.buildMarker)\Server"
                        Name="RfbPort"
-                       Value="10230"
+                       Value="$(var.VNCServerPort)"
                        Type="integer" />
         <RegistryValue Id="UseVncAuthentication.Reg" Root="HKLM" Action="write"
                        Key="Software\BlitsMe$(var.buildMarker)\Server"

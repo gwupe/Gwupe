@@ -9,25 +9,25 @@ namespace BlitsMe.Agent.Misc
     public class BLMRegistry
     {
         private static readonly ILog logger = LogManager.GetLogger(typeof(BLMRegistry));
-        public const String root = @"SOFTWARE\BlitsMe";
+        public const String root = @"SOFTWARE\BlitsMe" + Program.BuildMarker;
         public const String serverIPsKey = "serverIPs";
         public const String usernameKey = "username";
         public const String profileKey = "profile";
         public const String passwordHashKey = "password";
 
-        public string username {
+        public string Username {
             get { return getRegValue(usernameKey); }
             set { setRegValue(usernameKey, value); }
         }
-        public string passwordHash {
+        public string PasswordHash {
             get { return getRegValue(passwordHashKey); }
             set { setRegValue(passwordHashKey, value); }
         }
-        public string profile {
+        public string Profile {
             get { return getRegValue(profileKey); }
             set { setRegValue(profileKey, value); }
         }
-        public string workstation
+        public string Workstation
         {
             get
             {

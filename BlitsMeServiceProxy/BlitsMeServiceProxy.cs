@@ -7,8 +7,13 @@ namespace BlitsMe.ServiceProxy
 {
     public class BlitsMeServiceProxy : IBlitsMeService
     {
+#if DEBUG
+        public const String BuildMarker = "_Dev";
+#else
+        public const String BuildMarker = "";
+#endif
         private NetNamedPipeBinding binding = new NetNamedPipeBinding();
-        private EndpointAddress endpoint = new EndpointAddress("net.pipe://localhost/BlitsMeService");
+        private EndpointAddress endpoint = new EndpointAddress("net.pipe://localhost/BlitsMeService" + BuildMarker);
         private ChannelFactory<IBlitsMeService> channelFactory;
         public BlitsMeServiceProxy()
         {

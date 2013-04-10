@@ -290,7 +290,7 @@ namespace BlitsMe.Agent.UI.WPF
         private string _customTitle;
         public String Title
         {
-            get { return "BlitsMe - " + _customTitle; }
+            get { return "BlitsMe" + Program.BuildMarker + " - " + _customTitle; }
             set { _customTitle = value; OnPropertyChanged("Title"); }
         }
 
