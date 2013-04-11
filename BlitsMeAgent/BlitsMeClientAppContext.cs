@@ -87,8 +87,14 @@ namespace BlitsMe.Agent
                 {
                     Logger.Info("My file version has changed " + _startupVersion + " => " + regVersion +
                                 ", closing to re-open as new version.");
-                    Process.Start(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location) +
-                                  "\\BlitsMe.Agent.Upgrade.exe");
+                    try
+                    {
+                        Process.Start(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location) +
+                                      "\\BlitsMe.Agent.Upgrade.exe");
+                    } catch(Exception e)
+                    {
+                        Logger.Error("Failed to start the upgrade exe, but will stop myself anyway.");
+                    }
                     Shutdown();
                 }
             } catch(Exception e)

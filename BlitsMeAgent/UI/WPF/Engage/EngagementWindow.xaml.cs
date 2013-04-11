@@ -57,16 +57,19 @@ namespace BlitsMe.Agent.UI.WPF.Engage
 
         private void EngagementOnRDPConnectionClosed(object sender, EventArgs eventArgs)
         {
+            /* TODO want to change the alert
             if (Dispatcher.CheckAccess())
                 EngagementStatus.Text = "";
             else
             {
                 Dispatcher.Invoke(new Action(() => { EngagementStatus.Text = ""; }));
             }
+             */
         }
 
         private void EngagementOnRDPConnectionAccepted(object sender, EventArgs eventArgs)
         {
+            /* TODO want to change the alert
             string message = Engagement.SecondParty.Name + " is viewing your desktop";
             if (Dispatcher.CheckAccess())
                 EngagementStatus.Text = message;
@@ -74,6 +77,7 @@ namespace BlitsMe.Agent.UI.WPF.Engage
             {
                 Dispatcher.Invoke(new Action(() => { EngagementStatus.Text = message; }));
             }
+             */
         }
 
 

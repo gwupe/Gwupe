@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Diagnostics;
 using System.IO;
+using System.Linq;
 using System.Management;
 using System.Reflection;
 
@@ -8,8 +9,11 @@ namespace BlitsMe.Agent.Upgrade
 {
     static class Program
     {
-        private const string AppGuid = "BlitsMe.Agent.Upgrade.Application";
-
+#if DEBUG
+        private const String BuildMarker = "_Dev";
+#else
+        private const String BuildMarker = "";
+#endif
         /// <summary>
         /// The main entry point for the application.
         /// </summary>
@@ -22,7 +26,10 @@ namespace BlitsMe.Agent.Upgrade
 
             foreach (Process pr in prs)
             {
-                if (pr.ProcessName == "BlitsMe.Agent" && (Environment.UserDomainName + "\\" + Environment.UserName).Equals(GetProcessOwner(pr.Id)))
+                if (pr.ProcessName == "BlitsMe.Agent" &&
+                        (ProgramFilesx86() + "\\BlitsMe" + BuildMarker + "\\BlitsMe.Agent.exe")
+                            .Equals(GetMainModuleFilepath(pr.Id)) &&
+                            (Environment.UserDomainName + "\\" + Environment.UserName).Equals(GetProcessOwner(pr.Id)))
                 {
                     try
                     {
@@ -70,6 +77,34 @@ namespace BlitsMe.Agent.Upgrade
             }
 
             return "NO OWNER";
+        }
+
+        static string ProgramFilesx86()
+        {
+            if (8 == IntPtr.Size
+                || (!String.IsNullOrEmpty(Environment.GetEnvironmentVariable("PROCESSOR_ARCHITEW6432"))))
+            {
+                return Environment.GetEnvironmentVariable("ProgramFiles(x86)");
+            }
+
+            return Environment.GetEnvironmentVariable("ProgramFiles");
+        }
+
+        private static string GetMainModuleFilepath(int processId)
+        {
+            string wmiQueryString = "SELECT ProcessId, ExecutablePath FROM Win32_Process WHERE ProcessId = " + processId;
+            using (var searcher = new ManagementObjectSearcher(wmiQueryString))
+            {
+                using (var results = searcher.Get())
+                {
+                    ManagementObject mo = results.Cast<ManagementObject>().FirstOrDefault();
+                    if (mo != null)
+                    {
+                        return (string)mo["ExecutablePath"];
+                    }
+                }
+            }
+            return null;
         }
     }
 }

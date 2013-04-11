@@ -15,18 +15,28 @@
                 <ResourceDictionary Source="/BlitsMe.Agent;component/UI/WPF/Style/EngagementStyle.xaml"/>
                 <ResourceDictionary Source="/BlitsMe.Agent;component/UI/WPF/Style/Style.xaml"/>
                 <ResourceDictionary Source="/BlitsMe.Agent;component/UI/WPF/Style/NotificationStyle.xaml"/>
+				<ResourceDictionary Source="../Style/RosterStyle.xaml" />
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>
     </UserControl.Resources>
     <Grid Background="#FF2B519B">
         <Grid Height="62" VerticalAlignment="Top" Margin="0,0,29.333,0">
-            <StackPanel Orientation="Horizontal" Margin="6,8,0,0">
-                <StackPanel.Resources>
+            <DockPanel Margin="6,8,0,0" LastChildFill="True">
+                <DockPanel.Resources>
                     <Style TargetType="{x:Type Button}">
                         <Setter Property="Margin" Value="10,0,0,0"/>
                     </Style>
-                </StackPanel.Resources>
-                <Button VerticalAlignment="Top" HorizontalAlignment="Left" Width="50" Height="50" Margin="0"  Click="ScorecardButtonClick" ToolTip="Profile">
+                </DockPanel.Resources>
+                <Button VerticalAlignment="Top" HorizontalAlignment="Left" Width="50" Height="50" Click="SendFileButtonClick" ToolTip="Send a File" DockPanel.Dock="Right">
+                    <Image Source="/BlitsMe.Agent;component/UI/WPF/Images/Upload.png" Height="40" Width="40" />
+                </Button>
+                <Button VerticalAlignment="Top" HorizontalAlignment="Left" Width="50" Height="50" Click="RemoteAssistanceButtonClick" ToolTip="Request Desktop Access" DockPanel.Dock="Right">
+                    <Image Source="..\Images\1337424537_System.png" Height="40" Width="40" />
+                </Button>
+                <Button VerticalAlignment="Top" HorizontalAlignment="Left" Height="50" Width="50" Click="ChatButtonClick"  ToolTip="Chat"  DockPanel.Dock="Right">
+                    <Image Source="..\Images\1337420206_Char.png" Height="40" Width="40"/>
+                </Button>
+                <Button VerticalAlignment="Top" HorizontalAlignment="Left" Width="50" Height="50" Margin="0"  Click="ScorecardButtonClick" ToolTip="Profile" DockPanel.Dock="Right">
                     <Rectangle x:Name="ImageContainer"
       Width="40" Height="40" StrokeThickness="0" HorizontalAlignment="Right" Margin="0" VerticalAlignment="Bottom">
             <Rectangle.Fill>
@@ -36,24 +46,26 @@
             </Rectangle.Fill>
         </Rectangle>
                 </Button>
-                <Button VerticalAlignment="Top" HorizontalAlignment="Left" Height="50" Width="50" Click="ChatButtonClick"  ToolTip="Chat" >
-                    <Image Source="..\Images\1337420206_Char.png" Height="40" Width="40"/>
-                </Button>
-                <Button VerticalAlignment="Top" HorizontalAlignment="Left" Width="50" Height="50" Click="RemoteAssistanceButtonClick" ToolTip="Request Desktop Access">
-                    <Image Source="..\Images\1337424537_System.png" Height="40" Width="40" />
-                </Button>
-				<!--
-                <Button VerticalAlignment="Top" HorizontalAlignment="Left" Width="50" Height="50" Click="HistoryButtonClick">
-                    <Image Source="..\Images\1337424609_Stats.png" Height="40" Width="40" />
-                </Button>
-				-->
-                <Button VerticalAlignment="Top" HorizontalAlignment="Left" Width="50" Height="50" Click="SendFileButtonClick" ToolTip="Send a File">
-                    <Image Source="/BlitsMe.Agent;component/UI/WPF/Images/Upload.png" Height="40" Width="40" />
-                </Button>
-				<Grid HorizontalAlignment="Center" VerticalAlignment="Center">
-					<TextBlock Name="EngagementStatus" Style="{StaticResource EngagementStatusText}" Text="" Margin="10" MinWidth="270"/>
-				</Grid>
-            </StackPanel>
+				<Grid Margin="0" DockPanel.Dock="Left">
+                    <StackPanel Margin="0,0,0,0">
+                        <TextBlock Style="{StaticResource TeamMemberNameText}" Text="{Binding Path=SecondParty.Name, FallbackValue=FirstName LastName}" />
+                        <Grid Margin="0,0,0,0" Height="15" HorizontalAlignment="Center">
+                            <ed:RegularPolygon Style="{StaticResource TeamMemberStarFull}" Margin="0,0,0,0" />
+                            <ed:RegularPolygon Style="{StaticResource TeamMemberStarFull}" Margin="15,0,0,0" />
+                            <ed:RegularPolygon Style="{StaticResource TeamMemberStarFull}" Margin="30,0,0,0" />
+                            <ed:RegularPolygon Style="{StaticResource TeamMemberStarFull}" Margin="45,0,0,0" />
+                            <ed:RegularPolygon Style="{StaticResource TeamMemberStarFull}" Margin="60,0,0,0" />
+                            <Rectangle Style="{StaticResource TeamMemberStarCover}" Width="{Binding Path=SecondParty.Rating, FallbackValue=25, Converter={StaticResource starRatingConverter}}" />
+                            <ed:RegularPolygon Style="{StaticResource TeamMemberStarEmpty}" Margin="0,0,0,0" />
+                            <ed:RegularPolygon Style="{StaticResource TeamMemberStarEmpty}" Margin="15,0,0,0" />
+                            <ed:RegularPolygon Style="{StaticResource TeamMemberStarEmpty}" Margin="30,0,0,0" />
+                            <ed:RegularPolygon Style="{StaticResource TeamMemberStarEmpty}" Margin="45,0,0,0" />
+                            <ed:RegularPolygon Style="{StaticResource TeamMemberStarEmpty}" Margin="60,0,0,0" />
+                        </Grid>
+                        <TextBlock Style="{StaticResource TeamMemberLocationText}" Text="{Binding Path=SecondParty.Location, FallbackValue=Planet Earth}" />
+                    </StackPanel>
+                </Grid>
+            </DockPanel>
         </Grid>
         <Grid HorizontalAlignment="Right" Width="9" Height="58" VerticalAlignment="Top">
             <Ellipse x:Name="OutgoingTunnelIndicator" Fill="DarkGray" HorizontalAlignment="Right" Stroke="Black" Width="3" Margin="0,8,3,0" Height="3" StrokeThickness="0" VerticalAlignment="Top" d:LayoutOverrides="Height"/>
