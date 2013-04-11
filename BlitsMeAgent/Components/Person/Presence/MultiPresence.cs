@@ -12,18 +12,19 @@ namespace BlitsMe.Agent.Components.Person.Presence
         public string Mode { get { return _presences.Count > 0 ? GetHighestPriorityPresence().Mode : null; } }
         public string Type { get { return _presences.Count > 0 ? GetHighestPriorityPresence().Type : null; } }
         public int Priority { get { return _presences.Count > 0 ? GetHighestPriorityPresence().Priority : 0; } }
+        public string Resource { get { return _presences.Count > 0 ? GetHighestPriorityPresence().Resource : ""; } }
         public bool IsOnline { get { return _presences.Count > 0 && GetHighestPriorityPresence().IsOnline; } }
-        public bool IsAvailable { get { return _presences.Count > 0 && GetHighestPriorityPresence().IsAvailable; } }
+        public bool IsPresent { get { return _presences.Count > 0 && GetHighestPriorityPresence().IsPresent; } }
         public string Status { get { return _presences.Count > 0 ? GetHighestPriorityPresence().Status : null; } }
 
-        public void AddPresence(String resource, IPresence presence)
+        public void AddPresence(IPresence presence)
         {
-            if (_presences.ContainsKey(resource))
+            if (_presences.ContainsKey(presence.Resource))
             {
-                _presences[resource] = presence;
+                _presences[presence.Resource] = presence;
             } else
             {
-                _presences.Add(resource, presence);
+                _presences.Add(presence.Resource, presence);
             }
         }
 
@@ -47,6 +48,11 @@ namespace BlitsMe.Agent.Components.Person.Presence
         public int CompareTo(IPresence other)
         {
             return Priority.CompareTo(other.Priority);
+        }
+
+        public override string ToString()
+        {
+            return _presences.Count > 0 ? GetHighestPriorityPresence().ToString() : "";
         }
     }
 }

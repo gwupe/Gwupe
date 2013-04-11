@@ -59,7 +59,7 @@ namespace BlitsMe.Agent.Managers
         {
             if (_haveRoster)
             {
-                ChangePresence(request.user, request.resource, request.shortCode, new Presence(request.presence));
+                ChangePresence(request.user, request.shortCode, new Presence(request.resource, request.presence));
             }
             else
             {
@@ -67,18 +67,19 @@ namespace BlitsMe.Agent.Managers
             }
         }
 
-        private void ChangePresence(String user, String resource, String shortCode, Presence presence)
+        private void ChangePresence(String user, String shortCode, Presence presence)
         {
             if(!ServicePersonLookup.ContainsKey(user)){
                 // if we are getting presence alerts, we need to create this user
-                AddUsernameToList(user, resource, presence);
+                AddUsernameToList(user, presence);
             }
             Person servicePerson = _appContext.RosterManager.GetServicePerson(user);
             if (servicePerson != null)
             {
-                servicePerson.SetPresence(resource,presence);
+                servicePerson.SetPresence(presence);
+                Logger.Debug("Incoming presence change for " + user + " [" + presence + "], resource = " + presence.Resource + ", priority " + presence.Priority);
                 Logger.Info("Presence change, now " + user +
-                            (servicePerson.Presence.IsAvailable ? " is available " : " is no longer available") + "[" + servicePerson.Presence.Mode + "], resource " + resource + ", priority " + presence.Priority);
+                            (servicePerson.Presence.IsOnline ? " is available " : " is no longer available") + "[" + servicePerson.Presence + "], resource " + servicePerson.Presence.Resource + ", priority " + servicePerson.Presence.Priority);
                 if (shortCode != null)
                 {
                     servicePerson.ShortCode = shortCode;
@@ -116,7 +117,7 @@ namespace BlitsMe.Agent.Managers
                             foreach (RosterElement rosterElement in response.rosterElements)
                             {
                                 // Add each buddy to the list
-                                AddUserElementToList(rosterElement.userElement, "default", new Presence(rosterElement.presence));
+                                AddUserElementToList(rosterElement.userElement, new Presence("default", rosterElement.presence));
                             }
                             // Process the queued changes
                             while(_queuedPresenceChanges.Count > 0)
@@ -124,7 +125,7 @@ namespace BlitsMe.Agent.Managers
                                 PresenceChangeRq request;
                                 if(_queuedPresenceChanges.TryDequeue(out request))
                                 {
-                                    ChangePresence(request.user, request.resource, request.shortCode, new Presence(request.presence));
+                                    ChangePresence(request.user,  request.shortCode, new Presence(request.resource, request.presence));
                                 } else
                                 {
                                     Logger.Error("Failed to dequeue from the saved presence change requests");
@@ -149,12 +150,12 @@ namespace BlitsMe.Agent.Managers
         }
 
 
-        private void AddUsernameToList(String username, String resource, Presence presence)
+        private void AddUsernameToList(String username, Presence presence)
         {
             try
             {
                 VCardRs cardRs = _appContext.ConnectionManager.Connection.Request<VCardRq,VCardRs>(new VCardRq(username));
-                AddUserElementToList(cardRs.userElement, resource, presence);
+                AddUserElementToList(cardRs.userElement, presence);
             }
             catch (Exception e)
             {
@@ -162,12 +163,12 @@ namespace BlitsMe.Agent.Managers
             }
         }
 
-        private void AddUserElementToList(UserElement userElement, String resource = null, Presence presence = null)
+        private void AddUserElementToList(UserElement userElement, Presence presence = null)
         {
             Person person = new Person(userElement);
             if (presence != null)
             {
-                person.SetPresence(resource,presence);
+                person.SetPresence(presence);
             }
             ServicePersonList.Add(person);
             ServicePersonLookup[person.Username] = person;
