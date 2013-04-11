@@ -3,7 +3,9 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Net;
+using System.Net.Security;
 using System.Reflection;
+using System.Security.Cryptography.X509Certificates;
 using System.ServiceProcess;
 using System.Text.RegularExpressions;
 using System.Timers;
@@ -31,7 +33,8 @@ namespace BlitsMe.Service
         // FIXME: Move this to a global config file at some point
         private const string VncServiceName = "BlitsMeSupportService" + BuildMarker;
         private const int VncServiceTimeoutMs = 30000;
-        private String _version;
+        private readonly String _version;
+        private readonly X509Certificate2 _cacert;
 
         public List<String> Servers;
         private System.ServiceModel.ServiceHost _serviceHost;
@@ -51,48 +54,90 @@ namespace BlitsMe.Service
 #endif
             // Check for update on startup
             _webClient = new WebClient();
+            try
+            {
+                var stream = Assembly.GetExecutingAssembly().GetManifestResourceStream("BlitsMe.Service.cacert.pem");
+                Byte[] certificateData = new Byte[stream.Length];
+                stream.Read(certificateData, 0, certificateData.Length);
+                _cacert = new X509Certificate2(certificateData);
+                Logger.Info("Will use certificate from CA " + _cacert.GetNameInfo(X509NameType.SimpleName, true) +
+                            ", verified? " + _cacert.Verify());
+            } catch (Exception e)
+            {
+                Logger.Error("Failed to get the certificate : " + e.Message,e);
+            }
             CheckForNewVersion();
             // check for updates every interval
-            _updateCheck = new Timer(UpdateCheckInterval*1000);
+            _updateCheck = new Timer(UpdateCheckInterval * 1000);
             _updateCheck.Elapsed += delegate { CheckForNewVersion(); };
             _updateCheck.Start();
         }
 
         private void CheckForNewVersion()
         {
+            ServicePointManager.ServerCertificateValidationCallback += ValidateServerWithCA;
             try
             {
                 Version assemblyVersion = new Version(_version);
-                String versionInfomation = _webClient.DownloadString("http://" + UpdateServer + "/updates/update.php?ver=" + assemblyVersion);
-                String[] versionParts = versionInfomation.Split('\n')[0].Split(':');
-                Version updateVersion = new Version(versionParts[0]);
-                if (assemblyVersion.CompareTo(updateVersion) < 0)
+                String versionInfomation = _webClient.DownloadString("https://" + UpdateServer + "/updates/update.php?ver=" + assemblyVersion);
+                if (Regex.Match(versionInfomation, "^[0-9]+\\.[0-9]+\\.[0-9]+:BlitsMeSetup.*").Success)
                 {
-                    Logger.Debug("Upgrade Available : " + assemblyVersion + " => " + updateVersion);
-                    try
+                    String[] versionParts = versionInfomation.Split('\n')[0].Split(':');
+                    Version updateVersion = new Version(versionParts[0]);
+                    if (assemblyVersion.CompareTo(updateVersion) < 0)
                     {
-                        
-                        Logger.Info("Downloading update " + versionParts[1]);
-                        String fileLocation = Path.GetTempPath() + versionParts[1];
-                        _webClient.DownloadFile("http://" + UpdateServer + "/updates/" + versionParts[1], fileLocation);
-                        Logger.Info("Downloaded update " + versionParts[1]);
-                        String logfile = Path.GetTempPath() + "BlitsMeInstall.log";
-                        Logger.Info("Executing " + fileLocation + ", log file is " + logfile);
-                        Process.Start(fileLocation, "/qn /lvx " + logfile);
+                        Logger.Debug("Upgrade Available : " + assemblyVersion + " => " + updateVersion);
+                        try
+                        {
+
+                            Logger.Info("Downloading update " + versionParts[1]);
+                            String fileLocation = Path.GetTempPath() + versionParts[1];
+                            _webClient.DownloadFile("https://" + UpdateServer + "/updates/" + versionParts[1],
+                                                    fileLocation);
+                            Logger.Info("Downloaded update " + versionParts[1]);
+                            String logfile = Path.GetTempPath() + "BlitsMeInstall.log";
+                            Logger.Info("Executing " + fileLocation + ", log file is " + logfile);
+                            Process.Start(fileLocation, "/qn /lvx " + logfile);
+                        }
+                        catch (Exception e)
+                        {
+                            Logger.Error("Failed to download update : " + e.Message, e);
+                        }
                     }
-                    catch (Exception e)
+                    else
                     {
-                        Logger.Error("Failed to download update : " + e.Message, e);
+                        Logger.Debug("No update available, current version " + assemblyVersion + ", available version " +
+                                     updateVersion + ", checking again in " + (UpdateCheckInterval / 60) + " minutes.");
                     }
-                } else
+                }
+                else
                 {
-                    Logger.Debug("No update available, current version " + assemblyVersion + ", available version " + updateVersion + ", checking again in " + (UpdateCheckInterval/60) + " minutes.");
+                    Logger.Error("Failed to check for updates, the update request return invalid information : " + versionInfomation);
                 }
             }
             catch (Exception e)
             {
                 Logger.Warn("Failed to check for update : " + e.Message, e);
             }
+            finally
+            {
+                ServicePointManager.ServerCertificateValidationCallback -= ValidateServerWithCA;
+            }
+        }
+
+        private bool ValidateServerWithCA(object sender, X509Certificate certificate, X509Chain chain, SslPolicyErrors sslPolicyErrors)
+        {
+            bool isValid = false;
+            if (sslPolicyErrors == SslPolicyErrors.RemoteCertificateChainErrors)
+            {
+                X509Chain chain0 = new X509Chain();
+                chain0.ChainPolicy.RevocationMode = X509RevocationMode.NoCheck;
+                // add all your extra certificate chain
+                chain0.ChainPolicy.ExtraStore.Add(new X509Certificate2(_cacert));
+                chain0.ChainPolicy.VerificationFlags = X509VerificationFlags.AllowUnknownCertificateAuthority;
+                isValid = chain0.Build((X509Certificate2)certificate);
+            }
+            return isValid;
         }
 
         protected override void OnStart(string[] args)
@@ -115,7 +160,7 @@ namespace BlitsMe.Service
                 }
                 catch (Exception e)
                 {
-                    Logger.Error("Failed to get the server IP's : " + e.Message,e);
+                    Logger.Error("Failed to get the server IP's : " + e.Message, e);
                 }
             }
         }
@@ -136,7 +181,7 @@ namespace BlitsMe.Service
             }
             catch (Exception e)
             {
-                Logger.Error("Failed to save version to registry : " + e.Message,e);
+                Logger.Error("Failed to save version to registry : " + e.Message, e);
             }
         }
 
@@ -151,7 +196,7 @@ namespace BlitsMe.Service
             catch (Exception e2)
             {
                 // TODO log something to event log
-                Logger.Error("Failed to determine server IP's from the registry [" + e2.GetType() + "] : " + e2.Message,e2);
+                Logger.Error("Failed to determine server IP's from the registry [" + e2.GetType() + "] : " + e2.Message, e2);
             }
         }
 
@@ -169,7 +214,7 @@ namespace BlitsMe.Service
             }
             catch (System.ServiceProcess.TimeoutException e)
             {
-                Logger.Error("VNCServer service failed to start in a reasonable time : " + e.Message,e);
+                Logger.Error("VNCServer service failed to start in a reasonable time : " + e.Message, e);
                 return false;
             }
             catch (Exception e)
