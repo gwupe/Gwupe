@@ -80,18 +80,18 @@ namespace BlitsMe.Agent.Components.Person
         }
 
         public IList<String> Groups { get; set; }
-        private string _status;
-        public String Status
+        private string _subscriptionStatus;
+        public String SubscriptionStatus
         {
-            get { return _status; }
-            set { _status = value; OnPropertyChanged("Status"); }
+            get { return _subscriptionStatus; }
+            set { _subscriptionStatus = value; OnPropertyChanged("SubscriptionStatus"); }
         }
 
-        private string _type;
-        public String Type
+        private string _subscriptionType;
+        public String SubscriptionType
         {
-            get { return _type; }
-            set { _type = value; OnPropertyChanged("Type"); }
+            get { return _subscriptionType; }
+            set { _subscriptionType = value; OnPropertyChanged("SubscriptionType"); }
         }
 
         private byte[] _avatar;
@@ -137,8 +137,8 @@ namespace BlitsMe.Agent.Components.Person
             this._location = userElement.location;
             this._rating = userElement.rating;
             this._joined = userElement.joined;
-            this._status = userElement.status;
-            this._type = userElement.type;
+            this._subscriptionStatus = userElement.subscriptionStatus;
+            this._subscriptionType = userElement.subscriptionType;
             _firstname = userElement.firstname;
             _lastname = userElement.lastname;
             _description = userElement.description;

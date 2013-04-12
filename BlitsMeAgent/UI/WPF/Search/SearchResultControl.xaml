@@ -38,7 +38,7 @@
                 </StackPanel>
                 <TextBlock Style="{DynamicResource ProspectDescription}" Text="{Binding Path=Person.Description, FallbackValue=Description of my skills.}" Margin="206,0,103,0" HorizontalAlignment="Stretch" />
 				<StackPanel HorizontalAlignment="Right" Width="100" VerticalAlignment="Center">
-					<Button x:Name="AddPersonButton" Content="Add" Margin="2"/>
+					<Button x:Name="AddPersonButton" Content="{Binding AddText, FallbackValue=Add}" IsEnabled="{Binding CanAdd, FallbackValue=true}" Margin="2" />
 					<!-- <Button x:Name="ChatPersonButton" Content="Chat" Margin="2" Click="ChatPersonButton_Click" /> -->
 				</StackPanel>
 			</Grid>

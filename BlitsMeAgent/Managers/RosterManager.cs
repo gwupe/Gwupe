@@ -195,6 +195,7 @@ namespace BlitsMe.Agent.Managers
         {
             if(e == null)
             {
+                person.SubscriptionStatus = "subscribe";
                 Logger.Debug("Succeeded in sending subscribe request for " + person.Username);
             } else
             {
