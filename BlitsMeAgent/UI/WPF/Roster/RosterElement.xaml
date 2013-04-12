@@ -17,7 +17,7 @@
         </ResourceDictionary>
     </UserControl.Resources>
 
-	<Grid x:Name="LayoutRoot" Margin="0,1">
+	<Grid x:Name="LayoutRoot" Margin="0,1" MaxWidth="170">
             <Border Style="{StaticResource TeamMemberBorder}">
                 <Grid Margin="0">
 					<Rectangle x:Name="ImageContainer"

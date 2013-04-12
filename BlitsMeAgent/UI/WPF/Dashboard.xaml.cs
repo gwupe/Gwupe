@@ -42,6 +42,13 @@ namespace BlitsMe.Agent.UI.WPF
         private readonly Object _searchLock = new Object();
         internal DashboardDataContext DashboardData;
 
+        public event EventHandler ContentWindowChanged;
+
+        private void OnContentWindowChanged(EventArgs e)
+        {
+            EventHandler handler = ContentWindowChanged;
+            if (handler != null) handler(this, e);
+        }
 
         public Dashboard(BlitsMeClientAppContext appContext)
         {
@@ -186,6 +193,7 @@ namespace BlitsMe.Agent.UI.WPF
             if (egw != null)
             {
                 ActiveContent.Content = egw;
+                OnContentWindowChanged(EventArgs.Empty);
             }
             else
             {
@@ -227,6 +235,7 @@ namespace BlitsMe.Agent.UI.WPF
                 _searchCountDown.Elapsed += ProcessSearch;
             }
             ActiveContent.Content = _searchWindow;
+            OnContentWindowChanged(EventArgs.Empty);
         }
 
         private void ProcessSearch(object sender, ElapsedEventArgs elapsedEventArgs)
@@ -273,6 +282,7 @@ namespace BlitsMe.Agent.UI.WPF
                     _userInfoWindow = new UserInfoWindow(_appContext);
                 }
                 ActiveContent.Content = _userInfoWindow;
+                OnContentWindowChanged(EventArgs.Empty);
             }
         }
 

@@ -2,11 +2,14 @@
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using System.ComponentModel;
+using System.Threading;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
+using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Shapes;
+using System.Windows.Threading;
 using BlitsMe.Agent.Components;
 using BlitsMe.Agent.Components.Notification;
 using BlitsMe.Agent.Components.Person;
@@ -43,6 +46,7 @@ namespace BlitsMe.Agent.UI.WPF.Engage
             {
                 Logger.Error("Failed to link into function RemoteDesktop : " + e.Message, e);
             }
+            _appContext.UIDashBoard.ContentWindowChanged += UiDashBoardOnContentWindowChanged;
             _notificationView = new CollectionViewSource { Source = notificationList };
             _notificationView.Filter += NotificationFilter;
             Notifications.ItemsSource = _notificationView.View;
@@ -53,6 +57,20 @@ namespace BlitsMe.Agent.UI.WPF.Engage
             ShowChat();
             _ewDataContext = new EngagementWindowDataContext(_appContext, engagement);
             DataContext = _ewDataContext;
+        }
+
+        private void UiDashBoardOnContentWindowChanged(object sender, EventArgs eventArgs)
+        {
+            if (_appContext.UIDashBoard.ActiveContent.Content == this)
+                if (_chatWindow != null && EngagementContent.Content == _chatWindow)
+                {
+                    Dispatcher.BeginInvoke(DispatcherPriority.Input, new ThreadStart(() =>
+                        {
+                            _chatWindow.messageBox.Focus();
+                            Keyboard.Focus(_chatWindow.messageBox);
+                        }));
+                }
+
         }
 
         private void EngagementOnRDPConnectionClosed(object sender, EventArgs eventArgs)

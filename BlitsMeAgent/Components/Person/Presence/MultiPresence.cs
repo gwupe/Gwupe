@@ -9,8 +9,8 @@ namespace BlitsMe.Agent.Components.Person.Presence
     {
         private readonly Dictionary<String, IPresence> _presences = new Dictionary<string, IPresence>();
 
-        public string Mode { get { return _presences.Count > 0 ? GetHighestPriorityPresence().Mode : null; } }
-        public string Type { get { return _presences.Count > 0 ? GetHighestPriorityPresence().Type : null; } }
+        public string Mode { get { return _presences.Count > 0 ? GetHighestPriorityPresence().Mode : Presence.UNAVAILABLE; } }
+        public string Type { get { return _presences.Count > 0 ? GetHighestPriorityPresence().Type : Presence.AVAILABLE; } }
         public int Priority { get { return _presences.Count > 0 ? GetHighestPriorityPresence().Priority : 0; } }
         public string Resource { get { return _presences.Count > 0 ? GetHighestPriorityPresence().Resource : ""; } }
         public bool IsOnline { get { return _presences.Count > 0 && GetHighestPriorityPresence().IsOnline; } }

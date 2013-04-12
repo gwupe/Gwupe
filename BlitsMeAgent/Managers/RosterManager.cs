@@ -117,7 +117,9 @@ namespace BlitsMe.Agent.Managers
                             foreach (RosterElement rosterElement in response.rosterElements)
                             {
                                 // Add each buddy to the list
-                                AddUserElementToList(rosterElement.userElement, new Presence("default", rosterElement.presence));
+                                // I think we should not add a default presence, lets see how it goes
+                                //AddUserElementToList(rosterElement.userElement, new Presence("default", rosterElement.presence));
+                                AddUserElementToList(rosterElement.userElement);
                             }
                             // Process the queued changes
                             while(_queuedPresenceChanges.Count > 0)

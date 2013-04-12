@@ -393,7 +393,6 @@
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="app.config" />
-    <Resource Include="Images\1170492_woman_smiling_at_camera.jpg" />
     <Resource Include="Icons\icon-pulse-0.ico">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Resource>
@@ -427,8 +426,6 @@
     <Resource Include="Icons\icon-pulse-90.ico">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Resource>
-    <Resource Include="UI\WPF\Images\1359662466_Add.png" />
-    <Resource Include="UI\WPF\Images\1360201178_speech_bubble.png" />
     <Resource Include="UI\WPF\Images\1364864637_alert.png" />
     <Resource Include="UI\WPF\Images\floppy_unmount.png" />
     <Resource Include="UI\WPF\Images\stock_insert_image.png" />
@@ -439,11 +436,6 @@
     <Resource Include="UI\WPF\Images\BLITSME.png" />
     <Resource Include="UI\WPF\Images\Check.png" />
     <Resource Include="UI\WPF\Images\facebook-like.png" />
-    <Resource Include="UI\WPF\Images\Help.png" />
-    <Resource Include="UI\WPF\Images\Log Out.png" />
-    <Resource Include="UI\WPF\Images\messagebox_warning.png" />
-    <Resource Include="UI\WPF\Images\process.png" />
-    <Resource Include="UI\WPF\Images\Search.png" />
     <Resource Include="UI\WPF\Images\tweet.png" />
     <Resource Include="UI\WPF\Images\silhoette.png" />
     <Resource Include="UI\WPF\Images\Upload.png" />
@@ -529,13 +521,10 @@
     <Resource Include="UI\WPF\Images\1337424609_Stats.png" />
     <Resource Include="UI\WPF\Images\1337425212_02.png" />
     <Resource Include="UI\WPF\Images\Speech Left.png" />
-    <Resource Include="UI\WPF\Images\Star_max-b-10px.png" />
-    <Resource Include="UI\WPF\Images\Star_max-b-15px.png" />
     <Resource Include="UI\WPF\Images\Speech Bubble Join Me.png" />
     <Resource Include="UI\WPF\Images\Speech Bubble Join Other.png" />
     <Resource Include="UI\WPF\Images\Speech Down.png" />
     <Resource Include="UI\WPF\Images\Speech Up.png" />
-    <Resource Include="UI\WPF\Images\Star_max-b-_empty10px.png" />
     <Resource Include="UI\WPF\Images\Thought Bubble Left.png" />
     <Resource Include="UI\WPF\Images\Thought Bubble Right.png" />
   </ItemGroup>
@@ -548,10 +537,6 @@
   </Target>
   -->
   <Target Name="AfterBuild">
-    <Copy
-        DestinationFolder="$(OutputPath)"
-        SourceFiles="@(RootContent)"
-        SkipUnchangedFiles="true"
-        />
+    <Copy DestinationFolder="$(OutputPath)" SourceFiles="@(RootContent)" SkipUnchangedFiles="true" />
   </Target>
 </Project>
