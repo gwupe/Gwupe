@@ -204,8 +204,6 @@
     <RootContent Include="env\Release\bmserver.exe" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="env\Debug\cacert.pem" />
-    <EmbeddedResource Include="env\Release\cacert.pem" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
