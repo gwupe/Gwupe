@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
@@ -10,7 +11,7 @@ using log4net;
 
 namespace BlitsMe.Agent.UI.WPF.Utils
 {
-    abstract class ObservableListMirror<TIncomingType,TOutgoingType>
+    abstract class ObservableListMirror<TIncomingType,TOutgoingType> : IEnumerable<TOutgoingType>
     {
         private static readonly ILog Logger =
             LogManager.GetLogger(typeof (ObservableListMirror<TIncomingType, TOutgoingType>));
@@ -46,6 +47,15 @@ namespace BlitsMe.Agent.UI.WPF.Utils
         }
 
         protected abstract TOutgoingType CreateNew(TIncomingType sourceObject);
+
+        public TOutgoingType GetElement(String lookup)
+        {
+            if (ListLookup.ContainsKey(lookup))
+            {
+                return ListLookup[lookup];
+            }
+            throw new Exception("Cannot find element identified by " + lookup);
+        }
 
         private void AddElement(TIncomingType listElement)
         {
@@ -138,6 +148,16 @@ namespace BlitsMe.Agent.UI.WPF.Utils
                     }
                     break;
             }
+        }
+
+        public IEnumerator<TOutgoingType> GetEnumerator()
+        {
+            return List.GetEnumerator();
+        }
+
+        IEnumerator IEnumerable.GetEnumerator()
+        {
+            return GetEnumerator();
         }
     }
 }

@@ -79,7 +79,10 @@ namespace BlitsMe.Agent.Managers
                 servicePerson.SetPresence(presence);
                 Logger.Debug("Incoming presence change for " + user + " [" + presence + "], resource = " + presence.Resource + ", priority " + presence.Priority);
                 Logger.Info("Presence change, now " + user +
-                            (servicePerson.Presence.IsOnline ? " is available " : " is no longer available") + "[" + servicePerson.Presence + "], resource " + servicePerson.Presence.Resource + ", priority " + servicePerson.Presence.Priority);
+                            (servicePerson.Presence.IsOnline ?
+                                " is available " + "[" + servicePerson.Presence + "], resource " + servicePerson.Presence.Resource + ", priority " + servicePerson.Presence.Priority :
+                                " is no longer available " + "[" + servicePerson.Presence + "]")
+                                );
                 if (shortCode != null)
                 {
                     servicePerson.ShortCode = shortCode;

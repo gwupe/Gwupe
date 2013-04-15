@@ -47,7 +47,7 @@ namespace BlitsMe.Agent.Managers
             Person servicePerson = _appContext.RosterManager.GetServicePerson(username);
             if(servicePerson == null)
             {
-                throw new Exception("Unable to find service person [username]");
+                throw new Exception("Unable to find service person [" + username + "]");
             }
             var newEngagement = new Engagement(_appContext, servicePerson);
             newEngagement.Chat.NewMessage += OnChatEvent;

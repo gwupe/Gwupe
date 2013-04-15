@@ -4,7 +4,6 @@
 	xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
 	xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
 	xmlns:ed="http://schemas.microsoft.com/expression/2010/drawing"
-	xmlns:PresentationOptions="http://schemas.microsoft.com/winfx/2006/xaml/presentation/options"
 	mc:Ignorable="d"
 	x:Class="BlitsMe.Agent.UI.WPF.Roster.RosterElement"
 	x:Name="UserControl">
@@ -17,35 +16,19 @@
         </ResourceDictionary>
     </UserControl.Resources>
 
-	<Grid x:Name="LayoutRoot" Margin="0,1" MaxWidth="170">
-            <Border Style="{StaticResource TeamMemberBorder}">
-                <Grid Margin="0">
-					<Rectangle x:Name="ImageContainer"
-      Width="50" Height="50" StrokeThickness="0" VerticalAlignment="center" HorizontalAlignment="Left" Margin="0">
-            <Rectangle.Fill>
-                <ImageBrush
-          Stretch="Uniform" ImageSource="{Binding Path=Person.Avatar, Converter={StaticResource imageStreamReader}}"
-          PresentationOptions:Freeze="True" />
-            </Rectangle.Fill>
-        </Rectangle>
-                    <StackPanel Margin="53,0,0,0">
-                        <TextBlock Style="{StaticResource TeamMemberNameText}" Text="{Binding Path=Person.Name, FallbackValue=FirstName LastName}" />
-                        <Grid Margin="0,0,0,0" Height="15" HorizontalAlignment="Center">
-                            <ed:RegularPolygon Style="{StaticResource TeamMemberStarFull}" Margin="0,0,0,0" />
-                            <ed:RegularPolygon Style="{StaticResource TeamMemberStarFull}" Margin="15,0,0,0" />
-                            <ed:RegularPolygon Style="{StaticResource TeamMemberStarFull}" Margin="30,0,0,0" />
-                            <ed:RegularPolygon Style="{StaticResource TeamMemberStarFull}" Margin="45,0,0,0" />
-                            <ed:RegularPolygon Style="{StaticResource TeamMemberStarFull}" Margin="60,0,0,0" />
-                            <Rectangle Style="{StaticResource TeamMemberStarCover}" Width="{Binding Path=Person.Rating, FallbackValue=25, Converter={StaticResource starRatingConverter}}" />
-                            <ed:RegularPolygon Style="{StaticResource TeamMemberStarEmpty}" Margin="0,0,0,0" />
-                            <ed:RegularPolygon Style="{StaticResource TeamMemberStarEmpty}" Margin="15,0,0,0" />
-                            <ed:RegularPolygon Style="{StaticResource TeamMemberStarEmpty}" Margin="30,0,0,0" />
-                            <ed:RegularPolygon Style="{StaticResource TeamMemberStarEmpty}" Margin="45,0,0,0" />
-                            <ed:RegularPolygon Style="{StaticResource TeamMemberStarEmpty}" Margin="60,0,0,0" />
-                        </Grid>
-                        <TextBlock Style="{StaticResource TeamMemberLocationText}" Text="{Binding Path=Person.Location, FallbackValue=Planet Earth}" />
-                    </StackPanel>
-                </Grid>
-            </Border>
-	</Grid>
+		<ContentControl Content="{Binding Person}" >
+                  <ContentControl.Style>
+                        <Style TargetType="{x:Type ContentControl}">
+						<Setter Property="ContentTemplate" Value="{StaticResource TeamMemberActive}" />
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding IsActive}" Value="True">
+                                    <Setter Property="ContentTemplate" Value="{StaticResource TeamMemberActive}" />
+                                </DataTrigger>
+                                <DataTrigger Binding="{Binding IsActive}" Value="False">
+                                    <Setter Property="ContentTemplate" Value="{StaticResource TeamMemberInActive}" />
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </ContentControl.Style>
+        </ContentControl>
 </UserControl>

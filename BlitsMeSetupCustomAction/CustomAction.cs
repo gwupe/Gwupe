@@ -2,12 +2,16 @@
 using System.Diagnostics;
 using System.Linq;
 using System.Management;
+using System.Runtime.InteropServices;
 using Microsoft.Deployment.WindowsInstaller;
 
 namespace BlitsMeSetupCustomAction
 {
     public class CustomActions
     {
+        const uint WM_QUIT = 0x12;
+        [DllImport("user32.dll", SetLastError = true)]
+        static extern bool PostThreadMessage(int idThread, uint Msg, IntPtr wParam, IntPtr lParam);
 #if DEBUG
         public const String BuildMarker = "_Dev";
 #else
@@ -63,8 +67,12 @@ namespace BlitsMeSetupCustomAction
                     {
                         try
                         {
-                            pr.CloseMainWindow();
-                            pr.Close();
+                            foreach (ProcessThread thread in pr.Threads)
+                            {
+                                PostThreadMessage(thread.Id, WM_QUIT, IntPtr.Zero, IntPtr.Zero);
+                            }
+                            //pr.CloseMainWindow();
+                            //pr.Close();
                         }
                         catch (Exception e)
                         {

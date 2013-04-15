@@ -13,6 +13,7 @@ using System.Windows.Threading;
 using BlitsMe.Agent.Components;
 using BlitsMe.Agent.Components.Notification;
 using BlitsMe.Agent.Components.Person;
+using BlitsMe.Agent.UI.WPF.API;
 using BlitsMe.Communication.P2P.RUDP.Tunnel.API;
 using Microsoft.Win32;
 using log4net;
@@ -22,7 +23,7 @@ namespace BlitsMe.Agent.UI.WPF.Engage
     /// <summary>
     /// Interaction logic for EngagementWindow.xaml
     /// </summary>
-    public partial class EngagementWindow : UserControl
+    public partial class EngagementWindow : UserControl, IDashboardContentControl
     {
         internal Engagement Engagement { get; set; }
         private readonly BlitsMeClientAppContext _appContext;
@@ -46,7 +47,6 @@ namespace BlitsMe.Agent.UI.WPF.Engage
             {
                 Logger.Error("Failed to link into function RemoteDesktop : " + e.Message, e);
             }
-            _appContext.UIDashBoard.ContentWindowChanged += UiDashBoardOnContentWindowChanged;
             _notificationView = new CollectionViewSource { Source = notificationList };
             _notificationView.Filter += NotificationFilter;
             Notifications.ItemsSource = _notificationView.View;
@@ -57,20 +57,6 @@ namespace BlitsMe.Agent.UI.WPF.Engage
             ShowChat();
             _ewDataContext = new EngagementWindowDataContext(_appContext, engagement);
             DataContext = _ewDataContext;
-        }
-
-        private void UiDashBoardOnContentWindowChanged(object sender, EventArgs eventArgs)
-        {
-            if (_appContext.UIDashBoard.ActiveContent.Content == this)
-                if (_chatWindow != null && EngagementContent.Content == _chatWindow)
-                {
-                    Dispatcher.BeginInvoke(DispatcherPriority.Input, new ThreadStart(() =>
-                        {
-                            _chatWindow.messageBox.Focus();
-                            Keyboard.Focus(_chatWindow.messageBox);
-                        }));
-                }
-
         }
 
         private void EngagementOnRDPConnectionClosed(object sender, EventArgs eventArgs)
@@ -210,6 +196,19 @@ namespace BlitsMe.Agent.UI.WPF.Engage
             {
                 eventArgs.Accepted = false;
             }
+        }
+
+        public void SetAsMain(Dashboard dashboard)
+        {
+            if (dashboard.ActiveContent.Content == this)
+                if (_chatWindow != null && EngagementContent.Content == _chatWindow)
+                {
+                    Dispatcher.BeginInvoke(DispatcherPriority.Input, new ThreadStart(() =>
+                    {
+                        _chatWindow.messageBox.Focus();
+                        Keyboard.Focus(_chatWindow.messageBox);
+                    }));
+                }
         }
     }
 

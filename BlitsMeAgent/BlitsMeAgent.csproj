@@ -201,6 +201,7 @@
     <Compile Include="Managers\RosterManager.cs" />
     <Compile Include="Properties\Annotations.cs" />
     <Compile Include="UI\SystemTray.cs" />
+    <Compile Include="UI\WPF\API\IDashboardContentControl.cs" />
     <Compile Include="UI\WPF\AvatarImageWindow.xaml.cs">
       <DependentUpon>AvatarImageWindow.xaml</DependentUpon>
     </Compile>

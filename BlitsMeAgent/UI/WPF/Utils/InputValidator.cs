@@ -68,5 +68,21 @@ namespace BlitsMe.Agent.UI.WPF.Utils
             _errorText.Visibility = Visibility.Hidden;
             _statusText.Visibility = Visibility.Hidden;
         }
+
+        public bool ValidateFieldMatches(Control textBox, string text, Label label, string errorString, string placeHolder, string regEx)
+        {
+            bool dataOK = true;
+            if (Regex.IsMatch(text.Trim(),
+                               regEx,
+                               RegexOptions.IgnoreCase))
+            {
+                setError(errorString);
+                textBox.Background = new SolidColorBrush(Colors.MistyRose);
+                label.Foreground = new SolidColorBrush(Colors.Red);
+                dataOK = false;
+            }
+            ;
+            return dataOK;
+        }
     }
 }

@@ -21,19 +21,18 @@
                 <Image Source="{Binding Path=Person.Avatar, Converter={StaticResource imageStreamReader}}" Height="50" HorizontalAlignment="Left" Width="50" Margin="0,0,5,0" DataContext="{Binding}" />
                 <StackPanel Margin="53,0,0,0" Width="150" HorizontalAlignment="Left" VerticalAlignment="Center">
                     <TextBlock Style="{StaticResource TeamMemberNameText}" Text="{Binding Path=Person.Name, FallbackValue=FirstName LastName}" Width="150" TextAlignment="Center" />
-                    <Grid Margin="0,0,0,0" Height="15" HorizontalAlignment="Center">
-                        <ed:RegularPolygon Style="{StaticResource TeamMemberStarFull}" Margin="0,0,0,0" />
-                        <ed:RegularPolygon Style="{StaticResource TeamMemberStarFull}" Margin="15,0,0,0" />
-                        <ed:RegularPolygon Style="{StaticResource TeamMemberStarFull}" Margin="30,0,0,0" />
-                        <ed:RegularPolygon Style="{StaticResource TeamMemberStarFull}" Margin="45,0,0,0" />
-                        <ed:RegularPolygon Style="{StaticResource TeamMemberStarFull}" Margin="60,0,0,0" />
-                        <Rectangle Style="{StaticResource TeamMemberStarCover}" Width="{Binding Path=Person.Rating, FallbackValue=25, Converter={StaticResource starRatingConverter}}" />
-                        <ed:RegularPolygon Style="{StaticResource TeamMemberStarEmpty}" Margin="0,0,0,0" />
-                        <ed:RegularPolygon Style="{StaticResource TeamMemberStarEmpty}" Margin="15,0,0,0" />
-                        <ed:RegularPolygon Style="{StaticResource TeamMemberStarEmpty}" Margin="30,0,0,0" />
-                        <ed:RegularPolygon Style="{StaticResource TeamMemberStarEmpty}" Margin="45,0,0,0" />
-                        <ed:RegularPolygon Style="{StaticResource TeamMemberStarEmpty}" Margin="60,0,0,0" />
-                    </Grid>
+				<ContentControl Content="{Binding Person.Rating}" >
+                  <ContentControl.Style>
+                        <Style TargetType="{x:Type ContentControl}">
+						<Setter Property="ContentTemplate" Value="{StaticResource Rating}" />
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding Person.Rating}" Value="0">
+                                    <Setter Property="ContentTemplate" Value="{StaticResource Unrated}" />
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </ContentControl.Style>
+                </ContentControl>
                     <TextBlock Style="{StaticResource TeamMemberLocationText}" Text="{Binding Path=Person.Location, FallbackValue=Planet Earth}" Width="150" TextAlignment="Center" />
                 </StackPanel>
                 <TextBlock Style="{DynamicResource ProspectDescription}" Text="{Binding Path=Person.Description, FallbackValue=Description of my skills.}" Margin="206,0,103,0" HorizontalAlignment="Stretch" />

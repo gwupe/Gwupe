@@ -44,12 +44,17 @@ namespace BlitsMe.Agent.UI.WPF
             ResetStatus();
 
             bool dataOK = true;
-            dataOK = validator.ValidateFieldNonEmpty(Email, Email.Text, EmailLabel, "Please enter your email address") && validator.ValidateEmail(Email,EmailLabel) && dataOK;
+            dataOK = validator.ValidateFieldMatches(Username, Username.Text, UsernameLabel,
+                                                    "Username can only use normal characters", "", ".*[^a-zA-Z0-9_\\-\\.].*") && dataOK;
+            dataOK = validator.ValidateFieldMatches(Username, Username.Text, UsernameLabel,
+                                                    "Username cannot contain spaces", "", ".* .*") && dataOK;
+            dataOK = validator.ValidateFieldNonEmpty(Email, Email.Text, EmailLabel, "Please enter your email address") && validator.ValidateEmail(Email, EmailLabel) && dataOK;
             dataOK = validator.ValidateFieldNonEmpty(Location, Location.Text, LocationLabel, "Please enter your location", "City, Country") && dataOK;
             dataOK = validator.ValidateFieldNonEmpty(Password, Password.Password, PasswordLabel, "Please enter your password") && dataOK;
             dataOK = validator.ValidateFieldNonEmpty(Username, Username.Text, UsernameLabel, "Please enter your preferred username") && dataOK;
             dataOK = validator.ValidateFieldNonEmpty(Lastname, Lastname.Text, NameLabel, "Please enter your last name", "Last") && dataOK;
             dataOK = validator.ValidateFieldNonEmpty(Firstname, Firstname.Text, NameLabel, "Please enter your first name", "First") && dataOK;
+
 
             if (dataOK)
             {

@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Diagnostics;
 using BlitsMe.Agent.Components.Person.Presence;
 using BlitsMe.Cloud.Messaging.Elements;
 using log4net;

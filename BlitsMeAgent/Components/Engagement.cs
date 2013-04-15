@@ -231,9 +231,7 @@ namespace BlitsMe.Agent.Components
                                                    Convert.ToInt32(response.externalEndpointPort))
                                     ), 10000);
                     OnPropertyChanged(new PropertyChangedEventArgs("OutgoingTunnel"));
-#if DEBUG
-                    Logger.Debug("Synced with peer, connection setup");
-#endif
+                    Logger.Info("Successfully completed incoming sync with " + SecondParty.Username + "-" + SecondParty.ShortCode);
                 }
                 catch (Exception e)
                 {

@@ -48,7 +48,7 @@ namespace BlitsMe.Communication.P2P.RUDP.Utils
 #endif
             } while (!_syncEvent.WaitOne(1000));
 
-            Logger.Info("Synchronisation with " + peer + " established");
+            Logger.Debug("Synchronisation with " + peer + " established");
         }
 
         public void ProcessSyncRs(StandardSyncRsTunnelPacket packet)
@@ -97,7 +97,7 @@ namespace BlitsMe.Communication.P2P.RUDP.Utils
 #endif
             } while (!_syncRqEvent.WaitOne(1000));
 
-            Logger.Info("Synchronisation with " + peer + " established");
+            Logger.Debug("Synchronisation with " + peer + " established");
         }
     }
 }

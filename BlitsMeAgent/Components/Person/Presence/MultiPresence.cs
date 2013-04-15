@@ -8,6 +8,7 @@ namespace BlitsMe.Agent.Components.Person.Presence
     class MultiPresence : IPresence
     {
         private readonly Dictionary<String, IPresence> _presences = new Dictionary<string, IPresence>();
+        private readonly object _presenceLock = new Object();
 
         public string Mode { get { return _presences.Count > 0 ? GetHighestPriorityPresence().Mode : Presence.UNAVAILABLE; } }
         public string Type { get { return _presences.Count > 0 ? GetHighestPriorityPresence().Type : Presence.AVAILABLE; } }
@@ -19,30 +20,51 @@ namespace BlitsMe.Agent.Components.Person.Presence
 
         public void AddPresence(IPresence presence)
         {
-            if (_presences.ContainsKey(presence.Resource))
+            lock (_presenceLock)
             {
-                _presences[presence.Resource] = presence;
-            } else
-            {
-                _presences.Add(presence.Resource, presence);
+                if (_presences.ContainsKey(presence.Resource))
+                {
+                    if (presence.Type.Equals(Presence.UNAVAILABLE))
+                    {
+                        _presences.Remove(presence.Resource);
+                    }
+                    else
+                    {
+                        _presences[presence.Resource] = presence;
+                    }
+                }
+                else
+                {
+                    _presences.Add(presence.Resource, presence);
+                }
             }
         }
 
         private IPresence GetHighestPriorityPresence()
         {
-            var presences = new List<IPresence>(_presences.Values);
-            presences.Sort();
-            return presences[0];
+            lock (_presenceLock)
+            {
+                if (_presences.Count > 0)
+                {
+                    var presences = new List<IPresence>(_presences.Values);
+                    presences.Sort();
+                    return presences[0];
+                }
+            }
+            return null;
         }
 
         public IPresence GetPresence(String resource)
         {
-            IPresence presence = null;
-            if(_presences.ContainsKey(resource))
+            lock (_presenceLock)
             {
-                _presences.TryGetValue(resource, out presence);
+                IPresence presence = null;
+                if (_presences.ContainsKey(resource))
+                {
+                    _presences.TryGetValue(resource, out presence);
+                }
+                return presence;
             }
-            return presence;
         }
 
         public int CompareTo(IPresence other)
@@ -50,9 +72,14 @@ namespace BlitsMe.Agent.Components.Person.Presence
             return Priority.CompareTo(other.Priority);
         }
 
+        public int UnderlyingPresenceCount
+        {
+            get { return _presences.Count; }
+        }
+
         public override string ToString()
         {
-            return _presences.Count > 0 ? GetHighestPriorityPresence().ToString() : "";
+            return _presences.Count > 0 ? GetHighestPriorityPresence() + " (LogonCount="+_presences.Count+")" : "";
         }
     }
 }
