@@ -9,10 +9,10 @@
 
 	<Grid x:Name="LayoutRoot" HorizontalAlignment="Left" Width="227" Margin="0,0,-6,7">
         <Image HorizontalAlignment="Left" Height="53" Margin="8,8,0,0" Source="/UI\WPF\Images\Blitsmewording200.png" Stretch="Fill" VerticalAlignment="Top" Width="200"/>
-		<Label Content="Username" HorizontalAlignment="Left" Margin="9.814,62.96,0,0" VerticalAlignment="Top"/>
-		<TextBox HorizontalAlignment="Left" Margin="77.11,62.96,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="132.704" Height="25.96" Name="username" KeyDown="username_KeyDown" IsEnabled="False" />
-		<Label Content="Password" HorizontalAlignment="Left" Margin="9.814,100.96,0,0" VerticalAlignment="Top" Name="passwordLabel" />
-		<PasswordBox HorizontalAlignment="Left" Margin="77.11,100.96,0,0" VerticalAlignment="Top" Width="132.704" Height="25.96" Name="password" KeyDown="password_KeyDown" IsEnabled="False" />
+		<Label x:Name="UsernameLabel" Content="Username" HorizontalAlignment="Left" Margin="9.814,62.96,0,0" VerticalAlignment="Top"/>
+		<TextBox HorizontalAlignment="Left" Margin="77.11,62.96,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="132.704" Height="25.96" Name="Username" KeyDown="username_KeyDown" IsEnabled="False" />
+		<Label Content="Password" HorizontalAlignment="Left" Margin="9.814,100.96,0,0" VerticalAlignment="Top" x:Name="PasswordLabel" />
+		<PasswordBox HorizontalAlignment="Left" Margin="77.11,100.96,0,0" VerticalAlignment="Top" Width="132.704" Height="25.96" Name="Password" KeyDown="password_KeyDown" IsEnabled="False" />
 		<Button Content="Sign In" Margin="75.11,137.08,67.89,0" VerticalAlignment="Top" Name="signin" Click="signin_click" IsEnabled="False" />
 		<TextBlock HorizontalAlignment="Left" Margin="8,164.04,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Height="37.92" Width="136.61">
 			<Hyperlink Name="NewUser" RequestNavigate="NewUserCreate" NavigateUri="" IsEnabled="False">

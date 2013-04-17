@@ -5,6 +5,7 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Input;
 using System.Windows.Media;
 
 namespace BlitsMe.Agent.UI.WPF.Utils
@@ -37,13 +38,15 @@ namespace BlitsMe.Agent.UI.WPF.Utils
             return dataOK;
         }
 
-        public bool ValidateFieldNonEmpty(Control textBox, string text, Label textLabel, string errorText, string defaultValue = "")
+        public bool ValidateFieldNonEmpty(Control control, string text, Label textLabel, string errorText, string defaultValue = "")
         {
             if (text.Equals(defaultValue) || String.IsNullOrWhiteSpace(text))
             {
-                textBox.Background = new SolidColorBrush(Colors.MistyRose);
+                control.Background = new SolidColorBrush(Colors.MistyRose);
                 textLabel.Foreground = new SolidColorBrush(Colors.Red);
                 setError(errorText);
+                control.Focus();
+                Keyboard.Focus(control);
                 return false;
             }
             return true;
@@ -51,9 +54,13 @@ namespace BlitsMe.Agent.UI.WPF.Utils
 
         public void setError(string error)
         {
-            _statusText.Visibility = Visibility.Hidden;
-            _errorText.Text = error;
-            _errorText.Visibility = Visibility.Visible;
+            if (_statusText != null)
+                _statusText.Visibility = Visibility.Hidden;
+            if (_errorText != null)
+            {
+                _errorText.Text = error;
+                _errorText.Visibility = Visibility.Visible;
+            }
         }
 
         public void ResetStatus(Control[] textBoxes, Label[] labels)
@@ -65,8 +72,10 @@ namespace BlitsMe.Agent.UI.WPF.Utils
                 if(labels[i] != null)
                     labels[i].Foreground = new SolidColorBrush(Colors.Black);
             }
-            _errorText.Visibility = Visibility.Hidden;
-            _statusText.Visibility = Visibility.Hidden;
+            if(_errorText != null)
+                _errorText.Visibility = Visibility.Hidden;
+            if(_statusText != null)
+                _statusText.Visibility = Visibility.Hidden;
         }
 
         public bool ValidateFieldMatches(Control textBox, string text, Label label, string errorString, string placeHolder, string regEx)

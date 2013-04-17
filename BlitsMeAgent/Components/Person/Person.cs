@@ -143,7 +143,7 @@ namespace BlitsMe.Agent.Components.Person
             _firstname = userElement.firstname;
             _lastname = userElement.lastname;
             _description = userElement.description;
-            if(userElement.avatarData != null)
+            if(!String.IsNullOrWhiteSpace(userElement.avatarData))
             {
                 try
                 {

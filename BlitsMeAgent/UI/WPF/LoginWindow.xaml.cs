@@ -13,6 +13,7 @@ using System.Windows.Media;
 using System.Threading;
 using System.ComponentModel;
 using BlitsMe.Agent.Components;
+using BlitsMe.Agent.UI.WPF.Utils;
 using BlitsMe.Common.Security;
 using log4net;
 
@@ -25,19 +26,21 @@ namespace BlitsMe.Agent.UI.WPF
     {
         private static readonly ILog logger = LogManager.GetLogger(typeof(LoginWindow));
         private readonly BlitsMeClientAppContext _appContext;
-        private LoginDetails loginDetails;
-        public AutoResetEvent signinEvent;
+        private readonly LoginDetails _loginDetails;
+        public AutoResetEvent SigninEvent;
+        private readonly InputValidator _validator;
 
         public LoginWindow(BlitsMeClientAppContext appContext, LoginDetails details, AutoResetEvent signinEvent)
         {
             InitializeComponent();
             _appContext = appContext;
-            loginDetails = details;
-            if(loginDetails != null)
+            _loginDetails = details;
+            if(_loginDetails != null)
             {
-                username.Text = loginDetails.username;
+                Username.Text = _loginDetails.username;
             }
-            this.signinEvent = signinEvent;
+            this.SigninEvent = signinEvent;
+            _validator = new InputValidator(null, null);
         }
 
         public void Click_ForgotPassword(object sender, RequestNavigateEventArgs e)
@@ -51,8 +54,8 @@ namespace BlitsMe.Agent.UI.WPF
             try
             {
                 signUpWindow.ShowDialog();
-                username.Text = signUpWindow.Username.Text;
-                password.Password = signUpWindow.Password.Password;
+                Username.Text = signUpWindow.Username.Text;
+                Password.Password = signUpWindow.Password.Password;
                 ProcessSignin();
             }
             catch (Exception ex)
@@ -63,9 +66,8 @@ namespace BlitsMe.Agent.UI.WPF
 
         public void LoginFailed()
         {
-            passwordLabel.Foreground = new SolidColorBrush(Colors.Red);
-            password.Background = new SolidColorBrush(Colors.MistyRose);
-            password.Password = "";
+            Password.Password = "";
+            _validator.ValidateFieldNonEmpty(Password, Password.Password, PasswordLabel, "");
         }
 
         private void signin_click(object sender, RoutedEventArgs e)
@@ -75,35 +77,22 @@ namespace BlitsMe.Agent.UI.WPF
 
         private void ProcessSignin()
         {
-            bool fail = false;
-            if (username.Text == null || username.Text.Equals(""))
+            bool dataOK = true;
+            ResetStatus();
+            dataOK = _validator.ValidateFieldNonEmpty(Password, Password.Password, PasswordLabel, "") && dataOK;
+            dataOK = _validator.ValidateFieldNonEmpty(Username, Username.Text, UsernameLabel, "") && dataOK;
+            if (dataOK)
             {
-                username.Background = new SolidColorBrush(Colors.MistyRose);
-                username.Focus();
-                fail = true;
-            }
-            else
-            {
-                username.Background = new SolidColorBrush(Colors.White);
-            }
-            if ((password.Password == null || password.Password.Equals("")) && (username.Text == null || !username.Text.Equals("guest")))
-            {
-                password.Background = new SolidColorBrush(Colors.MistyRose);
-                if(!username.IsFocused) password.Focus();
-                fail = true;
-            }
-            else
-            {
-                passwordLabel.Foreground = new SolidColorBrush(Colors.Black);
-                password.Background = new SolidColorBrush(Colors.White);
-            }
-            if (!fail)
-            {
-                loginDetails.username = username.Text;
-                loginDetails.passwordHash = Util.getSingleton().hashPassword(password.Password);
+                _loginDetails.username = Username.Text;
+                _loginDetails.passwordHash = Util.getSingleton().hashPassword(Password.Password);
                 logger.Debug("Got username and password, notifying app");
-                signinEvent.Set();
+                SigninEvent.Set();
             }
+        }
+
+        private void ResetStatus()
+        {
+            _validator.ResetStatus(new Control[] { Username, Password }, new[] { UsernameLabel, PasswordLabel });
         }
 
         private void WindowStateChanged(object sender, EventArgs e)
@@ -129,7 +118,7 @@ namespace BlitsMe.Agent.UI.WPF
         {
             if (e.Key == Key.Return)
             {
-                password.Focus();
+                Password.Focus();
             }
         }
 
@@ -146,8 +135,8 @@ namespace BlitsMe.Agent.UI.WPF
             if (Dispatcher.CheckAccess())
             {
                 NewUser.IsEnabled = false;
-                username.IsEnabled = false;
-                password.IsEnabled = false;
+                Username.IsEnabled = false;
+                Password.IsEnabled = false;
                 ForgotPassword.IsEnabled = false;
                 signin.Content = "Logging In";
                 signin.IsEnabled = false;
@@ -163,8 +152,8 @@ namespace BlitsMe.Agent.UI.WPF
             if (Dispatcher.CheckAccess())
             {
                 NewUser.IsEnabled = true;
-                username.IsEnabled = true;
-                password.IsEnabled = true;
+                Username.IsEnabled = true;
+                Password.IsEnabled = true;
                 ForgotPassword.IsEnabled = true;
                 signin.Content = "Sign In";
                 signin.IsEnabled = true;

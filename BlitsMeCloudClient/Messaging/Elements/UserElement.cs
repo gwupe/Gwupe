@@ -33,6 +33,8 @@ namespace BlitsMe.Cloud.Messaging.Elements
         public DateTime? joined;
         [DataMember]
         public String avatarData;
+        [DataMember]
+        public bool hasAvatar;
 
     }
 }

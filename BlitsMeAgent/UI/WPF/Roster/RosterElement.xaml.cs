@@ -20,6 +20,8 @@ namespace BlitsMe.Agent.UI.WPF.Roster
             set { _person = value; OnPropertyChanged(new PropertyChangedEventArgs("Person")); }
 	    }
 
+        private string ToolTip { get; set; }
+
 	    public bool IsActive
 	    {
 	        get { return _isActive; }
@@ -30,6 +32,7 @@ namespace BlitsMe.Agent.UI.WPF.Roster
 		{
 			InitializeComponent();
 		    Person = person;
+	        ToolTip = "Chat with " + person.Firstname;
             IsActive = false;
         }
 

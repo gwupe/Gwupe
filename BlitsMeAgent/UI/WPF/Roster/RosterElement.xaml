@@ -16,10 +16,10 @@
         </ResourceDictionary>
     </UserControl.Resources>
 
-		<ContentControl Content="{Binding Person}" >
+		<ContentControl Content="{Binding Person}" ToolTip="{Binding Path=ToolTip}" >
                   <ContentControl.Style>
                         <Style TargetType="{x:Type ContentControl}">
-						<Setter Property="ContentTemplate" Value="{StaticResource TeamMemberActive}" />
+						<Setter Property="ContentTemplate" Value="{StaticResource TeamMemberInActive}" />
                             <Style.Triggers>
                                 <DataTrigger Binding="{Binding IsActive}" Value="True">
                                     <Setter Property="ContentTemplate" Value="{StaticResource TeamMemberActive}" />

@@ -108,7 +108,7 @@
         </Grid>
     </DataTemplate>
 
-	<DataTemplate x:Key="TeamMemberActive">
+	<DataTemplate x:Key="TeamMemberInActive">
 	<Border Style="{StaticResource TeamMemberBorderActive}" Margin="0,0,0,1">
         <Grid Margin="0" MaxWidth="160">
             <Rectangle x:Name="ImageContainer"
@@ -139,7 +139,7 @@
     </Border>
 	</DataTemplate>
 
-	<DataTemplate x:Key="TeamMemberInActive">
+	<DataTemplate x:Key="TeamMemberActive">
 	<Border Style="{StaticResource TeamMemberBorder}" Margin="0,0,0,1">
         <Grid Margin="0" MaxWidth="160">
             <Rectangle x:Name="ImageContainer"

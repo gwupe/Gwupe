@@ -19,7 +19,7 @@ namespace BlitsMe.Service
     public partial class BMService : ServiceBase
     {
         private static readonly ILog Logger = LogManager.GetLogger(typeof(BMService));
-        private readonly WebClient _webClient;
+        private WebClient _webClient;
         private readonly Timer _updateCheck;
 #if DEBUG
         private const String UpdateServer = "s1.i.dev.blits.me";
@@ -34,7 +34,7 @@ namespace BlitsMe.Service
         private const string VncServiceName = "BlitsMeSupportService" + BuildMarker;
         private const int VncServiceTimeoutMs = 30000;
         private readonly String _version;
-        private readonly X509Certificate2 _cacert;
+        private X509Certificate2 _cacert;
 
         public List<String> Servers;
         private System.ServiceModel.ServiceHost _serviceHost;
@@ -53,20 +53,9 @@ namespace BlitsMe.Service
             }
 #endif
             // Check for update on startup
-            _webClient = new WebClient();
-            try
-            {
-                var stream = Assembly.GetExecutingAssembly().GetManifestResourceStream("BlitsMe.Service.cacert.pem");
-                Byte[] certificateData = new Byte[stream.Length];
-                stream.Read(certificateData, 0, certificateData.Length);
-                _cacert = new X509Certificate2(certificateData);
-                Logger.Info("Will use certificate from CA " + _cacert.GetNameInfo(X509NameType.SimpleName, true) +
-                            ", verified? " + _cacert.Verify());
-            } catch (Exception e)
-            {
-                Logger.Error("Failed to get the certificate : " + e.Message,e);
-            }
-            CheckForNewVersion();
+
+            // Don't do this hear, it could hold up starting of the service and thats tre bad
+            //CheckForNewVersion();
             // check for updates every interval
             _updateCheck = new Timer(UpdateCheckInterval * 1000);
             _updateCheck.Elapsed += delegate { CheckForNewVersion(); };
@@ -75,6 +64,24 @@ namespace BlitsMe.Service
 
         private void CheckForNewVersion()
         {
+            if (_webClient == null)
+            {
+                _webClient = new WebClient();
+                try
+                {
+                    var stream = Assembly.GetExecutingAssembly().GetManifestResourceStream("BlitsMe.Service.cacert.pem");
+                    Byte[] certificateData = new Byte[stream.Length];
+                    stream.Read(certificateData, 0, certificateData.Length);
+                    _cacert = new X509Certificate2(certificateData);
+                    Logger.Info("Will use certificate from CA " + _cacert.GetNameInfo(X509NameType.SimpleName, true) +
+                                ", verified? " + _cacert.Verify());
+                }
+                catch (Exception e)
+                {
+                    Logger.Error("Failed to get the certificate : " + e.Message, e);
+                }
+            }
+
             ServicePointManager.ServerCertificateValidationCallback += ValidateServerWithCA;
             try
             {

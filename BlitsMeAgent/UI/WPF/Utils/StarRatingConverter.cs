@@ -15,7 +15,6 @@ namespace BlitsMe.Agent.UI.WPF.Utils
                 int rating = (int) value;
                 return 75 - (rating*75/100);
             }
-            Logger.Error("Failed to convert null value for star rating");
             return 0;
         }
 

@@ -39,6 +39,10 @@ namespace BlitsMe.Agent.Components.Processors
             {
                 SubscribeRq request = new SubscribeRq {subscribe = true, username = username};
                 _appContext.ConnectionManager.Connection.RequestAsync<SubscribeRq,SubscribeRs>(request, SubscribeRequestResponseHandler);
+            } else
+            {
+                SubscribeRq request = new SubscribeRq { subscribe = false, username = username };
+                _appContext.ConnectionManager.Connection.RequestAsync<SubscribeRq, SubscribeRs>(request, SubscribeRequestResponseHandler);
             }
         }
 
@@ -46,7 +50,7 @@ namespace BlitsMe.Agent.Components.Processors
         {
             if(e != null)
             {
-                Logger.Error("Failed to send subscribe to " + request.username + " : " +
+                Logger.Error("Failed to send subscribe answer to " + request.username + " : " +
                              e.Message,e);
             }
         }
