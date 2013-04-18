@@ -63,7 +63,6 @@ namespace BlitsMe.Agent
             BlitsMeServiceProxy = new BlitsMeServiceProxy();
             ConnectionManager = new ConnectionManager(this);
             LoginManager = new LoginManager(this);
-            _requestManager = new RequestManager(this);
             P2PManager = new P2PManager();
             RosterManager = new RosterManager(this);
             EngagementManager = new EngagementManager(this);
@@ -75,6 +74,8 @@ namespace BlitsMe.Agent
             _upgradeCheckTimer = new Timer(60000);
             _upgradeCheckTimer.Elapsed += UpgradeCheckTimerOnElapsed;
             _upgradeCheckTimer.Enabled = true;
+            ConnectionManager.Start();
+            _requestManager = new RequestManager(this);
         }
 
         private void UpgradeCheckTimerOnElapsed(object sender, ElapsedEventArgs elapsedEventArgs)

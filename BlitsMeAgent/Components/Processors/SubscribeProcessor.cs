@@ -24,7 +24,7 @@ namespace BlitsMe.Agent.Components.Processors
             if (request.subscribe)
             {
                 AddBuddyNotification notification = new AddBuddyNotification()
-                    {Manager = _appContext.NotificationManager, Message = request.username + " would like to add you."};
+                    {Manager = _appContext.NotificationManager, Message = request.userElement.name + " would like to add you."};
                 notification.AnsweredTrue += delegate { ProcessAnswer(true, request.username); };
                 notification.AnsweredFalse += delegate { ProcessAnswer(false, request.username); };
                 _appContext.NotificationManager.AddNotification(notification);

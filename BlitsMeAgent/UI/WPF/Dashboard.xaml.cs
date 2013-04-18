@@ -177,6 +177,11 @@ namespace BlitsMe.Agent.UI.WPF
             ShowEngagement(rosterElement.Person);
         }
 
+        private void RemoveTeamMember(object sender, RoutedEventArgs e)
+        {
+            Logger.Debug("Removing Team Member " + ((ListBoxItem)sender));
+        }
+
         private void ShowEngagement(Person person)
         {
             EngagementWindow egw = _engagementWindows.GetEngagementWindow(person);

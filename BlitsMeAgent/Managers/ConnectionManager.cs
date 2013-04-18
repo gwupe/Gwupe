@@ -37,13 +37,18 @@ namespace BlitsMe.Agent.Managers
         public ConnectionManager(BlitsMeClientAppContext appContext)
         {
             this._appContext = appContext;
+            _connection = new CloudConnection();//,GetServers());
+            SaveServers(_connection.Servers);
+        }
+
+        public void Start()
+        {
             var stream = Assembly.GetExecutingAssembly().GetManifestResourceStream("BlitsMe.Agent.cacert.pem");
             Byte[] certificateData = new Byte[stream.Length];
             stream.Read(certificateData, 0, certificateData.Length);
             X509Certificate2 cert = new X509Certificate2(certificateData);
-            Logger.Info("Will use certificate from CA " + cert.GetNameInfo(X509NameType.SimpleName,true) + ", verified? " + cert.Verify());
-            _connection = new CloudConnection(_appContext.Version, cert);//,GetServers());
-            SaveServers(_connection.Servers);
+            Logger.Info("Will use certificate from CA " + cert.GetNameInfo(X509NameType.SimpleName, true) + ", verified? " + cert.Verify());
+            _connection.StartConnection(_appContext.Version, cert);
         }
 
         private void SaveServers(List<string> servers)

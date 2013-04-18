@@ -20,8 +20,8 @@ namespace BlitsMe.Cloud.Communication
         private static readonly List<string> DefaultIPs = new List<String>(new String[] { "s1.i.blits.me", "s2.i.blits.me", "s3.i.blits.me" });
 #endif
         private static readonly List<int> DefaultPorts = new List<int>(new int[] { 443 });
-        private readonly ConnectionMaintainer _connectionMaintainer;
-        private readonly Thread _connectionMaintainerThread;
+        private ConnectionMaintainer _connectionMaintainer;
+        private Thread _connectionMaintainerThread;
         public List<string> Servers;
         public List<int> Ports;
         public event ConnectionEvent Disconnect;
@@ -55,28 +55,32 @@ namespace BlitsMe.Cloud.Communication
             }
         }
 
-        public CloudConnection(String version, X509Certificate2 cert)
-            : this(version, DefaultIPs, DefaultPorts, cert)
+        public CloudConnection()
+            : this(DefaultIPs, DefaultPorts)
         {
         }
 
-        public CloudConnection(String version, List<string> servers, X509Certificate2 cert)
-            : this(version, servers, DefaultPorts, cert)
+        public CloudConnection(List<string> servers)
+            : this(servers, DefaultPorts)
         {
         }
 
 
-        public CloudConnection(String version, List<string> connectServers, List<int> connectPorts, X509Certificate2 cert)
+        public CloudConnection(List<string> connectServers, List<int> connectPorts)
         {
             Servers = (connectServers == null || connectServers.Count == 0) ? DefaultIPs : connectServers;
             Ports = (connectPorts == null || connectPorts.Count == 0) ? DefaultPorts : connectPorts;
+        }
+
+        public void StartConnection(string version, X509Certificate2 cert)
+        {
 #if DEBUG
             Logger.Debug("Setting up communication with the cloud servers");
 #endif
             _connectionMaintainer = new ConnectionMaintainer(version, Servers, Ports, cert);
             _connectionMaintainer.Disconnect += (sender, args) => OnDisconnect(args);
             _connectionMaintainer.Connect += (sender, args) => OnConnect(args);
-            _connectionMaintainerThread = new Thread(_connectionMaintainer.run) { IsBackground = true, Name = "_connectionMaintainerThread"};
+            _connectionMaintainerThread = new Thread(_connectionMaintainer.run) { IsBackground = true, Name = "_connectionMaintainerThread" };
 #if DEBUG
             Logger.Debug("Starting connection manager");
 #endif
@@ -96,10 +100,12 @@ namespace BlitsMe.Cloud.Communication
             {
                 throw new ConnectionException("Cannot send request, connection not established");
             }
-            return _sendRequest<TRq,TRs>(req);
+            return _sendRequest<TRq, TRs>(req);
         }
 
-        public void RequestAsync<TRq,TRs>(TRq req, Action<TRq,TRs,Exception> responseHandler) where TRq : Request where TRs : Response
+        public void RequestAsync<TRq, TRs>(TRq req, Action<TRq, TRs, Exception> responseHandler)
+            where TRq : Request
+            where TRs : Response
         {
             if (!isEstablished())
             {
@@ -109,27 +115,31 @@ namespace BlitsMe.Cloud.Communication
                 {
                     try
                     {
-                        TRs res = _sendRequest<TRq,TRs>(req);
+                        TRs res = _sendRequest<TRq, TRs>(req);
                         try
                         {
                             responseHandler(req, res, null);
-                        } catch (Exception e)
-                        {
-                          Logger.Error("Assigned response handler threw an exception : " + e.Message,e);
                         }
-                    } catch(Exception e)
+                        catch (Exception e)
+                        {
+                            Logger.Error("Assigned response handler threw an exception : " + e.Message, e);
+                        }
+                    }
+                    catch (Exception e)
                     {
-                        Logger.Error("Failed to run response handler for request",e);
-                        responseHandler(req,null,e);
+                        Logger.Error("Failed to run response handler for request", e);
+                        responseHandler(req, null, e);
                     }
                 });
             asyncThread.IsBackground = true;
             asyncThread.Start();
         }
 
-        private TRs _sendRequest<TRq,TRs>(TRq req) where TRq : Request where TRs : Response
+        private TRs _sendRequest<TRq, TRs>(TRq req)
+            where TRq : Request
+            where TRs : Response
         {
-            TRs response = WebSocketClient.SendRequest<TRq,TRs>(req);
+            TRs response = WebSocketClient.SendRequest<TRq, TRs>(req);
             return response;
         }
 

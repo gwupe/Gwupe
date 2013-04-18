@@ -25,38 +25,45 @@
         <Grid.ColumnDefinitions>
             <ColumnDefinition/>
         </Grid.ColumnDefinitions>
-		<Grid HorizontalAlignment="Left" Width="180" Margin="10,10,0,10">
-        <StackPanel>
-            <Grid>
-				<TextBox x:Name="SearchBox" Margin="5,5,10,0" TextWrapping="Wrap" Text="Search" VerticalAlignment="Top" FontFamily="Calibri" FontSize="16" TextChanged="Search_TextChanged" GotFocus="SearchBox_GotFocus" LostFocus="SearchBox_LostFocus" Background="#FF2B519B" Foreground="White"/>
-			</Grid>
-            <StackPanel Margin="5" Orientation="Horizontal" Height="32" HorizontalAlignment="Center" >
-				<StackPanel.Resources>
-                    <Style TargetType="{x:Type Button}">
-                        <Setter Property="Margin" Value="0,0,2,0"/>
-                    </Style>
-                </StackPanel.Resources>
-				<Button x:Name="UserInfo" ToolTip="My Details" Background="White" BorderThickness="0" Click="UserInfo_Click">
-            		<Image Source="Images/User.png" Margin="1"/>
-				</Button>
-				<Button ToolTip="Logout" Click="Logout" Background="White" BorderThickness="0">
-            		<Image Source="Images/Logoff.png" Margin="1"/>
-				</Button>
-				<Button ToolTip="Quit" Click="ExitApplication" Background="White" BorderThickness="0">
-            		<Image Source="Images/exit.png" Margin="1"/>
-				</Button>
-            </StackPanel>
-            <!-- This is the Roster section -->
+        <Grid HorizontalAlignment="Left" Width="180" Margin="10,10,0,10">
+            <StackPanel>
+                <Grid>
+                    <TextBox x:Name="SearchBox" Margin="5,5,10,0" TextWrapping="Wrap" Text="Search" VerticalAlignment="Top" FontFamily="Calibri" FontSize="16" TextChanged="Search_TextChanged" GotFocus="SearchBox_GotFocus" LostFocus="SearchBox_LostFocus" Background="#FF2B519B" Foreground="White"/>
+                </Grid>
+                <StackPanel Margin="5" Orientation="Horizontal" Height="32" HorizontalAlignment="Center" >
+                    <StackPanel.Resources>
+                        <Style TargetType="{x:Type Button}">
+                            <Setter Property="Margin" Value="0,0,2,0"/>
+                        </Style>
+                    </StackPanel.Resources>
+                    <Button x:Name="UserInfo" ToolTip="My Details" Background="White" BorderThickness="0" Click="UserInfo_Click">
+                        <Image Source="Images/User.png" Margin="1"/>
+                    </Button>
+                    <Button ToolTip="Logout" Click="Logout" Background="White" BorderThickness="0">
+                        <Image Source="Images/Logoff.png" Margin="1"/>
+                    </Button>
+                    <Button ToolTip="Quit" Click="ExitApplication" Background="White" BorderThickness="0">
+                        <Image Source="Images/exit.png" Margin="1"/>
+                    </Button>
+                </StackPanel>
+                <!-- This is the Roster section -->
                 <ListBox Name="Team" ItemsSource="{Binding}" Style="{StaticResource TeamList}" 
 					FontFamily="Corbel" Margin="0,0,0,27">
                     <ListBox.Resources>
                         <Style TargetType="{x:Type ListBoxItem}">
                             <EventSetter Event="ListBoxItem.Selected" Handler="TeamMemberSelected" HandledEventsToo="True"/>
+                            <Setter Property="ContextMenu">
+                                <Setter.Value>
+                                    <ContextMenu>
+                                        <MenuItem Header="Remove" />
+                                    </ContextMenu>
+                                </Setter.Value>
+                            </Setter>
                         </Style>
                     </ListBox.Resources>
                 </ListBox>
-        </StackPanel>
-		</Grid>
+            </StackPanel>
+        </Grid>
         <Grid Margin="195,8,8,8">
             <DockPanel LastChildFill="True">
                 <ItemsControl x:Name="Notifications" DockPanel.Dock="Top" Margin="8,0">
