@@ -5,6 +5,7 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
+using BlitsMe.Agent.UI.WPF.API;
 using BlitsMe.Agent.UI.WPF.Utils;
 using BlitsMe.Cloud.Exceptions;
 using BlitsMe.Cloud.Messaging.API;
@@ -16,7 +17,7 @@ namespace BlitsMe.Agent.UI.WPF
     /// <summary>
     /// Interaction logic for UserInfo.xaml
     /// </summary>
-    public partial class UserInfoWindow : UserControl
+    public partial class UserInfoWindow : UserControl, IDashboardContentControl
     {
         private static readonly ILog Logger = LogManager.GetLogger(typeof(UserInfoWindow));
         private readonly BlitsMeClientAppContext _appContext;
@@ -48,7 +49,7 @@ namespace BlitsMe.Agent.UI.WPF
             ResetStatus();
 
             bool dataOK = true;
-            dataOK = validator.ValidateFieldNonEmpty(Email, Email.Text, EmailLabel, "Please enter your email address") && validator.ValidateEmail(Email,EmailLabel) && dataOK;
+            dataOK = validator.ValidateFieldNonEmpty(Email, Email.Text, EmailLabel, "Please enter your email address") && validator.ValidateEmail(Email, EmailLabel) && dataOK;
             dataOK = validator.ValidateFieldNonEmpty(Location, Location.Text, LocationLabel, "Please enter your location", "City, Country") && dataOK;
             if (PasswordChange != null && (bool)PasswordChange.IsChecked)
             {
@@ -164,6 +165,11 @@ namespace BlitsMe.Agent.UI.WPF
         {
             var avatarWindow = new AvatarImageWindow(_appContext) { Owner = _appContext.UIDashBoard, ProfileImage = ImageStreamReader.CreateBitmapImage(_appContext.CurrentUserManager.CurrentUser.Avatar) };
             avatarWindow.ShowDialog();
+        }
+
+        public void SetAsMain(Dashboard dashboard)
+        {
+
         }
     }
 }

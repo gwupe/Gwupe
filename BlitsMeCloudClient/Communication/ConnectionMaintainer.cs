@@ -219,6 +219,7 @@ namespace BlitsMe.Cloud.Communication
 
         protected override bool validateServerCertificate(object sender, System.Security.Cryptography.X509Certificates.X509Certificate certificate, System.Security.Cryptography.X509Certificates.X509Chain chain, System.Net.Security.SslPolicyErrors sslPolicyErrors)
         {
+            return true;
             bool isValid = false;
             if (sslPolicyErrors == SslPolicyErrors.RemoteCertificateChainErrors)
             {

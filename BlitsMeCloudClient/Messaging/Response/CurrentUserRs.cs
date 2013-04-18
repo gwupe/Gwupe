@@ -18,7 +18,5 @@ namespace BlitsMe.Cloud.Messaging.Response
 
         [DataMember]
         public UserElement userElement;
-
-        [DataMember] public String avatarData;
     }
 }

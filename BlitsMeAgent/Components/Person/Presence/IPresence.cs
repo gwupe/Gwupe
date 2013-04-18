@@ -10,9 +10,10 @@ namespace BlitsMe.Agent.Components.Person.Presence
         String Mode { get; }
         String Type { get; }
         int Priority { get; }
+        String Resource { get; }
 
         Boolean IsOnline { get; }
-        Boolean IsAvailable { get; }
+        Boolean IsPresent { get; }
         String Status { get; }
     }
 }

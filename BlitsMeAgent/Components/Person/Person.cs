@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Diagnostics;
 using BlitsMe.Agent.Components.Person.Presence;
 using BlitsMe.Cloud.Messaging.Elements;
 using log4net;
@@ -80,18 +81,18 @@ namespace BlitsMe.Agent.Components.Person
         }
 
         public IList<String> Groups { get; set; }
-        private string _status;
-        public String Status
+        private string _subscriptionStatus;
+        public String SubscriptionStatus
         {
-            get { return _status; }
-            set { _status = value; OnPropertyChanged("Status"); }
+            get { return _subscriptionStatus; }
+            set { _subscriptionStatus = value; OnPropertyChanged("SubscriptionStatus"); }
         }
 
-        private string _type;
-        public String Type
+        private string _subscriptionType;
+        public String SubscriptionType
         {
-            get { return _type; }
-            set { _type = value; OnPropertyChanged("Type"); }
+            get { return _subscriptionType; }
+            set { _subscriptionType = value; OnPropertyChanged("SubscriptionType"); }
         }
 
         private byte[] _avatar;
@@ -126,7 +127,7 @@ namespace BlitsMe.Agent.Components.Person
             // Set backing field directly, no listeners yet
             this.Groups = rosterElement.groups;
             this._shortCode = rosterElement.shortCode;
-            _presence.AddPresence("default",new Presence.Presence(rosterElement.presence));
+            _presence.AddPresence(new Presence.Presence("default",rosterElement.presence));
         }
 
         public Person(UserElement userElement) : this()
@@ -137,12 +138,12 @@ namespace BlitsMe.Agent.Components.Person
             this._location = userElement.location;
             this._rating = userElement.rating;
             this._joined = userElement.joined;
-            this._status = userElement.status;
-            this._type = userElement.type;
+            this._subscriptionStatus = userElement.subscriptionStatus;
+            this._subscriptionType = userElement.subscriptionType;
             _firstname = userElement.firstname;
             _lastname = userElement.lastname;
             _description = userElement.description;
-            if(userElement.avatarData != null)
+            if(!String.IsNullOrWhiteSpace(userElement.avatarData))
             {
                 try
                 {
@@ -155,9 +156,9 @@ namespace BlitsMe.Agent.Components.Person
             
         }
 
-        internal void SetPresence(String resource, IPresence presence)
+        internal void SetPresence(IPresence presence)
         {
-            _presence.AddPresence(resource,presence);
+            _presence.AddPresence(presence);
             OnPropertyChanged("Presence");
         }
 

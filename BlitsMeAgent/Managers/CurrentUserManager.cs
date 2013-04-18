@@ -27,16 +27,9 @@ namespace BlitsMe.Agent.Managers
             _appContext = appContext;
         }
 
-        internal void SetUser(UserElement userElement, String avatarData = null)
+        internal void SetUser(UserElement userElement)
         {
             _currentUser = new Person(userElement);
-            try
-            {
-                if (!String.IsNullOrWhiteSpace(avatarData)) _currentUser.SetAvatarData(avatarData);
-            } catch(Exception e)
-            {
-                Logger.Error("Failed to set avatar data : " + e.Message,e);
-            }
             OnCurrentUserChanged(EventArgs.Empty);
         }
 
@@ -44,7 +37,7 @@ namespace BlitsMe.Agent.Managers
         {
             CurrentUserRq request = new CurrentUserRq();
             CurrentUserRs response = _appContext.ConnectionManager.Connection.Request<CurrentUserRq, CurrentUserRs>(request);
-            SetUser(response.userElement, response.avatarData);
+            SetUser(response.userElement);
         }
 
         internal void SaveCurrentUser(String elevateTokenId, String securityString, String password = null)

@@ -1,4 +1,5 @@
-﻿using System.IO;
+﻿using System.ComponentModel;
+using System.IO;
 using System.Windows.Controls;
 using System.Windows.Media.Imaging;
 using BlitsMe.Agent.Components.Person;
@@ -9,15 +10,38 @@ namespace BlitsMe.Agent.UI.WPF.Roster
 	/// <summary>
 	/// Interaction logic for RosterElement.xaml
 	/// </summary>
-	public partial class RosterElement : UserControl
+	public partial class RosterElement : UserControl, INotifyPropertyChanged
 	{
-        public Person Person { get; set; }
+	    private bool _isActive;
+	    private Person _person;
+	    public Person Person
+	    {
+	        get { return _person; }
+            set { _person = value; OnPropertyChanged(new PropertyChangedEventArgs("Person")); }
+	    }
 
-		public RosterElement(Person person)
+        private string ToolTip { get; set; }
+
+	    public bool IsActive
+	    {
+	        get { return _isActive; }
+	        set { _isActive = value; OnPropertyChanged(new PropertyChangedEventArgs("IsActive")); }
+	    }
+
+	    public RosterElement(Person person)
 		{
-			this.InitializeComponent();
-		    this.Person = person;
-		}
+			InitializeComponent();
+		    Person = person;
+	        ToolTip = "Chat with " + person.Firstname;
+            IsActive = false;
+        }
 
+	    public event PropertyChangedEventHandler PropertyChanged;
+
+	    public void OnPropertyChanged(PropertyChangedEventArgs e)
+	    {
+	        PropertyChangedEventHandler handler = PropertyChanged;
+	        if (handler != null) handler(this, e);
+	    }
 	}
 }

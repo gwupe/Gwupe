@@ -8,8 +8,8 @@
 
 	<Grid x:Name="LayoutRoot" Margin="27.666,18.5,22.333,0" HorizontalAlignment="Center" VerticalAlignment="Top" Height="305.047">
 		<Image HorizontalAlignment="Center" Height="53" Margin="8,8,0,0" Source="/UI\WPF\Images\Blitsmewording200.png" Stretch="Fill" VerticalAlignment="Top" Width="200"/>
-		<TextBlock Margin="60,66,60,0" TextWrapping="Wrap" Text="Fill in your details" VerticalAlignment="Top" TextAlignment="Center"/>
-		<TextBlock x:Name="ErrorText" Margin="10,86.96,10,0" TextWrapping="Wrap" Text="Error" VerticalAlignment="Top" TextAlignment="Center" Foreground="Red" Visibility="Hidden"/>
+		<TextBlock Margin="60,61,60,0" TextWrapping="Wrap" Text="Fill in your details" VerticalAlignment="Top" TextAlignment="Center"/>
+		<TextBlock x:Name="ErrorText" Margin="10,83.04,10,0" TextWrapping="Wrap" Text="Error" VerticalAlignment="Top" TextAlignment="Center" Foreground="Red" Height="15.96" Visibility="Hidden"/>
 		<TextBlock x:Name="StatusText" Margin="10,86.96,10,0" TextWrapping="Wrap" Text="Success" VerticalAlignment="Top" TextAlignment="Center" Foreground="#FF244488" Visibility="Hidden" Background="Black"/>
 		<Grid Margin="0,99,0.001,0" HorizontalAlignment="Center" Width="256" VerticalAlignment="Top" Height="206.047">
 			<Label Content="Name" x:Name="NameLabel" HorizontalAlignment="Left" Margin="10,8.371,0,0" VerticalAlignment="Top" Width="68.123"/>

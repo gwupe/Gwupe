@@ -189,11 +189,17 @@
     <EmbeddedResource Include="env\Debug\log4net.xml">
       <LogicalName>BlitsMe.Service.log4net.xml</LogicalName>
     </EmbeddedResource>
+    <EmbeddedResource Include="env\Debug\cacert.pem">
+      <LogicalName>BlitsMe.Service.cacert.pem</LogicalName>
+    </EmbeddedResource>
     <RootContent Include="env\Debug\bmserver.exe" />
   </ItemGroup>
   <ItemGroup Condition=" '$(Configuration)' == 'Release' ">
     <EmbeddedResource Include="env\Release\log4net.xml">
       <LogicalName>BlitsMe.Service.log4net.xml</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="env\Release\cacert.pem">
+      <LogicalName>BlitsMe.Service.cacert.pem</LogicalName>
     </EmbeddedResource>
     <RootContent Include="env\Release\bmserver.exe" />
   </ItemGroup>

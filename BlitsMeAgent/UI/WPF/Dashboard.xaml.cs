@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using System.ComponentModel;
@@ -9,10 +8,8 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
 using BlitsMe.Agent.Components;
-using BlitsMe.Agent.Components.Chat;
 using BlitsMe.Agent.Components.Notification;
 using BlitsMe.Agent.Components.Person;
-using BlitsMe.Agent.Components.Search;
 using BlitsMe.Agent.UI.WPF.Engage;
 using BlitsMe.Agent.UI.WPF.Roster;
 using BlitsMe.Agent.UI.WPF.Search;
@@ -41,7 +38,6 @@ namespace BlitsMe.Agent.UI.WPF
         private Timer _searchCountDown;
         private readonly Object _searchLock = new Object();
         internal DashboardDataContext DashboardData;
-
 
         public Dashboard(BlitsMeClientAppContext appContext)
         {
@@ -73,6 +69,7 @@ namespace BlitsMe.Agent.UI.WPF
                 Logger.Error("Failed to set the list : " + e.Message, e);
             }
             _appContext.EngagementManager.NewActivity += EngagementManagerOnNewActivity;
+            Logger.Info("Dashboard setup completed");
         }
 
         private void SetupCurrentUserListener()
@@ -186,10 +183,29 @@ namespace BlitsMe.Agent.UI.WPF
             if (egw != null)
             {
                 ActiveContent.Content = egw;
+                egw.SetAsMain(this);
+                try
+                {
+                    ClearActiveRosterElement();
+                    RosterElement element = _rosterList.GetElement(person.Username);
+                    element.IsActive = true;
+                }
+                catch (Exception e)
+                {
+                    Logger.Error("Failed to select the roster item for " + person.Username);
+                }
             }
             else
             {
                 Logger.Error("Failed to find an engagement window for peron " + person);
+            }
+        }
+
+        private void ClearActiveRosterElement()
+        {
+            foreach (var rosterElement in _rosterList)
+            {
+                rosterElement.IsActive = false;
             }
         }
 
@@ -227,6 +243,8 @@ namespace BlitsMe.Agent.UI.WPF
                 _searchCountDown.Elapsed += ProcessSearch;
             }
             ActiveContent.Content = _searchWindow;
+            _searchWindow.SetAsMain(this);
+            ClearActiveRosterElement();
         }
 
         private void ProcessSearch(object sender, ElapsedEventArgs elapsedEventArgs)
@@ -273,6 +291,8 @@ namespace BlitsMe.Agent.UI.WPF
                     _userInfoWindow = new UserInfoWindow(_appContext);
                 }
                 ActiveContent.Content = _userInfoWindow;
+                _userInfoWindow.SetAsMain(this);
+                ClearActiveRosterElement();
             }
         }
 

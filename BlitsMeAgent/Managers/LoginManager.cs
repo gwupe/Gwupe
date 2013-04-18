@@ -105,14 +105,14 @@ namespace BlitsMe.Agent.Managers
             {
                 if (_loginWindow.Dispatcher.CheckAccess())
                 {
-                    _loginWindow.username.Text = LoginDetails.username;
-                    _loginWindow.password.Password = "";
+                    _loginWindow.Username.Text = LoginDetails.username;
+                    _loginWindow.Password.Password = "";
                 } else
                 {
                     _loginWindow.Dispatcher.Invoke(new Action(() =>
                     {
-                        _loginWindow.username.Text = LoginDetails.username;
-                        _loginWindow.password.Password = "";
+                        _loginWindow.Username.Text = LoginDetails.username;
+                        _loginWindow.Password.Password = "";
                     }));
                 }
                 LoginDetails.username = "";

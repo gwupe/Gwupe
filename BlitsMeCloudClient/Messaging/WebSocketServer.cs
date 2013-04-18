@@ -74,7 +74,7 @@ namespace BlitsMe.Cloud.Messaging
             }
             catch (Exception e)
             {
-                Logger.Error("Failed to process message : " + e.Message, e);
+                Logger.Error("Failed to process message with processor " + processor.GetType() + " : " + e.Message, e);
                 try
                 {
                     Type responseType = Type.GetType("BlitsMe.Cloud.Messaging.Response." + processorName + "Rs");

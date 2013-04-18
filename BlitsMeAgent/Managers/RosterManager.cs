@@ -59,7 +59,7 @@ namespace BlitsMe.Agent.Managers
         {
             if (_haveRoster)
             {
-                ChangePresence(request.user, request.resource, request.shortCode, new Presence(request.presence));
+                ChangePresence(request.user, request.shortCode, new Presence(request.resource, request.presence));
             }
             else
             {
@@ -67,18 +67,24 @@ namespace BlitsMe.Agent.Managers
             }
         }
 
-        private void ChangePresence(String user, String resource, String shortCode, Presence presence)
+        private void ChangePresence(String user, String shortCode, Presence presence)
         {
             if(!ServicePersonLookup.ContainsKey(user)){
-                // if we are getting presence alerts, we need to create this user
-                AddUsernameToList(user, resource, presence);
+                if (Presence.UNAVAILABLE.Equals(presence.Type))
+                    return;
+                // if we are getting presence alerts (excl unavail), we need to create this user
+                AddUsernameToList(user, presence);
             }
             Person servicePerson = _appContext.RosterManager.GetServicePerson(user);
             if (servicePerson != null)
             {
-                servicePerson.SetPresence(resource,presence);
+                servicePerson.SetPresence(presence);
+                Logger.Debug("Incoming presence change for " + user + " [" + presence + "], resource = " + presence.Resource + ", priority " + presence.Priority);
                 Logger.Info("Presence change, now " + user +
-                            (servicePerson.Presence.IsAvailable ? " is available " : " is no longer available") + "[" + servicePerson.Presence.Mode + "], resource " + resource + ", priority " + presence.Priority);
+                            (servicePerson.Presence.IsOnline ?
+                                " is available " + "[" + servicePerson.Presence + "], resource " + servicePerson.Presence.Resource + ", priority " + servicePerson.Presence.Priority :
+                                " is no longer available " + "[" + servicePerson.Presence + "]")
+                                );
                 if (shortCode != null)
                 {
                     servicePerson.ShortCode = shortCode;
@@ -115,8 +121,25 @@ namespace BlitsMe.Agent.Managers
                         {
                             foreach (RosterElement rosterElement in response.rosterElements)
                             {
+                                // If there are no subscriptions, as far as we are concerned, they are not part of the roster.
+                                if (rosterElement.presence != null && "none".Equals(rosterElement.userElement.subscriptionType))
+                                    continue;
                                 // Add each buddy to the list
-                                AddUserElementToList(rosterElement.userElement, "default", new Presence(rosterElement.presence));
+                                // I think we should not add a default presence, lets see how it goes
+                                AddUserElementToList(rosterElement.userElement);
+                                // Now async get the images
+                                if (rosterElement.userElement.hasAvatar)
+                                {
+                                    try
+                                    {
+                                        _appContext.ConnectionManager.Connection.RequestAsync<VCardRq, VCardRs>(
+                                            new VCardRq(rosterElement.userElement.user), ResponseHandler);
+                                    }
+                                    catch (Exception e)
+                                    {
+                                        Logger.Error("Failed to get the vcard for " + rosterElement.userElement.user, e);
+                                    }
+                                }
                             }
                             // Process the queued changes
                             while(_queuedPresenceChanges.Count > 0)
@@ -124,7 +147,7 @@ namespace BlitsMe.Agent.Managers
                                 PresenceChangeRq request;
                                 if(_queuedPresenceChanges.TryDequeue(out request))
                                 {
-                                    ChangePresence(request.user, request.resource, request.shortCode, new Presence(request.presence));
+                                    ChangePresence(request.user,  request.shortCode, new Presence(request.resource, request.presence));
                                 } else
                                 {
                                     Logger.Error("Failed to dequeue from the saved presence change requests");
@@ -148,13 +171,33 @@ namespace BlitsMe.Agent.Managers
             }
         }
 
+        private void ResponseHandler(VCardRq vCardRq, VCardRs vCardRs, Exception e)
+        {
+            if(e == null)
+            {
+                if(!String.IsNullOrWhiteSpace(vCardRs.userElement.avatarData) && ServicePersonLookup.ContainsKey(vCardRq.username))
+                {
+                    try
+                    {
+                        ServicePersonLookup[vCardRq.username].SetAvatarData(vCardRs.userElement.avatarData);
+                    }catch (Exception e1)
+                    {
+                        Logger.Error("Failed to set avatar data for " + vCardRq.username,e);
+                    }
+                }
+            } else
+            {
+                Logger.Error("Failed to get vcard for " + vCardRq.username,e);
+            }
+        }
 
-        private void AddUsernameToList(String username, String resource, Presence presence)
+
+        private void AddUsernameToList(String username, Presence presence)
         {
             try
             {
                 VCardRs cardRs = _appContext.ConnectionManager.Connection.Request<VCardRq,VCardRs>(new VCardRq(username));
-                AddUserElementToList(cardRs.userElement, resource, presence);
+                AddUserElementToList(cardRs.userElement, presence);
             }
             catch (Exception e)
             {
@@ -162,12 +205,12 @@ namespace BlitsMe.Agent.Managers
             }
         }
 
-        private void AddUserElementToList(UserElement userElement, String resource = null, Presence presence = null)
+        private void AddUserElementToList(UserElement userElement, Presence presence = null)
         {
             Person person = new Person(userElement);
             if (presence != null)
             {
-                person.SetPresence(resource,presence);
+                person.SetPresence(presence);
             }
             ServicePersonList.Add(person);
             ServicePersonLookup[person.Username] = person;
@@ -192,6 +235,7 @@ namespace BlitsMe.Agent.Managers
         {
             if(e == null)
             {
+                person.SubscriptionStatus = "subscribe";
                 Logger.Debug("Succeeded in sending subscribe request for " + person.Username);
             } else
             {

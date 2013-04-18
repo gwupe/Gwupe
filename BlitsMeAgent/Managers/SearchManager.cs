@@ -31,14 +31,14 @@ namespace BlitsMe.Agent.Managers
             SearchRq request = new SearchRq() { query = search };
             if (_appContext.ConnectionManager.IsOnline())
             {
-                _appContext.ConnectionManager.Connection.RequestAsync<SearchRq,SearchRs>(request, ResponseHandler);
+                _appContext.ConnectionManager.Connection.RequestAsync<SearchRq,SearchRs>(request, SearchResponseHandler);
             } else
             {
                 Logger.Warn("Cannot search, not online");
             }
         }
 
-        private void ResponseHandler(SearchRq request, SearchRs response, Exception e)
+        private void SearchResponseHandler(SearchRq request, SearchRs response, Exception e)
         {
             if (e == null)
             {
@@ -50,7 +50,22 @@ namespace BlitsMe.Agent.Managers
                     {
                         foreach (var resultElement in response.results)
                         {
-                            SearchResults.Add(new SearchResult(resultElement));
+                            var searchResult = new SearchResult(resultElement);
+                            SearchResults.Add(searchResult);
+                            if (resultElement.user.hasAvatar)
+                            {
+                                try
+                                {
+                                    _appContext.ConnectionManager.Connection.RequestAsync<VCardRq, VCardRs>(
+                                        new VCardRq(resultElement.user.user),
+                                        delegate(VCardRq rq, VCardRs rs, Exception arg3)
+                                            { ResponseHandler(rq, rs, arg3, searchResult); });
+                                }
+                                catch (Exception ex)
+                                {
+                                    Logger.Error("Failed to get the vcard for " + resultElement.user.user, ex);
+                                }
+                            }
                         }
                     }
                 }
@@ -60,6 +75,27 @@ namespace BlitsMe.Agent.Managers
             }
         }
 
+        private void ResponseHandler(VCardRq vCardRq, VCardRs vCardRs, Exception e, SearchResult searchResult)
+        {
+            if (e == null)
+            {
+                if (!String.IsNullOrWhiteSpace(vCardRs.userElement.avatarData))
+                {
+                    try
+                    {
+                        searchResult.Person.SetAvatarData(vCardRs.userElement.avatarData);
+                    }
+                    catch (Exception e1)
+                    {
+                        Logger.Error("Failed to set avatar data for " + vCardRq.username, e);
+                    }
+                }
+            }
+            else
+            {
+                Logger.Error("Failed to get vcard for " + vCardRq.username, e);
+            }
+        }
 
         internal void Close()
         {

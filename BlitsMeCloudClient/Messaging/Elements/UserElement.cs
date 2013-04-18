@@ -16,11 +16,11 @@ namespace BlitsMe.Cloud.Messaging.Elements
         [DataMember]
         public String name;
         [DataMember]
-        public String status;
+        public String subscriptionStatus;
         [DataMember]
         public String user;
         [DataMember]
-        public String type;
+        public String subscriptionType;
         [DataMember]
         public String description;
         [DataMember]
@@ -33,6 +33,8 @@ namespace BlitsMe.Cloud.Messaging.Elements
         public DateTime? joined;
         [DataMember]
         public String avatarData;
+        [DataMember]
+        public bool hasAvatar;
 
     }
 }

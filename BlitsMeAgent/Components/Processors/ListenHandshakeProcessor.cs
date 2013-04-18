@@ -55,6 +55,7 @@ namespace BlitsMe.Agent.Components.Processors
             try
             {
                 engagement.IncomingTunnel.WaitForSyncFromPeer(peerIP, 10000);
+                Logger.Info("Successfully completed incoming sync with " + engagement.SecondParty.Username + "-" + engagement.SecondParty.ShortCode);
             }
             catch (Exception e)
             {

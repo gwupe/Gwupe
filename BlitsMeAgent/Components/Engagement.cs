@@ -1,25 +1,12 @@
 using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.ComponentModel;
-using System.Diagnostics;
-using System.IO;
 using System.Net;
 using System.Threading;
-using BlitsMe.Agent.Components.Chat;
-using BlitsMe.Agent.Components.Functions;
 using BlitsMe.Agent.Components.Functions.API;
-using BlitsMe.Agent.Components.Functions.FileSend;
-using BlitsMe.Agent.Components.Functions.RemoteDesktop;
-using BlitsMe.Agent.Components.Notification;
 using BlitsMe.Agent.Managers;
-using BlitsMe.Cloud.Exceptions;
-using BlitsMe.Cloud.Messaging.API;
 using BlitsMe.Cloud.Messaging.Request;
 using BlitsMe.Cloud.Messaging.Response;
-using BlitsMe.Common.Security;
-using BlitsMe.Communication.P2P.RUDP.Connector;
-using BlitsMe.Communication.P2P.RUDP.Connector.API;
 using BlitsMe.Communication.P2P.RUDP.Tunnel;
 using BlitsMe.Communication.P2P.RUDP.Tunnel.API;
 using BlitsMe.Communication.P2P.RUDP.Utils;
@@ -231,9 +218,7 @@ namespace BlitsMe.Agent.Components
                                                    Convert.ToInt32(response.externalEndpointPort))
                                     ), 10000);
                     OnPropertyChanged(new PropertyChangedEventArgs("OutgoingTunnel"));
-#if DEBUG
-                    Logger.Debug("Synced with peer, connection setup");
-#endif
+                    Logger.Info("Successfully completed incoming sync with " + SecondParty.Username + "-" + SecondParty.ShortCode);
                 }
                 catch (Exception e)
                 {

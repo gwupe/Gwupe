@@ -2,14 +2,18 @@
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using System.ComponentModel;
+using System.Threading;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
+using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Shapes;
+using System.Windows.Threading;
 using BlitsMe.Agent.Components;
 using BlitsMe.Agent.Components.Notification;
 using BlitsMe.Agent.Components.Person;
+using BlitsMe.Agent.UI.WPF.API;
 using BlitsMe.Communication.P2P.RUDP.Tunnel.API;
 using Microsoft.Win32;
 using log4net;
@@ -19,7 +23,7 @@ namespace BlitsMe.Agent.UI.WPF.Engage
     /// <summary>
     /// Interaction logic for EngagementWindow.xaml
     /// </summary>
-    public partial class EngagementWindow : UserControl
+    public partial class EngagementWindow : UserControl, IDashboardContentControl
     {
         internal Engagement Engagement { get; set; }
         private readonly BlitsMeClientAppContext _appContext;
@@ -57,16 +61,19 @@ namespace BlitsMe.Agent.UI.WPF.Engage
 
         private void EngagementOnRDPConnectionClosed(object sender, EventArgs eventArgs)
         {
+            /* TODO want to change the alert
             if (Dispatcher.CheckAccess())
                 EngagementStatus.Text = "";
             else
             {
                 Dispatcher.Invoke(new Action(() => { EngagementStatus.Text = ""; }));
             }
+             */
         }
 
         private void EngagementOnRDPConnectionAccepted(object sender, EventArgs eventArgs)
         {
+            /* TODO want to change the alert
             string message = Engagement.SecondParty.Name + " is viewing your desktop";
             if (Dispatcher.CheckAccess())
                 EngagementStatus.Text = message;
@@ -74,6 +81,7 @@ namespace BlitsMe.Agent.UI.WPF.Engage
             {
                 Dispatcher.Invoke(new Action(() => { EngagementStatus.Text = message; }));
             }
+             */
         }
 
 
@@ -188,6 +196,19 @@ namespace BlitsMe.Agent.UI.WPF.Engage
             {
                 eventArgs.Accepted = false;
             }
+        }
+
+        public void SetAsMain(Dashboard dashboard)
+        {
+            if (dashboard.ActiveContent.Content == this)
+                if (_chatWindow != null && EngagementContent.Content == _chatWindow)
+                {
+                    Dispatcher.BeginInvoke(DispatcherPriority.Input, new ThreadStart(() =>
+                    {
+                        _chatWindow.messageBox.Focus();
+                        Keyboard.Focus(_chatWindow.messageBox);
+                    }));
+                }
         }
     }
 
