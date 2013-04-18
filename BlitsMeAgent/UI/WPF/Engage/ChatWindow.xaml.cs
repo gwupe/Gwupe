@@ -95,8 +95,13 @@ namespace BlitsMe.Agent.UI.WPF.Engage
 
         public void Execute(object parameter)
         {
-            _chat.SendChatMessage(_textBox.Text);
+            String message = _textBox.Text.Trim();
+            if (message.Length > 0)
+            {
+                _chat.SendChatMessage(message);
+            }
             _textBox.Clear();
+
         }
 
         public bool CanExecute(object parameter)

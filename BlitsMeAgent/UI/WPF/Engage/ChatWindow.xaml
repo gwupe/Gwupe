@@ -77,7 +77,7 @@
           PresentationOptions:Freeze="True" />
             </Rectangle.Fill>
         </Rectangle>
-            <TextBox x:Name="messageBox" Margin="20,19,144,23" BorderThickness="0" SpellCheck.IsEnabled="True" VerticalScrollBarVisibility="Auto">
+            <TextBox x:Name="messageBox" Margin="20,19,144,23" BorderThickness="0" SpellCheck.IsEnabled="True" VerticalScrollBarVisibility="Auto" TextWrapping="Wrap" >
                 <TextBox.InputBindings>
                     <KeyBinding Key="Enter" Command="{Binding SendMessage}" />
                 </TextBox.InputBindings>
