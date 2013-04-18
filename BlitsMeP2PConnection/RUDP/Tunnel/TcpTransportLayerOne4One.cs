@@ -17,7 +17,7 @@ namespace BlitsMe.Communication.P2P.RUDP.Tunnel
     public class TcpTransportLayerOne4One : ITcpTransportLayer
     {
         private static readonly ILog Logger = LogManager.GetLogger(typeof(TcpTransportLayerOne4One));
-        private readonly TCPTransport _transport;
+        private readonly ITCPTransport _transport;
         private readonly byte _connectionId;
         // Event Handlers
         private readonly AutoResetEvent _ackEvent = new AutoResetEvent(false); // when ack comes in, this gets raised
@@ -39,7 +39,7 @@ namespace BlitsMe.Communication.P2P.RUDP.Tunnel
         public int PacketCountTransmitDataFirst { get; private set; }
         public int PacketCountTransmitDataResend { get; private set; }
 
-        public TcpTransportLayerOne4One(TCPTransport transport, byte connectionId)
+        public TcpTransportLayerOne4One(ITCPTransport transport, byte connectionId)
         {
             this._transport = transport;
             this._connectionId = connectionId;
@@ -106,7 +106,7 @@ namespace BlitsMe.Communication.P2P.RUDP.Tunnel
                 int ackTrip = (int)((stopTime - startTime) / 10000);
                 if (ackTrip > AckWaitInterval && (ackTrip - AckWaitInterval) > 20)
                 {
-                    // ackTrip was more than 50ms longer than our internal, we need to adjust up
+                    // ackTrip was more than 50ms longer than our interval, we need to adjust up
                     AckWaitInterval = ((ackTrip - AckWaitInterval) / 2) + AckWaitInterval;
 #if(DEBUG)
                     Logger.Debug("Adjusted ack wait interval UP to " + AckWaitInterval + ", trip was " + ackTrip);

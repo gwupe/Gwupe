@@ -30,7 +30,7 @@ namespace BlitsMe.Communication.P2P.RUDP.Tunnel
         private readonly Dictionary<String, TunnelContainer> _tunnels;
         private TunnelContainer _mruTunnel;
 
-        public TCPTransport TCPTransport { get; private set; }
+        public ITCPTransport TCPTransport { get; private set; }
         public UDPTransport UDPTransport { get; private set; }
 
         public IPAddress RemoteIp

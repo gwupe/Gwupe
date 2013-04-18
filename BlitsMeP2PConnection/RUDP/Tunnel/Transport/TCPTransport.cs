@@ -13,7 +13,7 @@ using log4net;
 
 namespace BlitsMe.Communication.P2P.RUDP.Tunnel.Transport
 {
-    public class TCPTransport : ITransport
+    public class TCPTransport : ITCPTransport
     {
         private static readonly ILog Logger = LogManager.GetLogger(typeof (TCPTransport));
         private readonly TCPConnectionHelper _tcpConnectionHelper;

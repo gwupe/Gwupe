@@ -16,7 +16,7 @@ namespace BlitsMe.Communication.P2P.RUDP.Tunnel.API
 
     public interface ITransportManager
     {
-        TCPTransport TCPTransport { get; }
+        ITCPTransport TCPTransport { get; }
         UDPTransport UDPTransport { get; }
 
         // send data function

@@ -104,12 +104,14 @@
     <Compile Include="RUDP\Socket\API\ITcpOverUdptSocket.cs" />
     <Compile Include="RUDP\Packet\API\ITcpPacket.cs" />
     <Compile Include="RUDP\Socket\StandardTcpOverUdptSocket.cs" />
+    <Compile Include="RUDP\Tunnel\API\ITCPTransport.cs" />
     <Compile Include="RUDP\Tunnel\API\ITransportLayer.cs" />
     <Compile Include="RUDP\Tunnel\API\ITransport.cs" />
     <Compile Include="RUDP\Tunnel\API\IUDPTunnel.cs" />
     <Compile Include="RUDP\Tunnel\API\ITcpTransportLayer.cs" />
     <Compile Include="RUDP\Tunnel\TcpTransportLayerOne4One.cs" />
     <Compile Include="RUDP\Tunnel\API\ITransportManager.cs" />
+    <Compile Include="RUDP\Tunnel\TcpTransportSlidingWindow.cs" />
     <Compile Include="RUDP\Tunnel\TransportManager.cs" />
     <Compile Include="RUDP\Tunnel\UDPTunnel.cs" />
     <Compile Include="RUDP\Tunnel\Transport\TCPTransport.cs" />
