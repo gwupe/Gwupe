@@ -33,7 +33,6 @@ namespace BlitsMe.Communication.P2P.RUDP.Connector
                 // Attempt to connect end point
                 TcpClient client = new TcpClient();
                 client.Connect(ProxyEndPoint);
-                OnConnectionAccepted();
                 // Setup the proxying threads
                 ProxyConnection proxyConnection = new ProxyConnection(client, socket);
                 return proxyConnection;

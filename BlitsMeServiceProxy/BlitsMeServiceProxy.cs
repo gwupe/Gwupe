@@ -44,6 +44,13 @@ namespace BlitsMe.ServiceProxy
             return rv;
         }
 
+        public void Ping()
+        {
+            IBlitsMeService channel = channelFactory.CreateChannel();
+            channel.Ping();
+            ((IClientChannel)channel).Close();
+        }
+
         ~BlitsMeServiceProxy()
         {
             this.close();

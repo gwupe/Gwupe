@@ -18,6 +18,9 @@ namespace BlitsMe.ServiceHost
 
         [OperationContract]
         bool VNCStartService();
+
+        [OperationContract]
+        void Ping();
     }
 
     public interface IBlitsMeServiceChannel : IBlitsMeService, System.ServiceModel.IClientChannel

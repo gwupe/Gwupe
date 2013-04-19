@@ -8,6 +8,7 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
 using BlitsMe.Agent.Components;
+using BlitsMe.Agent.Components.Alert;
 using BlitsMe.Agent.Components.Notification;
 using BlitsMe.Agent.Components.Person;
 using BlitsMe.Agent.UI.WPF.Engage;
@@ -33,6 +34,7 @@ namespace BlitsMe.Agent.UI.WPF
         private readonly CollectionViewSource _notificationView;
         // Dispatching collection for notifications (to be used by everything)
         internal DispatchingCollection<ObservableCollection<Notification>, Notification> NotificationList { get; set; }
+        internal DispatchingCollection<ObservableCollection<Alert>, Alert> AlertList { get; set; } 
         private SearchWindow _searchWindow;
         private UserInfoWindow _userInfoWindow;
         private Timer _searchCountDown;
@@ -48,6 +50,8 @@ namespace BlitsMe.Agent.UI.WPF
             _notificationView = new CollectionViewSource { Source = NotificationList };
             _notificationView.Filter += NotificationFilter;
             Notifications.ItemsSource = _notificationView.View;
+            AlertList = new DispatchingCollection<ObservableCollection<Alert>, Alert>(_appContext.NotificationManager.Alerts, Dispatcher);
+            Alerts.ItemsSource = AlertList;
             _appContext.NotificationManager.Notifications.CollectionChanged += NotificationsOnCollectionChanged;
             // Setup the various data contexts and sources
             _rosterList = new RosterList(_appContext, Dispatcher);

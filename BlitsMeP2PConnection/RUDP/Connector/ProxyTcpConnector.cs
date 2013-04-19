@@ -34,6 +34,7 @@ namespace BlitsMe.Communication.P2P.RUDP.Connector
 
         protected virtual void OnConnectionAccepted()
         {
+
             EventHandler<NamedConnectionEventArgs> handler = ConnectionAccepted;
             if (handler != null)
             {

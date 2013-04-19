@@ -3,6 +3,7 @@
 	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
 	xmlns:s="clr-namespace:System;assembly=mscorlib"
 	xmlns:Notification="clr-namespace:BlitsMe.Agent.Components.Notification"
+	xmlns:Alert="clr-namespace:BlitsMe.Agent.Components.Alert"
 	xmlns:FileSendNotification="clr-namespace:BlitsMe.Agent.Components.Functions.FileSend.Notification"
 	xmlns:wpf="clr-namespace:BlitsMe.Agent.UI.WPF"
 	xmlns:RDPNotification="clr-namespace:BlitsMe.Agent.Components.Functions.RemoteDesktop.Notification">
@@ -82,6 +83,11 @@
             </StackPanel>
             <TextBlock HorizontalAlignment="Left" Margin="8,11,0,8" Text="{Binding Path=Message, FallbackValue=Unknown Notification}" DockPanel.Dock="Left" Foreground="White" FontWeight="Bold"/>
         </DockPanel>
+    </DataTemplate>
+    <DataTemplate DataType="{x:Type Alert:Alert}">
+        <DockPanel HorizontalAlignment="Stretch" LastChildFill="true" Background="Red" Margin="1">
+            <TextBlock HorizontalAlignment="Stretch" Margin="3" Text="{Binding Path=Message, FallbackValue=Unknown Alert}" Foreground="White" FontWeight="Bold" Background="Red" TextAlignment="Center" DockPanel.Dock="Left"/>
+		</DockPanel>
     </DataTemplate>
     <!-- for a nice progress bar -->
     <LinearGradientBrush x:Key="ProgressBarBackground" EndPoint="1,0" StartPoint="0,0">

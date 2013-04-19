@@ -106,14 +106,7 @@ namespace BlitsMe.Agent.Components.Functions.RemoteDesktop
         private Client _client;
         public Client Client
         {
-            get
-            {
-                if (_client == null)
-                {
-                    _client = new Client(_engagement.TransportManager);
-                }
-                return _client;
-            }
+            get { return _client ?? (_client = new Client(_engagement.TransportManager)); }
         }
 
         private Server _server;

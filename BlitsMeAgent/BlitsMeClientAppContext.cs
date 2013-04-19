@@ -42,9 +42,9 @@ namespace BlitsMe.Agent
         internal SearchManager SearchManager { get; private set; }
         internal Thread _dashboardUIThread;
         internal bool isShuttingDown { get; private set; }
-        private readonly BLMRegistry _reg = new BLMRegistry();
-        private readonly Timer _upgradeCheckTimer;
-        private readonly String _startupVersion;
+        internal readonly BLMRegistry Reg = new BLMRegistry();
+        internal readonly String StartupVersion;
+        internal readonly MaintenanceManager _maintenanceManager;
 
         /// <summary>
         /// This class should be created and passed into Application.Run( ... )
@@ -52,8 +52,8 @@ namespace BlitsMe.Agent
         public BlitsMeClientAppContext()
         {
             XmlConfigurator.Configure(Assembly.GetExecutingAssembly().GetManifestResourceStream("BlitsMe.Agent.log4net.xml"));
-            _startupVersion = Regex.Replace(FileVersionInfo.GetVersionInfo(Assembly.GetExecutingAssembly().Location).FileVersion, "\\.[0-9]+$", "");
-            Logger.Info("BlitsMe" + Program.BuildMarker + ".Agent Starting up [" + _startupVersion + "]");
+            StartupVersion = Regex.Replace(FileVersionInfo.GetVersionInfo(Assembly.GetExecutingAssembly().Location).FileVersion, "\\.[0-9]+$", "");
+            Logger.Info("BlitsMe" + Program.BuildMarker + ".Agent Starting up [" + StartupVersion + "]");
 #if DEBUG
             foreach (var manifestResourceName in Assembly.GetExecutingAssembly().GetManifestResourceNames())
             {
@@ -71,37 +71,10 @@ namespace BlitsMe.Agent
             CurrentUserManager = new CurrentUserManager(this);
             EngagementManager.NewActivity += OnNewEngagementActivity;
             _systray = new SystemTray(this);
-            _upgradeCheckTimer = new Timer(60000);
-            _upgradeCheckTimer.Elapsed += UpgradeCheckTimerOnElapsed;
-            _upgradeCheckTimer.Enabled = true;
             ConnectionManager.Start();
             _requestManager = new RequestManager(this);
-        }
-
-        private void UpgradeCheckTimerOnElapsed(object sender, ElapsedEventArgs elapsedEventArgs)
-        {
-            try
-            {
-                var regVersion = _reg.getRegValue("Version", true);
-                Logger.Debug("Checking for agent upgrade " + _startupVersion + " vs " + regVersion);
-                if (new Version(regVersion).CompareTo(new Version(_startupVersion)) != 0)
-                {
-                    Logger.Info("My file version has changed " + _startupVersion + " => " + regVersion +
-                                ", closing to re-open as new version.");
-                    try
-                    {
-                        Process.Start(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location) +
-                                      "\\BlitsMe.Agent.Upgrade.exe");
-                    } catch(Exception e)
-                    {
-                        Logger.Error("Failed to start the upgrade exe, but will stop myself anyway.");
-                    }
-                    Shutdown();
-                }
-            } catch(Exception e)
-            {
-                Logger.Error("Failed to check version and act : " + e.Message,e);
-            }
+            _maintenanceManager = new MaintenanceManager(this);
+            _maintenanceManager.Start();
         }
 
         public String Version

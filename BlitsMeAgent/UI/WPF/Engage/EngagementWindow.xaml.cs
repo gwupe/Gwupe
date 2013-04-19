@@ -11,6 +11,7 @@ using System.Windows.Media;
 using System.Windows.Shapes;
 using System.Windows.Threading;
 using BlitsMe.Agent.Components;
+using BlitsMe.Agent.Components.Alert;
 using BlitsMe.Agent.Components.Notification;
 using BlitsMe.Agent.Components.Person;
 using BlitsMe.Agent.UI.WPF.API;
@@ -31,6 +32,7 @@ namespace BlitsMe.Agent.UI.WPF.Engage
         private static readonly ILog Logger = LogManager.GetLogger(typeof(EngagementWindow));
         private readonly CollectionViewSource _notificationView;
         private readonly EngagementWindowDataContext _ewDataContext;
+        private Alert thisAlert;
 
         internal EngagementWindow(BlitsMeClientAppContext appContext, DispatchingCollection<ObservableCollection<Notification>, Notification> notificationList, Engagement engagement)
         {
@@ -61,27 +63,49 @@ namespace BlitsMe.Agent.UI.WPF.Engage
 
         private void EngagementOnRDPConnectionClosed(object sender, EventArgs eventArgs)
         {
-            /* TODO want to change the alert
+            _appContext.NotificationManager.DeleteAlert(thisAlert);
             if (Dispatcher.CheckAccess())
-                EngagementStatus.Text = "";
+            {
+                MainLayout.Background = new SolidColorBrush(Color.FromArgb(255, 43, 81, 155));
+                _chatWindow.BubbleCover.Background = new SolidColorBrush(Color.FromArgb(255, 43, 81, 155));
+                KickOffButton.Visibility = Visibility.Collapsed;
+                RemoteAssistanceButton.Visibility = Visibility.Visible;
+            }
             else
             {
-                Dispatcher.Invoke(new Action(() => { EngagementStatus.Text = ""; }));
+                Dispatcher.Invoke(new Action(() =>
+                    {
+                        MainLayout.Background = new SolidColorBrush(Color.FromArgb(255, 43, 81, 155));
+                        _chatWindow.BubbleCover.Background = new SolidColorBrush(Color.FromArgb(255, 43, 81, 155));
+                        KickOffButton.Visibility = Visibility.Collapsed;
+                        RemoteAssistanceButton.Visibility = Visibility.Visible;
+                    }));
             }
-             */
         }
 
         private void EngagementOnRDPConnectionAccepted(object sender, EventArgs eventArgs)
         {
-            /* TODO want to change the alert
-            string message = Engagement.SecondParty.Name + " is viewing your desktop";
+
+            thisAlert = new Alert() { Message = Engagement.SecondParty.Firstname + " is Connected" };
+            _appContext.NotificationManager.AddAlert(thisAlert);
             if (Dispatcher.CheckAccess())
-                EngagementStatus.Text = message;
+            {
+                MainLayout.Background = new SolidColorBrush(Colors.Red);
+                _chatWindow.BubbleCover.Background = new SolidColorBrush(Colors.Red);
+                KickOffButton.Visibility = Visibility.Visible;
+                RemoteAssistanceButton.Visibility = Visibility.Collapsed;
+            }
             else
             {
-                Dispatcher.Invoke(new Action(() => { EngagementStatus.Text = message; }));
+                Dispatcher.Invoke(new Action(() =>
+                    {
+                        MainLayout.Background = new SolidColorBrush(Colors.Red);
+                        _chatWindow.BubbleCover.Background = new SolidColorBrush(Colors.Red);
+                        KickOffButton.Visibility = Visibility.Visible; ;
+                        RemoteAssistanceButton.Visibility = Visibility.Collapsed;
+
+                    }));
             }
-             */
         }
 
 
@@ -210,6 +234,14 @@ namespace BlitsMe.Agent.UI.WPF.Engage
                     }));
                 }
         }
+
+        private void KickOffButton_Click(object sender, System.Windows.RoutedEventArgs e)
+        {
+        	Thread thread = new Thread(((Components.Functions.RemoteDesktop.Function)Engagement.getFunction("RemoteDesktop")).Server.Close)
+        	    {IsBackground = true};
+            thread.Start();
+        }
+
     }
 
     internal class EngagementWindowDataContext

@@ -62,7 +62,7 @@
                     <DropShadowEffect/>
                 </Image.Effect>
             </Image>
-            <Grid Margin="0,0,0,8" Height="80" VerticalAlignment="Bottom" HorizontalAlignment="Right" Width="320" Background="#FF2B519B" >
+            <Grid x:Name="BubbleCover" Margin="0,0,0,8" Height="80" VerticalAlignment="Bottom" HorizontalAlignment="Right" Width="320" Background="#FF2B519B" >
             </Grid>
             <Image Margin="0,0,62,8" Source="/BlitsMe.Agent;component/UI/WPF/Images/Thought Bubble Right.png" Height="80" VerticalAlignment="Bottom" HorizontalAlignment="Right" Width="277">
                 <Image.Effect>

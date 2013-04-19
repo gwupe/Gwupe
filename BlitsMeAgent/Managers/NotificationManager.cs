@@ -2,6 +2,7 @@ using System;
 using System.Collections.ObjectModel;
 using System.Timers;
 using BlitsMe.Agent.Components;
+using BlitsMe.Agent.Components.Alert;
 using BlitsMe.Agent.Components.Notification;
 using log4net;
 
@@ -12,6 +13,7 @@ namespace BlitsMe.Agent.Managers
         private static readonly ILog Logger = LogManager.GetLogger(typeof(NotificationManager));
         private readonly BlitsMeClientAppContext _appContext;
         public ObservableCollection<Notification> Notifications;
+        public ObservableCollection<Alert> Alerts;
         private readonly System.Timers.Timer _removerTimer;
 
         internal NotificationManager(BlitsMeClientAppContext appContext)
@@ -21,6 +23,7 @@ namespace BlitsMe.Agent.Managers
             _removerTimer = new System.Timers.Timer { Interval = 1000 };
             _removerTimer.Elapsed += RemoveAfterTimeoutRunner;
             _removerTimer.Start();
+            Alerts = new ObservableCollection<Alert>();
         }
 
         internal void DeleteNotification(Notification notification)
@@ -52,6 +55,30 @@ namespace BlitsMe.Agent.Managers
             if (_removerTimer.Enabled == false)
             {
                 _removerTimer.Start();
+            }
+        }
+
+        internal void DeleteAlert(Alert alert)
+        {
+            lock (Alerts)
+            {
+                if (Alerts.Remove(alert))
+                {
+                    Logger.Debug("Successfully removed alert [" + alert.ToString() + "]");
+                }
+                else
+                {
+                    Logger.Warn("Failed to remove notication [" + alert.ToString() + "]");
+                }
+            }
+        }
+
+        internal void AddAlert(Alert alert)
+        {
+            alert.Manager = this;
+            lock(Alerts)
+            {
+                Alerts.Add(alert);
             }
         }
 

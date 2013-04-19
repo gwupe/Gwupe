@@ -6,63 +6,74 @@
 	 mc:Ignorable="d"
 	x:Class="BlitsMe.Agent.UI.WPF.Dashboard"
 	x:Name="Main"
-	Title="{Binding Path=Title, FallbackValue=BlitsMe}"
+	Title="{Binding Title, FallbackValue=BlitsMe}"
 	WindowStartupLocation="CenterScreen" 
 	Closing="HideIfClosing" StateChanged="WindowStateChanged" Width="800" Height="600" MinWidth="640" MinHeight="480"
 	>
     <Window.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
-                <ResourceDictionary Source="Style/RosterStyle.xaml" />
-                <ResourceDictionary Source="Style/Style.xaml"/>
-                <ResourceDictionary Source="Style/EngagementStyle.xaml" />
-                <ResourceDictionary Source="Style/NotificationStyle.xaml" />
+            	<ResourceDictionary Source="Style/RosterStyle.xaml" />
+            	<ResourceDictionary Source="Style/Style.xaml"/>
+            	<ResourceDictionary Source="Style/EngagementStyle.xaml" />
+            	<ResourceDictionary Source="Style/NotificationStyle.xaml" />
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>
     </Window.Resources>
 
     <Grid x:Name="LayoutRoot" Style="{StaticResource MainLayout}" >
         <Grid.ColumnDefinitions>
-            <ColumnDefinition/>
+        	<ColumnDefinition/>
         </Grid.ColumnDefinitions>
         <Grid HorizontalAlignment="Left" Width="180" Margin="10,10,0,10">
-            <StackPanel>
-                <Grid>
-                    <TextBox x:Name="SearchBox" Margin="5,5,10,0" TextWrapping="Wrap" Text="Search" VerticalAlignment="Top" FontFamily="Calibri" FontSize="16" TextChanged="Search_TextChanged" GotFocus="SearchBox_GotFocus" LostFocus="SearchBox_LostFocus" Background="#FF2B519B" Foreground="White"/>
-                </Grid>
-                <StackPanel Margin="5" Orientation="Horizontal" Height="32" HorizontalAlignment="Center" >
-                    <StackPanel.Resources>
-                        <Style TargetType="{x:Type Button}">
-                            <Setter Property="Margin" Value="0,0,2,0"/>
-                        </Style>
-                    </StackPanel.Resources>
-                    <Button x:Name="UserInfo" ToolTip="My Details" Background="White" BorderThickness="0" Click="UserInfo_Click">
-                        <Image Source="Images/User.png" Margin="1"/>
-                    </Button>
-                    <Button ToolTip="Logout" Click="Logout" Background="White" BorderThickness="0">
-                        <Image Source="Images/Logoff.png" Margin="1"/>
-                    </Button>
-                    <Button ToolTip="Quit" Click="ExitApplication" Background="White" BorderThickness="0">
-                        <Image Source="Images/exit.png" Margin="1"/>
-                    </Button>
-                </StackPanel>
-                <!-- This is the Roster section -->
-                <ListBox Name="Team" ItemsSource="{Binding}" Style="{StaticResource TeamList}" 
-					FontFamily="Corbel" Margin="0,0,0,27">
-                    <ListBox.Resources>
-                        <Style TargetType="{x:Type ListBoxItem}">
-                            <EventSetter Event="ListBoxItem.Selected" Handler="TeamMemberSelected" HandledEventsToo="True"/>
-                            <Setter Property="ContextMenu">
-                                <Setter.Value>
-                                    <ContextMenu>
-                                        <MenuItem Header="Remove" />
-                                    </ContextMenu>
-                                </Setter.Value>
-                            </Setter>
-                        </Style>
-                    </ListBox.Resources>
-                </ListBox>
-            </StackPanel>
+        	<DockPanel LastChildFill="True">
+        		<Grid DockPanel.Dock="Top">
+        			<TextBox x:Name="SearchBox" Margin="0" TextWrapping="Wrap" Text="Search" VerticalAlignment="Top" FontFamily="Calibri" FontSize="16" TextChanged="Search_TextChanged" GotFocus="SearchBox_GotFocus" LostFocus="SearchBox_LostFocus" Background="#FF2B519B" Foreground="White" HorizontalAlignment="Center" Width="170"/>
+        		</Grid>
+        		<StackPanel Margin="5" Orientation="Horizontal" Height="32" HorizontalAlignment="Center" DockPanel.Dock="Top">
+        			<StackPanel.Resources>
+        				<Style TargetType="{x:Type Button}">
+        					<Setter Property="Margin" Value="0,0,2,0"/>
+        				</Style>
+        			</StackPanel.Resources>
+        			<Button x:Name="UserInfo" ToolTip="My Details" Background="White" BorderThickness="0" Click="UserInfo_Click">
+        				<Image Source="Images/User.png" Margin="1"/>
+        			</Button>
+        			<Button ToolTip="Logout" Click="Logout" Background="White" BorderThickness="0">
+        				<Image Source="Images/Logoff.png" Margin="1"/>
+        			</Button>
+        			<Button ToolTip="Quit" Click="ExitApplication" Background="White" BorderThickness="0">
+        				<Image Source="Images/exit.png" Margin="1"/>
+        			</Button>
+        		</StackPanel>
+        		<ItemsControl x:Name="Alerts" DockPanel.Dock="Bottom" Margin="0,0">
+        			<ItemsControl.ItemsPanel>
+        				<ItemsPanelTemplate>
+        					<StackPanel VerticalAlignment="Bottom" d:LayoutOverrides="VerticalAlignment" >
+							</StackPanel>
+        				</ItemsPanelTemplate>
+        			</ItemsControl.ItemsPanel>
+        		</ItemsControl>
+        		<!-- This is the Roster section -->
+        		<ListBox x:Name="Team" ItemsSource="{Binding}" 
+        			FontFamily="Corbel" Margin="0,0,0,0" DockPanel.Dock="Bottom">
+        			<ListBox.Resources>
+        				<Style TargetType="{x:Type ListBoxItem}">
+        					<EventSetter Event="ListBoxItem.Selected" Handler="TeamMemberSelected" HandledEventsToo="True"/>
+        					<Setter Property="ContextMenu">
+        						<Setter.Value>
+        							<ContextMenu>
+        								<MenuItem Header="Remove" />
+        							</ContextMenu>
+        						</Setter.Value>
+        					</Setter>
+        				</Style>
+        			</ListBox.Resources>
+        			<ListBox.Style>
+        				<StaticResource ResourceKey="TeamList"/>
+        			</ListBox.Style>
+        		</ListBox>
+        	</DockPanel>
         </Grid>
         <Grid Margin="195,8,8,8">
             <DockPanel LastChildFill="True">
@@ -74,7 +85,7 @@
                     </ItemsControl.ItemsPanel>
                 </ItemsControl>
                 <!-- Now this is the desktop area -->
-                <ContentControl Name="ActiveContent" BorderThickness="1" Background="#FFC8C8C8" BorderBrush="Black" DockPanel.Dock="Bottom" />
+                <ContentControl x:Name="ActiveContent" BorderThickness="1" Background="#FFC8C8C8" BorderBrush="Black" DockPanel.Dock="Bottom" />
             </DockPanel>
         </Grid>
     </Grid>

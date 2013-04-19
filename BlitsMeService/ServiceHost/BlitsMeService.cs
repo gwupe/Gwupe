@@ -29,5 +29,9 @@ namespace BlitsMe.Service.ServiceHost
             return service.VNCStartService();
         }
 
+        public void Ping()
+        {
+            service.Ping();
+        }
     }
 }

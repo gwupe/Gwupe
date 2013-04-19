@@ -5,6 +5,7 @@ using System.Windows.Input;
 using BlitsMe.Agent.Components.Chat;
 using BlitsMe.Agent.Components.Person;
 using log4net;
+using log4net.Repository.Hierarchy;
 
 namespace BlitsMe.Agent.UI.WPF.Engage
 {
@@ -13,6 +14,7 @@ namespace BlitsMe.Agent.UI.WPF.Engage
 	/// </summary>
 	public partial class ChatWindow : UserControl
 	{
+	    private static readonly ILog Logger = LogManager.GetLogger(typeof (ChatWindow));
 	    private readonly BlitsMeClientAppContext _appContext;
 	    private readonly EngagementWindow _engagementWindow;
 	    internal readonly Chat _chat;
@@ -26,10 +28,9 @@ namespace BlitsMe.Agent.UI.WPF.Engage
 	        _chat.NewMessage += ChatOnNewMessage;
             ChatPanelViewer.ScrollToBottom();
 	        DataContext = new ChatWindowDataContext(_appContext, this);
-
 		}
 
-        #region EventHandlers
+	    #region EventHandlers
 
         private void ChatOnNewMessage(object sender, ChatEventArgs args)
         {

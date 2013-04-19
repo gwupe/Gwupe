@@ -146,6 +146,7 @@
     <Reference Include="WindowsBase" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Components\Alert\Alert.cs" />
     <Compile Include="Components\Chat\Chat.cs" />
     <Compile Include="Components\Chat\ChatElement.cs" />
     <Compile Include="Components\Chat\ChatEventArgs.cs" />
@@ -193,6 +194,7 @@
     <Compile Include="Managers\EngagementManager.cs" />
     <Compile Include="Managers\LoginEventArgs.cs" />
     <Compile Include="Managers\LoginManager.cs" />
+    <Compile Include="Managers\MaintenanceManager.cs" />
     <Compile Include="Managers\NotificationManager.cs" />
     <Compile Include="Managers\P2PManager.cs" />
     <Compile Include="Managers\RequestManager.cs" />
@@ -428,6 +430,8 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Resource>
     <Resource Include="UI\WPF\Images\1364864637_alert.png" />
+    <Resource Include="UI\WPF\Images\close.png" />
+    <Resource Include="UI\WPF\Images\fileclose.png" />
     <Resource Include="UI\WPF\Images\floppy_unmount.png" />
     <Resource Include="UI\WPF\Images\stock_insert_image.png" />
     <Resource Include="UI\WPF\Images\folder_image.png" />

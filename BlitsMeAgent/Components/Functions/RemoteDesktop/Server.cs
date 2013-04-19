@@ -53,7 +53,7 @@ namespace BlitsMe.Agent.Components.Functions.RemoteDesktop
 
         public bool Started
         {
-            get { return _vncListener != null && _vncListener.Listening; }
+            get { return _vncListener != null; }
         }
 
         internal void Start()

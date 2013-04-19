@@ -192,6 +192,11 @@ namespace BlitsMe.Service
             }
         }
 
+        public void Ping()
+        {
+            
+        }
+
         public void saveServerIPs(List<String> newIPs)
         {
             // Lets add some
