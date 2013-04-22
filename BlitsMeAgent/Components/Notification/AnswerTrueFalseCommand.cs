@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Windows.Input;
 using BlitsMe.Agent.Managers;
 
@@ -22,14 +23,17 @@ namespace BlitsMe.Agent.Components.Notification
         public void Execute(object parameter)
         {
             bool accept = (bool)parameter;
+            Thread execThread;
             _notificationManager.DeleteNotification(_notification);
             if(accept)
             {
-                _notification.OnAnswerTrue(EventArgs.Empty);
+                execThread = new Thread(() => _notification.OnAnswerTrue(EventArgs.Empty));
             } else
             {
-                _notification.OnAnswerFalse(EventArgs.Empty);
+                execThread = new Thread(() => _notification.OnAnswerFalse(EventArgs.Empty));
             }
+            execThread.IsBackground = true;
+            execThread.Start();
         }
 
         public bool CanExecute(object parameter)

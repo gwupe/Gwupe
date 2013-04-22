@@ -21,6 +21,9 @@ namespace BlitsMe.ServiceHost
 
         [OperationContract]
         void Ping();
+
+        [OperationContract]
+        String HardwareFingerprint();
     }
 
     public interface IBlitsMeServiceChannel : IBlitsMeService, System.ServiceModel.IClientChannel

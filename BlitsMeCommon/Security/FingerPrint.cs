@@ -18,8 +18,8 @@ namespace BlitsMe.Common.Security
         {
             if (string.IsNullOrEmpty(fingerPrint))
             {
-                fingerPrint = GetHash("CPU >> " + cpuId() + "\nBIOS >> " + biosId() + "\nBASE >> " + baseId()
-                    //+"\nDISK >> "+ diskId() + "\nVIDEO >> " + videoId() +"\nMAC >> "+ macId()
+                fingerPrint = GetHash("CPU >> " + cpuId() + "\nBIOS >> " + biosId() + "\nBASE >> " + baseId() + "\nMAC >> " + macId()
+                    +"\nDISK >> "+ diskId() + "\nVIDEO >> " + videoId()
                                      );
             }
             return fingerPrint;
@@ -53,6 +53,7 @@ namespace BlitsMe.Common.Security
             }
             return s;
         }
+
         #region Original Device ID Getting Code
         //Return a hardware identifier
         private static string identifier(string wmiClass, string wmiProperty, string wmiMustBeTrue)

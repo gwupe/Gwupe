@@ -20,6 +20,7 @@ namespace BlitsMe.Agent.Components.Functions.FileSend
         private long _dataWriteSize;
         public long DataWriteSize { get { return _dataWriteSize; } }
         public event EventHandler DataRead;
+        public bool FileReceiveResult = false;
 
         public void OnDataRead(EventArgs e)
         {
@@ -44,6 +45,7 @@ namespace BlitsMe.Agent.Components.Functions.FileSend
                 if (_dataWriteSize == _fileInfo.FileSize)
                 {
                     Logger.Debug("File transfer of " + _fileInfo.Filename + " complete, filesize looks good");
+                    FileReceiveResult = true;
                 } else
                 {
                     Logger.Warn("File transfer of " + _fileInfo.Filename + " looks like it failed, expected file size is " + _fileInfo.FileSize + " but destination filesize is " + _dataWriteSize);
@@ -61,6 +63,7 @@ namespace BlitsMe.Agent.Components.Functions.FileSend
             // open the file here
             string pathUser = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile);
             string pathDownload = Path.Combine(pathUser, "Downloads", _fileInfo.Filename);
+            _fileInfo.FilePath = pathDownload;
             try
             {
                 _fileStream = new FileStream(pathDownload, FileMode.OpenOrCreate);

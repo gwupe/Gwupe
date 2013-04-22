@@ -27,14 +27,6 @@ namespace BlitsMe.Agent.Misc
             get { return getRegValue(profileKey); }
             set { setRegValue(profileKey, value); }
         }
-        public string Workstation
-        {
-            get
-            {
-                return generateWorkstation();
-            }
-            set {  }
-        }
 
         public List<String> getServerIPs()
         {
@@ -72,26 +64,26 @@ namespace BlitsMe.Agent.Misc
                 logger.Error("Failed to set registry value [" + regValue + "] for " + regKey + " from registry [" + root + "] : " + e.Message);
             }
         }
-/*
-        private String generateProfile() {
-            byte[] data = new byte[128];
-            System.Security.Principal.WindowsIdentity.GetCurrent().User.AccountDomainSid.GetBinaryForm(data,0);
-            MD5 md5 = new MD5CryptoServiceProvider();
-            byte[] hashArray = md5.ComputeHash(data);
-            StringBuilder hash = new StringBuilder();
-            for (int i = 0; i < hashArray.Length; i++)
-            {
-                hash.Append(hashArray[i].ToString("X2"));
-            }
-            String profile = hash.ToString();
-            setRegValue(profileKey, profile);
-            return profile;
-        }
-        */
-        private String generateWorkstation()
-        {
-            return FingerPrint.Value();
-        }
-
+        /*
+                private String generateProfile() {
+                    byte[] data = new byte[128];
+                    System.Security.Principal.WindowsIdentity.GetCurrent().User.AccountDomainSid.GetBinaryForm(data,0);
+                    MD5 md5 = new MD5CryptoServiceProvider();
+                    byte[] hashArray = md5.ComputeHash(data);
+                    StringBuilder hash = new StringBuilder();
+                    for (int i = 0; i < hashArray.Length; i++)
+                    {
+                        hash.Append(hashArray[i].ToString("X2"));
+                    }
+                    String profile = hash.ToString();
+                    setRegValue(profileKey, profile);
+                    return profile;
+                }
+        
+                private String generateWorkstation()
+                {
+                    return FingerPrint.Value();
+                }
+                */
     }
 }

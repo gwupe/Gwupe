@@ -1,10 +1,8 @@
 ﻿using System;
 using System.Diagnostics;
-using System.IO;
 using System.Reflection;
 using System.Text.RegularExpressions;
 using System.Threading;
-using System.Timers;
 using System.Windows;
 using System.Windows.Forms;
 using System.Windows.Threading;
@@ -13,14 +11,12 @@ using BlitsMe.Agent.Managers;
 using BlitsMe.Agent.Misc;
 using BlitsMe.Agent.UI;
 using BlitsMe.Agent.UI.WPF;
-using BlitsMe.Cloud.Messaging.API;
 using BlitsMe.Cloud.Messaging.Request;
 using BlitsMe.Cloud.Messaging.Response;
 using BlitsMe.Common.Security;
 using BlitsMe.ServiceProxy;
 using log4net;
 using log4net.Config;
-using Timer = System.Timers.Timer;
 using Dashboard = BlitsMe.Agent.UI.WPF.Dashboard;
 
 namespace BlitsMe.Agent

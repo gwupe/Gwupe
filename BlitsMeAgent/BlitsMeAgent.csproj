@@ -128,6 +128,7 @@
     </Reference>
     <Reference Include="PresentationCore" />
     <Reference Include="PresentationFramework" />
+    <Reference Include="PresentationFramework.Aero" />
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Management" />
@@ -158,6 +159,7 @@
     <Compile Include="Components\Functions\FileSend\FileSendInfo.cs" />
     <Compile Include="Components\Functions\FileSend\FileSendListener.cs" />
     <Compile Include="Components\Functions\FileSend\Function.cs" />
+    <Compile Include="Components\Functions\FileSend\Notification\FileReceivedNotification.cs" />
     <Compile Include="Components\Functions\FileSend\Notification\FileSendProgressNotification.cs" />
     <Compile Include="Components\Functions\FileSend\Processors\FileSendRequestProcessor.cs" />
     <Compile Include="Components\Functions\FileSend\Processors\FileSendRequestResponseProcessor.cs" />
@@ -299,6 +301,7 @@
     </Compile>
     <Compile Include="UI\WPF\Utils\ImageStreamReader.cs" />
     <Compile Include="UI\WPF\Utils\InputValidator.cs" />
+    <Compile Include="UI\WPF\Utils\RectConverter.cs" />
     <Compile Include="UI\WPF\Utils\RelativeMessageTimeConverter.cs" />
     <Compile Include="UI\WPF\LoginWindow.xaml.cs">
       <DependentUpon>LoginWindow.xaml</DependentUpon>
@@ -307,7 +310,6 @@
       <DependentUpon>AddPersonControl.xaml</DependentUpon>
     </Compile>
     <Compile Include="UI\WPF\Roster\RosterList.cs" />
-    <Compile Include="UI\WPF\RectConverter.cs" />
     <Compile Include="UI\WPF\Utils\StarRatingConverter.cs" />
     <Compile Include="UI\WPF\Search\SearchResultControl.xaml.cs">
       <DependentUpon>SearchResultControl.xaml</DependentUpon>

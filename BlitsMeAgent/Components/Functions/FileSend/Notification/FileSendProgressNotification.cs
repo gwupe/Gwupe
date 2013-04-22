@@ -1,5 +1,6 @@
 ﻿using System;
 using System.ComponentModel;
+using System.Threading;
 using System.Windows.Input;
 using BlitsMe.Agent.Components.Notification;
 using BlitsMe.Agent.Managers;
@@ -7,21 +8,24 @@ using log4net;
 
 namespace BlitsMe.Agent.Components.Functions.FileSend.Notification
 {
-    class FileSendProgressNotification : Components.Notification.Notification, INotifyPropertyChanged
+    class FileSendProgressNotification : Components.Notification.Notification
     {
-        private static readonly ILog Logger = LogManager.GetLogger(typeof (FileSendProgressNotification));
-        public FileSendInfo FileInfo;
+        private static readonly ILog Logger = LogManager.GetLogger(typeof(FileSendProgressNotification));
+        public FileSendInfo FileInfo
+        {
+            get { return _fileInfo; }
+            set
+            {
+                _fileInfo = value;
+                Message = (_fileInfo.Direction == FileSendDirection.Receive ? "Receiving " : "Sending ") +
+                          _fileInfo.Filename;
+            }
+        }
 
         public int Progress
         {
             get { return _progress; }
-            set { _progress = value; OnPropertyChanged(new PropertyChangedEventArgs("Progress")); }
-        }
-
-        public String ProgressText
-        {
-            get { return (FileInfo.Direction == FileSendDirection.Receive ? "Receiving " : "Sending ") + _progressText; }
-            set { _progressText = value; }
+            set { _progress = value; OnPropertyChanged("Progress"); }
         }
 
         public event EventHandler ProcessCancelFile;
@@ -35,6 +39,7 @@ namespace BlitsMe.Agent.Components.Functions.FileSend.Notification
         private ICommand _cancelFileSend;
         private int _progress;
         private string _progressText;
+        private FileSendInfo _fileInfo;
 
         public ICommand CancelFileSend
         {
@@ -54,8 +59,8 @@ namespace BlitsMe.Agent.Components.Functions.FileSend.Notification
 
             public void Execute(object parameter)
             {
-                _notificationManager.DeleteNotification(_fileSendProgressNotification);
-                _fileSendProgressNotification.OnProcessCancelFile(EventArgs.Empty);
+                Thread cancelThread = new Thread(() => _fileSendProgressNotification.OnProcessCancelFile(EventArgs.Empty)) { IsBackground = true };
+                cancelThread.Start();
             }
 
             public bool CanExecute(object parameter)
@@ -71,13 +76,6 @@ namespace BlitsMe.Agent.Components.Functions.FileSend.Notification
             DeleteTimeout = 300;
         }
 
-        public event PropertyChangedEventHandler PropertyChanged;
-
-        private void OnPropertyChanged(PropertyChangedEventArgs e)
-        {
-            PropertyChangedEventHandler handler = PropertyChanged;
-            if (handler != null) handler(this, e);
-        }
     }
 
 }

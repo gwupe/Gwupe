@@ -1,10 +1,11 @@
 ﻿using System;
+using System.ComponentModel;
 using System.Windows.Input;
 using BlitsMe.Agent.Managers;
 
 namespace BlitsMe.Agent.Components.Notification
 {
-    internal abstract class Notification
+    internal abstract class Notification : INotifyPropertyChanged
     {
         private ICommand _deleteNotification;
         public NotificationManager Manager { get; set; }
@@ -12,6 +13,7 @@ namespace BlitsMe.Agent.Components.Notification
         public String From { get; set; }
         public int DeleteTimeout { get; set; }
         public readonly long NotifyTime;
+        private string _message;
 
         public void OnProcessDeleteCommand(EventArgs e)
         {
@@ -30,11 +32,23 @@ namespace BlitsMe.Agent.Components.Notification
             DeleteTimeout = 0;
         }
 
-        public String Message { get; set; }
+        public virtual String Message
+        {
+            get { return _message; }
+            set { _message = value; OnPropertyChanged("Message");}
+        }
 
         public override string ToString()
         {
             return this.GetType() + " : " + Message;
+        }
+
+        public event PropertyChangedEventHandler PropertyChanged;
+
+        protected virtual void OnPropertyChanged(string propertyName)
+        {
+            PropertyChangedEventHandler handler = PropertyChanged;
+            if (handler != null) handler(this, new PropertyChangedEventArgs(propertyName));
         }
     }
 

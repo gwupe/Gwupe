@@ -158,7 +158,13 @@ namespace BlitsMe.Agent.Managers
                 _loginWindow.SignalLoggingIn();
             }
             LoginDetails.profile = _reg.Profile;
-            LoginDetails.workstation = _reg.Workstation;
+            try
+            {
+                LoginDetails.workstation = _appContext.BlitsMeService.HardwareFingerprint();
+            } catch(Exception e)
+            {
+                Logger.Error("Failed to get the hardware id : " + e.Message);
+            }
             while (true)
             {
                 // Lets wait for the login required event

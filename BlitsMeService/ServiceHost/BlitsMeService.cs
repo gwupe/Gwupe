@@ -33,5 +33,10 @@ namespace BlitsMe.Service.ServiceHost
         {
             service.Ping();
         }
+
+        public string HardwareFingerprint()
+        {
+            return service.HardwareFingerprint();
+        }
     }
 }

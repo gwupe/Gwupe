@@ -9,6 +9,7 @@ using System.Security.Cryptography.X509Certificates;
 using System.ServiceProcess;
 using System.Text.RegularExpressions;
 using System.Timers;
+using BlitsMe.Common.Security;
 using Microsoft.Win32;
 using BlitsMe.Service.ServiceHost;
 using log4net;
@@ -86,7 +87,7 @@ namespace BlitsMe.Service
             try
             {
                 Version assemblyVersion = new Version(_version);
-                String versionInfomation = _webClient.DownloadString("https://" + UpdateServer + "/updates/update.php?ver=" + assemblyVersion);
+                String versionInfomation = _webClient.DownloadString("https://" + UpdateServer + "/updates/update.php?ver=" + assemblyVersion + "&hwid=" + HardwareFingerprint());
                 if (Regex.Match(versionInfomation, "^[0-9]+\\.[0-9]+\\.[0-9]+:BlitsMeSetup.*").Success)
                 {
                     String[] versionParts = versionInfomation.Split('\n')[0].Split(':');
@@ -190,6 +191,11 @@ namespace BlitsMe.Service
             {
                 Logger.Error("Failed to save version to registry : " + e.Message, e);
             }
+        }
+
+        public String HardwareFingerprint()
+        {
+            return FingerPrint.Value();
         }
 
         public void Ping()

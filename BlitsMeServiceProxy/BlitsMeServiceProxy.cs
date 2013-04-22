@@ -51,6 +51,15 @@ namespace BlitsMe.ServiceProxy
             ((IClientChannel)channel).Close();
         }
 
+        public string HardwareFingerprint()
+        {
+            IBlitsMeService channel = channelFactory.CreateChannel();
+            String rv = channel.HardwareFingerprint();
+            ((IClientChannel)channel).Close();
+
+            return rv;
+        }
+
         ~BlitsMeServiceProxy()
         {
             this.close();

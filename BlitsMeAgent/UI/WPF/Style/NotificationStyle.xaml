@@ -5,88 +5,109 @@
 	xmlns:Notification="clr-namespace:BlitsMe.Agent.Components.Notification"
 	xmlns:Alert="clr-namespace:BlitsMe.Agent.Components.Alert"
 	xmlns:FileSendNotification="clr-namespace:BlitsMe.Agent.Components.Functions.FileSend.Notification"
-	xmlns:wpf="clr-namespace:BlitsMe.Agent.UI.WPF"
-	xmlns:RDPNotification="clr-namespace:BlitsMe.Agent.Components.Functions.RemoteDesktop.Notification">
+	xmlns:RDPNotification="clr-namespace:BlitsMe.Agent.Components.Functions.RemoteDesktop.Notification"
+	xmlns:Utils="clr-namespace:BlitsMe.Agent.UI.WPF.Utils" xmlns:Themes="clr-namespace:Microsoft.Windows.Themes;assembly=PresentationFramework.Aero">
 
-    <wpf:RectConverter x:Key="rectConverter" />
+    <Utils:RectConverter x:Key="rectConverter" />
+	    <Style x:Key="NotificationActionButton" TargetType="{x:Type Button}">
+    	<Setter Property="Background" Value="White" />
+		<Setter Property="HorizontalAlignment" Value="Right" />
+    </Style>
+	<Style x:Key="CancelButtonStyle" TargetType="{x:Type Button}" BasedOn="{StaticResource NotificationActionButton}">
+		<Setter Property="Width" Value="20" />
+		<Setter Property="Command" Value="{Binding DeleteNotification}" />
+		<Setter Property="ContentTemplate" Value="{DynamicResource CancelButtonTemplate}" />
+		<Setter Property="ToolTip" Value="Cancel" />
+	</Style>
+	<Style x:Key="AcceptButtonStyle" TargetType="{x:Type Button}" BasedOn="{StaticResource NotificationActionButton}">
+		<Setter Property="Width" Value="20" />
+		<Setter Property="Command" Value="{Binding AnswerTrueFalse}" />
+		<Setter Property="CommandParameter">
+			<Setter.Value><s:Boolean>True</s:Boolean></Setter.Value>
+		</Setter>
+		<Setter Property="ContentTemplate" Value="{DynamicResource AcceptButtonTemplate}" />
+		<Setter Property="ToolTip" Value="Accept" />
+	</Style>
+	<Style x:Key="DenyButtonStyle" TargetType="{x:Type Button}" BasedOn="{StaticResource NotificationActionButton}">
+		<Setter Property="Width" Value="20" />
+		<Setter Property="Command" Value="{Binding AnswerTrueFalse}" />
+		<Setter Property="CommandParameter">
+			<Setter.Value><s:Boolean>False</s:Boolean></Setter.Value>
+		</Setter>
+		<Setter Property="ContentTemplate" Value="{DynamicResource DenyButtonTemplate}" />
+		<Setter Property="ToolTip" Value="Deny" />
+	</Style>
+	<Style x:Key="NotificationDockStyle" TargetType="{x:Type DockPanel}">
+		<Setter Property="HorizontalAlignment" Value="Stretch" />
+		<Setter Property="LastChildFill" Value="true" />
+		<Setter Property="Background" Value="#FF99b4d1" />
+		<Setter Property="Margin" Value="1" />
+	</Style>
 
     <!-- Resource dictionary entries should be defined here. -->
     <DataTemplate DataType="{x:Type FileSendNotification:FileSendProgressNotification}">
-        <DockPanel HorizontalAlignment="Stretch" LastChildFill="true" Background="#FF1AAD45">
+        <DockPanel Style="{StaticResource NotificationDockStyle}">
             <StackPanel Orientation="Horizontal" Margin="2,2,2,2" HorizontalAlignment="Right" DockPanel.Dock="Right">
-                <Button Content="Cancel" HorizontalAlignment="Right" Width="46" Command="{Binding CancelFileSend}" />
+        		<Button Style="{DynamicResource CancelButtonStyle}" Command="{Binding CancelFileSend}" />
             </StackPanel>
             <ProgressBar Height="20" Width="Auto" Margin="2,2,0,2" TextBlock.FontWeight="Bold" Value="{Binding Progress, FallbackValue=0}"
-			Tag="{Binding Path=ProgressText, FallbackValue=Waiting }" 
+			Tag="{Binding Message, FallbackValue=Waiting}" 
 			Foreground="Blue"
              Style="{DynamicResource MyProgressBarStyle}" />
         </DockPanel>
     </DataTemplate>
     <DataTemplate DataType="{x:Type Notification:AddBuddyNotification}">
-        <DockPanel HorizontalAlignment="Stretch" LastChildFill="true" Background="#FF1AAD45">
+        <DockPanel Style="{StaticResource NotificationDockStyle}">
             <StackPanel Orientation="Horizontal" Margin="0,8,8,8" HorizontalAlignment="Right" DockPanel.Dock="Right">
-                <Button Content="Add" HorizontalAlignment="Right" Width="75" Command="{Binding AnswerTrueFalse}">
-                    <Button.CommandParameter>
-                        <s:Boolean>True</s:Boolean>
-                    </Button.CommandParameter>
-                </Button>
-                <Button Content="Reject" HorizontalAlignment="Right" Width="75" Command="{Binding AnswerTrueFalse}" >
-                    <Button.CommandParameter>
-                        <s:Boolean>False</s:Boolean>
-                    </Button.CommandParameter>
-                </Button>
-                <Button Content="X" HorizontalAlignment="Right" Width="20" Command="{Binding DeleteNotification}" />
+        		<Button Style="{DynamicResource AcceptButtonStyle}" />
+        		<Button Style="{DynamicResource DenyButtonStyle}" />
             </StackPanel>
-            <TextBlock HorizontalAlignment="Left" Margin="8,11,0,8" Text="{Binding Path=Message, FallbackValue=Unknown Notification}" DockPanel.Dock="Left" Foreground="White" FontWeight="Bold"/>
+            <TextBlock HorizontalAlignment="Left" Margin="8,11,0,8" Text="{Binding Message, FallbackValue=Unknown Notification}" DockPanel.Dock="Left" Foreground="White" FontWeight="Bold"/>
         </DockPanel>
     </DataTemplate>
     <DataTemplate DataType="{x:Type RDPNotification:RDPNotification}">
-        <DockPanel HorizontalAlignment="Stretch" LastChildFill="true" Background="#FF1AAD45">
+        <DockPanel Style="{StaticResource NotificationDockStyle}">
             <StackPanel Orientation="Horizontal" Margin="0,8,8,8" HorizontalAlignment="Right" DockPanel.Dock="Right">
-                <Button Content="Accept" HorizontalAlignment="Right" Width="75" Command="{Binding AnswerRDP}">
-                    <Button.CommandParameter>
-                        <s:Boolean>True</s:Boolean>
-                    </Button.CommandParameter>
-                </Button>
-                <Button Content="Deny" HorizontalAlignment="Right" Width="75" Command="{Binding AnswerRDP}" >
-                    <Button.CommandParameter>
-                        <s:Boolean>False</s:Boolean>
-                    </Button.CommandParameter>
-                </Button>
-                <Button Content="X" HorizontalAlignment="Right" Width="20" Command="{Binding DeleteNotification}" />
+        		<Button Style="{DynamicResource AcceptButtonStyle}" />
+        		<Button Style="{DynamicResource DenyButtonStyle}" />
             </StackPanel>
-            <TextBlock HorizontalAlignment="Left" Margin="8,11,0,8" Text="{Binding Path=Message, FallbackValue=Unknown Notification}" DockPanel.Dock="Left" Foreground="White" FontWeight="Bold"/>
+            <TextBlock HorizontalAlignment="Left" Margin="8,11,0,8" Text="{Binding Message, FallbackValue=Unknown Notification}" DockPanel.Dock="Left" Foreground="White" FontWeight="Bold"/>
         </DockPanel>
     </DataTemplate>
     <DataTemplate DataType="{x:Type FileSendNotification:FileSendRequestNotification}">
-        <DockPanel HorizontalAlignment="Stretch" LastChildFill="true" Background="#FF1AAD45">
+        <DockPanel Style="{StaticResource NotificationDockStyle}">
             <StackPanel Orientation="Horizontal" Margin="0,8,8,8" HorizontalAlignment="Right" DockPanel.Dock="Right">
-                <Button Content="Accept" HorizontalAlignment="Right" Width="75" Command="{Binding AnswerFileSendRequest}">
-                    <Button.CommandParameter>
-                        <s:Boolean>True</s:Boolean>
-                    </Button.CommandParameter>
-                </Button>
-                <Button Content="Deny" HorizontalAlignment="Right" Width="75" Command="{Binding AnswerFileSendRequest}" >
-                    <Button.CommandParameter>
-                        <s:Boolean>False</s:Boolean>
-                    </Button.CommandParameter>
-                </Button>
-                <Button Content="X" HorizontalAlignment="Right" Width="20" Command="{Binding DeleteNotification}" />
+        		<Button Style="{DynamicResource AcceptButtonStyle}" />
+        		<Button Style="{DynamicResource DenyButtonStyle}" />
             </StackPanel>
-            <TextBlock HorizontalAlignment="Left" Margin="8,11,0,8" Text="{Binding Path=Message, FallbackValue=Unknown Notification}" DockPanel.Dock="Left" Foreground="White" FontWeight="Bold"/>
+            <TextBlock HorizontalAlignment="Left" Margin="8,11,0,8" Text="{Binding Message, FallbackValue=Unknown Notification}" DockPanel.Dock="Left" Foreground="White" FontWeight="Bold"/>
+        </DockPanel>
+    </DataTemplate>
+    <DataTemplate DataType="{x:Type FileSendNotification:FileReceivedNotification}">
+        <DockPanel Style="{StaticResource NotificationDockStyle}">
+        	<StackPanel Orientation="Horizontal" Margin="0,8,8,8" HorizontalAlignment="Right" DockPanel.Dock="Right">
+        		<Button Style="{DynamicResource NotificationActionButton}" Content="Open File" Width="75" Command="{Binding OpenCommand}">
+        			<Button.CommandParameter>File</Button.CommandParameter>
+        		</Button>
+        		<Button Content="Open Folder" Width="75" Command="{Binding OpenCommand}" Style="{DynamicResource NotificationActionButton}" >
+        			<Button.CommandParameter>Folder</Button.CommandParameter>
+        		</Button>
+        		<Button Style="{DynamicResource CancelButtonStyle}" />
+        	</StackPanel>
+            <TextBlock HorizontalAlignment="Left" Margin="8,11,0,8" Text="{Binding Message, FallbackValue=Unknown Notification}" DockPanel.Dock="Left" Foreground="White" FontWeight="Bold"/>
         </DockPanel>
     </DataTemplate>
     <DataTemplate DataType="{x:Type Notification:InfoNotification}">
         <DockPanel HorizontalAlignment="Stretch" LastChildFill="true" Background="#FF1AAD45">
             <StackPanel Orientation="Horizontal" Margin="0,8,8,8" HorizontalAlignment="Right" DockPanel.Dock="Right">
-                <Button Content="X" HorizontalAlignment="Right" Width="20" Command="{Binding DeleteNotification}" />
+        		<Button Style="{DynamicResource CancelButtonStyle}" />
             </StackPanel>
-            <TextBlock HorizontalAlignment="Left" Margin="8,11,0,8" Text="{Binding Path=Message, FallbackValue=Unknown Notification}" DockPanel.Dock="Left" Foreground="White" FontWeight="Bold"/>
+            <TextBlock HorizontalAlignment="Left" Margin="8,11,0,8" Text="{Binding Message, FallbackValue=Unknown Notification}" DockPanel.Dock="Left" Foreground="White" FontWeight="Bold"/>
         </DockPanel>
     </DataTemplate>
     <DataTemplate DataType="{x:Type Alert:Alert}">
         <DockPanel HorizontalAlignment="Stretch" LastChildFill="true" Background="Red" Margin="1">
-            <TextBlock HorizontalAlignment="Stretch" Margin="3" Text="{Binding Path=Message, FallbackValue=Unknown Alert}" Foreground="White" FontWeight="Bold" Background="Red" TextAlignment="Center" DockPanel.Dock="Left"/>
+            <TextBlock HorizontalAlignment="Stretch" Margin="3" Text="{Binding Message, FallbackValue=Unknown Alert}" Foreground="White" FontWeight="Bold" Background="Red" TextAlignment="Center" DockPanel.Dock="Left"/>
 		</DockPanel>
     </DataTemplate>
     <!-- for a nice progress bar -->
@@ -148,12 +169,12 @@
             <Setter.Value>
                 <ControlTemplate TargetType="{x:Type ProgressBar}">
                     <Grid x:Name="TemplateRoot" SnapsToDevicePixels="true">
-                        <TextBlock Text="{TemplateBinding Tag}" Grid.ZIndex="2" Foreground="Black"
+                        <TextBlock Text="{TemplateBinding Tag}" Panel.ZIndex="2" Foreground="Black"
                                         HorizontalAlignment="Center"
                                         VerticalAlignment="Center"/>
                         <TextBlock Text="{TemplateBinding Tag}"
-                                Grid.ZIndex="3" Foreground="White"
-                                Width="{Binding ElementName=rectangle, Path=ActualWidth}"
+                                Panel.ZIndex="3" Foreground="White"
+                                Width="{Binding ActualWidth, ElementName=rectangle}"
                                 TextAlignment="Center"
                                 HorizontalAlignment="Stretch"
                                 VerticalAlignment="Center">
@@ -224,4 +245,14 @@
             </Setter.Value>
         </Setter>
     </Style>
+    <DataTemplate x:Key="CancelButtonTemplate">
+		<Image Source="/BlitsMe.Agent;component/UI/WPF/Images/close.png"/>
+    </DataTemplate>
+    <DataTemplate x:Key="AcceptButtonTemplate">
+		<Image Source="/BlitsMe.Agent;component/UI/WPF/Images/Check.png" Width="13"/>
+    </DataTemplate>
+    <DataTemplate x:Key="DenyButtonTemplate">
+		<Image Source="/BlitsMe.Agent;component/UI/WPF/Images/close.png"/>
+    </DataTemplate>
+
 </ResourceDictionary>

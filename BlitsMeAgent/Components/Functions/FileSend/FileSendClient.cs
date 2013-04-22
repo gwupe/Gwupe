@@ -105,8 +105,7 @@ namespace BlitsMe.Agent.Components.Functions.FileSend
 
         private bool ReadReply(byte[] data, TcpTransportConnection connection)
         {
-            // Nothing will be sent back
-            throw new NotImplementedException();
+            return true;
         }
 
         internal void Close()

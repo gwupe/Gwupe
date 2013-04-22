@@ -22,14 +22,14 @@ namespace BlitsMe.Agent.Components.Functions.RemoteDesktop
         private readonly BlitsMeClientAppContext _appContext;
         private readonly Engagement _engagement;
 
-        private static readonly ILog Logger = LogManager.GetLogger(typeof (FileSend.Function));
+        private static readonly ILog Logger = LogManager.GetLogger(typeof(FileSend.Function));
 
         internal Function(BlitsMeClientAppContext appContext, Engagement engagement)
         {
             _appContext = appContext;
             _engagement = engagement;
         }
-        
+
         // event handler to get an acceptance of RDP Session
         internal event RDPSessionRequestResponseEvent RDPSessionRequestResponse;
         internal event RDPIncomingRequestEvent RDPIncomingRequestEvent;
@@ -53,56 +53,71 @@ namespace BlitsMe.Agent.Components.Functions.RemoteDesktop
         {
             // Set the shortcode, to make sure we connect to the right caller.
             _engagement.SecondParty.ShortCode = shortCode;
-            RDPNotification rdpNotification = new RDPNotification() { Message = _engagement.SecondParty.Name + " would like to access your desktop.", From = _engagement.SecondParty.Username };
-            rdpNotification.ProcessDenyRDP += RDPNotificationOnProcessDenyRDP;
-            rdpNotification.ProcessAcceptRDP += RDPNotificationOnProcessAcceptRDP;
+            RDPNotification rdpNotification = new RDPNotification()
+                {
+                    Message = _engagement.SecondParty.Name + " would like to access your desktop.",
+                    From = _engagement.SecondParty.Username,
+                    DeleteTimeout = 300
+                };
+            rdpNotification.AnsweredTrue += delegate { ProcessAnswer(true); };
+            rdpNotification.AnsweredFalse += delegate { ProcessAnswer(false); };
             _appContext.NotificationManager.AddNotification(rdpNotification);
             _engagement.Chat.LogSystemMessage(_engagement.SecondParty.Name + " sent you a request to control your desktop.");
             OnRDPIncomingRequestEvent(new RDPIncomingRequestArgs(_engagement));
         }
 
-        private void RDPNotificationOnProcessAcceptRDP(object sender, EventArgs eventArgs)
+        private void ProcessAnswer(bool accept)
         {
-            _engagement.Chat.LogSystemMessage("You accepted the desktop assistance request from " + _engagement.SecondParty.Name);
-            try
+            if (accept)
             {
-                if (_appContext.BlitsMeServiceProxy.VNCStartService())
+                _engagement.Chat.LogSystemMessage("You accepted the desktop assistance request from " +
+                                                  _engagement.SecondParty.Name);
+                try
                 {
-                    Server.Start();
+                    if (_appContext.BlitsMeServiceProxy.VNCStartService())
+                    {
+                        Server.Start();
+                    }
+                    else
+                    {
+                        Logger.Error("Failed to start the TVN Service. FIXME - not enough info.");
+                    }
                 }
-                else
+                catch (Exception e)
                 {
-                    Logger.Error("Failed to start the TVN Service. FIXME - not enough info.");
+                    Logger.Error("Failed to start server : " + e.Message, e);
+                }
+                RDPRequestResponseRq request = new RDPRequestResponseRq()
+                    {
+                        accepted = true,
+                        shortCode = _engagement.SecondParty.ShortCode,
+                        username = _engagement.SecondParty.Username
+                    };
+                try
+                {
+                    _appContext.ConnectionManager.Connection.RequestAsync<RDPRequestResponseRq, RDPRequestResponseRs>(
+                        request, delegate { });
+                }
+                catch (Exception e)
+                {
+                    Logger.Error("Failed to send a RDP acceptance request to " + _engagement.SecondParty.Username, e);
                 }
             }
-            catch (Exception e)
+            else
             {
-                Logger.Error("Failed to start server : " + e.Message, e);
-            }
-            RDPRequestResponseRq request = new RDPRequestResponseRq() { accepted = true, shortCode = _engagement.SecondParty.ShortCode, username = _engagement.SecondParty.Username };
-            try
-            {
-                _appContext.ConnectionManager.Connection.RequestAsync<RDPRequestResponseRq,RDPRequestResponseRs>(request, delegate { });
-            }
-            catch (Exception e)
-            {
-                Logger.Error("Failed to send a RDP acceptance request to " + _engagement.SecondParty.Username, e);
+                _engagement.Chat.LogSystemMessage("You denied the desktop assistance request from " + _engagement.SecondParty.Name);
+                RDPRequestResponseRq request = new RDPRequestResponseRq() { accepted = false, shortCode = _engagement.SecondParty.ShortCode, username = _engagement.SecondParty.Username };
+                try
+                {
+                    _appContext.ConnectionManager.Connection.RequestAsync<RDPRequestResponseRq, RDPRequestResponseRs>(request, delegate { });
+                }
+                catch (Exception e)
+                {
+                    Logger.Error("Failed to send a RDP denial request to " + _engagement.SecondParty.Username, e);
+                }
             }
         }
 
-        private void RDPNotificationOnProcessDenyRDP(object sender, EventArgs eventArgs)
-        {
-            _engagement.Chat.LogSystemMessage("You denied the desktop assistance request from " + _engagement.SecondParty.Name);
-            RDPRequestResponseRq request = new RDPRequestResponseRq() { accepted = false, shortCode = _engagement.SecondParty.ShortCode, username = _engagement.SecondParty.Username };
-            try
-            {
-                _appContext.ConnectionManager.Connection.RequestAsync<RDPRequestResponseRq,RDPRequestResponseRs>(request, delegate {  });
-            }
-            catch (Exception e)
-            {
-                Logger.Error("Failed to send a RDP denial request to " + _engagement.SecondParty.Username, e);
-            }
-        }
         private Client _client;
         public Client Client
         {
@@ -137,7 +152,7 @@ namespace BlitsMe.Agent.Components.Functions.RemoteDesktop
             try
             {
                 ChatElement chatElement = _engagement.Chat.LogSystemMessage("You sent " + _engagement.SecondParty.Name + " a request to control their desktop.");
-                _appContext.ConnectionManager.Connection.RequestAsync<RDPRequestRq,RDPRequestRs>(request, (req, res, ex) => ProcessRequestRDPSessionResponse(req, res, ex, chatElement));
+                _appContext.ConnectionManager.Connection.RequestAsync<RDPRequestRq, RDPRequestRs>(request, (req, res, ex) => ProcessRequestRDPSessionResponse(req, res, ex, chatElement));
             }
             catch (Exception ex)
             {
@@ -150,7 +165,7 @@ namespace BlitsMe.Agent.Components.Functions.RemoteDesktop
         {
             if (e != null)
             {
-                Logger.Error("Received a async response to " + request.id + " that is an error",e);
+                Logger.Error("Received a async response to " + request.id + " that is an error", e);
                 chatElement.DeliveryState = ChatDeliveryState.Failed;
             }
             else
