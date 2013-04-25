@@ -1,19 +1,24 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using System.Text;
 
 namespace BlitsMe.Agent.Components.Person.Presence
 {
-    interface IPresence : IComparable<IPresence>
+    public enum PresenceMode { chat, available, away, xa, dnd };
+    public enum PresenceType { available, unavailable };
+
+    interface IPresence : IComparable<IPresence>, INotifyPropertyChanged
     {
-        String Mode { get; }
-        String Type { get; }
+        PresenceMode Mode { get; }
+        PresenceType Type { get; }
         int Priority { get; }
         String Resource { get; }
 
         Boolean IsOnline { get; }
         Boolean IsPresent { get; }
         String Status { get; }
+
     }
 }

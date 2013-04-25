@@ -70,7 +70,7 @@ namespace BlitsMe.Agent.Managers
         private void ChangePresence(String user, String shortCode, Presence presence)
         {
             if(!ServicePersonLookup.ContainsKey(user)){
-                if (Presence.UNAVAILABLE.Equals(presence.Type))
+                if (PresenceType.unavailable.Equals(presence.Type))
                     return;
                 // if we are getting presence alerts (excl unavail), we need to create this user
                 AddUsernameToList(user, presence);

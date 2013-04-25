@@ -169,6 +169,7 @@
     <Compile Include="Components\Functions\RemoteDesktop\Notification\RDPNotification.cs" />
     <Compile Include="Components\Functions\RemoteDesktop\Processors\RDPRequestProcessor.cs" />
     <Compile Include="Components\Functions\RemoteDesktop\Processors\RDPRequestResponseProcessor.cs" />
+    <Compile Include="Components\IdleState.cs" />
     <Compile Include="Components\Notification\AnswerTrueFalseCommand.cs" />
     <Compile Include="Components\Notification\InfoNotification.cs" />
     <Compile Include="Components\LoginDetails.cs" />
@@ -185,6 +186,10 @@
     <Compile Include="Components\Processors\SubscribeProcessor.cs" />
     <Compile Include="Components\Processors\UserToUserProcessor.cs" />
     <Compile Include="Components\Processors\PresenceChangeProcessor.cs" />
+    <Compile Include="Components\Schedule\CheckServiceTask.cs" />
+    <Compile Include="Components\Schedule\CheckUpgradeTask.cs" />
+    <Compile Include="Components\Schedule\DetectIdleTask.cs" />
+    <Compile Include="Components\Schedule\IScheduledTask.cs" />
     <Compile Include="Components\Search\SearchResult.cs" />
     <Compile Include="Exceptions\LoginException.cs" />
     <Compile Include="Exceptions\RDPSessionFailedException.cs" />
@@ -196,7 +201,7 @@
     <Compile Include="Managers\EngagementManager.cs" />
     <Compile Include="Managers\LoginEventArgs.cs" />
     <Compile Include="Managers\LoginManager.cs" />
-    <Compile Include="Managers\MaintenanceManager.cs" />
+    <Compile Include="Managers\ScheduleManager.cs" />
     <Compile Include="Managers\NotificationManager.cs" />
     <Compile Include="Managers\P2PManager.cs" />
     <Compile Include="Managers\RequestManager.cs" />

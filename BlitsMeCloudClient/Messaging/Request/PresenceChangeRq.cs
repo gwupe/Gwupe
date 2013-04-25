@@ -12,7 +12,7 @@ namespace BlitsMe.Cloud.Messaging.Request
     {
         public override String type
         {
-            get { return "{PresenceChange-RQ"; }
+            get { return "PresenceChange-RQ"; }
             set { }
         }
         [DataMember]

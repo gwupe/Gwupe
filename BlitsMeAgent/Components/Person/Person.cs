@@ -127,7 +127,7 @@ namespace BlitsMe.Agent.Components.Person
             // Set backing field directly, no listeners yet
             this.Groups = rosterElement.groups;
             this._shortCode = rosterElement.shortCode;
-            _presence.AddPresence(new Presence.Presence("default",rosterElement.presence));
+            //_presence.AddPresence(new Presence.Presence("default",rosterElement.presence));
         }
 
         public Person(UserElement userElement) : this()

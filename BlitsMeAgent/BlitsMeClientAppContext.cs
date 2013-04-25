@@ -7,6 +7,8 @@ using System.Windows;
 using System.Windows.Forms;
 using System.Windows.Threading;
 using BlitsMe.Agent.Components;
+using BlitsMe.Agent.Components.Person.Presence;
+using BlitsMe.Agent.Components.Schedule;
 using BlitsMe.Agent.Managers;
 using BlitsMe.Agent.Misc;
 using BlitsMe.Agent.UI;
@@ -40,7 +42,8 @@ namespace BlitsMe.Agent
         internal bool isShuttingDown { get; private set; }
         internal readonly BLMRegistry Reg = new BLMRegistry();
         internal readonly String StartupVersion;
-        internal readonly MaintenanceManager _maintenanceManager;
+        internal readonly ScheduleManager ScheduleManager;
+        private IdleState _idleState;
 
         /// <summary>
         /// This class should be created and passed into Application.Run( ... )
@@ -69,8 +72,11 @@ namespace BlitsMe.Agent
             _systray = new SystemTray(this);
             ConnectionManager.Start();
             _requestManager = new RequestManager(this);
-            _maintenanceManager = new MaintenanceManager(this);
-            _maintenanceManager.Start();
+            ScheduleManager = new ScheduleManager(this);
+            ScheduleManager.AddTask(new CheckUpgradeTask(this) { PeriodSeconds = 120 });
+            ScheduleManager.AddTask(new CheckServiceTask(this) { PeriodSeconds = 120 });
+            ScheduleManager.AddTask(new DetectIdleTask(this));
+            ScheduleManager.Start();
         }
 
         public String Version
@@ -96,11 +102,7 @@ namespace BlitsMe.Agent
                 }
                 else
                 {
-                    UIDashBoard.Dispatcher.Invoke(new Action(() =>
-                                                                {
-                                                                    UIDashBoard.EngagementManagerOnNewActivity(sender,
-                                                                                                              args);
-                                                                }));
+                    UIDashBoard.Dispatcher.Invoke(new Action(() => UIDashBoard.EngagementManagerOnNewActivity(sender,args)));
                 }
             }
         }
@@ -110,9 +112,18 @@ namespace BlitsMe.Agent
             get { return BlitsMeServiceProxy; }
         }
 
-        public PingRs ping(PingRq request)
+        public event EventHandler IdleChanged;
+
+        public void OnIdleChanged(EventArgs e)
         {
-            return new PingRs();
+            EventHandler handler = IdleChanged;
+            if (handler != null) handler(this, e);
+        }
+
+        public IdleState IdleState
+        {
+            get { return _idleState; }
+            set { _idleState = value; OnIdleChanged(EventArgs.Empty); }
         }
 
         public void OnIconClickLaunchDashboard(object sender, EventArgs e)
@@ -132,7 +143,7 @@ namespace BlitsMe.Agent
 
         internal void HideDashboard()
         {
-            if(UIDashBoard != null)
+            if (UIDashBoard != null)
             {
                 if (UIDashBoard.Dispatcher.CheckAccess())
                     UIDashBoard.Hide();
@@ -242,7 +253,7 @@ namespace BlitsMe.Agent
                 RosterManager.Close();
             if (EngagementManager != null)
                 EngagementManager.Close();
-            if(NotificationManager != null)
+            if (NotificationManager != null)
                 NotificationManager.Close();
             if (SearchManager != null)
                 SearchManager.Close();
