@@ -51,19 +51,35 @@ namespace BlitsMe.Agent.Components.Functions.RemoteDesktop
 
         internal void ProcessIncomingRDPRequest(String shortCode)
         {
-            // Set the shortcode, to make sure we connect to the right caller.
-            _engagement.SecondParty.ShortCode = shortCode;
-            RDPNotification rdpNotification = new RDPNotification()
+            bool bExists = false;
+            // Loop through existing notifications to see if we already have a remote desktop request
+            // from the SecondParty. If the .From and Type of the notification mathc the SecondParty.UserName
+            // and RDPNotification type
+            foreach (TrueFalseNotification n in _appContext.NotificationManager.Notifications)
+            {
+                if (n.From == _engagement.SecondParty.Username && n.GetType() == typeof(RDPNotification))
+                {
+                    // if the notification exists set flag.
+                    bExists = true;
+                }
+            }
+            // only process this notification if they don't already exist.
+            if (!bExists)
+            {
+                // Set the shortcode, to make sure we connect to the right caller.
+                _engagement.SecondParty.ShortCode = shortCode;
+                RDPNotification rdpNotification = new RDPNotification()
                 {
                     Message = _engagement.SecondParty.Name + " would like to access your desktop.",
                     From = _engagement.SecondParty.Username,
                     DeleteTimeout = 300
                 };
-            rdpNotification.AnsweredTrue += delegate { ProcessAnswer(true); };
-            rdpNotification.AnsweredFalse += delegate { ProcessAnswer(false); };
-            _appContext.NotificationManager.AddNotification(rdpNotification);
-            _engagement.Chat.LogSystemMessage(_engagement.SecondParty.Name + " sent you a request to control your desktop.");
-            OnRDPIncomingRequestEvent(new RDPIncomingRequestArgs(_engagement));
+                rdpNotification.AnsweredTrue += delegate { ProcessAnswer(true); };
+                rdpNotification.AnsweredFalse += delegate { ProcessAnswer(false); };
+                _appContext.NotificationManager.AddNotification(rdpNotification);
+                _engagement.Chat.LogSystemMessage(_engagement.SecondParty.Name + " sent you a request to control your desktop.");
+                OnRDPIncomingRequestEvent(new RDPIncomingRequestArgs(_engagement));
+            }
         }
 
         private void ProcessAnswer(bool accept)
