@@ -214,6 +214,7 @@
     <ProjectReference Include="..\BlitsMeCommon\BlitsMeCommon.csproj">
       <Project>{1b355f1c-9d50-4bab-8ceb-e6ca72e6de69}</Project>
       <Name>BlitsMeCommon</Name>
+      <Private>False</Private>
     </ProjectReference>
     <ProjectReference Include="..\BlitsMeServiceHost\BlitsMeServiceHost.csproj">
       <Project>{3D791A7A-2044-42A0-902A-FC86EDE214D4}</Project>

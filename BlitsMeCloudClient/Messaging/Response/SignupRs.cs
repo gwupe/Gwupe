@@ -9,10 +9,12 @@ namespace BlitsMe.Cloud.Messaging.Response
     [DataContract]
     public class SignupRs : API.Response
     {
-        public const String SignupErrorPasswordComplexity = "PASSWORD_COMPLEXITY_ERROR";
-        public const String SignupErrorUsernameTaken = "USERNAME_TAKEN_ERROR";
-        public const String SignupErrorEmailAddressInUse = "EMAIL_IN_USE_ERROR";
+        public const String SignupErrorPasswordComplexity = "PASSWORD_COMPLEXITY";
+        public const String SignupErrorUserExists = "USER_EXISTS";
+        public const String SignupErrorEmailAddressInUse = "EMAIL_EXISTS";
 
         public override string type { get { return "Signup-RS"; } set { } }
+
+        [DataMember] public List<String> errors;
     }
 }

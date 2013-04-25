@@ -42,9 +42,12 @@ namespace BlitsMe.Agent.Managers
             _currentUser = new Person(userElement);
             if(CurrentUserPresence == null)
             {
-                _currentUserPresence = new Presence { Mode = PresenceMode.available, Priority = 1, Type = PresenceType.available };
-                UpdatePresence(true);
+                _currentUserPresence = new Presence();
             }
+            _currentUserPresence.Mode = PresenceMode.available;
+            _currentUserPresence.Type = PresenceType.available;
+            _currentUserPresence.Priority = 1;
+            UpdatePresence(true);
             OnCurrentUserChanged(EventArgs.Empty);
         }
 
