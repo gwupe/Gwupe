@@ -34,5 +34,15 @@ namespace BlitsMe.Agent.UI.WPF.Search
         {
 
         }
+
+        private void btnPrev_Click(object sender, System.Windows.RoutedEventArgs e)
+        {
+           
+        }
+
+        private void btnNext_Click(object sender, System.Windows.RoutedEventArgs e)
+        {
+
+        }
     }
 }
