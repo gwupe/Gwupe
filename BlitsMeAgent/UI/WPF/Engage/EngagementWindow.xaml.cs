@@ -184,6 +184,7 @@ namespace BlitsMe.Agent.UI.WPF.Engage
         private void RemoteAssistanceButtonClick(object sender, RoutedEventArgs e)
         {
             // Request is asynchronous, we request and RDP session and then wait, acceptance on the users side will send a request to us
+            
             try
             {
                 ((Components.Functions.RemoteDesktop.Function)Engagement.getFunction("RemoteDesktop")).RequestRDPSession();
