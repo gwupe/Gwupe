@@ -56,7 +56,7 @@
         		</ItemsControl>
         		<!-- This is the Roster section -->
         		<ListBox x:Name="Team" ItemsSource="{Binding}" 
-        			FontFamily="Corbel" Margin="0,0,0,0" DockPanel.Dock="Bottom">
+        			FontFamily="Corbel" Margin="0,0,0,0" DockPanel.Dock="Bottom" ScrollViewer.HorizontalScrollBarVisibility="Disabled">
         			<ListBox.Resources>
         				<Style TargetType="{x:Type ListBoxItem}">
         					<EventSetter Event="ListBoxItem.Selected" Handler="TeamMemberSelected" HandledEventsToo="True"/>

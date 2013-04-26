@@ -16,5 +16,6 @@ namespace BlitsMe.Cloud.Messaging.Request
         }
 
         [DataMember] public string query;
+        [DataMember] public int page;
     }
 }

@@ -17,5 +17,6 @@ namespace BlitsMe.Cloud.Messaging.Response
         }
 
         [DataMember] public List<ResultElement> results;
+        [DataMember] public int totalResults;
     }
 }
