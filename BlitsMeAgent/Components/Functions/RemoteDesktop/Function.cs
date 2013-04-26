@@ -11,6 +11,9 @@ using BlitsMe.Cloud.Messaging.API;
 using BlitsMe.Cloud.Messaging.Request;
 using BlitsMe.Cloud.Messaging.Response;
 using log4net;
+using System.Runtime.InteropServices;
+
+
 
 namespace BlitsMe.Agent.Components.Functions.RemoteDesktop
 {
@@ -19,10 +22,18 @@ namespace BlitsMe.Agent.Components.Functions.RemoteDesktop
 
     class Function : IFunction
     {
+        [DllImportAttribute("User32.dll")]
+        static extern bool SetForegroundWindow(IntPtr hWnd);
+        [DllImportAttribute("User32.dll")]
+        static extern bool SwitchToThisWindow(IntPtr hWnd, bool fAltTab);
+        [DllImportAttribute("User32.dll")]
+        static extern bool IsWindow(IntPtr hWnd);
+
         private readonly BlitsMeClientAppContext _appContext;
         private readonly Engagement _engagement;
 
         private static readonly ILog Logger = LogManager.GetLogger(typeof(FileSend.Function));
+        private Process _bmssHandle = null;
 
         internal Function(BlitsMeClientAppContext appContext, Engagement engagement)
         {
@@ -63,8 +74,9 @@ namespace BlitsMe.Agent.Components.Functions.RemoteDesktop
                     bExists = true;
                 }
             }
-            // only process this notification if they don't already exist.
-            if (!bExists)
+            // only process this notification if they don't already exist AND 
+            // we are not currently in a remote session
+            if (!bExists && !Server.Started)
             {
                 // Set the shortcode, to make sure we connect to the right caller.
                 _engagement.SecondParty.ShortCode = shortCode;
@@ -164,6 +176,21 @@ namespace BlitsMe.Agent.Components.Functions.RemoteDesktop
 
         internal void RequestRDPSession()
         {
+            // Added: JH 2013-04-26
+            // _bmssHandle stores the process information of the launched bmss process
+            // if that is null - no session is in progress otherwise check that window is open and that its title contains BlitsMe
+            
+            if (_bmssHandle != null && IsWindow(_bmssHandle.MainWindowHandle) && _bmssHandle.MainWindowTitle.Contains("BlitsMe")) 
+            {
+                // First call SwitchToThisWindow to unminimize it if it is minimized
+                SwitchToThisWindow(_bmssHandle.MainWindowHandle, true);
+                // Then foreground it so that it is at the front.
+                SetForegroundWindow(_bmssHandle.MainWindowHandle);
+                // we are done - window acticated nothing more to do so bug out
+                return;
+            }
+            // if we get this far then _bmssHandle is not valid so null it to be sure.
+            _bmssHandle = null;
             RDPRequestRq request = new RDPRequestRq() { shortCode = _engagement.SecondParty.ShortCode, username = _engagement.SecondParty.Username };
             try
             {
@@ -201,7 +228,8 @@ namespace BlitsMe.Agent.Components.Functions.RemoteDesktop
                     String viewerExe = System.IO.Path.GetDirectoryName(Environment.GetCommandLineArgs()[0]) +
                                        "\\bmss.exe";
                     Logger.Debug("Checking the following location for the exe " + viewerExe);
-                    Process.Start(viewerExe, "-username=\"" + _engagement.SecondParty.Name + "\" -scale=auto 127.0.0.1:" + port);
+                    _bmssHandle = Process.Start(viewerExe, "-username=\"" + _engagement.SecondParty.Name + "\" -scale=auto 127.0.0.1:" + port);
+
                 }
                 catch (Exception e)
                 {
