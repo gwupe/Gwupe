@@ -20,7 +20,13 @@ namespace BlitsMe.Agent.Components.Chat
 
         public ChatElement AddMessage(String message, String speaker)
         {
-            ChatElement newMessage = new ChatElement {Message = message, Speaker = speaker, DeliveryState = ChatDeliveryState.Delivered, SpeakTime = DateTime.Now };
+            ChatElement newMessage = new ChatElement
+                {
+                    Message = message, 
+                    Speaker = speaker, 
+                    DeliveryState = ChatDeliveryState.Delivered, 
+                    SpeakTime = DateTime.Now
+                };
             _addToExchange(newMessage);
             return newMessage;
         }

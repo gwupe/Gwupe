@@ -9,42 +9,47 @@ using log4net.Repository.Hierarchy;
 
 namespace BlitsMe.Agent.UI.WPF.Engage
 {
-	/// <summary>
-	/// Interaction logic for ChatWindow.xaml
-	/// </summary>
-	public partial class ChatWindow : UserControl
-	{
-	    private static readonly ILog Logger = LogManager.GetLogger(typeof (ChatWindow));
-	    private readonly BlitsMeClientAppContext _appContext;
-	    private readonly EngagementWindow _engagementWindow;
-	    internal readonly Chat _chat;
+    /// <summary>
+    /// Interaction logic for ChatWindow.xaml
+    /// </summary>
+    public partial class ChatWindow : UserControl
+    {
+        private static readonly ILog Logger = LogManager.GetLogger(typeof(ChatWindow));
+        private readonly BlitsMeClientAppContext _appContext;
+        private readonly EngagementWindow _engagementWindow;
+        internal readonly Chat _chat;
+        private DateTime _lastMessage;
 
-	    public ChatWindow(BlitsMeClientAppContext appContext, EngagementWindow engagementWindow)
-		{
+        public ChatWindow(BlitsMeClientAppContext appContext, EngagementWindow engagementWindow)
+        {
             this.InitializeComponent();
             _appContext = appContext;
             _engagementWindow = engagementWindow;
-	        _chat = _engagementWindow.Engagement.Chat;
-	        _chat.NewMessage += ChatOnNewMessage;
+            _chat = _engagementWindow.Engagement.Chat;
+            _chat.NewMessage += ChatOnNewMessage;
             ChatPanelViewer.ScrollToBottom();
-	        DataContext = new ChatWindowDataContext(_appContext, this);
-		}
+            DataContext = new ChatWindowDataContext(_appContext, this);
+        }
 
-	    #region EventHandlers
+        #region EventHandlers
 
         private void ChatOnNewMessage(object sender, ChatEventArgs args)
         {
+            if (!Dispatcher.CheckAccess()) // Only run with dispatcher
+            {
+                Dispatcher.Invoke(new Action(() => ChatOnNewMessage(sender, args)));
+                return;
+            }
             // Only run event handler if the dispatcher is not shutting down.
             if (!Dispatcher.HasShutdownStarted)
             {
-                if (Dispatcher.CheckAccess())
+                ChatPanelViewer.ScrollToBottom();
+                if (_lastMessage.Day != DateTime.Now.Day)
                 {
-                    ChatPanelViewer.ScrollToBottom();
+                    // This is to make sure that all the items 'friendly dates' remain correct on midnight rollover
+                    ChatPanel.Items.Refresh();
                 }
-                else
-                {
-                    Dispatcher.Invoke(new Action(() => ChatPanelViewer.ScrollToBottom()));
-                }
+                _lastMessage = DateTime.Now;
             }
         }
 
@@ -75,7 +80,7 @@ namespace BlitsMe.Agent.UI.WPF.Engage
         {
             get
             {
-                return  _sendMessage ?? (_sendMessage = new SendMessageCommand(_appContext, _chatWindow._chat, _chatWindow.messageBox));
+                return _sendMessage ?? (_sendMessage = new SendMessageCommand(_appContext, _chatWindow._chat, _chatWindow.messageBox));
             }
         }
     }

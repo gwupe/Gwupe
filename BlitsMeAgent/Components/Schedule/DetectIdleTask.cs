@@ -1,10 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Runtime.InteropServices;
-using System.Text;
 using log4net;
-using log4net.Repository.Hierarchy;
 
 namespace BlitsMe.Agent.Components.Schedule
 {
@@ -20,8 +16,8 @@ namespace BlitsMe.Agent.Components.Schedule
             LastExecuteTime = DateTime.MinValue;
         }
 
-        internal const int TimeToIdle = 60000; // 10 minutes
-        internal const int TimeToExtendedIdle = 120000; // 60 minutes
+        internal const int TimeToIdle = 600000; // 10 minutes
+        internal const int TimeToExtendedIdle = 3600000; // 60 minutes
 
         public string Name { get { return "CheckIdle"; } }
         public int PeriodSeconds { get { return 1; } }

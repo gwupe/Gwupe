@@ -46,7 +46,7 @@ namespace BlitsMe.Agent.Managers
             }
             _currentUserPresence.Mode = PresenceMode.available;
             _currentUserPresence.Type = PresenceType.available;
-            _currentUserPresence.Priority = 1;
+            _currentUserPresence.Priority = 2;
             UpdatePresence(true);
             OnCurrentUserChanged(EventArgs.Empty);
         }
@@ -62,7 +62,7 @@ namespace BlitsMe.Agent.Managers
                     {
                         case IdleState.InUse:
                             {
-                                CurrentUserPresence.Priority = 1;
+                                CurrentUserPresence.Priority = 2;
                                 break;
                             }
                         case IdleState.Idle:
