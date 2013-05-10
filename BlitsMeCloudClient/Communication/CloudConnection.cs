@@ -15,9 +15,10 @@ namespace BlitsMe.Cloud.Communication
     {
         private static readonly ILog Logger = LogManager.GetLogger(typeof(CloudConnection));
 #if DEBUG
-        private static readonly List<string> DefaultIPs = new List<String>(new String[] { "s1.i.dev.blits.me", "s2.i.dev.blits.me", "s3.i.dev.blits.me" });
+        //private static readonly List<string> DefaultIPs = new List<String>(new String[] { "s1.i.dev.blits.me", "s2.i.dev.blits.me", "s3.i.dev.blits.me" });
+        private static readonly List<string> DefaultIPs = new List<String>(new String[] { "i.dev.blits.me" });
 #else
-        private static readonly List<string> DefaultIPs = new List<String>(new String[] { "s1.i.blits.me", "s2.i.blits.me", "s3.i.blits.me" });
+        private static readonly List<string> DefaultIPs = new List<String>(new String[] { "i.blits.me" });
 #endif
         private static readonly List<int> DefaultPorts = new List<int>(new int[] { 443 });
         private ConnectionMaintainer _connectionMaintainer;

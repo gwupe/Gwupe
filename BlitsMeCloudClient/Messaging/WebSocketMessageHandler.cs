@@ -30,9 +30,7 @@ namespace BlitsMe.Cloud.Messaging
 
         public void onClose(WebSocketConnection aConnection, int aCloseCode, string aCloseReason, bool aClosedByPeer)
         {
-#if DEBUG
             logger.Debug("Client : Connection [" + aConnection.ToString() + "] has closed with message : " + aCloseReason);
-#endif
             webSocketClient.Reset();
             webSocketServer.Reset();
             this.connection = null;
@@ -42,9 +40,7 @@ namespace BlitsMe.Cloud.Messaging
         public void onOpen(WebSocketConnection aConnection)
         {
             this.connection = aConnection;
-#if DEBUG
             logger.Debug("Client : Received connection [" + aConnection.ToString() + "]");
-#endif
         }
 
         public void onMessage(WebSocketConnection connection, bool final, bool res1, bool res2, bool res3, int code, MemoryStream data)
@@ -53,8 +49,8 @@ namespace BlitsMe.Cloud.Messaging
             Message message;
             try
             {
-                message = getMessage(data,final,code);
-                if(message == null)
+                message = getMessage(data, final, code);
+                if (message == null)
                 {
                     return;
                 }
@@ -78,51 +74,49 @@ namespace BlitsMe.Cloud.Messaging
             }
         }
 
-        public void sendMessage(API.Message message) {
+        public void sendMessage(API.Message message)
+        {
             DataContractJsonSerializer ser = new DataContractJsonSerializer(message.GetType());
             MemoryStream stream = new MemoryStream();
             ser.WriteObject(stream, message);
             String resAsString = Encoding.UTF8.GetString(stream.ToArray());
             connection.SendText(resAsString);
-#if DEBUG
             logger.Debug("Sent message : " + resAsString);
-#endif
         }
 
         private Message getMessage(MemoryStream rawData, bool finalFrame, int opCode)
         {
             MemoryStream data = null;
-            if(finalFrame)
+            if (finalFrame)
             {
                 // This is a final frame
-                if(opCode == 0)
+                if (opCode == 0)
                 {
                     // This is the final frame of a multi framed message
                     messageBuffer.Write(rawData.GetBuffer(), 0, (int)rawData.Length);
                     data = messageBuffer;
-#if DEBUG
-                        logger.Debug("Full message [" + messageBuffer.Length + "] (multi-complete): " +
-                                     Encoding.UTF8.GetString(messageBuffer.ToArray()));
-#endif
+                    logger.Debug("Full message [" + messageBuffer.Length + "] (multi-complete): " +
+                                 Encoding.UTF8.GetString(messageBuffer.ToArray()));
                     data.Position = 0;
-                } else
+                }
+                else
                 {
                     // This frame is a single frame
                     data = rawData;
-#if DEBUG
-                        logger.Debug("Got message [" + rawData.Length + "] (single): " + Encoding.UTF8.GetString(rawData.ToArray()));
-#endif
+                    logger.Debug("Got message [" + rawData.Length + "] (single): " + Encoding.UTF8.GetString(rawData.ToArray()));
                 }
-            } else
+            }
+            else
             {
                 // This is a multi framed message
-                if(opCode != 0)
+                if (opCode != 0)
                 {
                     // This is the first frame of the multi framed message
                     messageBuffer = new MemoryStream();
                     rawData.WriteTo(messageBuffer);
                     return null;
-                } else
+                }
+                else
                 {
                     // This is an intemediary frame of a multi framed message
                     // Add it to the buffer and return

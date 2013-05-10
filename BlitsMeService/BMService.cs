@@ -23,11 +23,11 @@ namespace BlitsMe.Service
         private WebClient _webClient;
         private readonly Timer _updateCheck;
 #if DEBUG
-        private const String UpdateServer = "s1.i.dev.blits.me";
+        private const String UpdateServer = "dev.blits.me";
         private const int UpdateCheckInterval = 120;
         public const String BuildMarker = "_Dev";
 #else
-        private const String UpdateServer = "s1.i.blits.me";
+        private const String UpdateServer = "blits.me";
         private const int UpdateCheckInterval = 3600;
         public const String BuildMarker = "";
 #endif

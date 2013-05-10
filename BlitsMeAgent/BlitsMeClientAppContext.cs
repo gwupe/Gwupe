@@ -19,6 +19,8 @@ using BlitsMe.Common.Security;
 using BlitsMe.ServiceProxy;
 using log4net;
 using log4net.Config;
+using log4net.Core;
+using log4net.Repository.Hierarchy;
 using Dashboard = BlitsMe.Agent.UI.WPF.Dashboard;
 
 namespace BlitsMe.Agent
@@ -79,6 +81,11 @@ namespace BlitsMe.Agent
             ScheduleManager.Start();
         }
 
+        internal bool Debug
+        {
+            set { ((Logger) Logger.Logger).Parent.Level = value ? Level.Debug : Level.Info; }
+        }
+
         public String Version
         {
             get
@@ -102,7 +109,7 @@ namespace BlitsMe.Agent
                 }
                 else
                 {
-                    UIDashBoard.Dispatcher.Invoke(new Action(() => UIDashBoard.EngagementManagerOnNewActivity(sender,args)));
+                    UIDashBoard.Dispatcher.Invoke(new Action(() => UIDashBoard.EngagementManagerOnNewActivity(sender, args)));
                 }
             }
         }

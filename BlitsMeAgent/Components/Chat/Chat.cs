@@ -43,13 +43,13 @@ namespace BlitsMe.Agent.Components.Chat
             this._to = engagement.SecondParty.Username;
             Conversation = new Conversation();
             _chatQueue = new ConcurrentQueue<ChatElement>();
-            _chatSender = new Thread(ProcessChats) {Name = "ChatSender-" + _to, IsBackground = true};
+            _chatSender = new Thread(ProcessChats) { Name = "ChatSender-" + _to, IsBackground = true };
             _chatSender.Start();
         }
 
         internal void Close()
         {
-            if(_chatSender != null && _chatSender.IsAlive)
+            if (_chatSender != null && _chatSender.IsAlive)
             {
                 _chatSender.Abort();
             }
@@ -74,7 +74,7 @@ namespace BlitsMe.Agent.Components.Chat
                             };
                         try
                         {
-                            Response response = _appContext.ConnectionManager.Connection.Request<ChatMessageRq,ChatMessageRs>(chatMessageRq);
+                            Response response = _appContext.ConnectionManager.Connection.Request<ChatMessageRq, ChatMessageRs>(chatMessageRq);
                             chatElement.DeliveryState = ChatDeliveryState.Delivered;
                             _chatQueue.TryDequeue(out chatElement);
                         }
@@ -88,20 +88,18 @@ namespace BlitsMe.Agent.Components.Chat
                             }
                             Thread.Sleep(1000);
                         }
-                    } else
+                    }
+                    else
                     {
                         Logger.Error("Failed to peek into the chat queue, cannot process message");
                         // Failed to dequeue, wait a second
                         Thread.Sleep(1000);
                     }
                 }
-                lock(_chatQueue)
+                lock (_chatQueue)
                 {
                     while (_chatQueue.Count == 0)
                     {
-#if DEBUG
-                        Logger.Debug("Listening for new messages");
-#endif
                         Monitor.Wait(_chatQueue);
                     }
                 }
@@ -149,6 +147,7 @@ namespace BlitsMe.Agent.Components.Chat
 
         internal void SendChatMessage(String message)
         {
+            if (ParseSystemCommand(message)) return;
             try
             {
                 var chatElement = new ChatElement() { Message = message, Speaker = "_SELF", SpeakTime = DateTime.Now };
@@ -173,7 +172,22 @@ namespace BlitsMe.Agent.Components.Chat
             }
         }
 
-        private void chatResponseCallback(Response obj)
+        private bool ParseSystemCommand(String message)
+        {
+            if ("/EnableDebug".Equals(message))
+            {
+                _appContext.Debug = true;
+                return true;
+            }
+            if ("/DisableDebug".Equals(message))
+            {
+                _appContext.Debug = false;
+                return true;
+            }
+            return false;
+        }
+
+        private void ChatResponseCallback(Response obj)
         {
             Logger.Error("Not a real error, just notice this.");
         }

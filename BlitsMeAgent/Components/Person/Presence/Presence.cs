@@ -93,14 +93,17 @@ namespace BlitsMe.Agent.Components.Person.Presence
                 case IdleState.InUse:
                     Type = PresenceType.available;
                     Mode = PresenceMode.available;
+                    Priority = 2;
                     break;
                 case IdleState.Idle:
                     Type = PresenceType.available;
                     Mode = PresenceMode.away;
+                    Priority = 0;
                     break;
                 case IdleState.ExtendedIdle:
                     Type = PresenceType.available;
                     Mode = PresenceMode.xa;
+                    Priority = 0;
                     break;
             }
         }

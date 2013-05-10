@@ -123,7 +123,7 @@ namespace BlitsMe.Agent.Managers
                 if (_appContext.ConnectionManager.Connection.isEstablished())
                 {
                     LogoutRq request = new LogoutRq();
-                    _appContext.ConnectionManager.Connection.Request<LogoutRq,LogoutRs>(request);
+                    _appContext.ConnectionManager.Connection.RequestAsync<LogoutRq,LogoutRs>(request, delegate {  });
                 }
                 IsLoggedIn = false;
                 // Lets pulse the logout occurred lock

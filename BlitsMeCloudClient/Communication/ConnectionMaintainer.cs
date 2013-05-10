@@ -58,7 +58,7 @@ namespace BlitsMe.Cloud.Communication
             {
                 foreach (String destination in destinations)
                 {
-                    String uriString = "ws://" + destination + ":" + port + "/blitsme/" + version + "/ws";
+                    String uriString = "ws://" + destination + ":" + port + "/blitsme-ws/" + version;
                     try
                     {
                         Uri uri = new Uri(uriString);

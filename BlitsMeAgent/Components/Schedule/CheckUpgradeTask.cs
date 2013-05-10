@@ -31,7 +31,7 @@ namespace BlitsMe.Agent.Components.Schedule
             {
                 var regVersion = _appContext.Reg.getRegValue("Version", true);
                 Logger.Debug("Checking for agent upgrade " + _appContext.StartupVersion + " vs " + regVersion);
-                if (new Version(regVersion).CompareTo(new Version(_appContext.StartupVersion)) != 0)
+                if (new Version(regVersion).CompareTo(new Version(_appContext.StartupVersion)) > 0)
                 {
                     Logger.Info("My file version has changed " + _appContext.StartupVersion + " => " + regVersion +
                                 ", closing to re-open as new version.");
