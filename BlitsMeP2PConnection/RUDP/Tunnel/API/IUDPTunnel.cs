@@ -21,13 +21,15 @@ namespace BlitsMe.Communication.P2P.RUDP.Tunnel.API
         event ConnectionChangedEvent Connected;
         event ConnectionChangedEvent Disconnected;
         // a unique id for the tunnel
-        String id { get; set; }
+        String Id { get; set; }
         // Is the tunnel established
         bool IsTunnelEstablished { get; }
         // is it closing
         bool Closing { get; }
         // is it degraded (not sure if its still up)
         bool Degraded { get; }
+        // Whats the latency on this link
+        int PeerLatency { get; }
         // The remote IP of the tunnel
         IPAddress RemoteIp { get; }
         // Initiates syncing with a peer

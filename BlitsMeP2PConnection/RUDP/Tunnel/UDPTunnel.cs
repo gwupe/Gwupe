@@ -57,14 +57,15 @@ namespace BlitsMe.Communication.P2P.RUDP.Tunnel
 
         private bool _isTunnelEstablished;
         public bool Closing { private set; get; }
-        public String id { get; set; }
+        public String Id { get; set; }
 
         // If there is a ping failure, its degraded
         public bool Degraded
         {
             get { return _pingFailCount > 0; }
         }
-
+        
+        // are we synced
         public bool IsTunnelEstablished
         {
             get { return _isTunnelEstablished; }
@@ -78,16 +79,12 @@ namespace BlitsMe.Communication.P2P.RUDP.Tunnel
             }
         }
 
-        // are we synced
-        public int PeerLatency; // latency between us an peer
-
+        public int PeerLatency { get; private set; } // latency between us an peer
 
         // Method variables
         public API.ProcessPacket ProcessData { get; set; }
         public EncryptData EncryptData { get; set; }
         public DecryptData DecryptData { get; set; }
-
-// this method will be called to process data packet
 
         public IPAddress RemoteIp
         {
@@ -106,7 +103,7 @@ namespace BlitsMe.Communication.P2P.RUDP.Tunnel
 
         public UDPTunnel(int port)
         {
-            this.id = id;
+            this.Id = Id;
             IPEndPoint endPoint = new IPEndPoint(IPAddress.Any, port);
             _udpClient = new UdpClient(endPoint);
             InitReceiver();
@@ -238,7 +235,7 @@ namespace BlitsMe.Communication.P2P.RUDP.Tunnel
             SendPacket(packet);
         }
 
-        public void SendPacket(BasicTunnelPacket packet)
+        private void SendPacket(BasicTunnelPacket packet)
         {
             if (IsTunnelEstablished)
             {
@@ -254,7 +251,7 @@ namespace BlitsMe.Communication.P2P.RUDP.Tunnel
             }
         }
 
-        public void SendUDPClose()
+        private void SendUDPClose()
         {
             StandardCloseTunnelPacket packet = new StandardCloseTunnelPacket();
             try
@@ -275,11 +272,11 @@ namespace BlitsMe.Communication.P2P.RUDP.Tunnel
 
         private void InitReceiver()
         {
-            _receiveThread = new Thread(listenForPackets) { IsBackground = true, Name = "_receiveThread" };
+            _receiveThread = new Thread(ListenForPackets) { IsBackground = true, Name = "_receiveThread" };
             _receiveThread.Start();
         }
 
-        private void listenForPackets()
+        private void ListenForPackets()
         {
 #if(DEBUG)
             Logger.Debug("Started UDP reading thread");
@@ -292,7 +289,7 @@ namespace BlitsMe.Communication.P2P.RUDP.Tunnel
                 {
                     bytes = _udpClient.Receive(ref RemoteIpEndPoint);
                     BasicTunnelPacket packet = StandardUdpPacketFactory.instance.getPacket(bytes, RemoteIpEndPoint);
-                    handlePacket(packet);
+                    HandlePacket(packet);
                 }
                 catch (UnknownPacketException e)
                 {
@@ -343,7 +340,7 @@ namespace BlitsMe.Communication.P2P.RUDP.Tunnel
             }
         }
 
-        private void handlePacket(BasicTunnelPacket packet)
+        private void HandlePacket(BasicTunnelPacket packet)
         {
 #if(DEBUG)
             Logger.Debug("Looking for handler for packet " + packet.ToString() + " from ip " + packet.ip);
@@ -371,7 +368,7 @@ namespace BlitsMe.Communication.P2P.RUDP.Tunnel
                             }
                         }
                         // a new thread needs to handle this upstream otherwise upstream can hang the whole process
-                        Thread processDataThread = new Thread(() => ProcessData(data, id)) { IsBackground = true };
+                        Thread processDataThread = new Thread(() => ProcessData(data, Id)) { IsBackground = true };
                         processDataThread.Name = "processDataThread[" + processDataThread.ManagedThreadId + "]";
                         processDataThread.Start();
                     }

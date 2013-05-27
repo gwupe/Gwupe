@@ -1,15 +1,9 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Net;
-using BlitsMe.Communication.P2P.RUDP.Packet;
 using BlitsMe.Communication.P2P.RUDP.Packet.API;
-using BlitsMe.Communication.P2P.RUDP.Packet.TCP;
 using BlitsMe.Communication.P2P.RUDP.Tunnel.API;
-using BlitsMe.Communication.P2P.RUDP.Socket.API;
-using BlitsMe.Communication.P2P.Exceptions;
 using BlitsMe.Communication.P2P.RUDP.Tunnel.Transport;
-using BlitsMe.Communication.P2P.RUDP.Utils;
 using log4net;
 
 namespace BlitsMe.Communication.P2P.RUDP.Tunnel
@@ -61,7 +55,7 @@ namespace BlitsMe.Communication.P2P.RUDP.Tunnel
             byte[] packetData = new byte[bytes.Length - 1];
             Array.Copy(bytes, 1, packetData, 0, bytes.Length - 1);
             // Set this tunnel as MRU
-            if (id != null && (_mruTunnel == null || !_mruTunnel.Tunnel.id.Equals(id)) && _tunnels.ContainsKey(id))
+            if (id != null && (_mruTunnel == null || !_mruTunnel.Tunnel.Id.Equals(id)) && _tunnels.ContainsKey(id))
             {
 #if DEBUG
                 Logger.Debug("Received data on tunnel " + id + ", this tunnels is now MRU");
@@ -99,7 +93,7 @@ namespace BlitsMe.Communication.P2P.RUDP.Tunnel
         {
             byte[] data = packet.GetBytes();
             byte[] typedPacketData = new byte[data.Length + 1];
-            typedPacketData[0] = PACKET_TYPE_TCP;
+            typedPacketData[0] = packetType;
             Array.Copy(data, 0, typedPacketData, 1, data.Length);
             // Pick a tunnel to send
             if (_mruTunnel == null || !_mruTunnel.Tunnel.IsTunnelEstablished || _mruTunnel.Tunnel.Degraded)
@@ -110,7 +104,7 @@ namespace BlitsMe.Communication.P2P.RUDP.Tunnel
                 _mruTunnel = PickTunnel();
             }
 #if DEBUG
-            Logger.Debug("Using tunnel " + _mruTunnel.Tunnel.id + " for transmission");
+            Logger.Debug("Using tunnel " + _mruTunnel.Tunnel.Id + " for transmission");
 #endif
             _mruTunnel.Tunnel.SendData(typedPacketData);
         }
@@ -120,8 +114,8 @@ namespace BlitsMe.Communication.P2P.RUDP.Tunnel
         public void AddTunnel(IUDPTunnel tunnel, int priority)
         {
             tunnel.ProcessData = ProcessTunnelData;
-            _tunnels.Remove(tunnel.id);
-            _tunnels.Add(tunnel.id, new TunnelContainer() { Priority = priority, Tunnel = tunnel });
+            _tunnels.Remove(tunnel.Id);
+            _tunnels.Add(tunnel.Id, new TunnelContainer() { Priority = priority, Tunnel = tunnel });
         }
 
         private TunnelContainer PickTunnel()
@@ -151,7 +145,22 @@ namespace BlitsMe.Communication.P2P.RUDP.Tunnel
 
         public void Close()
         {
+            Logger.Debug("Closing transports");
             if (TCPTransport != null) TCPTransport.Close(true);
+            if (UDPTransport != null) UDPTransport.Close(true);
+            foreach (var tunnelContainer in _tunnels)
+            {
+                Logger.Debug("Closing tunnel " + tunnelContainer.Value.Tunnel.Id);
+                try
+                {
+                    tunnelContainer.Value.Tunnel.Close();
+                }
+                catch (Exception e)
+                {
+                    Logger.Warn("Closing tunnel " + tunnelContainer.Value.Tunnel.Id + " failed : " + e.Message);
+                }
+            }
+            _tunnels.Clear();
         }
 
     }

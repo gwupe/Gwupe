@@ -207,7 +207,7 @@ namespace BlitsMe.Agent.Components
                 try
                 {
                     OutgoingTunnel = _appContext.P2PManager.CompleteTunnel(response.uniqueId);
-                    OutgoingTunnel.id = "outgoing";
+                    OutgoingTunnel.Id = "outgoing";
 #if DEBUG
                     Logger.Debug("Got endPointManager from p2p manager");
 #endif

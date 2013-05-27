@@ -76,7 +76,14 @@ namespace BlitsMe.Communication.P2P.RUDP.Utils
 #if(DEBUG)
             Logger.Debug("Disconnecting tcp session " + connectionId);
 #endif
-            transport.SendData(new StandardDisconnectPacket(connectionId));
+            try
+            {
+                transport.SendData(new StandardDisconnectPacket(connectionId));
+            }
+            catch (Exception e)
+            {
+                Logger.Error("Failed to send the close packet, closing connection anyway. : " + e.Message,e);
+            }
         }
 
         public void AckConnectionResponse(byte connectionId, TCPTransport transport) {

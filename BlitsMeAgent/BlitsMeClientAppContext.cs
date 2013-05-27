@@ -86,13 +86,17 @@ namespace BlitsMe.Agent
             set { ((Logger) Logger.Logger).Parent.Level = value ? Level.Debug : Level.Info; }
         }
 
-        public String Version
+        public String Version(int level = 1)
         {
-            get
-            {
-                var fullVersion = new Version(FileVersionInfo.GetVersionInfo(Assembly.GetExecutingAssembly().Location).FileVersion);
-                return fullVersion.Major + "." + fullVersion.Minor;
-            }
+            var fullVersion = new Version(FileVersionInfo.GetVersionInfo(Assembly.GetExecutingAssembly().Location).FileVersion);
+            return fullVersion.Major +
+                   (level > 0
+                        ? "." + fullVersion.Minor +
+                          (level > 1
+                               ? "." + fullVersion.Build +
+                                 (level > 2 ? "." + fullVersion.Revision : "")
+                               : "")
+                        : "");
         }
 
         private void OnNewEngagementActivity(object sender, EngagementActivityArgs args)

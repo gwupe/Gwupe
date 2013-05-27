@@ -15,7 +15,7 @@ namespace BlitsMe.Cloud.Messaging
         private readonly WebSocketMessageHandler _messageHandler;
         private Dictionary<String, API.Response> _responseStore;
         private Dictionary<String, AutoResetEvent> _responseWaiters;
-        private const int WaitTime = 30000;
+        private const int WaitTime = 60000;
 
         public WebSocketClient(WebSocketMessageHandler handler)
         {

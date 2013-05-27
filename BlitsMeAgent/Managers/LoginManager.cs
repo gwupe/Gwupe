@@ -123,7 +123,15 @@ namespace BlitsMe.Agent.Managers
                 if (_appContext.ConnectionManager.Connection.isEstablished())
                 {
                     LogoutRq request = new LogoutRq();
-                    _appContext.ConnectionManager.Connection.RequestAsync<LogoutRq,LogoutRs>(request, delegate {  });
+                    //_appContext.ConnectionManager.Connection.RequestAsync<LogoutRq,LogoutRs>(request, delegate {  });
+                    try
+                    {
+                        _appContext.ConnectionManager.Connection.Request<LogoutRq,LogoutRs>(request);
+                    }
+                    catch (Exception e)
+                    {
+                        Logger.Error("Failed to logout correctly : " + e.Message,e);
+                    }
                 }
                 IsLoggedIn = false;
                 // Lets pulse the logout occurred lock
@@ -257,7 +265,8 @@ namespace BlitsMe.Agent.Managers
                         username = LoginDetails.username,
                         passwordDigest = LoginDetails.passwordHash,
                         profile = LoginDetails.profile,
-                        workstation = LoginDetails.workstation
+                        workstation = LoginDetails.workstation,
+                        version = _appContext.Version(2)
                     };
                 LoginRs loginRs = null;
                 try

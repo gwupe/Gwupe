@@ -22,5 +22,7 @@ namespace BlitsMe.Cloud.Messaging.Request
         public string profile { get; set; }
         [DataMember]
         public string workstation { get; set; }
+        [DataMember]
+        public string version { get; set; }
     }
 }

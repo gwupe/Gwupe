@@ -48,7 +48,7 @@ namespace BlitsMe.Agent.Managers
             stream.Read(certificateData, 0, certificateData.Length);
             X509Certificate2 cert = new X509Certificate2(certificateData);
             Logger.Info("Will use certificate from CA " + cert.GetNameInfo(X509NameType.SimpleName, true) + ", verified? " + cert.Verify());
-            _connection.StartConnection(_appContext.Version, cert);
+            _connection.StartConnection(_appContext.Version(), cert);
         }
 
         private void SaveServers(List<string> servers)
