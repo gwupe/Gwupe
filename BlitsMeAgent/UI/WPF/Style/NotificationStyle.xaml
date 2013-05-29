@@ -13,11 +13,17 @@
     	<Setter Property="Background" Value="White" />
 		<Setter Property="HorizontalAlignment" Value="Right" />
     </Style>
-	<Style x:Key="CancelButtonStyle" TargetType="{x:Type Button}" BasedOn="{StaticResource NotificationActionButton}">
+	<Style x:Key="DeleteButtonStyle" TargetType="{x:Type Button}" BasedOn="{StaticResource NotificationActionButton}">
 		<Setter Property="Width" Value="20" />
 		<Setter Property="Command" Value="{Binding DeleteNotification}" />
 		<Setter Property="ContentTemplate" Value="{DynamicResource CancelButtonTemplate}" />
 		<Setter Property="ToolTip" Value="Cancel" />
+	</Style>
+	<Style x:Key="CancelButtonStyle" TargetType="{x:Type Button}" BasedOn="{StaticResource NotificationActionButton}">
+		<Setter Property="Width" Value="20" />
+		<Setter Property="Command" Value="{Binding Cancel}" />
+		<Setter Property="ContentTemplate" Value="{DynamicResource CancelButtonTemplate}" />
+		<Setter Property="ToolTip" Value="{Binding CancelTooltip}" />
 	</Style>
 	<Style x:Key="AcceptButtonStyle" TargetType="{x:Type Button}" BasedOn="{StaticResource NotificationActionButton}">
 		<Setter Property="Width" Value="20" />
@@ -48,7 +54,7 @@
     <DataTemplate DataType="{x:Type FileSendNotification:FileSendProgressNotification}">
         <DockPanel Style="{StaticResource NotificationDockStyle}">
             <StackPanel Orientation="Horizontal" Margin="2,2,2,2" HorizontalAlignment="Right" DockPanel.Dock="Right">
-        		<Button Style="{DynamicResource CancelButtonStyle}" Command="{Binding CancelFileSend}" />
+        		<Button Style="{DynamicResource DeleteButtonStyle}" Command="{Binding CancelFileSend}" />
             </StackPanel>
             <ProgressBar Height="20" Width="Auto" Margin="2,2,0,2" TextBlock.FontWeight="Bold" Value="{Binding Progress, FallbackValue=0}"
 			Tag="{Binding Message, FallbackValue=Waiting}" 
@@ -62,7 +68,7 @@
         		<Button Style="{DynamicResource AcceptButtonStyle}" />
         		<Button Style="{DynamicResource DenyButtonStyle}" />
             </StackPanel>
-            <TextBlock HorizontalAlignment="Left" Margin="8,11,0,8" Text="{Binding Message, FallbackValue=Unknown Notification}" DockPanel.Dock="Left" Foreground="White" FontWeight="Bold"/>
+            <TextBlock HorizontalAlignment="Left" Margin="8,11,0,8" Text="{Binding Message, FallbackValue=Unknown Notification}" DockPanel.Dock="Left" Foreground="Black" FontWeight="Bold"/>
         </DockPanel>
     </DataTemplate>
     <DataTemplate DataType="{x:Type RDPNotification:RDPNotification}">
@@ -71,7 +77,7 @@
         		<Button Style="{DynamicResource AcceptButtonStyle}" />
         		<Button Style="{DynamicResource DenyButtonStyle}" />
             </StackPanel>
-            <TextBlock HorizontalAlignment="Left" Margin="8,11,0,8" Text="{Binding Message, FallbackValue=Unknown Notification}" DockPanel.Dock="Left" Foreground="White" FontWeight="Bold"/>
+            <TextBlock HorizontalAlignment="Left" Margin="8,11,0,8" Text="{Binding Message, FallbackValue=Unknown Notification}" DockPanel.Dock="Left" Foreground="Black" FontWeight="Bold"/>
         </DockPanel>
     </DataTemplate>
     <DataTemplate DataType="{x:Type FileSendNotification:FileSendRequestNotification}">
@@ -80,7 +86,7 @@
         		<Button Style="{DynamicResource AcceptButtonStyle}" />
         		<Button Style="{DynamicResource DenyButtonStyle}" />
             </StackPanel>
-            <TextBlock HorizontalAlignment="Left" Margin="8,11,0,8" Text="{Binding Message, FallbackValue=Unknown Notification}" DockPanel.Dock="Left" Foreground="White" FontWeight="Bold"/>
+            <TextBlock HorizontalAlignment="Left" Margin="8,11,0,8" Text="{Binding Message, FallbackValue=Unknown Notification}" DockPanel.Dock="Left" Foreground="Black" FontWeight="Bold"/>
         </DockPanel>
     </DataTemplate>
     <DataTemplate DataType="{x:Type FileSendNotification:FileReceivedNotification}">
@@ -92,15 +98,23 @@
         		<Button Content="Open Folder" Width="75" Command="{Binding OpenCommand}" Style="{DynamicResource NotificationActionButton}" >
         			<Button.CommandParameter>Folder</Button.CommandParameter>
         		</Button>
-        		<Button Style="{DynamicResource CancelButtonStyle}" />
+        		<Button Style="{DynamicResource DeleteButtonStyle}" />
         	</StackPanel>
-            <TextBlock HorizontalAlignment="Left" Margin="8,11,0,8" Text="{Binding Message, FallbackValue=Unknown Notification}" DockPanel.Dock="Left" Foreground="White" FontWeight="Bold"/>
+            <TextBlock HorizontalAlignment="Left" Margin="8,11,0,8" Text="{Binding Message, FallbackValue=Unknown Notification}" DockPanel.Dock="Left" Foreground="Black" FontWeight="Bold"/>
+        </DockPanel>
+    </DataTemplate>
+    <DataTemplate DataType="{x:Type Notification:CancellableNotification}">
+        <DockPanel Style="{StaticResource NotificationDockStyle}">
+            <StackPanel Orientation="Horizontal" Margin="0,8,8,8" HorizontalAlignment="Right" DockPanel.Dock="Right">
+        		<Button Style="{DynamicResource CancelButtonStyle}" />
+            </StackPanel>
+            <TextBlock HorizontalAlignment="Left" Margin="8,11,0,8" Text="{Binding Message, FallbackValue=Unknown Notification}" DockPanel.Dock="Left" Foreground="Black" FontWeight="Bold"/>
         </DockPanel>
     </DataTemplate>
     <DataTemplate DataType="{x:Type Notification:InfoNotification}">
         <DockPanel HorizontalAlignment="Stretch" LastChildFill="true" Background="#FF1AAD45">
             <StackPanel Orientation="Horizontal" Margin="0,8,8,8" HorizontalAlignment="Right" DockPanel.Dock="Right">
-        		<Button Style="{DynamicResource CancelButtonStyle}" />
+        		<Button Style="{DynamicResource DeleteButtonStyle}" />
             </StackPanel>
             <TextBlock HorizontalAlignment="Left" Margin="8,11,0,8" Text="{Binding Message, FallbackValue=Unknown Notification}" DockPanel.Dock="Left" Foreground="White" FontWeight="Bold"/>
         </DockPanel>

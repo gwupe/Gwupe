@@ -15,6 +15,6 @@ namespace BlitsMe.Cloud.Messaging.Response
 
         public override string type { get { return "Signup-RS"; } set { } }
 
-        [DataMember] public List<String> errors;
+        [DataMember] public List<String> signupErrors;
     }
 }

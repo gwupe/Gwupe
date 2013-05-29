@@ -37,7 +37,7 @@ namespace BlitsMe.Cloud.Communication
         {
             get
             {
-                return wsMessageHandler.webSocketClient;
+                return wsMessageHandler.WebSocketClient;
             }
         }
 
@@ -45,7 +45,7 @@ namespace BlitsMe.Cloud.Communication
         {
             get
             {
-                return wsMessageHandler.webSocketServer;
+                return wsMessageHandler.WebSocketServer;
             }
         }
 

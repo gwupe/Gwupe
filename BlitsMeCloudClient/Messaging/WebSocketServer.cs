@@ -39,7 +39,7 @@ namespace BlitsMe.Cloud.Messaging
             response.date = DateTime.Now;
             try
             {
-                _messageHander.sendMessage(response);
+                _messageHander.SendMessage(response);
             }
             catch (Exception e)
             {

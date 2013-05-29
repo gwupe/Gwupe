@@ -94,23 +94,34 @@ namespace BlitsMe.Agent.UI.WPF
                     } catch (MessageException<SignupRs> ex)
                     {
                         Logger.Warn("Failed to signup : " + ex.Message);
-                        if (ex.Response.error.Equals(SignupRs.SignupErrorEmailAddressInUse))
+                        if (ex.Response.signupErrors != null)
                         {
-                            Email.Background = new SolidColorBrush(Colors.MistyRose);
-                            EmailLabel.Foreground = new SolidColorBrush(Colors.Red);
-                            _validator.setError("Email address in use");
-                        }
-                        else if (ex.Response.error.Equals(SignupRs.SignupErrorUserExists))
-                        {
-                            Username.Background = new SolidColorBrush(Colors.MistyRose);
-                            UsernameLabel.Foreground = new SolidColorBrush(Colors.Red);
-                            _validator.setError("Username already in use");
-                        }
-                        else if (ex.Response.error.Equals(SignupRs.SignupErrorPasswordComplexity))
-                        {
-                            Password.Background = new SolidColorBrush(Colors.MistyRose);
-                            PasswordLabel.Foreground = new SolidColorBrush(Colors.Red);
-                            _validator.setError("Password is insecure");
+                            bool foundError = false;
+                            if (ex.Response.signupErrors.Contains(SignupRs.SignupErrorEmailAddressInUse))
+                            {
+                                Email.Background = new SolidColorBrush(Colors.MistyRose);
+                                EmailLabel.Foreground = new SolidColorBrush(Colors.Red);
+                                _validator.setError("Email address in use");
+                                foundError = true;
+                            }
+                            if (ex.Response.signupErrors.Contains(SignupRs.SignupErrorUserExists))
+                            {
+                                Username.Background = new SolidColorBrush(Colors.MistyRose);
+                                UsernameLabel.Foreground = new SolidColorBrush(Colors.Red);
+                                _validator.setError("Username already in use");
+                                foundError = true;
+                            }
+                            if (ex.Response.signupErrors.Contains(SignupRs.SignupErrorPasswordComplexity))
+                            {
+                                Password.Background = new SolidColorBrush(Colors.MistyRose);
+                                PasswordLabel.Foreground = new SolidColorBrush(Colors.Red);
+                                _validator.setError("Password is insecure");
+                                foundError = true;
+                            }
+                            if(!foundError)
+                            {
+                                _validator.setError("Unknown Error");
+                            }
                         }
                         else
                         {

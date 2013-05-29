@@ -213,7 +213,7 @@ namespace BlitsMe.Agent.UI.WPF.Engage
         private void NotificationFilter(object sender, FilterEventArgs eventArgs)
         {
             Notification notification = eventArgs.Item as Notification;
-            if (notification != null && notification.From != null && notification.From.Equals(Engagement.SecondParty.Username))
+            if (notification != null && notification.AssociatedUsername != null && notification.AssociatedUsername.Equals(Engagement.SecondParty.Username))
             {
                 eventArgs.Accepted = true;
             }

@@ -71,11 +71,6 @@ namespace BlitsMe.Agent.Components.Functions.FileSend.Notification
             public event EventHandler CanExecuteChanged;
         }
 
-        internal FileSendProgressNotification()
-        {
-            DeleteTimeout = 300;
-        }
-
     }
 
 }

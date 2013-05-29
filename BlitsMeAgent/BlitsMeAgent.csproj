@@ -171,6 +171,8 @@
     <Compile Include="Components\Functions\RemoteDesktop\Processors\RDPRequestResponseProcessor.cs" />
     <Compile Include="Components\IdleState.cs" />
     <Compile Include="Components\Notification\AnswerTrueFalseCommand.cs" />
+    <Compile Include="Components\Notification\CancellableNotification.cs" />
+    <Compile Include="Components\Notification\CancelCommand.cs" />
     <Compile Include="Components\Notification\InfoNotification.cs" />
     <Compile Include="Components\LoginDetails.cs" />
     <Compile Include="Components\Notification\Notification.cs" />

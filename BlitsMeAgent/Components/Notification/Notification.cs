@@ -2,6 +2,7 @@
 using System.ComponentModel;
 using System.Windows.Input;
 using BlitsMe.Agent.Managers;
+using BlitsMe.Common.Security;
 
 namespace BlitsMe.Agent.Components.Notification
 {
@@ -10,8 +11,9 @@ namespace BlitsMe.Agent.Components.Notification
         private ICommand _deleteNotification;
         public NotificationManager Manager { get; set; }
         public event EventHandler Deleted;
-        public String From { get; set; }
+        public String AssociatedUsername { get; set; }
         public int DeleteTimeout { get; set; }
+        internal String Id { get; set; }
         public readonly long NotifyTime;
         private string _message;
 
@@ -30,6 +32,7 @@ namespace BlitsMe.Agent.Components.Notification
         {
             NotifyTime = DateTime.Now.Ticks;
             DeleteTimeout = 0;
+            Id = Util.getSingleton().generateString(32);
         }
 
         public virtual String Message

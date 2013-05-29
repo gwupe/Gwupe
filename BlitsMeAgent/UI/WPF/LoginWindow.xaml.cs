@@ -24,7 +24,7 @@ namespace BlitsMe.Agent.UI.WPF
     /// </summary>
     public partial class LoginWindow : Window
     {
-        private static readonly ILog logger = LogManager.GetLogger(typeof(LoginWindow));
+        private static readonly ILog Logger = LogManager.GetLogger(typeof(LoginWindow));
         private readonly BlitsMeClientAppContext _appContext;
         private readonly LoginDetails _loginDetails;
         public AutoResetEvent SigninEvent;
@@ -49,7 +49,7 @@ namespace BlitsMe.Agent.UI.WPF
 
         public void NewUserCreate(object sender, RequestNavigateEventArgs e)
         {
-            logger.Debug("Launching signupWindow");
+            Logger.Debug("Launching signupWindow");
             var signUpWindow = new SignUpWindow(_appContext) { Owner = this };
             try
             {
@@ -60,7 +60,7 @@ namespace BlitsMe.Agent.UI.WPF
             }
             catch (Exception ex)
             {
-                logger.Error("SignupWindow failed : " + ex.Message, ex);
+                Logger.Error("SignupWindow failed : " + ex.Message, ex);
             }
         }
 
@@ -85,7 +85,7 @@ namespace BlitsMe.Agent.UI.WPF
             {
                 _loginDetails.username = Username.Text;
                 _loginDetails.passwordHash = Util.getSingleton().hashPassword(Password.Password);
-                logger.Debug("Got username and password, notifying app");
+                Logger.Debug("Got username and password, notifying app");
                 SigninEvent.Set();
             }
         }

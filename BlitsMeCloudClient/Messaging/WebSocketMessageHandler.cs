@@ -2,6 +2,7 @@ using System;
 using System.IO;
 using System.Runtime.Serialization.Json;
 using System.Text;
+using System.Text.RegularExpressions;
 using Bauglir.Ex;
 using BlitsMe.Cloud.Communication;
 using BlitsMe.Cloud.Exceptions;
@@ -14,33 +15,33 @@ namespace BlitsMe.Cloud.Messaging
     {
         private static readonly ILog logger = LogManager.GetLogger(typeof(WebSocketMessageHandler));
 
-        private WebSocketConnection connection;
-        private ConnectionMaintainer _connectionMaintainer;
-        public WebSocketClient webSocketClient { get; private set; }
-        public WebSocketServer webSocketServer { get; private set; }
-        private MemoryStream messageBuffer;
+        private WebSocketConnection _connection;
+        private readonly ConnectionMaintainer _connectionMaintainer;
+        public WebSocketClient WebSocketClient { get; private set; }
+        public WebSocketServer WebSocketServer { get; private set; }
+        private MemoryStream _messageBuffer;
 
 
         public WebSocketMessageHandler(ConnectionMaintainer cm)
         {
             this._connectionMaintainer = cm;
-            webSocketClient = new WebSocketClient(this);
-            webSocketServer = new WebSocketServer(this);
+            WebSocketClient = new WebSocketClient(this);
+            WebSocketServer = new WebSocketServer(this);
         }
 
         public void onClose(WebSocketConnection aConnection, int aCloseCode, string aCloseReason, bool aClosedByPeer)
         {
             logger.Debug("Client : Connection [" + aConnection.ToString() + "] has closed with message : " + aCloseReason);
-            webSocketClient.Reset();
-            webSocketServer.Reset();
-            this.connection = null;
+            WebSocketClient.Reset();
+            WebSocketServer.Reset();
+            this._connection = null;
             this._connectionMaintainer.wakeupManager.Set();
         }
 
         public void onOpen(WebSocketConnection aConnection)
         {
-            this.connection = aConnection;
-            logger.Debug("Client : Received connection [" + aConnection.ToString() + "]");
+            this._connection = aConnection;
+            logger.Debug("Client : Received connection [" + aConnection + "]");
         }
 
         public void onMessage(WebSocketConnection connection, bool final, bool res1, bool res2, bool res3, int code, MemoryStream data)
@@ -49,7 +50,7 @@ namespace BlitsMe.Cloud.Messaging
             Message message;
             try
             {
-                message = getMessage(data, final, code);
+                message = GetMessage(data, final, code);
                 if (message == null)
                 {
                     return;
@@ -62,11 +63,11 @@ namespace BlitsMe.Cloud.Messaging
             }
             if (message is BlitsMe.Cloud.Messaging.API.Response)
             {
-                webSocketClient.ProcessResponse((API.Response)message);
+                WebSocketClient.ProcessResponse((API.Response)message);
             }
             else if (message is BlitsMe.Cloud.Messaging.API.Request)
             {
-                webSocketServer.ProcessRequest((API.Request)message);
+                WebSocketServer.ProcessRequest((API.Request)message);
             }
             else
             {
@@ -74,36 +75,43 @@ namespace BlitsMe.Cloud.Messaging
             }
         }
 
-        public void sendMessage(API.Message message)
+        public void SendMessage(Message message)
         {
             DataContractJsonSerializer ser = new DataContractJsonSerializer(message.GetType());
             MemoryStream stream = new MemoryStream();
             ser.WriteObject(stream, message);
             String resAsString = Encoding.UTF8.GetString(stream.ToArray());
-            connection.SendText(resAsString);
-            logger.Debug("Sent message : " + resAsString);
+            _connection.SendText(resAsString);
+            if (!Regex.Match(resAsString, "\"type\":\"Ping").Success)
+            {
+                logger.Debug("Sent message : " + SanitiseMessage(resAsString));
+            }
         }
 
-        private Message getMessage(MemoryStream rawData, bool finalFrame, int opCode)
+        private Message GetMessage(MemoryStream rawData, bool finalFrame, int opCode)
         {
             MemoryStream data = null;
             if (finalFrame)
             {
+
                 // This is a final frame
                 if (opCode == 0)
                 {
                     // This is the final frame of a multi framed message
-                    messageBuffer.Write(rawData.GetBuffer(), 0, (int)rawData.Length);
-                    data = messageBuffer;
-                    logger.Debug("Full message [" + messageBuffer.Length + "] (multi-complete): " +
-                                 Encoding.UTF8.GetString(messageBuffer.ToArray()));
+                    _messageBuffer.Write(rawData.GetBuffer(), 0, (int)rawData.Length);
+                    data = _messageBuffer;
                     data.Position = 0;
                 }
                 else
                 {
                     // This frame is a single frame
                     data = rawData;
-                    logger.Debug("Got message [" + rawData.Length + "] (single): " + Encoding.UTF8.GetString(rawData.ToArray()));
+                }
+                String messageString = Encoding.UTF8.GetString(data.ToArray());
+                if (!Regex.Match(messageString, "\"type\":\"Ping").Success)
+                {
+                    logger.Debug("Received message [" + data.Length + "] (" + (opCode == 0 ? "multi" : "single") + "): " +
+                                 SanitiseMessage(messageString));
                 }
             }
             else
@@ -112,17 +120,14 @@ namespace BlitsMe.Cloud.Messaging
                 if (opCode != 0)
                 {
                     // This is the first frame of the multi framed message
-                    messageBuffer = new MemoryStream();
-                    rawData.WriteTo(messageBuffer);
+                    _messageBuffer = new MemoryStream();
+                    rawData.WriteTo(_messageBuffer);
                     return null;
                 }
-                else
-                {
-                    // This is an intemediary frame of a multi framed message
-                    // Add it to the buffer and return
-                    messageBuffer.Write(rawData.GetBuffer(), 0, (int)rawData.Length);
-                    return null;
-                }
+                // This is an intemediary frame of a multi framed message
+                // Add it to the buffer and return
+                _messageBuffer.Write(rawData.GetBuffer(), 0, (int)rawData.Length);
+                return null;
             }
             DataContractJsonSerializer detectSerializer = new DataContractJsonSerializer(typeof(MessageImpl));
             MemoryStream copyData = new MemoryStream();
@@ -156,7 +161,10 @@ namespace BlitsMe.Cloud.Messaging
             }
         }
 
-
-
+        private static string SanitiseMessage(string messageString)
+        {
+            return Regex.Replace(Regex.Replace(messageString, "\"password\":\".*?\"", "\"password\":\"*******\""),
+                "\"([^\"]+)\":\"([^\"]{255}.*?)\"", "\"$1\":\"<LARGE_DATA>\"");
+        }
     }
 }

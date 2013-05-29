@@ -7,13 +7,14 @@ using BlitsMe.Communication.P2P.RUDP.Connector;
 using BlitsMe.Communication.P2P.RUDP.Connector.API;
 using BlitsMe.Communication.P2P.RUDP.Socket.API;
 using BlitsMe.Communication.P2P.RUDP.Tunnel.API;
+using BlitsMe.Common;
 using log4net;
 
 namespace BlitsMe.Agent.Components.Functions.FileSend
 {
     internal class FileSendListener : TcpTransportListener
     {
-        private static readonly ILog Logger = LogManager.GetLogger(typeof (FileSendListener));
+        private static readonly ILog Logger = LogManager.GetLogger(typeof(FileSendListener));
         private readonly FileSendInfo _fileInfo;
         private FileStream _fileStream;
         private BinaryWriter _binWriter;
@@ -28,7 +29,8 @@ namespace BlitsMe.Agent.Components.Functions.FileSend
             if (handler != null) handler(this, e);
         }
 
-        internal FileSendListener(ITransportManager transportManager, FileSendInfo fileInfo) : base(fileInfo.FileSendId, transportManager)
+        internal FileSendListener(ITransportManager transportManager, FileSendInfo fileInfo)
+            : base(fileInfo.FileSendId, transportManager)
         {
             _fileInfo = fileInfo;
             this.ConnectionAccepted += OnConnectionAccepted;
@@ -38,7 +40,7 @@ namespace BlitsMe.Agent.Components.Functions.FileSend
         private void OnConnectionClosed(object sender, NamedConnectionEventArgs namedConnectionEventArgs)
         {
             // check file size and close file here
-            if(_fileStream != null)
+            if (_fileStream != null)
             {
                 _fileStream.Flush(true);
                 _binWriter.Close();
@@ -46,7 +48,8 @@ namespace BlitsMe.Agent.Components.Functions.FileSend
                 {
                     Logger.Debug("File transfer of " + _fileInfo.Filename + " complete, filesize looks good");
                     FileReceiveResult = true;
-                } else
+                }
+                else
                 {
                     Logger.Warn("File transfer of " + _fileInfo.Filename + " looks like it failed, expected file size is " + _fileInfo.FileSize + " but destination filesize is " + _dataWriteSize);
                 }
@@ -61,16 +64,17 @@ namespace BlitsMe.Agent.Components.Functions.FileSend
         private void OnConnectionAccepted(object sender, NamedConnectionEventArgs namedConnectionEventArgs)
         {
             // open the file here
-            string pathUser = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile);
-            string pathDownload = Path.Combine(pathUser, "Downloads", _fileInfo.Filename);
+            string pathDownload = OsUtils.IsWinVistaOrHigher() ? Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), "Downloads", _fileInfo.Filename) 
+                                      : Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Desktop), _fileInfo.Filename);
             _fileInfo.FilePath = pathDownload;
             try
             {
                 _fileStream = new FileStream(pathDownload, FileMode.OpenOrCreate);
                 _binWriter = new BinaryWriter(_fileStream);
-            } catch(Exception e)
+            }
+            catch (Exception e)
             {
-                Logger.Error("Failed to open the filestream for file " + pathDownload + " : " + e.Message,e);
+                Logger.Error("Failed to open the filestream for file " + pathDownload + " : " + e.Message, e);
                 this.Close();
             }
         }
@@ -83,7 +87,7 @@ namespace BlitsMe.Agent.Components.Functions.FileSend
 
         private bool Reader(byte[] data, TcpTransportConnection connection)
         {
-            if(data.Length > 0)
+            if (data.Length > 0)
             {
                 try
                 {
@@ -91,7 +95,7 @@ namespace BlitsMe.Agent.Components.Functions.FileSend
                 }
                 catch (Exception e)
                 {
-                    Logger.Error("Failed to write data to file " + _fileInfo.Filename + " : " + e.Message,e);
+                    Logger.Error("Failed to write data to file " + _fileInfo.Filename + " : " + e.Message, e);
                     return false;
                 }
                 _dataWriteSize += data.Length;

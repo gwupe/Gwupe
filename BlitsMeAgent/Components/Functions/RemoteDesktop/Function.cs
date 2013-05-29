@@ -68,7 +68,7 @@ namespace BlitsMe.Agent.Components.Functions.RemoteDesktop
             // and RDPNotification type
             foreach (TrueFalseNotification n in _appContext.NotificationManager.Notifications)
             {
-                if (n.From == _engagement.SecondParty.Username && n.GetType() == typeof(RDPNotification))
+                if (n.AssociatedUsername == _engagement.SecondParty.Username && n.GetType() == typeof(RDPNotification))
                 {
                     // if the notification exists set flag.
                     bExists = true;
@@ -83,7 +83,7 @@ namespace BlitsMe.Agent.Components.Functions.RemoteDesktop
                 RDPNotification rdpNotification = new RDPNotification()
                 {
                     Message = _engagement.SecondParty.Name + " would like to access your desktop.",
-                    From = _engagement.SecondParty.Username,
+                    AssociatedUsername = _engagement.SecondParty.Username,
                     DeleteTimeout = 300
                 };
                 rdpNotification.AnsweredTrue += delegate { ProcessAnswer(true); };
