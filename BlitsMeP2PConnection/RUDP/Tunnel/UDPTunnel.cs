@@ -1,4 +1,5 @@
 ﻿using System;
+using BlitsMe.Common.Security;
 using BlitsMe.Communication.P2P.RUDP.Packet;
 using BlitsMe.Communication.P2P.RUDP.Packet.Tunnel;
 using BlitsMe.Communication.P2P.RUDP.Tunnel.API;
@@ -103,7 +104,7 @@ namespace BlitsMe.Communication.P2P.RUDP.Tunnel
 
         public UDPTunnel(int port)
         {
-            this.Id = Id;
+            Id = Util.getSingleton().generateString(8);
             IPEndPoint endPoint = new IPEndPoint(IPAddress.Any, port);
             _udpClient = new UdpClient(endPoint);
             InitReceiver();
@@ -113,7 +114,7 @@ namespace BlitsMe.Communication.P2P.RUDP.Tunnel
 
         public void SyncWithPeer(PeerInfo peerIp, int timeout)
         {
-            _syncer = new Syncer();
+            _syncer = new Syncer(Id);
             _syncer.SyncWithPeer(peerIp, timeout, _udpClient);
             _peer = peerIp;
             IsTunnelEstablished = true;
@@ -123,7 +124,7 @@ namespace BlitsMe.Communication.P2P.RUDP.Tunnel
         private void StartPinger()
         {
             _pingFailCount = 0;
-            _pinger = new Pinger();
+            _pinger = new Pinger(Id);
             _pingTimer = new Timer(this.PingPeer, this, PingIntervalMilliseconds, PingIntervalMilliseconds);
         }
 
@@ -167,7 +168,7 @@ namespace BlitsMe.Communication.P2P.RUDP.Tunnel
 
         public void WaitForSyncFromPeer(PeerInfo peerIp, int timeout)
         {
-            _syncer = new Syncer();
+            _syncer = new Syncer(Id);
             _syncer.WaitForSyncFromPeer(peerIp, timeout, _udpClient);
             _peer = peerIp;
             IsTunnelEstablished = true;
@@ -178,7 +179,7 @@ namespace BlitsMe.Communication.P2P.RUDP.Tunnel
         {
             _lastPing = DateTime.Now.Ticks;
             _pingFailCount = 0;
-            _pinger = new Pinger();
+            _pinger = new Pinger(Id);
             _pingTimer = new Timer(this.CheckForRecentPing, this, PingIntervalMilliseconds, PingIntervalMilliseconds);
         }
 

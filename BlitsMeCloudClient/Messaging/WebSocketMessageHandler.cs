@@ -13,7 +13,7 @@ namespace BlitsMe.Cloud.Messaging
 {
     public class WebSocketMessageHandler
     {
-        private static readonly ILog logger = LogManager.GetLogger(typeof(WebSocketMessageHandler));
+        private static readonly ILog Logger = LogManager.GetLogger(typeof(WebSocketMessageHandler));
 
         private WebSocketConnection _connection;
         private readonly ConnectionMaintainer _connectionMaintainer;
@@ -31,17 +31,17 @@ namespace BlitsMe.Cloud.Messaging
 
         public void onClose(WebSocketConnection aConnection, int aCloseCode, string aCloseReason, bool aClosedByPeer)
         {
-            logger.Debug("Client : Connection [" + aConnection.ToString() + "] has closed with message : " + aCloseReason);
+            Logger.Debug("Client : Connection [" + aConnection.ToString() + "] has closed with message : " + aCloseReason);
             WebSocketClient.Reset();
             WebSocketServer.Reset();
             this._connection = null;
-            this._connectionMaintainer.wakeupManager.Set();
+            this._connectionMaintainer.WakeupManager.Set();
         }
 
         public void onOpen(WebSocketConnection aConnection)
         {
             this._connection = aConnection;
-            logger.Debug("Client : Received connection [" + aConnection + "]");
+            Logger.Debug("Client : Received connection [" + aConnection + "]");
         }
 
         public void onMessage(WebSocketConnection connection, bool final, bool res1, bool res2, bool res3, int code, MemoryStream data)
@@ -58,7 +58,7 @@ namespace BlitsMe.Cloud.Messaging
             }
             catch (Exception e)
             {
-                logger.Error("Failed to process message from json into an object : " + e.Message);
+                Logger.Error("Failed to process message from json into an object : " + e.Message);
                 return;
             }
             if (message is BlitsMe.Cloud.Messaging.API.Response)
@@ -71,7 +71,7 @@ namespace BlitsMe.Cloud.Messaging
             }
             else
             {
-                logger.Error("Failed to determine message type for message " + message.id);
+                Logger.Error("Failed to determine message type for message " + message.id);
             }
         }
 
@@ -84,7 +84,7 @@ namespace BlitsMe.Cloud.Messaging
             _connection.SendText(resAsString);
             if (!Regex.Match(resAsString, "\"type\":\"Ping").Success)
             {
-                logger.Debug("Sent message : " + SanitiseMessage(resAsString));
+                Logger.Debug("Sent message : " + SanitiseMessage(resAsString));
             }
         }
 
@@ -110,7 +110,7 @@ namespace BlitsMe.Cloud.Messaging
                 String messageString = Encoding.UTF8.GetString(data.ToArray());
                 if (!Regex.Match(messageString, "\"type\":\"Ping").Success)
                 {
-                    logger.Debug("Received message [" + data.Length + "] (" + (opCode == 0 ? "multi" : "single") + "): " +
+                    Logger.Debug("Received message [" + data.Length + "] (" + (opCode == 0 ? "multi" : "single") + "): " +
                                  SanitiseMessage(messageString));
                 }
             }

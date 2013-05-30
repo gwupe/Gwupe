@@ -44,7 +44,7 @@ namespace BlitsMe.Agent.Components.Processors
         private void SetupIncomingTunnel(Engagement engagement, IUDPTunnel awareIncomingTunnel, PeerInfo peerinfo)
         {
             engagement.IncomingTunnel = awareIncomingTunnel;
-            engagement.IncomingTunnel.Id = "incoming";
+            engagement.IncomingTunnel.Id = engagement.SecondParty.Username + "-" + engagement.SecondParty.ShortCode + "-incoming";
             var p2pListenerThread = new Thread(() => IncomingTunnelWaitSync(engagement,peerinfo)) { IsBackground = true };
             p2pListenerThread.Name = "p2pListenerThread[" + p2pListenerThread.ManagedThreadId + "]";
             p2pListenerThread.Start();

@@ -37,13 +37,15 @@ namespace BlitsMe.Agent.Managers
             ServicePersonLookup = new Dictionary<String, Person>();
             _queuedPresenceChanges = new ConcurrentQueue<PresenceChangeRq>();
             // Manager thread
-            _rosterManagerThread = new Thread(Run) { IsBackground = true, Name = "_rosterManagerThread" };
-            _rosterManagerThread.Start();
+            // This is now on demand by the Login Manager
+            //_rosterManagerThread = new Thread(Run) { IsBackground = true, Name = "_rosterManagerThread" };
+            //_rosterManagerThread.Start();
         }
 
         public void Close()
         {
-            _rosterManagerThread.Abort();
+            if (_rosterManagerThread != null)
+                _rosterManagerThread.Abort();
         }
 
         public Person GetServicePerson(String username)
@@ -69,7 +71,8 @@ namespace BlitsMe.Agent.Managers
 
         private void ChangePresence(String user, String shortCode, Presence presence)
         {
-            if(!ServicePersonLookup.ContainsKey(user)){
+            if (!ServicePersonLookup.ContainsKey(user))
+            {
                 if (PresenceType.unavailable.Equals(presence.Type))
                     return;
                 // if we are getting presence alerts (excl unavail), we need to create this user
@@ -98,9 +101,7 @@ namespace BlitsMe.Agent.Managers
         {
             while (true)
             {
-                _haveRoster = false;
-                ServicePersonList.Clear();
-                ServicePersonLookup.Clear();
+
                 lock (_appContext.LoginManager.LoginOccurredLock)
                 {
                     if (!_appContext.ConnectionManager.IsOnline())
@@ -116,46 +117,7 @@ namespace BlitsMe.Agent.Managers
 #endif
                     try
                     {
-                        RosterRs response = _appContext.ConnectionManager.Connection.Request<RosterRq,RosterRs>(_rosterRequest);
-                        if (response.rosterElements != null)
-                        {
-                            foreach (RosterElement rosterElement in response.rosterElements)
-                            {
-                                // If there are no subscriptions, as far as we are concerned, they are not part of the roster.
-                                if (rosterElement.presence != null && "none".Equals(rosterElement.userElement.subscriptionType))
-                                    continue;
-                                // Add each buddy to the list
-                                // I think we should not add a default presence, lets see how it goes
-                                AddUserElementToList(rosterElement.userElement);
-                                // Now async get the images
-                                if (rosterElement.userElement.hasAvatar)
-                                {
-                                    try
-                                    {
-                                        _appContext.ConnectionManager.Connection.RequestAsync<VCardRq, VCardRs>(
-                                            new VCardRq(rosterElement.userElement.user), ResponseHandler);
-                                    }
-                                    catch (Exception e)
-                                    {
-                                        Logger.Error("Failed to get the vcard for " + rosterElement.userElement.user, e);
-                                    }
-                                }
-                            }
-                            // Process the queued changes
-                            while(_queuedPresenceChanges.Count > 0)
-                            {
-                                PresenceChangeRq request;
-                                if(_queuedPresenceChanges.TryDequeue(out request))
-                                {
-                                    ChangePresence(request.user,  request.shortCode, new Presence(request.resource, request.presence));
-                                } else
-                                {
-                                    Logger.Error("Failed to dequeue from the saved presence change requests");
-                                    break;
-                                }
-                            }
-                        }
-                        _haveRoster = true;
+                        RetrieveRoster();
                         if (_appContext.ConnectionManager.IsOnline())
                         {
                             Monitor.Wait(_appContext.LoginManager.LogoutOccurredLock);
@@ -163,9 +125,78 @@ namespace BlitsMe.Agent.Managers
                     }
                     catch (Exception e)
                     {
-                        Logger.Error("Failed to get the Roster : " + e.Message, e);
-                        // Pause here to try again
+                        Logger.Error("Failed to get the roster, trying again : " + e.Message, e);
+                    }
+
+                }
+            }
+        }
+
+        internal void RetrieveRoster()
+        {
+            _haveRoster = false;
+            ServicePersonList.Clear();
+            ServicePersonLookup.Clear();
+            for (int attempts = 0; attempts < 3; attempts++)
+            {
+
+
+                try
+                {
+                    RosterRs response = _appContext.ConnectionManager.Connection.Request<RosterRq, RosterRs>(_rosterRequest);
+                    if (response.rosterElements != null)
+                    {
+                        foreach (RosterElement rosterElement in response.rosterElements)
+                        {
+                            // If there are no subscriptions, as far as we are concerned, they are not part of the roster.
+                            if (rosterElement.presence != null && "none".Equals(rosterElement.userElement.subscriptionType))
+                                continue;
+                            // Add each buddy to the list
+                            // I think we should not add a default presence, lets see how it goes
+                            AddUserElementToList(rosterElement.userElement);
+                            // Now async get the images
+                            if (rosterElement.userElement.hasAvatar)
+                            {
+                                try
+                                {
+                                    _appContext.ConnectionManager.Connection.RequestAsync<VCardRq, VCardRs>(
+                                        new VCardRq(rosterElement.userElement.user), ResponseHandler);
+                                }
+                                catch (Exception e)
+                                {
+                                    Logger.Error("Failed to get the vcard for " + rosterElement.userElement.user, e);
+                                }
+                            }
+                        }
+                        // Process the queued changes
+                        while (_queuedPresenceChanges.Count > 0)
+                        {
+                            PresenceChangeRq request;
+                            if (_queuedPresenceChanges.TryDequeue(out request))
+                            {
+                                ChangePresence(request.user, request.shortCode, new Presence(request.resource, request.presence));
+                            }
+                            else
+                            {
+                                Logger.Error("Failed to dequeue from the saved presence change requests");
+                                break;
+                            }
+                        }
+                    }
+                    _haveRoster = true;
+                    break;
+                }
+                catch (Exception e)
+                {
+                    Logger.Error("Failed to get the Roster : " + e.Message, e);
+                    // Pause here to try again
+                    if (attempts < 3)
+                    {
                         Thread.Sleep(PauseOnRosterFail);
+                    }
+                    else
+                    {
+                        throw;
                     }
                 }
             }
@@ -173,21 +204,23 @@ namespace BlitsMe.Agent.Managers
 
         private void ResponseHandler(VCardRq vCardRq, VCardRs vCardRs, Exception e)
         {
-            if(e == null)
+            if (e == null)
             {
-                if(!String.IsNullOrWhiteSpace(vCardRs.userElement.avatarData) && ServicePersonLookup.ContainsKey(vCardRq.username))
+                if (!String.IsNullOrWhiteSpace(vCardRs.userElement.avatarData) && ServicePersonLookup.ContainsKey(vCardRq.username))
                 {
                     try
                     {
                         ServicePersonLookup[vCardRq.username].SetAvatarData(vCardRs.userElement.avatarData);
-                    }catch (Exception e1)
+                    }
+                    catch (Exception e1)
                     {
-                        Logger.Error("Failed to set avatar data for " + vCardRq.username,e);
+                        Logger.Error("Failed to set avatar data for " + vCardRq.username, e);
                     }
                 }
-            } else
+            }
+            else
             {
-                Logger.Error("Failed to get vcard for " + vCardRq.username,e);
+                Logger.Error("Failed to get vcard for " + vCardRq.username, e);
             }
         }
 
@@ -196,7 +229,7 @@ namespace BlitsMe.Agent.Managers
         {
             try
             {
-                VCardRs cardRs = _appContext.ConnectionManager.Connection.Request<VCardRq,VCardRs>(new VCardRq(username));
+                VCardRs cardRs = _appContext.ConnectionManager.Connection.Request<VCardRq, VCardRs>(new VCardRq(username));
                 AddUserElementToList(cardRs.userElement, presence);
             }
             catch (Exception e)
@@ -220,12 +253,13 @@ namespace BlitsMe.Agent.Managers
         {
             // Lets add this person to the roster
             Logger.Debug("Attempting to add " + person + " to " + _appContext.LoginManager.LoginDetails.username + "'s Team");
-            if(ServicePersonLookup.ContainsKey(person.Username))
+            if (ServicePersonLookup.ContainsKey(person.Username))
             {
                 Logger.Error("Will not add " + person.Username + " to list, he/she already exists");
-            } else
+            }
+            else
             {
-                _appContext.ConnectionManager.Connection.RequestAsync<SubscribeRq,SubscribeRs>(new SubscribeRq() { username = person.Username, subscribe = true },
+                _appContext.ConnectionManager.Connection.RequestAsync<SubscribeRq, SubscribeRs>(new SubscribeRq() { username = person.Username, subscribe = true },
                                                                       (request, response, ex) =>
                                                                       ResponseHandler(request, response, ex, person));
             }
@@ -233,13 +267,14 @@ namespace BlitsMe.Agent.Managers
 
         private void ResponseHandler(SubscribeRq request, SubscribeRs response, Exception e, Person person)
         {
-            if(e == null)
+            if (e == null)
             {
                 person.SubscriptionStatus = "subscribe";
                 Logger.Debug("Succeeded in sending subscribe request for " + person.Username);
-            } else
+            }
+            else
             {
-                Logger.Error("Failed to subscribe to " + person.Username + " : " + e.Message,e);
+                Logger.Error("Failed to subscribe to " + person.Username + " : " + e.Message, e);
             }
         }
     }

@@ -14,10 +14,12 @@ namespace BlitsMe.Communication.P2P.RUDP.Utils
         private static readonly ILog Logger = LogManager.GetLogger(typeof(Pinger));
         private readonly AutoResetEvent _pingEvent = new AutoResetEvent(false);
         private byte _pingSeq;
+        public String Id { get; private set; }
 
-        public Pinger()
+        public Pinger(String id)
         {
             _pingSeq = 0;
+            this.Id = id;
         }
 
         public int Ping(PeerInfo peer, int timeout, UdpClient udpClient)
@@ -34,7 +36,7 @@ namespace BlitsMe.Communication.P2P.RUDP.Utils
             long stopTime = DateTime.Now.Ticks;
             int pingTimeMillis = (int)((stopTime - startTime) / 10000);
 #if(DEBUG)
-            Logger.Debug("Successfully UDP pinged [seq=" + ping.data[0] + "] " + peer.externalEndPoint + " in " + pingTimeMillis + "ms");
+            Logger.Debug("Successfully UDP pinged [seq=" + ping.data[0] + "] tunnel " + Id + " in " + pingTimeMillis + "ms");
 #endif
             return pingTimeMillis;
 
@@ -46,7 +48,7 @@ namespace BlitsMe.Communication.P2P.RUDP.Utils
             byte[] bytes = pong.getBytes();
             udpClient.Send(bytes, bytes.Length, ping.ip);
 #if(DEBUG)
-            Logger.Debug("Sent a UDP pong [seq=" + ping.data[0] + "] to " + ping.ip);
+            //Logger.Debug("Sent a UDP pong [seq=" + ping.data[0] + "] to " + ping.ip);
 #endif
 
         }

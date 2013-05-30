@@ -67,12 +67,19 @@ namespace BlitsMe.Agent.Managers
             if (handler != null) handler(this, args);
         }
 
-        public void Close()
+        public void Reset()
         {
             foreach (Engagement engagement in Engagements)
             {
                 engagement.Close();
             }
+            Engagements.Clear();
+            _engagementLookup.Clear();
+        }
+
+        public void Close()
+        {
+            Reset();
         }
     }
 }

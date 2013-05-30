@@ -40,8 +40,8 @@ namespace BlitsMe.Agent
         internal EngagementManager EngagementManager { get; private set; }
         internal NotificationManager NotificationManager { get; private set; }
         internal SearchManager SearchManager { get; private set; }
-        internal Thread _dashboardUIThread;
-        internal bool isShuttingDown { get; private set; }
+        internal Thread DashboardUiThread;
+        internal bool IsShuttingDown { get; private set; }
         internal readonly BLMRegistry Reg = new BLMRegistry();
         internal readonly String StartupVersion;
         internal readonly ScheduleManager ScheduleManager;
@@ -225,11 +225,11 @@ namespace BlitsMe.Agent
 
         internal void SetupAndRunDashboard()
         {
-            if (_dashboardUIThread == null)
+            if (DashboardUiThread == null)
             {
-                _dashboardUIThread = new Thread(RunDashboard) { Name = "dashboardUIThread" };
-                _dashboardUIThread.SetApartmentState(ApartmentState.STA);
-                _dashboardUIThread.Start();
+                DashboardUiThread = new Thread(RunDashboard) { Name = "dashboardUIThread" };
+                DashboardUiThread.SetApartmentState(ApartmentState.STA);
+                DashboardUiThread.Start();
                 while (UIDashBoard == null || !UIDashBoard.IsInitialized)
                 {
                     Thread.Sleep(50);
@@ -245,13 +245,22 @@ namespace BlitsMe.Agent
         // On exit
         protected override void ExitThreadCore()
         {
-            this.isShuttingDown = true;
+            this.IsShuttingDown = true;
             // before we exit, lets cleanup
-            if (_dashboardUIThread != null)
+            if (EngagementManager != null)
+                EngagementManager.Close();
+            if (NotificationManager != null)
+                NotificationManager.Close();
+            if (RosterManager != null)
+                RosterManager.Close();
+            if (DashboardUiThread != null)
             {
                 UIDashBoard.Dispatcher.InvokeShutdown();
-                _dashboardUIThread.Abort();
+                DashboardUiThread.Abort();
+                DashboardUiThread = null;
             }
+            if (SearchManager != null)
+                SearchManager.Close();
             if (BlitsMeServiceProxy != null)
                 BlitsMeServiceProxy.close();
             if (LoginManager != null)
@@ -260,14 +269,6 @@ namespace BlitsMe.Agent
                 ConnectionManager.Close();
             if (_systray != null)
                 _systray.close();
-            if (RosterManager != null)
-                RosterManager.Close();
-            if (EngagementManager != null)
-                EngagementManager.Close();
-            if (NotificationManager != null)
-                NotificationManager.Close();
-            if (SearchManager != null)
-                SearchManager.Close();
             // Done
             Logger.Info("BlitsMe.Agent has shut down");
             base.ExitThreadCore();

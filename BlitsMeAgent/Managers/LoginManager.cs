@@ -76,7 +76,7 @@ namespace BlitsMe.Agent.Managers
 
         public void Close()
         {
-            if(IsLoggedIn)
+            if (IsLoggedIn)
                 Logout(true);
             _loginWindow.Dispatcher.InvokeShutdown();
             _loginUiThread.Abort();
@@ -101,13 +101,20 @@ namespace BlitsMe.Agent.Managers
 
         public void Logout(bool userInitiated)
         {
-            if(userInitiated)
+            if (!_appContext.IsShuttingDown)
+            {
+                _appContext.EngagementManager.Reset();
+                if (_appContext.UIDashBoard != null)
+                { _appContext.UIDashBoard.Reset(); }
+            }
+            if (userInitiated)
             {
                 if (_loginWindow.Dispatcher.CheckAccess())
                 {
                     _loginWindow.Username.Text = LoginDetails.username;
                     _loginWindow.Password.Password = "";
-                } else
+                }
+                else
                 {
                     _loginWindow.Dispatcher.Invoke(new Action(() =>
                     {
@@ -118,7 +125,7 @@ namespace BlitsMe.Agent.Managers
                 LoginDetails.username = "";
                 LoginDetails.passwordHash = "";
             }
-            if(IsLoggedIn)
+            if (IsLoggedIn)
             {
                 if (_appContext.ConnectionManager.Connection.isEstablished())
                 {
@@ -126,11 +133,11 @@ namespace BlitsMe.Agent.Managers
                     //_appContext.ConnectionManager.Connection.RequestAsync<LogoutRq,LogoutRs>(request, delegate {  });
                     try
                     {
-                        _appContext.ConnectionManager.Connection.Request<LogoutRq,LogoutRs>(request);
+                        _appContext.ConnectionManager.Connection.Request<LogoutRq, LogoutRs>(request);
                     }
                     catch (Exception e)
                     {
-                        Logger.Error("Failed to logout correctly : " + e.Message,e);
+                        Logger.Error("Failed to logout correctly : " + e.Message, e);
                     }
                 }
                 IsLoggedIn = false;
@@ -140,7 +147,7 @@ namespace BlitsMe.Agent.Managers
                     Monitor.PulseAll(LogoutOccurredLock);
                 }
                 OnLoggedOut(new LoginEventArgs() { Logout = true });
-                if(_appContext.ConnectionManager.Connection.isEstablished())
+                if (_appContext.ConnectionManager.Connection.isEstablished())
                 {
                     LoginRequired.Set();
                 }
@@ -169,7 +176,8 @@ namespace BlitsMe.Agent.Managers
             try
             {
                 LoginDetails.workstation = _appContext.BlitsMeService.HardwareFingerprint();
-            } catch(Exception e)
+            }
+            catch (Exception e)
             {
                 Logger.Error("Failed to get the hardware id : " + e.Message);
             }
@@ -226,7 +234,7 @@ namespace BlitsMe.Agent.Managers
                     catch (Exception e)
                     {
                         // Do nothing here, just try keep connecting
-                        Logger.Warn("Login has failed : " + e.Message,e);
+                        Logger.Warn("Login has failed : " + e.Message, e);
                         Thread.Sleep(10000);
                     }
                 }
@@ -271,7 +279,8 @@ namespace BlitsMe.Agent.Managers
                 LoginRs loginRs = null;
                 try
                 {
-                    loginRs = _appContext.ConnectionManager.Connection.Request<LoginRq,LoginRs>(loginRq);
+                    loginRs = _appContext.ConnectionManager.Connection.Request<LoginRq, LoginRs>(loginRq);
+                    _appContext.RosterManager.RetrieveRoster();
                     _appContext.CurrentUserManager.SetUser(loginRs.userElement);
                 }
                 catch (MessageException<LoginRs> e)

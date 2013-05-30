@@ -76,6 +76,11 @@ namespace BlitsMe.Agent.UI.WPF
             Logger.Info("Dashboard setup completed");
         }
 
+        internal void Reset()
+        {
+            ActiveContent.Content = null;
+        }
+
         private void SetupCurrentUserListener()
         {
             Logger.Debug("Setting up new listener for " + _appContext.CurrentUserManager.CurrentUser.Name);
@@ -92,6 +97,8 @@ namespace BlitsMe.Agent.UI.WPF
 
         private void CurrentUserOnPropertyChanged(object sender, PropertyChangedEventArgs propertyChangedEventArgs)
         {
+            if (_appContext.IsShuttingDown)
+                return;
             if (Dispatcher.CheckAccess())
             {
                 if (propertyChangedEventArgs.PropertyName.Equals("Name"))
@@ -106,6 +113,8 @@ namespace BlitsMe.Agent.UI.WPF
 
         private void NotificationsOnCollectionChanged(object sender, NotifyCollectionChangedEventArgs notifyCollectionChangedEventArgs)
         {
+            if (_appContext.IsShuttingDown)
+                return;
             // Multithreaded handling, make sure only dispatcher updates UI objects
             if (Dispatcher.CheckAccess())
                 _notificationView.View.Refresh();
@@ -115,6 +124,8 @@ namespace BlitsMe.Agent.UI.WPF
 
         internal void EngagementManagerOnNewActivity(object sender, EngagementActivityArgs args)
         {
+            if (_appContext.IsShuttingDown)
+                return;
             if (Dispatcher.CheckAccess())
             {
                 ShowEngagement(args.Engagement.SecondParty);
@@ -127,6 +138,8 @@ namespace BlitsMe.Agent.UI.WPF
 
         private void NotificationFilter(object sender, FilterEventArgs eventArgs)
         {
+            if (_appContext.IsShuttingDown)
+                return;
             Notification notification = eventArgs.Item as Notification;
             if (notification != null && (notification.AssociatedUsername == null || notification.AssociatedUsername.Equals("")))
             {
@@ -154,7 +167,8 @@ namespace BlitsMe.Agent.UI.WPF
         {
             if (WindowState.Minimized == this.WindowState)
             {
-                this.Hide();
+                // Don't hide if minimized
+               // this.Hide();
             }
         }
 

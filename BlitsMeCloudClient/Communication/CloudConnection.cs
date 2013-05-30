@@ -45,14 +45,14 @@ namespace BlitsMe.Cloud.Communication
         {
             get
             {
-                return _connectionMaintainer.webSocketClient;
+                return _connectionMaintainer.WebSocketClient;
             }
         }
         public WebSocketServer WebSocketServer
         {
             get
             {
-                return _connectionMaintainer.webSocketServer;
+                return _connectionMaintainer.WebSocketServer;
             }
         }
 
@@ -79,9 +79,9 @@ namespace BlitsMe.Cloud.Communication
             Logger.Debug("Setting up communication with the cloud servers");
 #endif
             _connectionMaintainer = new ConnectionMaintainer(version, Servers, Ports, cert);
-            _connectionMaintainer.Disconnect += (sender, args) => OnDisconnect(args);
-            _connectionMaintainer.Connect += (sender, args) => OnConnect(args);
-            _connectionMaintainerThread = new Thread(_connectionMaintainer.run) { IsBackground = true, Name = "_connectionMaintainerThread" };
+            _connectionMaintainer.Disconnected += (sender, args) => OnDisconnect(args);
+            _connectionMaintainer.Connected += (sender, args) => OnConnect(args);
+            _connectionMaintainerThread = new Thread(_connectionMaintainer.Run) { IsBackground = true, Name = "_connectionMaintainerThread" };
 #if DEBUG
             Logger.Debug("Starting connection manager");
 #endif
@@ -90,7 +90,7 @@ namespace BlitsMe.Cloud.Communication
 
         public bool isEstablished()
         {
-            return _connectionMaintainer.isConnectionEstablished();
+            return _connectionMaintainer.IsConnectionEstablished();
         }
 
         public TRs Request<TRq, TRs>(TRq req)
@@ -146,7 +146,7 @@ namespace BlitsMe.Cloud.Communication
 
         public void Close()
         {
-            _connectionMaintainer.disconnect();
+            _connectionMaintainer.Disconnect();
             _connectionMaintainerThread.Join();
         }
 

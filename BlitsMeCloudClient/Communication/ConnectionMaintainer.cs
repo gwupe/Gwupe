@@ -1,12 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Net.Security;
-using System.Reflection;
 using System.Security.Cryptography.X509Certificates;
 using System.Threading;
 using BlitsMe.Cloud.Messaging;
 using BlitsMe.Cloud.Messaging.Request;
-using BlitsMe.Cloud.Messaging.API;
 using Bauglir.Ex;
 using System.IO;
 using BlitsMe.Cloud.Messaging.Response;
@@ -18,42 +16,42 @@ namespace BlitsMe.Cloud.Communication
 
     public class ConnectionMaintainer
     {
-        private static readonly ILog logger = LogManager.GetLogger(typeof(ConnectionMaintainer));
-        private bool maintainConnection;
-        private bool connectionEstablished;
-        private WebSocketMessageHandler wsMessageHandler;
-        private WebSocketClientConnection connection;
-        private String protocol { get; set; }
-        private List<Uri> servers;
-        public event ConnectionEvent Disconnect;
-        public event ConnectionEvent Connect;
-        private X509Certificate2 cacert;
+        private static readonly ILog Logger = LogManager.GetLogger(typeof(ConnectionMaintainer));
+        private bool _maintainConnection;
+        private bool _connectionEstablished;
+        private readonly WebSocketMessageHandler _wsMessageHandler;
+        private WebSocketClientConnection _connection;
+        private String Protocol { get; set; }
+        private readonly List<Uri> _servers;
+        public event ConnectionEvent Disconnected;
+        public event ConnectionEvent Connected;
+        private readonly X509Certificate2 _cacert;
 
-        public AutoResetEvent connectionOpenEvent = new AutoResetEvent(false);
-        public AutoResetEvent connectionCloseEvent = new AutoResetEvent(false);
-        public AutoResetEvent wakeupManager = new AutoResetEvent(false);
+        public AutoResetEvent ConnectionOpenEvent = new AutoResetEvent(false);
+        public AutoResetEvent ConnectionCloseEvent = new AutoResetEvent(false);
+        public AutoResetEvent WakeupManager = new AutoResetEvent(false);
 
-        public WebSocketClient webSocketClient
+        public WebSocketClient WebSocketClient
         {
             get
             {
-                return wsMessageHandler.WebSocketClient;
+                return _wsMessageHandler.WebSocketClient;
             }
         }
 
-        public Messaging.WebSocketServer webSocketServer
+        public Messaging.WebSocketServer WebSocketServer
         {
             get
             {
-                return wsMessageHandler.WebSocketServer;
+                return _wsMessageHandler.WebSocketServer;
             }
         }
 
         public ConnectionMaintainer(String version, List<String> destinations, List<Int32> ports, X509Certificate2 cert)
         {
-            this.protocol = "message";
-            cacert = cert;
-            servers = new List<Uri>();
+            this.Protocol = "message";
+            _cacert = cert;
+            _servers = new List<Uri>();
             foreach (Int32 port in ports)
             {
                 foreach (String destination in destinations)
@@ -62,146 +60,147 @@ namespace BlitsMe.Cloud.Communication
                     try
                     {
                         Uri uri = new Uri(uriString);
-                        servers.Add(uri);
+                        _servers.Add(uri);
                     }
                     catch (UriFormatException e)
                     {
-                        logger.Error("Failed to parse URI " + uriString + ", skipping : " + e.Message);
+                        Logger.Error("Failed to parse URI " + uriString + ", skipping : " + e.Message);
                     }
                 }
             }
-            wsMessageHandler = new WebSocketMessageHandler(this);
+            _wsMessageHandler = new WebSocketMessageHandler(this);
         }
 
-        public bool isConnectionEstablished()
+        public bool IsConnectionEstablished()
         {
-            return connectionEstablished;
+            return _connectionEstablished;
         }
 
-        public void disconnect()
+        public void Disconnect()
         {
-            maintainConnection = false;
-            wakeupManager.Set();
+            _maintainConnection = false;
+            WakeupManager.Set();
         }
 
-        public void run()
+        public void Run()
         {
-            maintainConnection = true;
-            connectionEstablished = false;
-            while (maintainConnection)
+            _maintainConnection = true;
+            _connectionEstablished = false;
+            while (_maintainConnection)
             {
-                while (!connectionEstablished && maintainConnection)
+                while (!_connectionEstablished && _maintainConnection)
                 {
-                    foreach (Uri server in servers)
+                    foreach (Uri server in _servers)
                     {
-                        if (!maintainConnection)
+                        if (!_maintainConnection)
                         {
                             break;
                         }
 #if DEBUG
-                        logger.Debug("Attempting to connect to server [" + server.ToString() + "]");
+                        Logger.Debug("Attempting to connect to server [" + server.ToString() + "]");
 #endif
 
                         try
                         {
-                            connect(server);
-                            logger.Info("Successfully connected to server [" + server.ToString() + "]");
+                            Connect(server);
+                            Logger.Info("Successfully connected to server [" + server.ToString() + "]");
                             break;
                         }
                         catch (Exception e)
                         {
-                            logger.Error("Failed to connect to server [" + server.ToString() + "] : " + e.Message);
+                            Logger.Error("Failed to connect to server [" + server.ToString() + "] : " + e.Message);
                             continue;
                         }
                     }
                     // If we haven't established a connection
-                    if (maintainConnection && !connectionEstablished)
+                    if (_maintainConnection && !_connectionEstablished)
                     {
 #if DEBUG
-                        logger.Debug("Failed to obtain a connection to a server, waiting for retry");
+                        Logger.Debug("Failed to obtain a connection to a server, waiting for retry");
 #endif
-                        wakeupManager.Reset();
-                        wakeupManager.WaitOne(10000);
+                        WakeupManager.Reset();
+                        WakeupManager.WaitOne(10000);
                     }
                 } // end get connection loop
-                if (maintainConnection)
+                if (_maintainConnection)
                 {
                     // Will only come here if a connection was established
                     // Now we wait for 30s then check if the connection is still up
-                    wakeupManager.Reset();
-                    wakeupManager.WaitOne(30000);
-                    if (maintainConnection && (!this.isConnected() || !ping()))
+                    WakeupManager.Reset();
+                    WakeupManager.WaitOne(30000);
+                    if (_maintainConnection && (!this.IsConnected() || !Ping()))
                     {
-                        logger.Info("Connection seems to be down, marking it as such");
-                        this.closeConnection(2, "Connection seems to be down");
+                        Logger.Info("Connection seems to be down, marking it as such");
+                        this.CloseConnection(2, "Connection seems to be down");
                     }
                 }
             } // end maintain connection loop
-            this.closeConnection(1, "Disconnect requested");
+            this.CloseConnection(1, "Disconnect requested");
         }
 
 
-        public bool ping()
+        public bool Ping()
         {
             try
             {
                 long startTime = DateTime.Now.Ticks;
-                PingRs pong = webSocketClient.SendRequest<PingRq, PingRs>(new PingRq());
+                PingRs pong = WebSocketClient.SendRequest<PingRq, PingRs>(new PingRq());
 #if DEBUG
-                logger.Debug("Ping succeeded, round trip " + ((DateTime.Now.Ticks - startTime) / 10000) + " ms");
+                Logger.Debug("Ping to blitsme [" + _connection.Client.Client.RemoteEndPoint + "] succeeded, round trip " + ((DateTime.Now.Ticks - startTime) / 10000) + " ms");
 #endif
                 return true;
             }
             catch (Exception e)
             {
-                logger.Error("Error while pinging : " + e.Message);
+                Logger.Error("Error while pinging : " + e.Message);
             }
             return false;
         }
 
         protected virtual void OnConnect(EventArgs e)
         {
-            Connect(this, e);
+            Connected(this, e);
         }
 
         protected virtual void OnDisconnect(EventArgs e)
         {
-            Disconnect(this, e);
+            Disconnected(this, e);
         }
 
-        public void connect(Uri uri)
+        public void Connect(Uri uri)
         {
-            connection = new WebSocketClientSSLConnection(cacert);
-            connection.ConnectionClose += wsMessageHandler.onClose;
-            connection.ConnectionOpen += wsMessageHandler.onOpen;
-            connection.ConnectionRead += wsMessageHandler.onMessage;
+            _connection = new WebSocketClientSSLConnection(_cacert);
+            _connection.ConnectionClose += _wsMessageHandler.onClose;
+            _connection.ConnectionOpen += _wsMessageHandler.onOpen;
+            _connection.ConnectionRead += _wsMessageHandler.onMessage;
             try
             {
-                if (!connection.Start(uri.Host, uri.Port.ToString(), uri.PathAndQuery, true, "", protocol))
+                if (!_connection.Start(uri.Host, uri.Port.ToString(), uri.PathAndQuery, true, "", Protocol))
                 {
                     throw new IOException("Unknown error connecting to " + uri.ToString());
                 }
-            } catch(Exception e)
+            }
+            catch (Exception e)
             {
-                logger.Error("Failed to connect to server [" + uri +"] : " + e.Message);
+                Logger.Error("Failed to connect to server [" + uri + "] : " + e.Message);
                 throw new IOException("Failed to connect to server [" + uri + "] : " + e.Message, e);
             }
-            connectionEstablished = true;
+            _connectionEstablished = true;
             OnConnect(new EventArgs());
         }
 
-        private bool isConnected()
+        private bool IsConnected()
         {
-            return !(connection == null || connection.Closed || connection.Closing);
+            return !(_connection == null || _connection.Closed || _connection.Closing);
         }
 
 
-        private void closeConnection(int code, String reason)
+        private void CloseConnection(int code, String reason)
         {
-            connectionEstablished = false;
-            if (isConnected())
+            _connectionEstablished = false;
+            if (IsConnected())
             {
-                connection.Close(code, reason);
+                _connection.Close(code, reason);
             }
             OnDisconnect(new EventArgs());
         }
@@ -211,15 +210,15 @@ namespace BlitsMe.Cloud.Communication
     {
         private readonly X509Certificate2 _cacert;
 
-        public WebSocketClientSSLConnection(X509Certificate2 cacert) : base()
+        public WebSocketClientSSLConnection(X509Certificate2 cacert)
+            : base()
         {
             _cacert = cacert;
         }
 
 
-        protected override bool validateServerCertificate(object sender, System.Security.Cryptography.X509Certificates.X509Certificate certificate, System.Security.Cryptography.X509Certificates.X509Chain chain, System.Net.Security.SslPolicyErrors sslPolicyErrors)
+        protected override bool validateServerCertificate(object sender, X509Certificate certificate, X509Chain chain, SslPolicyErrors sslPolicyErrors)
         {
-            return true;
             bool isValid = false;
             if (sslPolicyErrors == SslPolicyErrors.RemoteCertificateChainErrors)
             {

@@ -142,7 +142,7 @@ namespace BlitsMe.Agent.Components
         private void OutgoingTunnelOnDisconnected(object sender, EventArgs args)
         {
             // Attempt once to get it going again
-            if (!_appContext.isShuttingDown)
+            if (!_appContext.IsShuttingDown)
             {
                 SetupOutgoingTunnel();
             }
@@ -207,7 +207,7 @@ namespace BlitsMe.Agent.Components
                 try
                 {
                     OutgoingTunnel = _appContext.P2PManager.CompleteTunnel(response.uniqueId);
-                    OutgoingTunnel.Id = "outgoing";
+                    OutgoingTunnel.Id = SecondParty.Username + "-" + SecondParty.ShortCode + "-outgoing";
 #if DEBUG
                     Logger.Debug("Got endPointManager from p2p manager");
 #endif
@@ -250,6 +250,7 @@ namespace BlitsMe.Agent.Components
 
         public void Close()
         {
+            DisconnectTunnels();
             Chat.Close();
         }
     }

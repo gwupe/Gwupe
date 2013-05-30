@@ -14,12 +14,13 @@ namespace BlitsMe.Communication.P2P.RUDP.Utils
         private static readonly ILog Logger = LogManager.GetLogger(typeof(Syncer));
         private readonly AutoResetEvent _syncEvent = new AutoResetEvent(false);
         private readonly AutoResetEvent _syncRqEvent = new AutoResetEvent(false);
+        public String Id { get; private set; }
 
         private PeerInfo _expectedPeer;
 
-        public Syncer()
+        public Syncer(String id )
         {
-
+            Id = id;
         }
 
         public void SyncWithPeer(PeerInfo peer, int timeout, UdpClient udpClient)
@@ -27,7 +28,7 @@ namespace BlitsMe.Communication.P2P.RUDP.Utils
             long waitTime = timeout * 10000;
             long startTime = DateTime.Now.Ticks;
 #if DEBUG
-            Logger.Debug("Syncing with peer " + peer + " from " + udpClient.Client.LocalEndPoint);
+            Logger.Debug("Syncing with peer " + peer + " from " + udpClient.Client.LocalEndPoint + " to establish tunnel " + Id);
 #endif
 
             StandardSyncRqTunnelPacket syncRq = new StandardSyncRqTunnelPacket();
@@ -39,16 +40,16 @@ namespace BlitsMe.Communication.P2P.RUDP.Utils
                 if (DateTime.Now.Ticks - startTime > waitTime)
                 {
 #if(DEBUG)
-                    Logger.Debug("Sync Timeout : " + (DateTime.Now.Ticks - startTime));
+                    Logger.Debug("Tunnel " + Id + ", sync Timeout : " + (DateTime.Now.Ticks - startTime));
 #endif
-                    throw new TimeoutException("Timeout occured while attempting sync with peer " + peer.externalEndPoint);
+                    throw new TimeoutException("Tunnel " + Id + ", timeout occured while attempting sync with peer " + peer.externalEndPoint);
                 }
 #if(DEBUG)
-                Logger.Debug("Waiting to sync with " + peer.externalEndPoint);
+                Logger.Debug("Tunnel " + Id + ", waiting to sync with " + peer.externalEndPoint);
 #endif
             } while (!_syncEvent.WaitOne(1000));
 
-            Logger.Debug("Synchronisation with " + peer + " established");
+            Logger.Debug("Tunnel " + Id + ", synchronisation with " + peer + " established");
         }
 
         public void ProcessSyncRs(StandardSyncRsTunnelPacket packet)
@@ -67,7 +68,7 @@ namespace BlitsMe.Communication.P2P.RUDP.Utils
             }
             else
             {
-                Logger.Error("Got a sync request from an unexpected peer [" + packet.ip + "], dropping");
+                Logger.Error("Tunnel " + Id + ", got a sync request from an unexpected peer [" + packet.ip + "], dropping");
             }
         }
 
@@ -76,7 +77,7 @@ namespace BlitsMe.Communication.P2P.RUDP.Utils
             long waitTime = timeout * 10000;
             long startTime = DateTime.Now.Ticks;
 #if DEBUG
-            Logger.Debug("Waiting for sync from peer " + peer + " to " + udpClient.Client.LocalEndPoint);
+            Logger.Debug("Tunnel " + Id + ", waiting for sync from peer " + peer + " to " + udpClient.Client.LocalEndPoint);
 #endif
             StandardTunnelNopPacket nop = new StandardTunnelNopPacket();
             _expectedPeer = peer;
@@ -88,16 +89,16 @@ namespace BlitsMe.Communication.P2P.RUDP.Utils
                 if (DateTime.Now.Ticks - startTime > waitTime)
                 {
 #if(DEBUG)
-                    Logger.Debug("Sync Timeout : " + (DateTime.Now.Ticks - startTime));
+                    Logger.Debug("Tunnel " + Id + ", sync Timeout : " + (DateTime.Now.Ticks - startTime));
 #endif
-                    throw new TimeoutException("Timeout occured while waiting for sync from peer " + peer.externalEndPoint);
+                    throw new TimeoutException("Tunnel " + Id + ", timeout occured while waiting for sync from peer " + peer.externalEndPoint);
                 }
 #if(DEBUG)
-                Logger.Debug("Waiting for sync from " + peer.externalEndPoint);
+                Logger.Debug("Tunnel " + Id + ", waiting for sync from " + peer.externalEndPoint);
 #endif
             } while (!_syncRqEvent.WaitOne(1000));
 
-            Logger.Debug("Synchronisation with " + peer + " established");
+            Logger.Debug("Tunnel " + Id + ", synchronisation with " + peer + " established");
         }
     }
 }
