@@ -484,7 +484,7 @@ namespace BlitsMe.Communication.P2P.RUDP.Tunnel
 
         public void Close(bool initiatedBySelf)
         {
-            if (this.IsTunnelEstablished && !this.Closing)
+            if (IsTunnelEstablished && !Closing)
             {
                 Logger.Debug("Closing UDP endPointManager to " + _peer.externalEndPoint);
                 // Set the state that we are closing

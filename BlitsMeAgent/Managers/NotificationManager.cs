@@ -112,5 +112,13 @@ namespace BlitsMe.Agent.Managers
                 }
             }
         }
+
+        public void Reset()
+        {
+            Logger.Debug("Resetting Notification Manager, clearing notifications, alerts and timers");
+            Notifications.Clear();
+            Alerts.Clear();
+            _removerTimer.Stop();
+        }
     }
 }

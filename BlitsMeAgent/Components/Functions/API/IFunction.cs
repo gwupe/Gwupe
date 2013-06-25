@@ -7,5 +7,8 @@ namespace BlitsMe.Agent.Components.Functions.API
 {
     interface IFunction
     {
+        event EventHandler Activate;
+        event EventHandler Deactivate;
+        Boolean IsActive { get; }
     }
 }

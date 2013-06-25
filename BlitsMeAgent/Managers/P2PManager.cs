@@ -54,5 +54,14 @@ namespace BlitsMe.Agent.Managers
             return tunnel;
         }
 
+        public void Reset()
+        {
+            Logger.Debug("Resetting P2P Manager, clearing pending tunnels");
+            foreach (var pendingTunnel in _pendingTunnels)
+            {
+                pendingTunnel.Value.Close();
+            }
+            _pendingTunnels.Clear(); ;
+        }
     }
 }

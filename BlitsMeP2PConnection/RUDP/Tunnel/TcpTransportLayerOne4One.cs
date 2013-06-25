@@ -14,22 +14,18 @@ using BlitsMe.Communication.P2P.Exceptions;
 
 namespace BlitsMe.Communication.P2P.RUDP.Tunnel
 {
-    public class TcpTransportLayerOne4One : ITcpTransportLayer
+    public class TcpTransportLayerOne4One : TcpTransportLayer
     {
         private static readonly ILog Logger = LogManager.GetLogger(typeof(TcpTransportLayerOne4One));
-        private readonly ITCPTransport _transport;
-        private readonly byte _connectionId;
+
         // Event Handlers
         private readonly AutoResetEvent _ackEvent = new AutoResetEvent(false); // when ack comes in, this gets raised
         private ushort _sequenceIn = ushort.MaxValue - 50; // sequence number we last received in
         private ushort _sequenceOut = ushort.MaxValue - 50; // sequence number we last sent out
         private readonly Object _sendingLock = new Object(); // lock to make sending thread safe
-        private readonly Object _checkEstablishedLock = new Object();
-        private bool _isEstablished = false;
         public int AckWaitInterval { get; private set; }
+        public override byte ProtocolId { get { return 1; } }
 
-        // Properties
-        public IInternalTcpOverUdptSocket socket { get; private set; }
         public int PacketCountReceiveAckValid { get; private set; }
         public int PacketCountReceiveAckInvalid { get; private set; }
         public int PacketCountReceiveDataFirst { get; private set; }
@@ -39,37 +35,22 @@ namespace BlitsMe.Communication.P2P.RUDP.Tunnel
         public int PacketCountTransmitDataFirst { get; private set; }
         public int PacketCountTransmitDataResend { get; private set; }
 
-        public TcpTransportLayerOne4One(ITCPTransport transport, byte connectionId)
+        public TcpTransportLayerOne4One(ITCPTransport transport, byte connectionId, byte remoteConnectionId)
+            : base(transport, connectionId, remoteConnectionId)
         {
-            this._transport = transport;
-            this._connectionId = connectionId;
-            socket = new StandardTcpOverUdptSocket(this);
             AckWaitInterval = 300;
         }
 
-        public void SendData(byte[] data, int timeout)
+        public override void SendData(byte[] data, int timeout)
         {
-            lock (_checkEstablishedLock)
-            {
-                // block if connection is not established
-                while (!_isEstablished)
-                {
-#if(DEBUG)
-                    Logger.Debug("Connection [" + _connectionId + "] not yet established, waiting for connection");
-#endif
-                    Monitor.Wait(_checkEstablishedLock);
-#if(DEBUG)
-                    Logger.Debug("Connection [" + _connectionId + "] established, continuing to send data");
-#endif
-                }
-            }
+            BlockIfNotEstablished(timeout);
             long waitTime = timeout * 10000;
             lock (_sendingLock)
             {
                 _sequenceOut++;
                 StandardTcpDataPacket packet = new StandardTcpDataPacket(_sequenceOut);
                 packet.Data = data;
-                packet.ConnectionId = _connectionId;
+                packet.ConnectionId = ConnectionId;
 #if(DEBUG)
                 Logger.Debug("Sending packet " + packet.ToString());
 #endif
@@ -77,15 +58,14 @@ namespace BlitsMe.Communication.P2P.RUDP.Tunnel
                 _ackEvent.Reset();
                 do
                 {
-                    if (!_isEstablished)
+                    if (!Established)
                     {
 #if(DEBUG)
                         Logger.Debug("Connection is down, aborting data send");
 #endif
                         throw new ConnectionException("Cannot send data, connection is down");
                     }
-                    byte[] sendBytes = packet.GetBytes();
-                    _transport.SendData(packet);
+                    Transport.SendData(packet);
                     if (packet.ResendCount > 0) { PacketCountTransmitDataResend++; }
                     else { PacketCountTransmitDataFirst++; }
                     if (DateTime.Now.Ticks - startTime > waitTime)
@@ -94,10 +74,10 @@ namespace BlitsMe.Communication.P2P.RUDP.Tunnel
                         Logger.Debug("Data timeout : " + (DateTime.Now.Ticks - startTime));
 #endif
                         _sequenceOut--;
-                        throw new TimeoutException("Timeout occured while sending data to " + _transport.TransportManager.RemoteIp);
+                        throw new TimeoutException("Timeout occured while sending data to " + Transport.TransportManager.RemoteIp);
                     }
 #if(DEBUG)
-                    Logger.Debug("Waiting for ack from " + _transport.TransportManager.RemoteIp + " for packet " + _sequenceOut);
+                    Logger.Debug("Waiting for ack from " + Transport.TransportManager.RemoteIp + " for packet " + _sequenceOut);
 #endif
                     packet.ResendCount++;
 
@@ -123,7 +103,8 @@ namespace BlitsMe.Communication.P2P.RUDP.Tunnel
             }
         }
 
-        public void ProcessDataPacket(ITcpPacket packet)
+
+        public override void ProcessDataPacket(ITcpPacket packet)
         {
             if (BasicTcpPacket.compareSequences((ushort)(_sequenceIn + 1), packet.Sequence) == 0)
             {
@@ -132,7 +113,7 @@ namespace BlitsMe.Communication.P2P.RUDP.Tunnel
                 if (packet.ResendCount > 0) { PacketCountReceiveDataResend++; }
                 else { PacketCountReceiveDataFirst++; }
                 SendAck(packet, true);
-                socket.BufferClientData(packet.Data);
+                Socket.BufferClientData(packet.Data);
             }
             else if (BasicTcpPacket.compareSequences((ushort)(_sequenceIn + 1), packet.Sequence) > 0)
             {
@@ -153,10 +134,10 @@ namespace BlitsMe.Communication.P2P.RUDP.Tunnel
         private void SendAck(ITcpPacket packet, bool firstSend)
         {
             StandardAckPacket outPacket = new StandardAckPacket(packet.Sequence);
-            outPacket.ConnectionId = _connectionId;
+            outPacket.ConnectionId = ConnectionId;
             try
             {
-                _transport.SendData(outPacket);
+                Transport.SendData(outPacket);
 #if DEBUG
                 Logger.Debug("Sent ack [" + outPacket + "]");
 #endif
@@ -171,20 +152,7 @@ namespace BlitsMe.Communication.P2P.RUDP.Tunnel
 
         }
 
-        public void Close()
-        {
-            if (_isEstablished)
-            {
-                _isEstablished = false;
-                // close the socket
-                socket.Close();
-                // close the connection maintained by the transportManager
-                _transport.CloseConnection(_connectionId);
-            }
-        }
-
-
-        public void ProcessAck(StandardAckPacket packet)
+        public override void ProcessAck(StandardAckPacket packet)
         {
             if (packet.Sequence == _sequenceOut)
             {
@@ -201,14 +169,9 @@ namespace BlitsMe.Communication.P2P.RUDP.Tunnel
             }
         }
 
-
-        public void Open()
+        public override void Close()
         {
-            lock (_checkEstablishedLock)
-            {
-                _isEstablished = true;
-                Monitor.Pulse(_checkEstablishedLock);
-            }
+            _Close();
         }
     }
 }

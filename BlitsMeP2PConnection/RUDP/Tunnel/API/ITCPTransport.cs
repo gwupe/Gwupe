@@ -12,6 +12,7 @@ namespace BlitsMe.Communication.P2P.RUDP.Tunnel.API
         void CloseConnection(byte connectionId);
         void SendData(ITcpPacket packet);
         ITcpOverUdptSocket OpenConnection(String endPoint);
+        ITcpOverUdptSocket OpenConnection(String endPoint, byte protocolId);
         void Listen(string endPoint, Func<ITcpOverUdptSocket, bool> callback);
         void StopListen(string endPoint);
         void ProcessPacket(byte[] packetData);

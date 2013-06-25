@@ -101,5 +101,11 @@ namespace BlitsMe.Agent.Managers
         {
 
         }
+
+        internal void Reset()
+        {
+            Logger.Debug("Resetting Search Manager, clearing results");
+            SearchResults.Clear();
+        }
     }
 }

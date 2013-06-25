@@ -8,18 +8,18 @@ using log4net;
 
 namespace BlitsMe.Communication.P2P.RUDP.Connector
 {
-    internal class ProxyConnection : TcpTransportConnection
+    internal class ProxyTcpConnection : TcpTransportConnection
     {
-        private static readonly ILog Logger = LogManager.GetLogger(typeof(ProxyConnection));
+        private static readonly ILog Logger = LogManager.GetLogger(typeof(ProxyTcpConnection));
 
         private readonly Thread _proxyReverseThread;
-
         private readonly TcpClient _tcpClient;
 
-        internal ProxyConnection(TcpClient client, ITcpOverUdptSocket socket) : base(socket)
+        internal ProxyTcpConnection(TcpClient client, ITcpOverUdptSocket socket)
+            : base(socket)
         {
             _tcpClient = client;
-            _proxyReverseThread = new Thread(StartProxyTransportWriter) { IsBackground = true };
+            _proxyReverseThread = new Thread(ProxyTransportWriter) { IsBackground = true };
             _proxyReverseThread.Name = "_proxyReverseThread[" + _proxyReverseThread.ManagedThreadId + "]";
         }
 
@@ -28,7 +28,7 @@ namespace BlitsMe.Communication.P2P.RUDP.Connector
             _proxyReverseThread.Start();
         }
 
-        protected override void _Close(bool initiatedBySelf)
+        protected override void _Close()
         {
 #if(DEBUG)
             Logger.Debug("Closing proxied connection components");
@@ -53,7 +53,11 @@ namespace BlitsMe.Communication.P2P.RUDP.Connector
         {
             if (_tcpClient.Connected)
             {
+
                 _tcpClient.GetStream().Write(read, 0, read.Length);
+#if(DEBUG)
+                Logger.Debug("Wrote " + read.Length + " to tcp socket.");
+#endif
             }
             else
             {
@@ -65,14 +69,14 @@ namespace BlitsMe.Communication.P2P.RUDP.Connector
             return true;
         }
 
-        private void StartProxyTransportWriter()
+        private void ProxyTransportWriter()
         {
             try
             {
                 int read = -1;
                 while (read != 0)
                 {
-                    byte[] tmpRead = new byte[8192];
+                    byte[] tmpRead = new byte[16384];
                     read = _tcpClient.GetStream().Read(tmpRead, 0, tmpRead.Length);
                     if (read > 0)
                     {
@@ -86,6 +90,7 @@ namespace BlitsMe.Communication.P2P.RUDP.Connector
                         catch (Exception e)
                         {
                             Logger.Error("Sending to transport failed, shutting down ProxyTransportWriter");
+                            break;
                         }
                     }
 #if(DEBUG)
@@ -104,7 +109,7 @@ namespace BlitsMe.Communication.P2P.RUDP.Connector
             {
                 try
                 {
-                    this.Close(true);
+                    Close();
                 }
                 catch (Exception e)
                 {

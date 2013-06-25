@@ -21,7 +21,7 @@ namespace BlitsMe.Agent.Components.Functions.FileSend.Processors
             FileSendRequestResponseRs response = new FileSendRequestResponseRs();
             try
             {
-                ((Function)engagement.getFunction("FileSend")).ProcessFileSendRequestResponse(request.accepted,request.fileSendId);
+                ((Function)engagement.GetFunction("FileSend")).ProcessFileSendRequestResponse(request.accepted,request.fileSendId);
             }
             catch (Exception e)
             {

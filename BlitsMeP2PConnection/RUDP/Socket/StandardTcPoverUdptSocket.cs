@@ -48,9 +48,10 @@ namespace BlitsMe.Communication.P2P.RUDP.Socket
 
         public int BufferClientData(byte[] data)
         {
-            if (_clientBuffer.Count == BufferSize)
+            while (_clientBuffer.Count == BufferSize)
             {
-                throw new BufferOverrunException("Socket buffer is full, cannot process more data");
+                Logger.Warn("Not enough space in the buffer, waiting for space to become available");
+                Thread.Sleep(50);
             }
             lock (_dataReady)
             {
@@ -81,7 +82,7 @@ namespace BlitsMe.Communication.P2P.RUDP.Socket
                     int queueElements = _clientBuffer.Count;
                     int counter = 0;
                     // Read off until we finish the known queue or maxRead is reached
-                    while (counter < queueElements && readData < maxRead)
+                    while (counter < queueElements && readData < maxRead && !Closed)
                     {
                         // we will only be processing the queue if the working buffer is empty. So lets pull the first element 
                         // into it for use
@@ -98,6 +99,10 @@ namespace BlitsMe.Communication.P2P.RUDP.Socket
                         }
                     }
                 }
+            }
+            if(Closed)
+            {
+                throw new ObjectDisposedException("Socket has been closed");
             }
             return readData;
         }
@@ -123,6 +128,7 @@ namespace BlitsMe.Communication.P2P.RUDP.Socket
                 readData += _workingBuffer.Length;
                 _workingBuffer = null;
             }
+            //Logger.Debug("Read " + readData + " bytes");
             return readData;
         }
 

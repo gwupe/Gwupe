@@ -136,5 +136,11 @@ namespace BlitsMe.Agent.Managers
             if (handler != null) handler(this, e);
         }
 
+        public void Reset()
+        {
+            Logger.Debug("Resetting Current User Manager, clearing current user and presence");
+            _currentUser = null;
+            _currentUserPresence = null;
+        }
     }
 }

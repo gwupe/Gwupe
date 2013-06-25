@@ -32,7 +32,7 @@ namespace BlitsMe.Agent.UI.WPF.Engage
         private static readonly ILog Logger = LogManager.GetLogger(typeof(EngagementWindow));
         private readonly CollectionViewSource _notificationView;
         private readonly EngagementWindowDataContext _ewDataContext;
-        private Alert thisAlert;
+        private Alert _thisAlert;
 
         internal EngagementWindow(BlitsMeClientAppContext appContext, DispatchingCollection<ObservableCollection<Notification>, Notification> notificationList, Engagement engagement)
         {
@@ -42,8 +42,8 @@ namespace BlitsMe.Agent.UI.WPF.Engage
             engagement.PropertyChanged += EngagementOnPropertyChanged;
             try
             {
-                ((Components.Functions.RemoteDesktop.Function)Engagement.getFunction("RemoteDesktop")).RDPConnectionAccepted += EngagementOnRDPConnectionAccepted;
-                ((Components.Functions.RemoteDesktop.Function)Engagement.getFunction("RemoteDesktop")).RDPConnectionClosed += EngagementOnRDPConnectionClosed;
+                ((Components.Functions.RemoteDesktop.Function)Engagement.GetFunction("RemoteDesktop")).RDPConnectionAccepted += EngagementOnRDPConnectionAccepted;
+                ((Components.Functions.RemoteDesktop.Function)Engagement.GetFunction("RemoteDesktop")).RDPConnectionClosed += EngagementOnRDPConnectionClosed;
             }
             catch (Exception e)
             {
@@ -63,7 +63,7 @@ namespace BlitsMe.Agent.UI.WPF.Engage
 
         private void EngagementOnRDPConnectionClosed(object sender, EventArgs eventArgs)
         {
-            _appContext.NotificationManager.DeleteAlert(thisAlert);
+            _appContext.NotificationManager.DeleteAlert(_thisAlert);
             if (Dispatcher.CheckAccess())
             {
                 MainLayout.Background = new SolidColorBrush(Color.FromArgb(255, 43, 81, 155));
@@ -86,8 +86,8 @@ namespace BlitsMe.Agent.UI.WPF.Engage
         private void EngagementOnRDPConnectionAccepted(object sender, EventArgs eventArgs)
         {
 
-            thisAlert = new Alert() { Message = Engagement.SecondParty.Firstname + " is Connected" };
-            _appContext.NotificationManager.AddAlert(thisAlert);
+            _thisAlert = new Alert() { Message = Engagement.SecondParty.Firstname + " is Connected" };
+            _appContext.NotificationManager.AddAlert(_thisAlert);
             if (Dispatcher.CheckAccess())
             {
                 MainLayout.Background = new SolidColorBrush(Colors.Red);
@@ -177,7 +177,7 @@ namespace BlitsMe.Agent.UI.WPF.Engage
             if (result == true)
             {
                 string filename = fileDialog.FileName;
-                ((Components.Functions.FileSend.Function)Engagement.getFunction("FileSend")).RequestFileSend(filename);
+                ((Components.Functions.FileSend.Function)Engagement.GetFunction("FileSend")).RequestFileSend(filename);
             }
         }
 
@@ -187,7 +187,7 @@ namespace BlitsMe.Agent.UI.WPF.Engage
             
             try
             {
-                ((Components.Functions.RemoteDesktop.Function)Engagement.getFunction("RemoteDesktop")).RequestRDPSession();
+                ((Components.Functions.RemoteDesktop.Function)Engagement.GetFunction("RemoteDesktop")).RequestRDPSession();
             }
             catch (Exception ex)
             {
@@ -238,7 +238,7 @@ namespace BlitsMe.Agent.UI.WPF.Engage
 
         private void KickOffButton_Click(object sender, System.Windows.RoutedEventArgs e)
         {
-        	Thread thread = new Thread(((Components.Functions.RemoteDesktop.Function)Engagement.getFunction("RemoteDesktop")).Server.Close)
+        	Thread thread = new Thread(((Components.Functions.RemoteDesktop.Function)Engagement.GetFunction("RemoteDesktop")).Server.Close)
         	    {IsBackground = true};
             thread.Start();
         }

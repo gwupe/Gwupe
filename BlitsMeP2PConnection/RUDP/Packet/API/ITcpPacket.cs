@@ -10,8 +10,9 @@ namespace BlitsMe.Communication.P2P.RUDP.Packet.API
     {
         ushort Sequence { get; }
         byte Type { get; }
-        byte ResendCount { get; }
+        byte ResendCount { get; set; }
         byte ConnectionId { get; }
-
+        // won't be part of the bytes, just useful to timestamp packets for various reasons
+        long Timestamp { get; set; }
     }
 }

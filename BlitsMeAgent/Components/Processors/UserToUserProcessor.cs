@@ -41,6 +41,7 @@ namespace BlitsMe.Agent.Components.Processors
             {
                 try
                 {
+                    engagement.SecondParty.ShortCode = request.shortCode;
                     response = ProcessWithEngagement(engagement, request);
                     response.shortCode = engagement.SecondParty.ShortCode;
                     response.username = engagement.SecondParty.Username;

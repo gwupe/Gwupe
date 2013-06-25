@@ -10,6 +10,7 @@ namespace BlitsMe.Agent.Components.Functions.RemoteDesktop
     {
         private ProxyTcpTransportListener _vncListener;
         private readonly ITransportManager _transportManager;
+        internal bool Closing { get; private set; }
 #if DEBUG
         private const int VNCPort = 10231;
 #else
@@ -36,7 +37,7 @@ namespace BlitsMe.Agent.Components.Functions.RemoteDesktop
 
         private void VNCListenerOnConnectionClosed(object sender, NamedConnectionEventArgs namedConnectionEventArgs)
         {
-            OnConnectionClosed();
+            Close();
         }
 
         private void VNCListenerOnConnectionAccepted(object sender, NamedConnectionEventArgs namedConnectionEventArgs)
@@ -51,25 +52,38 @@ namespace BlitsMe.Agent.Components.Functions.RemoteDesktop
             _transportManager = manager;
         }
 
-        public bool Started
+        public bool Listening
         {
-            get { return _vncListener != null; }
+            get { return _vncListener != null && _vncListener.Listening; }
         }
 
-        internal void Start()
+        public bool Established
         {
+            get { return _vncListener != null && _vncListener.HasConnections; }
+        }
+
+        internal void Listen()
+        {
+            // A proxy transport listener listens on the TM @ the named port, if it receives a connection there, it forwards all traffic to the
+            // IP endpoint specified in the constructor
             _vncListener = new ProxyTcpTransportListener("RDP", new IPEndPoint(IPAddress.Loopback, VNCPort), _transportManager);
             _vncListener.ConnectionAccepted += VNCListenerOnConnectionAccepted;
             _vncListener.ConnectionClosed += VNCListenerOnConnectionClosed;
             _vncListener.ListenOnce();
         }
 
-
+        // This is called by the RDP Function, so stop listening and terminate connections
         internal void Close()
         {
-            if (Started)
+            if (!Closing)
             {
-                _vncListener.Close();
+                Closing = true;
+                if (_vncListener != null)
+                {
+                    _vncListener.Close();
+                }
+                OnConnectionClosed();
+                _vncListener = null;
             }
         }
     }

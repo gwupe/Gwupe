@@ -13,9 +13,9 @@ using BlitsMe.Communication.P2P.RUDP.Socket.API;
 
 namespace BlitsMe.Communication.P2P.RUDP.Connector
 {
-    public class ProxyTcpConnector : API.INamedConnector
+    public class ProxyFromTcpConnector : API.INamedConnector
     {
-        private static readonly ILog logger = LogManager.GetLogger(typeof(ProxyTcpConnector));
+        private static readonly ILog logger = LogManager.GetLogger(typeof(ProxyFromTcpConnector));
         private System.Net.Sockets.TcpListener _listener;
         private Thread _listenThread;
         private readonly ITransportManager _transportManager;
@@ -25,7 +25,7 @@ namespace BlitsMe.Communication.P2P.RUDP.Connector
         {
             get { return (IPEndPoint)_listener.LocalEndpoint; }
         }
-        private readonly List<ProxyConnection> _openConnections;
+        private readonly List<ProxyTcpConnection> _openConnections;
         public string Name { get; private set; }
 
         #region Event Handling
@@ -69,11 +69,11 @@ namespace BlitsMe.Communication.P2P.RUDP.Connector
 
         #endregion
 
-        public ProxyTcpConnector(String name, ITransportManager transportManager)
+        public ProxyFromTcpConnector(String name, ITransportManager transportManager)
         {
             this.Name = name;
             this._transportManager = transportManager;
-            _openConnections = new List<ProxyConnection>();
+            _openConnections = new List<ProxyTcpConnection>();
         }
 
         #region Normal TCP Listening Functionality
@@ -108,7 +108,7 @@ namespace BlitsMe.Communication.P2P.RUDP.Connector
 #if DEBUG
                 logger.Debug("Started listening TCP connector on port " + ListenerEndpoint.Port + " for connections");
 #endif
-                _listenThread = new Thread(new ThreadStart(listenerMethod)) { IsBackground = true, Name = "_realTCPlistenThread[" + Name + "]"};
+                _listenThread = new Thread(new ThreadStart(listenerMethod)) { IsBackground = true, Name = "_realTCPlistenThread[" + Name + "]" };
                 _listenThread.Start();
                 return ((IPEndPoint)_listener.LocalEndpoint).Port;
             }
@@ -181,10 +181,10 @@ namespace BlitsMe.Communication.P2P.RUDP.Connector
             {
                 ITcpOverUdptSocket socket = _transportManager.TCPTransport.OpenConnection(Name);
                 OnConnectionAccepted();
-                ProxyConnection proxyConnection = new ProxyConnection(client, socket);
-                proxyConnection.Closed += ProxyConnectionOnClosed;
-                proxyConnection.Start();
-                _openConnections.Add(proxyConnection);
+                ProxyTcpConnection proxyTcpConnection = new ProxyTcpConnection(client, socket);
+                proxyTcpConnection.Closed += delegate(object sender, EventArgs args) { ProxyConnectionOnClosed(proxyTcpConnection); };
+                proxyTcpConnection.Start();
+                _openConnections.Add(proxyTcpConnection);
             }
             catch (Exception e)
             {
@@ -193,8 +193,12 @@ namespace BlitsMe.Communication.P2P.RUDP.Connector
             }
         }
 
-        private void ProxyConnectionOnClosed(object sender, EventArgs eventArgs)
+        private void ProxyConnectionOnClosed(ProxyTcpConnection connection)
         {
+            if(_openConnections.Contains(connection))
+            {
+                _openConnections.Remove(connection);
+            }
             OnConnectionClosed();
         }
 
@@ -203,16 +207,22 @@ namespace BlitsMe.Communication.P2P.RUDP.Connector
 
         public void Close()
         {
-            StopListening();
-#if DEBUG
-            logger.Debug("Closing all active connections for named connection " + Name);
-#endif
-            foreach (ProxyConnection proxyConnection in _openConnections)
+            if (!Closing)
             {
-                proxyConnection.Close();
+                Closing = true;
+                StopListening();
+#if DEBUG
+                logger.Debug("Closing all active connections for named connection " + Name);
+#endif
+                while(_openConnections != null && _openConnections.Count > 0)
+                {
+                    var proxyConnection = _openConnections[0];
+                    _openConnections.RemoveAt(0);
+                    proxyConnection.Close();
+                }
             }
-            _openConnections.Clear();
         }
 
+        public bool Closing { get; private set; }
     }
 }

@@ -22,7 +22,7 @@ namespace BlitsMe.Agent.Components.Functions.RemoteDesktop.Processors
             RDPRequestResponseRs response = new RDPRequestResponseRs();
             try
             {
-                ((Function)engagement.getFunction("RemoteDesktop")).ProcessRemoteDesktopRequestResponse(request);
+                ((Function)engagement.GetFunction("RemoteDesktop")).ProcessRemoteDesktopRequestResponse(request);
             }
             catch (Exception e)
             {

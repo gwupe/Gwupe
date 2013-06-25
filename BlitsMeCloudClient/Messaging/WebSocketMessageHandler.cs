@@ -41,7 +41,7 @@ namespace BlitsMe.Cloud.Messaging
         public void onOpen(WebSocketConnection aConnection)
         {
             this._connection = aConnection;
-            Logger.Debug("Client : Received connection [" + aConnection + "]");
+            Logger.Debug("Client : Made connection [" + aConnection.Client.Client.RemoteEndPoint + "]");
         }
 
         public void onMessage(WebSocketConnection connection, bool final, bool res1, bool res2, bool res3, int code, MemoryStream data)

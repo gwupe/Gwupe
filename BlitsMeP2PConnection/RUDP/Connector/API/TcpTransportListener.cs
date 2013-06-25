@@ -1,12 +1,11 @@
 using System;
 using System.Collections.Generic;
 using BlitsMe.Communication.P2P.Exceptions;
-using BlitsMe.Communication.P2P.RUDP.Connector.API;
 using BlitsMe.Communication.P2P.RUDP.Socket.API;
 using BlitsMe.Communication.P2P.RUDP.Tunnel.API;
 using log4net;
 
-namespace BlitsMe.Communication.P2P.RUDP.Connector
+namespace BlitsMe.Communication.P2P.RUDP.Connector.API
 {
     //public delegate TcpTransportConnection ProcessConnect(ITcpOverUdptSocket socket);
 
@@ -19,7 +18,6 @@ namespace BlitsMe.Communication.P2P.RUDP.Connector
         private readonly ITransportManager _transportManager;
         private readonly List<TcpTransportConnection> _openConnections;
         public bool Closing { get; private set; }
-        //protected ProcessConnect ProcessConnect { get; set; }
 
         public TcpTransportListener(String name, ITransportManager transportManager)
         {
@@ -68,16 +66,26 @@ namespace BlitsMe.Communication.P2P.RUDP.Connector
 
         public void Close()
         {
-            Closing = true;
-            StopListening();
+            if (!Closing)
+            {
+                Closing = true;
+                StopListening();
+                CloseConnections();
+            }
+        }
+
+        private void CloseConnections()
+        {
 #if DEBUG
             Logger.Debug("Stopping all active connections from named connection " + Name);
 #endif
-            foreach (TcpTransportConnection openConnection in _openConnections)
+            // This is necessary because of the event which will try remove the conn from the list (here it won't find it)
+            while(_openConnections != null && _openConnections.Count > 0)
             {
-                openConnection.Close();
+                var conn = _openConnections[0];
+                _openConnections.Remove(conn);
+                conn.Close();
             }
-            _openConnections.Clear();
         }
 
         #endregion
@@ -101,13 +109,10 @@ namespace BlitsMe.Communication.P2P.RUDP.Connector
 
         private void TcpConnectionOnClosed(object sender, EventArgs eventArgs)
         {
-            if (!Closing)
+            var proxyConnect = sender as TcpTransportConnection;
+            if (_openConnections.Contains(proxyConnect))
             {
-                var proxyConnect = sender as TcpTransportConnection;
-                if (_openConnections.Contains(proxyConnect))
-                {
-                    _openConnections.Remove(proxyConnect);
-                }
+                _openConnections.Remove(proxyConnect);
             }
             OnConnectionClosed();
         }

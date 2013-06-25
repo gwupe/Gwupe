@@ -64,11 +64,11 @@ namespace BlitsMe.Agent.Components.Functions.RemoteDesktop
         {
             bool bExists = false;
             // Loop through existing notifications to see if we already have a remote desktop request
-            // from the SecondParty. If the .From and Type of the notification mathc the SecondParty.UserName
+            // from the SecondParty. If the .From and Type of the notification match the SecondParty.UserName
             // and RDPNotification type
             foreach (TrueFalseNotification n in _appContext.NotificationManager.Notifications)
             {
-                if (n.AssociatedUsername == _engagement.SecondParty.Username && n.GetType() == typeof(RDPNotification))
+                if (n.AssociatedUsername == _engagement.SecondParty.Username && n is RDPNotification)
                 {
                     // if the notification exists set flag.
                     bExists = true;
@@ -76,8 +76,9 @@ namespace BlitsMe.Agent.Components.Functions.RemoteDesktop
             }
             // only process this notification if they don't already exist AND 
             // we are not currently in a remote session
-            if (!bExists && !Server.Started)
+            if (!bExists && !Server.Listening && !Server.Established)
             {
+                IsActive = true;
                 // Set the shortcode, to make sure we connect to the right caller.
                 _engagement.SecondParty.ShortCode = shortCode;
                 RDPNotification rdpNotification = new RDPNotification()
@@ -94,6 +95,7 @@ namespace BlitsMe.Agent.Components.Functions.RemoteDesktop
             }
         }
 
+        // Called when the users accepts or denies
         private void ProcessAnswer(bool accept)
         {
             if (accept)
@@ -104,7 +106,7 @@ namespace BlitsMe.Agent.Components.Functions.RemoteDesktop
                 {
                     if (_appContext.BlitsMeServiceProxy.VNCStartService())
                     {
-                        Server.Start();
+                        Server.Listen();
                     }
                     else
                     {
@@ -124,7 +126,7 @@ namespace BlitsMe.Agent.Components.Functions.RemoteDesktop
                 try
                 {
                     _appContext.ConnectionManager.Connection.RequestAsync<RDPRequestResponseRq, RDPRequestResponseRs>(
-                        request, delegate { });
+                        request, RDPRequestAcceptResponseHandler);
                 }
                 catch (Exception e)
                 {
@@ -137,13 +139,19 @@ namespace BlitsMe.Agent.Components.Functions.RemoteDesktop
                 RDPRequestResponseRq request = new RDPRequestResponseRq() { accepted = false, shortCode = _engagement.SecondParty.ShortCode, username = _engagement.SecondParty.Username };
                 try
                 {
-                    _appContext.ConnectionManager.Connection.RequestAsync<RDPRequestResponseRq, RDPRequestResponseRs>(request, delegate { });
+                    _appContext.ConnectionManager.Connection.RequestAsync<RDPRequestResponseRq, RDPRequestResponseRs>(request, delegate
+                        { IsActive = false; });
                 }
                 catch (Exception e)
                 {
                     Logger.Error("Failed to send a RDP denial request to " + _engagement.SecondParty.Username, e);
                 }
             }
+        }
+
+        private void RDPRequestAcceptResponseHandler(RDPRequestResponseRq rdpRequestResponseRq, RDPRequestResponseRs rdpRequestResponseRs, Exception e)
+        {
+            IsActive = e == null;
         }
 
         private Client _client;
@@ -166,21 +174,24 @@ namespace BlitsMe.Agent.Components.Functions.RemoteDesktop
             }
         }
 
+        // Client disconnected or we kicked him off muhahaha!
         private void ServerOnConnectionClosed(object sender, EventArgs eventArgs)
         {
+            IsActive = false;
 #if DEBUG
             Logger.Debug("Server connection closed, notifying end of service.");
 #endif
             _engagement.Chat.LogServiceCompleteMessage("You were just helped by " + _engagement.SecondParty.Name + ", please rate his service below.");
         }
 
+        // Called When we send a rdp request
         internal void RequestRDPSession()
         {
             // Added: JH 2013-04-26
             // _bmssHandle stores the process information of the launched bmss process
             // if that is null - no session is in progress otherwise check that window is open and that its title contains BlitsMe
             
-            if (_bmssHandle != null && IsWindow(_bmssHandle.MainWindowHandle) && _bmssHandle.MainWindowTitle.Contains("BlitsMe")) 
+            if (_bmssHandle != null && !_bmssHandle.HasExited && IsWindow(_bmssHandle.MainWindowHandle) && _bmssHandle.MainWindowTitle.Contains("BlitsMe")) 
             {
                 // First call SwitchToThisWindow to unminimize it if it is minimized
                 SwitchToThisWindow(_bmssHandle.MainWindowHandle, true);
@@ -204,15 +215,18 @@ namespace BlitsMe.Agent.Components.Functions.RemoteDesktop
             }
         }
 
+        // Async callback to a RDP Request
         private void ProcessRequestRDPSessionResponse(RDPRequestRq request, RDPRequestRs response, Exception e, ChatElement chatElement)
         {
             if (e != null)
             {
+                IsActive = false;
                 Logger.Error("Received a async response to " + request.id + " that is an error", e);
                 chatElement.DeliveryState = ChatDeliveryState.Failed;
             }
             else
             {
+                IsActive = true;
                 chatElement.DeliveryState = ChatDeliveryState.Delivered;
             }
         }
@@ -221,10 +235,12 @@ namespace BlitsMe.Agent.Components.Functions.RemoteDesktop
         {
             if (request.accepted)
             {
+                IsActive = true;
                 _engagement.Chat.LogSystemMessage(_engagement.SecondParty.Name + " accepted your remote assistance request.");
                 try
                 {
                     int port = Client.Start();
+                    Client.ConnectionClosed += ClientOnConnectionClosed;
                     String viewerExe = System.IO.Path.GetDirectoryName(Environment.GetCommandLineArgs()[0]) +
                                        "\\bmss.exe";
                     Logger.Debug("Checking the following location for the exe " + viewerExe);
@@ -233,14 +249,56 @@ namespace BlitsMe.Agent.Components.Functions.RemoteDesktop
                 }
                 catch (Exception e)
                 {
+                    IsActive = false;
                     Logger.Error("Failed to start RDP client : " + e.Message, e);
                     throw e;
                 }
             }
             else
             {
+                IsActive = false;
                 _engagement.Chat.LogSystemMessage(_engagement.SecondParty.Name + " did not accept your remote assistance request.");
             }
+        }
+
+        private void ClientOnConnectionClosed(object sender, EventArgs eventArgs)
+        {
+            Logger.Debug("Client closed its connection");
+            IsActive = false;
+        }
+
+        private bool _isActive;
+        public bool IsActive
+        {
+            get { return _isActive; }
+            private set
+            {
+                if (_isActive != value)
+                {
+                    Logger.Debug("RDPFunction is now " + (value ? "Active" : "Inactive"));
+                    _isActive = value;
+                    if (value)
+                        OnActivate(EventArgs.Empty);
+                    else
+                        OnDeactivate(EventArgs.Empty);
+                }
+            }
+        }
+
+        public event EventHandler Activate;
+
+        public void OnActivate(EventArgs e)
+        {
+            EventHandler handler = Activate;
+            if (handler != null) handler(this, e);
+        }
+
+        public event EventHandler Deactivate;
+
+        public void OnDeactivate(EventArgs e)
+        {
+            EventHandler handler = Deactivate;
+            if (handler != null) handler(this, e);
         }
     }
 }

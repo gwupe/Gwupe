@@ -19,6 +19,7 @@ namespace BlitsMe.Communication.P2P.RUDP.Connector.API
         private readonly ITcpOverUdptSocket _socket;
 
         internal bool Started { get; private set; }
+        internal bool Closing { get; private set; }
         internal event EventHandler Closed;
 
         private void OnClosed()
@@ -30,7 +31,7 @@ namespace BlitsMe.Communication.P2P.RUDP.Connector.API
         internal TcpTransportConnection(ITcpOverUdptSocket socket)
         {
             _socket = socket;
-            _transportReaderThread = new Thread(StartTransportReader) { IsBackground = true };
+            _transportReaderThread = new Thread(TransportReader) { IsBackground = true };
             _transportReaderThread.Name = "_transportReaderThread[" + _transportReaderThread.ManagedThreadId + "]";
         }
 
@@ -43,35 +44,29 @@ namespace BlitsMe.Communication.P2P.RUDP.Connector.API
             Started = true;
         }
 
+        protected abstract void _Close();
+
         public void Close()
         {
-            Close(false);
-        }
-
-        protected abstract void _Close(bool initiatedBySelf);
-
-        internal void Close(bool initiatedBySelf)
-        {
-#if(DEBUG)
-            Logger.Debug("Closing tcp connection components");
-#endif
-            if (!_socket.Closed)
+            if (!Closing && Started)
             {
+                Closing = true;
+                _Close();
+#if(DEBUG)
+                Logger.Debug("Closing tcp connection components");
+#endif
 #if(DEBUG)
                 Logger.Debug("Closing Socket");
 #endif
                 _socket.Close();
-            }
-            if (_transportReaderThread.IsAlive && !_transportReaderThread.Equals(Thread.CurrentThread))
-            {
+                // Only abort the thread if we are not it.
+                if (_transportReaderThread.IsAlive && !_transportReaderThread.Equals(Thread.CurrentThread))
+                {
 #if(DEBUG)
-                Logger.Debug("Shutting of forward proxy thread.");
+                    Logger.Debug("Shutting of forward proxy thread.");
 #endif
-                _transportReaderThread.Abort();
-            }
-            _Close(initiatedBySelf);
-            if (Started)
-            {
+                    _transportReaderThread.Abort();
+                }
                 Started = false;
                 OnClosed();
             }
@@ -79,23 +74,32 @@ namespace BlitsMe.Communication.P2P.RUDP.Connector.API
 
         protected abstract bool ProcessTransportRead(byte[] data);
 
-        private void StartTransportReader()
+        private void TransportReader()
         {
             try
             {
                 int read = -1;
-                while (read != 0)
+                while (true)
                 {
                     byte[] tmpRead = new byte[8192];
-                    read = _socket.Read(tmpRead, tmpRead.Length);
+                    try
+                    {
+                        read = _socket.Read(tmpRead, tmpRead.Length);
+                    }
+                    catch (ObjectDisposedException e)
+                    {
+                        Logger.Info("Connection has been closed");
+                        break;
+                    }
                     if (read > 0)
                     {
 #if(DEBUG)
-                        Logger.Debug("Read " + read + " bytes from tcp layer socket, writing to upstream handler [md5=" + Util.getSingleton().getMD5Hash(tmpRead, 0, read) + "]");
+                        Logger.Debug("Read " + read + " bytes from tcp layer socket, writing to upstream handler [md5=" +
+                                     Util.getSingleton().getMD5Hash(tmpRead, 0, read) + "]");
 #endif
                         try
                         {
-                            if(read < 8192)
+                            if (read < 8192)
                             {
                                 var data = new byte[read];
                                 Array.Copy(tmpRead, data, read);
@@ -105,16 +109,12 @@ namespace BlitsMe.Communication.P2P.RUDP.Connector.API
                         }
                         catch (Exception e)
                         {
-                            Logger.Error("Processing a read from the transportManager failed, shutting down TcpConnection");
+                            Logger.Error(
+                                "Processing a read from the transportManager failed, shutting down TcpConnection");
                             break;
                         }
                     }
-                    else
-                    {
-#if(DEBUG)
-                        Logger.Error("Incoming transportManager socket has closed");
-#endif
-                    }
+
                 }
             }
             catch (Exception ex)
@@ -125,7 +125,7 @@ namespace BlitsMe.Communication.P2P.RUDP.Connector.API
             {
                 try
                 {
-                    this.Close(true);
+                    this.Close();
                 }
                 catch (Exception e)
                 {
@@ -143,15 +143,22 @@ namespace BlitsMe.Communication.P2P.RUDP.Connector.API
 
         public bool SendDataToTransport(byte[] write)
         {
-            if (!_socket.Closed)
+            if (!Closing)
             {
-                _socket.Send(write, 30000);
-            }
-            else
-            {
+                if (!_socket.Closed)
+                {
+                    _socket.Send(write, 30000);
+                }
+                else
+                {
 #if(DEBUG)
-                Logger.Debug("Outgoing transportManager socket has been closed");
+                    Logger.Debug("Outgoing transportManager socket has been closed");
 #endif
+                    return false;
+                }
+            } else
+            {
+                Logger.Debug("Cannot write data to Transport, connection is closing");
                 return false;
             }
             return true;

@@ -69,6 +69,7 @@ namespace BlitsMe.Agent.Managers
 
         public void Reset()
         {
+            Logger.Debug("Resetting Engagement Manager, clearing engagements");
             foreach (Engagement engagement in Engagements)
             {
                 engagement.Close();

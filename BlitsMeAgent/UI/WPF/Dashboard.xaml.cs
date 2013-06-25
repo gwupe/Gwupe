@@ -28,10 +28,10 @@ namespace BlitsMe.Agent.UI.WPF
         private readonly BlitsMeClientAppContext _appContext;
 
         // Observable mirror for engagements as engagement windows
-        private readonly EngagementWindowList _engagementWindows;
+        private EngagementWindowList _engagementWindows;
         // Observable mirror for Persons as RosterElements
-        private readonly RosterList _rosterList;
-        private readonly CollectionViewSource _notificationView;
+        private RosterList _rosterList;
+        private CollectionViewSource _notificationView;
         // Dispatching collection for notifications (to be used by everything)
         internal DispatchingCollection<ObservableCollection<Notification>, Notification> NotificationList { get; set; }
         internal DispatchingCollection<ObservableCollection<Alert>, Alert> AlertList { get; set; } 
@@ -45,24 +45,20 @@ namespace BlitsMe.Agent.UI.WPF
         {
             this.InitializeComponent();
             this._appContext = appContext;
-            // Handle the notifications
-            NotificationList = new DispatchingCollection<ObservableCollection<Notification>, Notification>(_appContext.NotificationManager.Notifications, Dispatcher);
-            _notificationView = new CollectionViewSource { Source = NotificationList };
-            _notificationView.Filter += NotificationFilter;
-            Notifications.ItemsSource = _notificationView.View;
-            AlertList = new DispatchingCollection<ObservableCollection<Alert>, Alert>(_appContext.NotificationManager.Alerts, Dispatcher);
-            Alerts.ItemsSource = AlertList;
-            _appContext.NotificationManager.Notifications.CollectionChanged += NotificationsOnCollectionChanged;
+            SetupNotificationHandler();
+            SetupRoster();
             // Setup the various data contexts and sources
-            _rosterList = new RosterList(_appContext, Dispatcher);
-            _rosterList.SetList(_appContext.RosterManager.ServicePersonList, "Username");
-            Team.LostFocus += Team_LostFocus;
-            Team.DataContext = _rosterList.RosterViewSource;
             DashboardData = new DashboardDataContext();
             DataContext = DashboardData;
             SetupCurrentUserListener();
             _appContext.CurrentUserManager.CurrentUserChanged += delegate { SetupCurrentUserListener(); };
-            // Setup the engagementWindow list as a mirror of the engagements
+            SetupEngagementWindows();
+            Logger.Info("Dashboard setup completed");
+        }
+
+        private void SetupEngagementWindows()
+        {
+// Setup the engagementWindow list as a mirror of the engagements
             _engagementWindows = new EngagementWindowList(_appContext, NotificationList, Dispatcher);
             try
             {
@@ -73,12 +69,41 @@ namespace BlitsMe.Agent.UI.WPF
                 Logger.Error("Failed to set the list : " + e.Message, e);
             }
             _appContext.EngagementManager.NewActivity += EngagementManagerOnNewActivity;
-            Logger.Info("Dashboard setup completed");
+        }
+
+        private void SetupRoster()
+        {
+            _rosterList = new RosterList(_appContext, Dispatcher);
+            _rosterList.SetList(_appContext.RosterManager.ServicePersonList, "Username");
+            Team.LostFocus += Team_LostFocus;
+            Team.DataContext = _rosterList.RosterViewSource;
+        }
+
+        private void SetupNotificationHandler()
+        {
+            // Handle the notifications
+            NotificationList =
+                new DispatchingCollection<ObservableCollection<Notification>, Notification>(
+                    _appContext.NotificationManager.Notifications, Dispatcher);
+            _notificationView = new CollectionViewSource {Source = NotificationList};
+            _notificationView.Filter += NotificationFilter;
+            Notifications.ItemsSource = _notificationView.View;
+            AlertList = new DispatchingCollection<ObservableCollection<Alert>, Alert>(_appContext.NotificationManager.Alerts,
+                                                                                      Dispatcher);
+            Alerts.ItemsSource = AlertList;
+            _appContext.NotificationManager.Notifications.CollectionChanged += NotificationsOnCollectionChanged;
         }
 
         internal void Reset()
         {
-            ActiveContent.Content = null;
+            if (!Dispatcher.CheckAccess())
+                Dispatcher.Invoke(new Action(Reset));
+            else
+            {
+                ActiveContent.Content = null;
+                SearchBox.Text = "Search";
+                _searchWindow = null;
+            }
         }
 
         private void SetupCurrentUserListener()

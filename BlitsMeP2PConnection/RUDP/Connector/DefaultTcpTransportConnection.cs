@@ -19,7 +19,7 @@ namespace BlitsMe.Communication.P2P.RUDP.Connector
         {
         }
 
-        protected override void _Close(bool initiatedBySelf)
+        protected override void _Close()
         {
         }
 

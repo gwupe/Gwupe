@@ -10,7 +10,12 @@ namespace BlitsMe.Communication.P2P.RUDP.Tunnel.API
 {
     public interface ITcpTransportLayer : ITransportLayer
     {
-        IInternalTcpOverUdptSocket socket { get; }
+        byte ConnectionId { get; }
+        byte RemoteConnectionId { get; }
+        byte ProtocolId { get; }
+        IInternalTcpOverUdptSocket Socket { get; }
+        bool Established { get; }
+        /*
         int PacketCountReceiveAckValid { get; }
         int PacketCountReceiveAckInvalid { get; }
         int PacketCountReceiveDataFirst { get; }
@@ -19,7 +24,7 @@ namespace BlitsMe.Communication.P2P.RUDP.Tunnel.API
         int PacketCountTransmitAckResend { get; }
         int PacketCountTransmitDataFirst { get; }
         int PacketCountTransmitDataResend { get; }
-
+        */
         void ProcessDataPacket(ITcpPacket packet);
         void SendData(byte[] data, int timeout);
         void ProcessAck(StandardAckPacket packet);

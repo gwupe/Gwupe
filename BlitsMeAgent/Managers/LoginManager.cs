@@ -104,6 +104,11 @@ namespace BlitsMe.Agent.Managers
             if (!_appContext.IsShuttingDown)
             {
                 _appContext.EngagementManager.Reset();
+                _appContext.CurrentUserManager.Reset();
+                _appContext.NotificationManager.Reset();
+                _appContext.RosterManager.Reset();
+                _appContext.P2PManager.Reset();
+                _appContext.SearchManager.Reset();
                 if (_appContext.UIDashBoard != null)
                 { _appContext.UIDashBoard.Reset(); }
             }

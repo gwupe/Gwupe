@@ -12,6 +12,7 @@ using BlitsMe.Communication.P2P.RUDP.Tunnel.API;
 using BlitsMe.Communication.P2P.RUDP.Utils;
 using log4net;
 using Function = BlitsMe.Agent.Components.Functions.FileSend.Function;
+using Timer = System.Timers.Timer;
 
 namespace BlitsMe.Agent.Components
 {
@@ -35,6 +36,49 @@ namespace BlitsMe.Agent.Components
             }
         }
 
+        private readonly double _timeoutToTunnelClose = TimeSpan.FromMinutes(2).TotalMilliseconds;
+        private readonly Timer _countdownToDeactivation;
+        internal bool Active
+        {
+            get { return _active; }
+            private set
+            {
+                if (_active != value)
+                {
+                    _active = value;
+                    Logger.Debug("Engagement with " + SecondParty.Username + " has become " + (_active ? "active" : "inactive"));
+                    if (_active)
+                        OnActivate(EventArgs.Empty);
+                    else
+                        OnDeactivate(EventArgs.Empty);
+                }
+            }
+        }
+
+        public event EventHandler Activate;
+
+        public void OnActivate(EventArgs e)
+        {
+            EventHandler handler = Activate;
+            if (handler != null) handler(this, e);
+        }
+
+        public event EventHandler Deactivate;
+
+        public void OnDeactivate(EventArgs e)
+        {
+            EventHandler handler = Deactivate;
+            if (handler != null) handler(this, e);
+        }
+
+        internal bool IsChildrenActive
+        {
+            get
+            {
+                return _chat.IsActive || _functions["FileSend"].IsActive || _functions["RemoteDesktop"].IsActive;
+            }
+        }
+
         public String SecondPartyUsername { get { return SecondParty == null ? null : SecondParty.Username; } }
 
         private void SecondPartyPropertyChanged(object sender, PropertyChangedEventArgs e)
@@ -44,10 +88,10 @@ namespace BlitsMe.Agent.Components
                 // Get the endPointManager going
                 if (OutgoingTunnel != null && OutgoingTunnel.IsTunnelEstablished)
                 {
+                    // Another one will start straight away because of the tunnel disconnected event
                     OutgoingTunnel.Close();
                     OnPropertyChanged(new PropertyChangedEventArgs("OutgoingTunnel"));
-                }
-                if (_secondParty.ShortCode != null)
+                } else
                 {
                     SetupOutgoingTunnel();
                 }
@@ -76,8 +120,31 @@ namespace BlitsMe.Agent.Components
 
         public Chat.Chat Chat
         {
-            get { return _chat ?? (_chat = new Chat.Chat(_appContext, this)); }
+            get
+            {
+                if (_chat == null)
+                {
+                    _chat = new Chat.Chat(_appContext, this);
+                    // if we receive or send a message, we should get the tunnel going and also setup a countdown to deactive
+                    _chat.NewMessage += (sender, args) =>
+                    {
+                        Active = true;
+                        SuggestCountdownToDeactivation();
+                    };
+                }
+                return _chat;
+            }
             set { _chat = value; }
+        }
+
+        private void SuggestCountdownToDeactivation()
+        {
+            if(Active)
+            {
+                Logger.Debug("Starting countdown to deactivation in " + _timeoutToTunnelClose/60000 + " mins");
+                _countdownToDeactivation.Stop();
+                _countdownToDeactivation.Start();
+            }
         }
 
         private readonly Dictionary<String, IFunction> _functions;
@@ -88,26 +155,55 @@ namespace BlitsMe.Agent.Components
             // This is to pickup logouts/connection disconnections
             _appContext.LoginManager.LoggedOut += LogoutOccurred;
             SecondParty = person;
+            _countdownToDeactivation = new Timer(_timeoutToTunnelClose) {AutoReset = false};
+            _countdownToDeactivation.Elapsed += (sender, args) => CompleteDeactivation();
+            Activate += OnActivate;
+            Deactivate += OnDeactivate;
             _transportManager = new TransportManager();
-            // Kickoff a tunnel if we have a shortcode
-            if (SecondParty.ShortCode != null)
-            {
-                SetupOutgoingTunnel();
-            }
             // Setup the functions of this engagement 
-            _functions = new Dictionary<string, IFunction>();
-            _functions.Add("FileSend", new Function(_appContext, this));
-            _functions.Add("RemoteDesktop", new Functions.RemoteDesktop.Function(_appContext, this));
+            _functions = new Dictionary<string, IFunction>
+                {
+                    {"FileSend", new Function(_appContext, this)},
+                    {"RemoteDesktop", new Functions.RemoteDesktop.Function(_appContext, this)}
+                };
+            foreach (var function in _functions)
+            {
+                function.Value.Activate += (sender, args) => { Active = true; };
+                function.Value.Deactivate += (sender, args) => SuggestCountdownToDeactivation();
+            }
         }
 
-        public bool hasFunction(String function)
+        private void OnDeactivate(object sender, EventArgs eventArgs)
+        {
+            Logger.Debug("Shutting down outgoing tunnel to " + SecondParty.Username + ", deactivating engagement.");
+            DisconnectOutgoingTunnel();
+        }
+
+        private void OnActivate(object sender, EventArgs eventArgs)
+        {
+            SetupOutgoingTunnel();
+        }
+
+        private void CompleteDeactivation()
+        {
+            if (!IsChildrenActive)
+            {
+                Active = false;
+            } else
+            {
+                Logger.Warn("Cannot deativate, children are still busy, resetting timer");
+                SuggestCountdownToDeactivation();
+            }
+        }
+
+        public bool HasFunction(String function)
         {
             return _functions.ContainsKey(function);
         }
 
-        public IFunction getFunction(String function)
+        public IFunction GetFunction(String function)
         {
-            if (hasFunction(function))
+            if (HasFunction(function))
             {
                 return _functions[function];
             }
@@ -142,7 +238,7 @@ namespace BlitsMe.Agent.Components
         private void OutgoingTunnelOnDisconnected(object sender, EventArgs args)
         {
             // Attempt once to get it going again
-            if (!_appContext.IsShuttingDown)
+            if (!_closing && Active)
             {
                 SetupOutgoingTunnel();
             }
@@ -151,6 +247,10 @@ namespace BlitsMe.Agent.Components
 
 
         private IUDPTunnel _incomingTunnel;
+        private bool _active;
+        private bool _closing;
+
+
         internal IUDPTunnel IncomingTunnel
         {
             get { return _incomingTunnel; }
@@ -176,31 +276,36 @@ namespace BlitsMe.Agent.Components
 
         private void SetupOutgoingTunnel()
         {
-            if (_p2PConnectionCreatorThread == null || !_p2PConnectionCreatorThread.IsAlive)
+            if (!_closing && (SecondParty.ShortCode != null) && Active)
             {
+                if ((_p2PConnectionCreatorThread == null || !_p2PConnectionCreatorThread.IsAlive)
+                    && (_outgoingTunnel == null || !_outgoingTunnel.IsTunnelEstablished))
+                {
 #if DEBUG
-                Logger.Debug("Starting up thread to setup p2p link");
+                    Logger.Debug("Starting up thread to setup outgoing tunnel to " + SecondParty.Username);
 #endif
 
-                _p2PConnectionCreatorThread = new Thread(InitP2PConnection) { IsBackground = true };
-                _p2PConnectionCreatorThread.Name = "_p2pConnectionCreatorThread[" +
-                                                   _p2PConnectionCreatorThread.ManagedThreadId + "]";
-                _p2PConnectionCreatorThread.Start();
-            }
-            else
-            {
+                    _p2PConnectionCreatorThread = new Thread(InitP2PConnection) {IsBackground = true};
+                    _p2PConnectionCreatorThread.Name = "_p2pConnectionCreatorThread[" +
+                                                       _p2PConnectionCreatorThread.ManagedThreadId + "]";
+                    _p2PConnectionCreatorThread.Start();
+                }
+                else
+                {
 #if DEBUG
-                Logger.Debug("Will not start P2P Connection, one is currently underway");
+                    Logger.Debug("Will not start outgoing tunnel, one is currently underway");
 #endif
+                }
             }
         }
+
 
         private void InitP2PConnection()
         {
             var initRq = new InitP2PConnectionRq { shortCode = SecondParty.ShortCode };
             try
             {
-                var response = _appContext.ConnectionManager.Connection.Request<InitP2PConnectionRq,InitP2PConnectionRs>(initRq);
+                var response = _appContext.ConnectionManager.Connection.Request<InitP2PConnectionRq, InitP2PConnectionRs>(initRq);
 #if DEBUG
                 Logger.Debug("Got response from p2p connection request");
 #endif
@@ -234,15 +339,25 @@ namespace BlitsMe.Agent.Components
 
         private void DisconnectTunnels()
         {
-            if (_incomingTunnel != null && !_incomingTunnel.Closing)
-            {
-                _incomingTunnel.Close();
-                _incomingTunnel = null;
-            }
-            if (_outgoingTunnel != null && !_outgoingTunnel.Closing)
+            DisconnectIncomingTunnel();
+            DisconnectOutgoingTunnel();
+        }
+
+        private void DisconnectOutgoingTunnel()
+        {
+            if (_outgoingTunnel != null)
             {
                 _outgoingTunnel.Close();
                 _outgoingTunnel = null;
+            }
+        }
+
+        private void DisconnectIncomingTunnel()
+        {
+            if (_incomingTunnel != null)
+            {
+                _incomingTunnel.Close();
+                _incomingTunnel = null;
             }
         }
 
@@ -250,6 +365,7 @@ namespace BlitsMe.Agent.Components
 
         public void Close()
         {
+            _closing = true;
             DisconnectTunnels();
             Chat.Close();
         }

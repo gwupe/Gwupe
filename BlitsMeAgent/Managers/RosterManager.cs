@@ -17,7 +17,7 @@ namespace BlitsMe.Agent.Managers
     {
         private const int PauseOnRosterFail = 10000;
         private static readonly ILog Logger = LogManager.GetLogger(typeof(RosterManager));
-        private readonly Thread _rosterManagerThread;
+        //private readonly Thread _rosterManagerThread;
         private readonly BlitsMeClientAppContext _appContext;
         private readonly RosterRq _rosterRequest = new RosterRq();
         private bool _haveRoster;
@@ -44,8 +44,8 @@ namespace BlitsMe.Agent.Managers
 
         public void Close()
         {
-            if (_rosterManagerThread != null)
-                _rosterManagerThread.Abort();
+            //if (_rosterManagerThread != null)
+            //    _rosterManagerThread.Abort();
         }
 
         public Person GetServicePerson(String username)
@@ -96,7 +96,7 @@ namespace BlitsMe.Agent.Managers
 
         }
 
-
+/*
         private void Run()
         {
             while (true)
@@ -131,16 +131,14 @@ namespace BlitsMe.Agent.Managers
                 }
             }
         }
+*/
 
         internal void RetrieveRoster()
         {
             _haveRoster = false;
-            ServicePersonList.Clear();
-            ServicePersonLookup.Clear();
+            Reset();
             for (int attempts = 0; attempts < 3; attempts++)
             {
-
-
                 try
                 {
                     RosterRs response = _appContext.ConnectionManager.Connection.Request<RosterRq, RosterRs>(_rosterRequest);
@@ -200,6 +198,12 @@ namespace BlitsMe.Agent.Managers
                     }
                 }
             }
+        }
+
+        internal void Reset()
+        {
+            ServicePersonList.Clear();
+            ServicePersonLookup.Clear();
         }
 
         private void ResponseHandler(VCardRq vCardRq, VCardRs vCardRs, Exception e)

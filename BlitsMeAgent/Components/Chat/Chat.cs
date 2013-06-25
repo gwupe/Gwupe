@@ -34,7 +34,14 @@ namespace BlitsMe.Agent.Components.Chat
 
         // Thread which handles the sending of messages (sending is async)
         private readonly Thread _chatSender;
-        private ConcurrentQueue<ChatElement> _chatQueue;
+        private readonly ConcurrentQueue<ChatElement> _chatQueue;
+        private long _lastActivity;
+        private readonly long _activityTimeout = TimeSpan.FromMinutes(1).Ticks;
+
+        public bool IsActive
+        {
+            get { return _lastActivity + _activityTimeout > DateTime.Now.Ticks; }
+        }
 
         internal Chat(BlitsMeClientAppContext appContext, Engagement engagement)
         {
@@ -108,6 +115,7 @@ namespace BlitsMe.Agent.Components.Chat
 
         internal void ReceiveChatMessage(String message, String chatId, String shortCode)
         {
+            _lastActivity = DateTime.Now.Ticks; 
             _engagement.SecondParty.ShortCode = shortCode;
             Conversation.AddMessage(message, _to);
             // Fire the event
@@ -122,6 +130,7 @@ namespace BlitsMe.Agent.Components.Chat
 
         internal ChatElement LogSystemMessage(String message)
         {
+            _lastActivity = DateTime.Now.Ticks;
             ChatElement chatElement = Conversation.AddMessage(message, "_SYSTEM");
             // Fire the event
             OnNewMessage(new ChatEventArgs(_engagement)
@@ -135,6 +144,7 @@ namespace BlitsMe.Agent.Components.Chat
 
         internal void LogServiceCompleteMessage(String message)
         {
+            _lastActivity = DateTime.Now.Ticks;
             Conversation.AddMessage(message, "_SERVICE_COMPLETE");
             // Fire the event
             OnNewMessage(new ChatEventArgs(_engagement)
@@ -147,6 +157,7 @@ namespace BlitsMe.Agent.Components.Chat
 
         internal void SendChatMessage(String message)
         {
+            _lastActivity = DateTime.Now.Ticks;
             if (ParseSystemCommand(message)) return;
             try
             {

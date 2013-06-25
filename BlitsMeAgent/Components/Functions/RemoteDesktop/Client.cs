@@ -8,12 +8,13 @@ namespace BlitsMe.Agent.Components.Functions.RemoteDesktop
 {
     internal class Client
     {
-        private ProxyTcpConnector _connector;
+        private ProxyFromTcpConnector _connector;
         private readonly ITransportManager _transportManager;
 
         #region Event Handling
 
         public event EventHandler ConnectionClosed;
+        public bool Closing { get; private set; }
 
         protected virtual void OnConnectionClosed()
         {
@@ -32,7 +33,7 @@ namespace BlitsMe.Agent.Components.Functions.RemoteDesktop
 
         private void ConnectorOnConnectionClosed(object sender, NamedConnectionEventArgs namedConnectionEventArgs)
         {
-            OnConnectionClosed();
+            Close();
         }
 
         private void ConnectorOnConnectionAccepted(object sender, NamedConnectionEventArgs namedConnectionEventArgs)
@@ -54,7 +55,7 @@ namespace BlitsMe.Agent.Components.Functions.RemoteDesktop
 
         internal int Start()
         {
-            _connector = new ProxyTcpConnector("RDP", _transportManager);
+            _connector = new ProxyFromTcpConnector("RDP", _transportManager);
             _connector.ConnectionAccepted += ConnectorOnConnectionAccepted;
             _connector.ConnectionClosed += ConnectorOnConnectionClosed;
             return _connector.ListenOnce();
@@ -64,10 +65,16 @@ namespace BlitsMe.Agent.Components.Functions.RemoteDesktop
 
         internal void Close()
         {
-            if(Connected)
+            if (!Closing)
             {
-                _connector.Close();
+                Closing = true;
+                if (_connector != null)
+                {
+                    _connector.Close();
+                }
+                OnConnectionClosed();
             }
+            _connector = null;
         }
 
     }
