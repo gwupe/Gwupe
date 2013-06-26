@@ -19,8 +19,31 @@ namespace BlitsMe.TransportEmulator
         private static readonly ILog Logger = LogManager.GetLogger(typeof(ProxyTransportManager));
         private readonly TransportForm _transportForm;
         private readonly bool _client;
+        private bool _isActive;
         public ITCPTransport TCPTransport { get; private set; }
         public UDPTransport UDPTransport { get; private set; }
+
+        public bool IsActive
+        {
+            get { return _isActive; }
+        }
+
+        public event EventHandler Active;
+
+        public void OnActive(EventArgs e)
+        {
+            EventHandler handler = Active;
+            if (handler != null) handler(this, e);
+        }
+
+        public event EventHandler Inactive;
+
+        public void OnInactive(EventArgs e)
+        {
+            EventHandler handler = Inactive;
+            if (handler != null) handler(this, e);
+        }
+
         public ProxyTransportManager proxy;
         public Stopwatch stopwatch;
         private Random rand;
@@ -33,6 +56,8 @@ namespace BlitsMe.TransportEmulator
 
         public ProxyTransportManager(TransportForm transportForm, bool client)
         {
+            _isActive = true;
+            OnActive(EventArgs.Empty);
             stopwatch = new Stopwatch();
             _transportForm = transportForm;
             _client = client;

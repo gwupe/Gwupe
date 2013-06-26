@@ -1,6 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Management;
+using System.Net;
+using System.Net.NetworkInformation;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -17,6 +20,18 @@ namespace BlitsMe.Sandbox
 
         public Class1()
         {
+            TestWaver();
+            //RunBufferTest();
+        }
+
+        private void TestWaver()
+        {
+            //Guess2();
+            GuessLocalIp();
+        }
+
+        private void RunBufferTest()
+        {
             validate = new Queue<byte>();
             CircularBuffer<byte> buffer = new CircularBuffer<byte>(1);
 
@@ -31,7 +46,7 @@ namespace BlitsMe.Sandbox
         {
             Random rand = new Random();
             byte[] otherBuff = new byte[20];
-            while(run || buffer.Count > 0)
+            while (run || buffer.Count > 0)
             {
                 byte[] get = buffer.Get(rand.Next(19) + 1, 1000);
                 foreach (var b in get)
@@ -39,12 +54,12 @@ namespace BlitsMe.Sandbox
                     validateGet(b);
                 }
                 int count = buffer.Get(otherBuff, 1000);
-                for(int i = 0; i < count;i++)
+                for (int i = 0; i < count; i++)
                 {
                     validateGet(otherBuff[i]);
                 }
             }
-            if(validate.Count > 0)
+            if (validate.Count > 0)
             {
                 throw new Exception("Oops, " + validate.Count + " still left in the queue.");
             }
@@ -68,7 +83,7 @@ namespace BlitsMe.Sandbox
                 input = new byte[rand.Next(19) + 1];
                 rand.NextBytes(input);
                 AddToBuffer(input, buffer);
-                if(input.Length > 20)
+                if (input.Length > 20)
                 {
                     Thread.Sleep(20);
                 }
@@ -84,6 +99,43 @@ namespace BlitsMe.Sandbox
                 validate.Enqueue(b);
             }
             buffer.Add(input, 1000);
+        }
+
+        private IPAddress GuessLocalIp()
+        {
+            NetworkInterface[] adapters = NetworkInterface.GetAllNetworkInterfaces();
+            foreach (NetworkInterface nic in adapters)
+            {
+                if (nic.OperationalStatus == OperationalStatus.Up)
+                {
+                    foreach (UnicastIPAddressInformation ipInfo in nic.GetIPProperties().UnicastAddresses)
+                    {
+                        byte[] address = ipInfo.Address.GetAddressBytes();
+                        if (address.Length == 4)
+                        {
+                            if ((address[0] == 172 && address[1] >= 16 && address[1] <= 31)
+                                || (address[0] == 10)
+                                || (address[0] == 192 && address[1] == 168))
+                                return ipInfo.Address;
+                        }
+                    }
+                }
+            }
+            return IPAddress.Any;
+        }
+
+        private void Guess2()
+        {
+            var scope = new ManagementScope(@"\\localhost\root\cimv2");
+            scope.Connect();
+            var query = new ObjectQuery(@"SELECT * FROM Win32_NetworkAdapter where NetConnectionStatus = 2");
+            var searcher = new ManagementObjectSearcher(scope, query);
+
+            var networkInterfaces = searcher.Get();
+            foreach (var networkInterface in networkInterfaces)
+            {
+                Console.WriteLine(string.Format("{0} - {1}", networkInterface["MACAddress"], networkInterface["Name"]));
+            }
         }
     }
 }

@@ -22,16 +22,17 @@ namespace BlitsMe.Communication.P2P.RUDP.Utils
             this.Id = id;
         }
 
-        public int Ping(PeerInfo peer, int timeout, UdpClient udpClient)
+        public int Ping(PeerInfo peer, int timeout, UdpClient udpClient, bool localConnection)
         {
             StandardPingTunnelPacket ping = new StandardPingTunnelPacket() { data = new[] { _pingSeq++ } };
             long startTime = DateTime.Now.Ticks;
             _pingEvent.Reset();
             byte[] bytes = ping.getBytes();
-            udpClient.Send(bytes, bytes.Length, peer.externalEndPoint);
+            var ipEndPoint = localConnection ? peer.internalEndPoint : peer.externalEndPoint;
+            udpClient.Send(bytes, bytes.Length, ipEndPoint);
             if (!_pingEvent.WaitOne(timeout))
             {
-                throw new TimeoutException("Timeout occured while attempting to ping [seq=" + ping.data[0] + "] " + peer.externalEndPoint);
+                throw new TimeoutException("Timeout occured while attempting to ping [seq=" + ping.data[0] + "] " + ipEndPoint);
             }
             long stopTime = DateTime.Now.Ticks;
             int pingTimeMillis = (int)((stopTime - startTime) / 10000);

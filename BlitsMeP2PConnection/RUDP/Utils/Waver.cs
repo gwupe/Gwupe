@@ -14,11 +14,7 @@ namespace BlitsMe.Communication.P2P.RUDP.Utils
         private readonly AutoResetEvent _waveEvent = new AutoResetEvent(false);
         private PeerInfo _waveResult;
 
-        public Waver()
-        {
-        }
-
-        public PeerInfo Wave(System.Net.IPEndPoint facilitatorIp, int timeout, UdpClient udpClient)
+        public PeerInfo Wave(IPEndPoint facilitatorIp, int timeout, UdpClient udpClient)
         {
             long waitTime = timeout * 10000;
 #if(DEBUG)
@@ -59,16 +55,16 @@ namespace BlitsMe.Communication.P2P.RUDP.Utils
 
         private IPEndPoint GetLocalEndPoint(IPEndPoint ip, UdpClient udpClient)
         {
-            var localEndPoint = new IPEndPoint(getDefaultIp(ip), ((IPEndPoint)udpClient.Client.LocalEndPoint).Port);
+            var localEndPoint = new IPEndPoint(GuessLocalIp(), ((IPEndPoint)udpClient.Client.LocalEndPoint).Port);
 #if DEBUG
             Logger.Debug("Got local endpoint as " + localEndPoint.ToString());
 #endif
             return localEndPoint;
         }
 
-        private IPAddress getDefaultIp(IPEndPoint ip)
+        private IPAddress GetDefaultIp(IPEndPoint ip)
         {
-            var ping = new System.Net.NetworkInformation.Ping();
+            var ping = new Ping();
             var options = new PingOptions {Ttl = 1};
             PingReply reply = ping.Send(ip.Address.ToString(), 5000, new byte[32], options);
             NetworkInterface[] adapters = NetworkInterface.GetAllNetworkInterfaces();
@@ -84,6 +80,29 @@ namespace BlitsMe.Communication.P2P.RUDP.Utils
                             {
                                 return ipInfo.Address;
                             }
+                        }
+                    }
+                }
+            }
+            return IPAddress.Any;
+        }
+
+        private IPAddress GuessLocalIp()
+        {
+            NetworkInterface[] adapters = NetworkInterface.GetAllNetworkInterfaces();
+            foreach (NetworkInterface nic in adapters)
+            {
+                if (nic.OperationalStatus == OperationalStatus.Up)
+                {
+                    foreach (UnicastIPAddressInformation ipInfo in nic.GetIPProperties().UnicastAddresses)
+                    {
+                        byte[] address = ipInfo.Address.GetAddressBytes();
+                        if (address.Length == 4)
+                        {
+                            if ((address[0] == 172 && address[1] >= 16 && address[1] <= 31)
+                                || (address[0] == 10)
+                                || (address[0] == 192 && address[1] == 168))
+                                return ipInfo.Address;
                         }
                     }
                 }

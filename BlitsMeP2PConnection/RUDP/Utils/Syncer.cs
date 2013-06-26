@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
 using System.Text;
 using System.Threading;
 using System.Net.Sockets;
@@ -17,13 +18,15 @@ namespace BlitsMe.Communication.P2P.RUDP.Utils
         public String Id { get; private set; }
 
         private PeerInfo _expectedPeer;
+        private IPEndPoint _lastSyncPacketIP;
+        private IPEndPoint _lastSyncRqPacketIp;
 
         public Syncer(String id )
         {
             Id = id;
         }
 
-        public void SyncWithPeer(PeerInfo peer, int timeout, UdpClient udpClient)
+        public bool SyncWithPeer(PeerInfo peer, int timeout, UdpClient udpClient)
         {
             long waitTime = timeout * 10000;
             long startTime = DateTime.Now.Ticks;
@@ -36,24 +39,28 @@ namespace BlitsMe.Communication.P2P.RUDP.Utils
             do
             {
                 byte[] syncBytes = syncRq.getBytes();
+                udpClient.Send(syncBytes, syncBytes.Length, peer.internalEndPoint);
                 udpClient.Send(syncBytes, syncBytes.Length, peer.externalEndPoint);
                 if (DateTime.Now.Ticks - startTime > waitTime)
                 {
 #if(DEBUG)
                     Logger.Debug("Tunnel " + Id + ", sync Timeout : " + (DateTime.Now.Ticks - startTime));
 #endif
-                    throw new TimeoutException("Tunnel " + Id + ", timeout occured while attempting sync with peer " + peer.externalEndPoint);
+                    throw new TimeoutException("Tunnel " + Id + ", timeout occured while attempting sync with peer " + peer.externalEndPoint + "/" + peer.internalEndPoint);
                 }
 #if(DEBUG)
-                Logger.Debug("Tunnel " + Id + ", waiting to sync with " + peer.externalEndPoint);
+                Logger.Debug("Tunnel " + Id + ", waiting to sync with " + peer.externalEndPoint + "/" + peer.internalEndPoint);
 #endif
             } while (!_syncEvent.WaitOne(1000));
+            var activeIp = _lastSyncPacketIP;
 
-            Logger.Debug("Tunnel " + Id + ", synchronisation with " + peer + " established");
+            Logger.Debug("Tunnel " + Id + ", synchronisation with " + activeIp + " established");
+            return activeIp.Equals(peer.internalEndPoint);
         }
 
         public void ProcessSyncRs(StandardSyncRsTunnelPacket packet)
         {
+            _lastSyncPacketIP = packet.ip;
             _syncEvent.Set();
         }
 
@@ -61,6 +68,7 @@ namespace BlitsMe.Communication.P2P.RUDP.Utils
         {
             if (_expectedPeer.externalEndPoint.Equals(packet.ip) || _expectedPeer.internalEndPoint.Equals(packet.ip))
             {
+                _lastSyncRqPacketIp = packet.ip;
                 _syncRqEvent.Set();
                 StandardSyncRsTunnelPacket syncRs = new StandardSyncRsTunnelPacket();
                 byte[] syncBytes = syncRs.getBytes();
@@ -72,7 +80,7 @@ namespace BlitsMe.Communication.P2P.RUDP.Utils
             }
         }
 
-        public void WaitForSyncFromPeer(PeerInfo peer, int timeout, UdpClient udpClient)
+        public bool WaitForSyncFromPeer(PeerInfo peer, int timeout, UdpClient udpClient)
         {
             long waitTime = timeout * 10000;
             long startTime = DateTime.Now.Ticks;
@@ -85,20 +93,23 @@ namespace BlitsMe.Communication.P2P.RUDP.Utils
             do
             {
                 byte[] nopBytes = nop.getBytes();
+                udpClient.Send(nopBytes, nopBytes.Length, peer.internalEndPoint);
                 udpClient.Send(nopBytes, nopBytes.Length, peer.externalEndPoint);
                 if (DateTime.Now.Ticks - startTime > waitTime)
                 {
 #if(DEBUG)
                     Logger.Debug("Tunnel " + Id + ", sync Timeout : " + (DateTime.Now.Ticks - startTime));
 #endif
-                    throw new TimeoutException("Tunnel " + Id + ", timeout occured while waiting for sync from peer " + peer.externalEndPoint);
+                    throw new TimeoutException("Tunnel " + Id + ", timeout occured while waiting for sync from peer " + peer.externalEndPoint + "/" + peer.internalEndPoint);
                 }
 #if(DEBUG)
-                Logger.Debug("Tunnel " + Id + ", waiting for sync from " + peer.externalEndPoint);
+                Logger.Debug("Tunnel " + Id + ", waiting for sync from " + peer.externalEndPoint + "/" + peer.internalEndPoint);
 #endif
             } while (!_syncRqEvent.WaitOne(1000));
+            var activeIp = _lastSyncRqPacketIp;
 
-            Logger.Debug("Tunnel " + Id + ", synchronisation with " + peer + " established");
+            Logger.Debug("Tunnel " + Id + ", synchronisation with " + activeIp + " established");
+            return activeIp.Equals(peer.internalEndPoint);
         }
     }
 }
