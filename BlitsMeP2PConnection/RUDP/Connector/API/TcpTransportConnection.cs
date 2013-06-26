@@ -79,7 +79,7 @@ namespace BlitsMe.Communication.P2P.RUDP.Connector.API
             try
             {
                 int read = -1;
-                while (true)
+                while (!_socket.Closed && !_socket.Closing)
                 {
                     byte[] tmpRead = new byte[8192];
                     try
@@ -88,7 +88,6 @@ namespace BlitsMe.Communication.P2P.RUDP.Connector.API
                     }
                     catch (ObjectDisposedException e)
                     {
-                        Logger.Info("Connection has been closed");
                         break;
                     }
                     if (read > 0)
@@ -114,8 +113,8 @@ namespace BlitsMe.Communication.P2P.RUDP.Connector.API
                             break;
                         }
                     }
-
                 }
+                Logger.Info("Connection has been closed");
             }
             catch (Exception ex)
             {

@@ -54,7 +54,7 @@ namespace BlitsMe.Communication.P2P.RUDP.Utils
 #if(DEBUG)
                 Logger.Debug("Waiting for connect response from " + namedEndPoint);
 #endif
-            } while (_connectEvents.ContainsKey(connectionId) && !_connectEvents[connectionId].WaitOne(1000));
+            } while (_connectEvents.ContainsKey(connectionId) && !_connectEvents[connectionId].WaitOne(5000));
 
             try
             {
@@ -116,7 +116,7 @@ namespace BlitsMe.Communication.P2P.RUDP.Utils
 
         public void CloseConnection(byte connectionId)
         {
-            long waitTime = 10000; // 10 second disconnect time
+            long waitTime = 120000; // 2 minute disconnect time
 #if(DEBUG)
             Logger.Debug("Disconnecting tcp session " + connectionId);
 #endif
@@ -131,6 +131,7 @@ namespace BlitsMe.Communication.P2P.RUDP.Utils
                     Logger.Debug("Sending disconnect packet : " + packet);
 #endif
                     _transport.SendData(packet);
+                    packet.ResendCount++;
                     var timeSpan = new TimeSpan(DateTime.Now.Ticks - startTime);
                     if (timeSpan.TotalMilliseconds > waitTime)
                     {
@@ -142,7 +143,7 @@ namespace BlitsMe.Communication.P2P.RUDP.Utils
 #if(DEBUG)
                     Logger.Debug("Waiting for disconnect response for connection id " + connectionId);
 #endif
-                } while (_disconnectEvents.ContainsKey(connectionId) && !_disconnectEvents[connectionId].WaitOne(1000));
+                } while (_disconnectEvents.ContainsKey(connectionId) && !_disconnectEvents[connectionId].WaitOne(20000));
 
                 if(_disconnectEvents.ContainsKey(connectionId))
                 {

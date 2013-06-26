@@ -26,6 +26,7 @@ namespace BlitsMe.Communication.P2P.RUDP.Tunnel
         public IInternalTcpOverUdptSocket Socket { get; private set; }
         public bool Established { get { return _isEstablished; } }
         public bool Closing { protected set; get; }
+        public bool Closed { protected set; get; }
         public abstract void ProcessDataPacket(ITcpPacket packet);
         public abstract void SendData(byte[] data, int timeout);
         public abstract void ProcessAck(StandardAckPacket packet);

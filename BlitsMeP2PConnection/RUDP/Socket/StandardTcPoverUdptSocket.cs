@@ -16,12 +16,18 @@ namespace BlitsMe.Communication.P2P.RUDP.Socket
     public class StandardTcpOverUdptSocket : IInternalTcpOverUdptSocket
     {
         private static readonly ILog Logger = LogManager.GetLogger(typeof (StandardTcpOverUdptSocket));
+        private bool _closing;
         public ITcpTransportLayer Connection { get; private set; }
         private readonly AutoResetEvent _dataReady = new AutoResetEvent(false);
         private readonly Queue<byte[]> _clientBuffer;
         private byte[] _workingBuffer;
         private const int BufferSize = 100;
         public bool Closed { get; private set; }
+
+        public bool Closing
+        {
+            get { return _closing; }
+        }
 
         public StandardTcpOverUdptSocket(ITcpTransportLayer connection)
         {
@@ -37,12 +43,14 @@ namespace BlitsMe.Communication.P2P.RUDP.Socket
 
         public void Close()
         {
-            if (!Closed)
+            if (!Closed && !Closing)
             {
-                Closed = true;
+                _closing = true;
                 // to clear any blocked reads
                 _dataReady.Set();
                 Connection.Close();
+                _closing = false;
+                Closed = true;
             }
         }
 

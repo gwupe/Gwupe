@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using BlitsMe.Communication.P2P.RUDP.Tunnel.API;
-using BlitsMe.Common;
-using System.IO;
+﻿using BlitsMe.Communication.P2P.RUDP.Tunnel.API;
 
 namespace BlitsMe.Communication.P2P.RUDP.Socket.API
 {
@@ -14,6 +8,7 @@ namespace BlitsMe.Communication.P2P.RUDP.Socket.API
         void Send(byte[] data, int timeout);
         int Read(byte[] data, int maxRead);
         bool Closed { get; }
+        bool Closing { get; }
         void Close();
     }
 }

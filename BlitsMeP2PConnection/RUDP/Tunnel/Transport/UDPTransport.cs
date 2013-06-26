@@ -15,7 +15,7 @@ namespace BlitsMe.Communication.P2P.RUDP.Tunnel.Transport
             TransportManager = transportManager;
         }
 
-        public void Close(bool initiatedBySelf)
+        public void Close()
         {
             throw new NotImplementedException();
         }

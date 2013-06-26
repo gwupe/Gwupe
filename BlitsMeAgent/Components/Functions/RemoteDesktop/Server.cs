@@ -11,6 +11,7 @@ namespace BlitsMe.Agent.Components.Functions.RemoteDesktop
         private ProxyTcpTransportListener _vncListener;
         private readonly ITransportManager _transportManager;
         internal bool Closing { get; private set; }
+        internal bool Closed { get; private set; }
 #if DEBUG
         private const int VNCPort = 10231;
 #else
@@ -64,6 +65,7 @@ namespace BlitsMe.Agent.Components.Functions.RemoteDesktop
 
         internal void Listen()
         {
+            Closed = false;
             // A proxy transport listener listens on the TM @ the named port, if it receives a connection there, it forwards all traffic to the
             // IP endpoint specified in the constructor
             _vncListener = new ProxyTcpTransportListener("RDP", new IPEndPoint(IPAddress.Loopback, VNCPort), _transportManager);
@@ -75,7 +77,7 @@ namespace BlitsMe.Agent.Components.Functions.RemoteDesktop
         // This is called by the RDP Function, so stop listening and terminate connections
         internal void Close()
         {
-            if (!Closing)
+            if (!Closing && !Closed)
             {
                 Closing = true;
                 if (_vncListener != null)
@@ -84,6 +86,8 @@ namespace BlitsMe.Agent.Components.Functions.RemoteDesktop
                 }
                 OnConnectionClosed();
                 _vncListener = null;
+                Closed = true;
+                Closing = false;
             }
         }
     }

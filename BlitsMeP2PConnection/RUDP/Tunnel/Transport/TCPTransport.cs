@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Timers;
@@ -36,6 +37,7 @@ namespace BlitsMe.Communication.P2P.RUDP.Tunnel.Transport
         public TCPTransport(ITransportManager transportManager)
         {
             _transportManager = transportManager;
+            transportManager.Inactive += delegate { CloseConnections(); };
             _activeTCPConnections = new TcpConnectionList();
             _listeningNamedTCPEndPoints = new Dictionary<String, NamedTCPListener>();
             _tcpConnectionHelper = new TCPConnectionHelper(this);
@@ -99,7 +101,8 @@ namespace BlitsMe.Communication.P2P.RUDP.Tunnel.Transport
                 {
                     Logger.Error("Failed to close connection [remote id = " + packet.ConnectionId + "] : " + e.Message);
                 }
-                SendData(new StandardDisconnectRsPacket(packet.ConnectionId));
+                var disconnectRsPacket = new StandardDisconnectRsPacket(packet.ConnectionId);
+                SendData(disconnectRsPacket);
             }
         }
 
@@ -266,7 +269,7 @@ namespace BlitsMe.Communication.P2P.RUDP.Tunnel.Transport
 #if(DEBUG)
             Logger.Debug("Sending connection response : " + response);
 #endif
-            _transportManager.SendData(response);
+            SendData(response);
             if (response.success)
             {
                 // This sends a positive response, we would like to get an Ack of this connection response
@@ -281,7 +284,16 @@ namespace BlitsMe.Communication.P2P.RUDP.Tunnel.Transport
 
         public void SendData(ITcpPacket packet)
         {
-            _transportManager.SendData(packet);
+            if (_transportManager.IsActive)
+            {
+                _transportManager.SendData(packet);
+#if DEBUG
+                Logger.Debug("Sent packet : " + packet);
+#endif
+            } else
+            {
+                throw new IOException("Transport manager is inactive (has no tunnels), cannot send data.");
+            }
         }
 
         public ITcpOverUdptSocket OpenConnection(string endPoint)
@@ -370,13 +382,25 @@ namespace BlitsMe.Communication.P2P.RUDP.Tunnel.Transport
 
         #endregion
 
-        public void Close(bool initiatedBySelf)
+        public void Close()
+        {
+            if (!Closing)
+            {
+                Closing = true;
+                CloseConnections();
+                _listeningNamedTCPEndPoints.Clear();
+                Closing = false;
+            }
+        }
+
+        protected bool Closing;
+
+        private void CloseConnections()
         {
             foreach (TcpConnectionHolder tcpConnectionHolder in _activeTCPConnections.GetList())
             {
                 CloseConnection(tcpConnectionHolder.Connection.ConnectionId);
             }
-            _listeningNamedTCPEndPoints.Clear();
         }
     }
 

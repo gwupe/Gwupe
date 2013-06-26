@@ -19,6 +19,10 @@ namespace BlitsMe.Communication.P2P.RUDP.Tunnel.API
         ITCPTransport TCPTransport { get; }
         UDPTransport UDPTransport { get; }
 
+        bool IsActive { get; }
+        event EventHandler Active;
+        event EventHandler Inactive;
+
         // send data function
         void SendData(IPacket packet);
 

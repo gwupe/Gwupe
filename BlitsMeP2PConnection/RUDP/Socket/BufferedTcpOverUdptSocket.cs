@@ -32,7 +32,7 @@ namespace BlitsMe.Communication.P2P.RUDP.Socket
 
         public int Read(byte[] data, int maxRead)
         {
-            if (!Closing)
+            if (!Closing && !Closed)
             {
                 int returnValue = clientBuffer.Get(data, maxRead);
                 Logger.Debug("Read " + returnValue + " bytes from transport buffer");
@@ -43,18 +43,17 @@ namespace BlitsMe.Communication.P2P.RUDP.Socket
             }
         }
 
-        public bool Closed
-        {
-            get { return Closing; }
-        }
+        public bool Closed { get; private set; }
 
         public void Close()
         {
-            if(!Closing)
+            if(!Closing && !Closed)
             {
                 Closing = true;
                 clientBuffer.Release();
                 _connection.Close();
+                Closing = false;
+                Closed = true;
             }
         }
 

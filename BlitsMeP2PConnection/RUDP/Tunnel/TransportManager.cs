@@ -24,6 +24,23 @@ namespace BlitsMe.Communication.P2P.RUDP.Tunnel
         private readonly Dictionary<String, TunnelContainer> _tunnels;
         private TunnelContainer _mruTunnel;
 
+        public event EventHandler Active;
+        public event EventHandler Inactive;
+
+        public bool IsActive { get; private set; }
+
+        public void OnInactive(EventArgs e)
+        {
+            EventHandler handler = Inactive;
+            if (handler != null) handler(this, e);
+        }
+
+        public void OnActive(EventArgs e)
+        {
+            EventHandler handler = Active;
+            if (handler != null) handler(this, e);
+        }
+
         public ITCPTransport TCPTransport { get; private set; }
         public UDPTransport UDPTransport { get; private set; }
 
@@ -114,8 +131,27 @@ namespace BlitsMe.Communication.P2P.RUDP.Tunnel
         public void AddTunnel(IUDPTunnel tunnel, int priority)
         {
             tunnel.ProcessData = ProcessTunnelData;
+            tunnel.Disconnected += TunnelOnDisconnected;
             _tunnels.Remove(tunnel.Id);
             _tunnels.Add(tunnel.Id, new TunnelContainer() { Priority = priority, Tunnel = tunnel });
+            if (_tunnels.Count == 1)
+            {
+                IsActive = true;
+                OnActive(EventArgs.Empty);
+            }
+        }
+
+        private void TunnelOnDisconnected(object sender, EventArgs args)
+        {
+            if (_tunnels.ContainsKey(((IUDPTunnel)sender).Id))
+            {
+                _tunnels.Remove(((IUDPTunnel) sender).Id);
+                if (_tunnels.Count == 0)
+                {
+                    IsActive = false;
+                    OnInactive(EventArgs.Empty);
+                }
+            }
         }
 
         private TunnelContainer PickTunnel()
@@ -146,18 +182,18 @@ namespace BlitsMe.Communication.P2P.RUDP.Tunnel
         public void Close()
         {
             Logger.Debug("Closing transports");
-            if (TCPTransport != null) TCPTransport.Close(true);
-            if (UDPTransport != null) UDPTransport.Close(true);
-            foreach (var tunnelContainer in _tunnels)
+            if (TCPTransport != null) TCPTransport.Close();
+            if (UDPTransport != null) UDPTransport.Close();
+            foreach (var tunnelContainer in _tunnels.Values)
             {
-                Logger.Debug("Closing tunnel " + tunnelContainer.Value.Tunnel.Id);
+                Logger.Debug("Closing tunnel " + tunnelContainer.Tunnel.Id);
                 try
                 {
-                    tunnelContainer.Value.Tunnel.Close();
+                    tunnelContainer.Tunnel.Close();
                 }
                 catch (Exception e)
                 {
-                    Logger.Warn("Closing tunnel " + tunnelContainer.Value.Tunnel.Id + " failed : " + e.Message);
+                    Logger.Warn("Closing tunnel " + tunnelContainer.Tunnel.Id + " failed : " + e.Message);
                 }
             }
             _tunnels.Clear();

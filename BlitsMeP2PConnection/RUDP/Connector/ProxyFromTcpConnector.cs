@@ -182,7 +182,7 @@ namespace BlitsMe.Communication.P2P.RUDP.Connector
                 ITcpOverUdptSocket socket = _transportManager.TCPTransport.OpenConnection(Name);
                 OnConnectionAccepted();
                 ProxyTcpConnection proxyTcpConnection = new ProxyTcpConnection(client, socket);
-                proxyTcpConnection.Closed += delegate(object sender, EventArgs args) { ProxyConnectionOnClosed(proxyTcpConnection); };
+                proxyTcpConnection.Closed += delegate { ProxyConnectionOnClosed(proxyTcpConnection); };
                 proxyTcpConnection.Start();
                 _openConnections.Add(proxyTcpConnection);
             }
@@ -195,7 +195,7 @@ namespace BlitsMe.Communication.P2P.RUDP.Connector
 
         private void ProxyConnectionOnClosed(ProxyTcpConnection connection)
         {
-            if(_openConnections.Contains(connection))
+            if (_openConnections.Contains(connection))
             {
                 _openConnections.Remove(connection);
             }
@@ -207,21 +207,29 @@ namespace BlitsMe.Communication.P2P.RUDP.Connector
 
         public void Close()
         {
-            if (!Closing)
+            if (!Closing && !Closed)
             {
                 Closing = true;
                 StopListening();
-#if DEBUG
-                logger.Debug("Closing all active connections for named connection " + Name);
-#endif
-                while(_openConnections != null && _openConnections.Count > 0)
-                {
-                    var proxyConnection = _openConnections[0];
-                    _openConnections.RemoveAt(0);
-                    proxyConnection.Close();
-                }
+                Closing = false;
+                Closed = true;
             }
         }
+
+        public void CloseConnections()
+        {
+#if DEBUG
+            logger.Debug("Closing all active connections for named connection " + Name);
+#endif
+            while (_openConnections != null && _openConnections.Count > 0)
+            {
+                var proxyConnection = _openConnections[0];
+                _openConnections.RemoveAt(0);
+                proxyConnection.Close();
+            }
+        }
+
+        protected bool Closed { get; private set; }
 
         public bool Closing { get; private set; }
     }

@@ -203,7 +203,7 @@ namespace BlitsMe.Communication.P2P.RUDP.Tunnel
             if (_pingFailCount >= AllowedPingFailCount)
             {
                 Logger.Error("Missing too many pings from " + _peer.externalEndPoint + " [" + _pingFailCount + "], shutting down endPointManager");
-                Close(true);
+                Close();
             }
         }
 
@@ -465,7 +465,7 @@ namespace BlitsMe.Communication.P2P.RUDP.Tunnel
 #if(DEBUG)
                 Logger.Debug("Got a close package, initialising close");
 #endif
-                this.Close(false);
+                this.Close();
             }
             else
             {
@@ -479,18 +479,13 @@ namespace BlitsMe.Communication.P2P.RUDP.Tunnel
 
         public void Close()
         {
-            Close(true);
-        }
-
-        public void Close(bool initiatedBySelf)
-        {
             if (IsTunnelEstablished && !Closing)
             {
-                Logger.Debug("Closing UDP endPointManager to " + _peer.externalEndPoint);
                 // Set the state that we are closing
                 this.Closing = true;
+                Logger.Debug("Closing UDP endPointManager to " + _peer.externalEndPoint);
                 // If we initiated it, send a close to peer (fire and forget)
-                if (initiatedBySelf) SendUDPClose();
+                SendUDPClose();
                 // Mark the endPointManager as stopped
                 this.IsTunnelEstablished = false;
                 // Close the pinger
