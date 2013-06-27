@@ -159,11 +159,13 @@ namespace BlitsMe.Cloud.Communication
 
         protected virtual void OnConnect(EventArgs e)
         {
+            _connectionEstablished = true;
             Connected(this, e);
         }
 
         protected virtual void OnDisconnect(EventArgs e)
         {
+            _connectionEstablished = false;
             Disconnected(this, e);
         }
 
@@ -171,7 +173,9 @@ namespace BlitsMe.Cloud.Communication
         {
             _connection = new WebSocketClientSSLConnection(_cacert);
             _connection.ConnectionClose += _wsMessageHandler.onClose;
+            _connection.ConnectionClose += delegate { OnDisconnect(EventArgs.Empty); };
             _connection.ConnectionOpen += _wsMessageHandler.onOpen;
+            _connection.ConnectionOpen += delegate { OnConnect(EventArgs.Empty); };
             _connection.ConnectionRead += _wsMessageHandler.onMessage;
             try
             {
@@ -185,8 +189,7 @@ namespace BlitsMe.Cloud.Communication
                 Logger.Error("Failed to connect to server [" + uri + "] : " + e.Message);
                 throw new IOException("Failed to connect to server [" + uri + "] : " + e.Message, e);
             }
-            _connectionEstablished = true;
-            OnConnect(new EventArgs());
+            //OnConnect(new EventArgs());
         }
 
         private bool IsConnected()
@@ -202,7 +205,7 @@ namespace BlitsMe.Cloud.Communication
             {
                 _connection.Close(code, reason);
             }
-            OnDisconnect(new EventArgs());
+            //OnDisconnect(new EventArgs());
         }
     }
 

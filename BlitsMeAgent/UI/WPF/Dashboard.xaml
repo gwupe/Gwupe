@@ -22,13 +22,10 @@
     </Window.Resources>
 
     <Grid x:Name="LayoutRoot" Style="{StaticResource MainLayout}" >
-        <Grid.ColumnDefinitions>
-        	<ColumnDefinition/>
-        </Grid.ColumnDefinitions>
-        <Grid HorizontalAlignment="Left" Width="180" Margin="10,10,0,10">
-        	<DockPanel LastChildFill="True">
-        		<Grid DockPanel.Dock="Top">
-        			<TextBox x:Name="SearchBox" Margin="0" TextWrapping="Wrap" Text="Search" VerticalAlignment="Top" FontFamily="Calibri" FontSize="16" TextChanged="Search_TextChanged" GotFocus="SearchBox_GotFocus" LostFocus="SearchBox_LostFocus" Background="#FF2B519B" Foreground="White" HorizontalAlignment="Center" Width="170"/>
+        <Grid HorizontalAlignment="Left" Width="190">
+        	<DockPanel LastChildFill="True" Margin="0">
+        		<Grid DockPanel.Dock="Top" >
+        			<TextBox x:Name="SearchBox" Margin="5,5,5,0" TextWrapping="Wrap" Text="Search" VerticalAlignment="Top" FontFamily="Calibri" FontSize="16" TextChanged="Search_TextChanged" GotFocus="SearchBox_GotFocus" LostFocus="SearchBox_LostFocus" Background="#FF2B519B" Foreground="White" HorizontalAlignment="Center" Width="180" Height="23"/>
         		</Grid>
         		<StackPanel Margin="5" Orientation="Horizontal" Height="32" HorizontalAlignment="Center" DockPanel.Dock="Top">
         			<StackPanel.Resources>
@@ -46,7 +43,7 @@
         				<Image Source="Images/exit.png" Margin="1"/>
         			</Button>
         		</StackPanel>
-        		<ItemsControl x:Name="Alerts" DockPanel.Dock="Bottom" Margin="0,0">
+        		<ItemsControl x:Name="Alerts" DockPanel.Dock="Bottom" Margin="5,0,5,5">
         			<ItemsControl.ItemsPanel>
         				<ItemsPanelTemplate>
         					<StackPanel VerticalAlignment="Bottom" d:LayoutOverrides="VerticalAlignment" >
@@ -56,17 +53,17 @@
         		</ItemsControl>
         		<!-- This is the Roster section -->
         		<ListBox x:Name="Team" ItemsSource="{Binding}" 
-        			FontFamily="Corbel" Margin="0,0,0,0" DockPanel.Dock="Bottom" ScrollViewer.HorizontalScrollBarVisibility="Disabled">
+        			FontFamily="Corbel" Margin="5,0" DockPanel.Dock="Bottom" ScrollViewer.HorizontalScrollBarVisibility="Disabled">
         			<ListBox.Resources>
         				<Style TargetType="{x:Type ListBoxItem}">
         					<EventSetter Event="ListBoxItem.Selected" Handler="TeamMemberSelected" HandledEventsToo="True"/>
-        					<Setter Property="ContextMenu">
+        					<!--<Setter Property="ContextMenu">
         						<Setter.Value>
         							<ContextMenu>
         								<MenuItem Header="Remove" />
         							</ContextMenu>
         						</Setter.Value>
-        					</Setter>
+        					</Setter>-->
         				</Style>
         			</ListBox.Resources>
         			<ListBox.Style>
@@ -75,7 +72,7 @@
         		</ListBox>
         	</DockPanel>
         </Grid>
-        <Grid Margin="195,8,8,8">
+        <Grid Margin="190,5,5,5">
             <DockPanel LastChildFill="True">
                 <ItemsControl x:Name="Notifications" DockPanel.Dock="Top" Margin="8,0">
                     <ItemsControl.ItemsPanel>

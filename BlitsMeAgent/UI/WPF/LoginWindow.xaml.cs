@@ -137,7 +137,7 @@ namespace BlitsMe.Agent.UI.WPF
                 NewUser.IsEnabled = false;
                 Username.IsEnabled = false;
                 Password.IsEnabled = false;
-                ForgotPassword.IsEnabled = false;
+                //ForgotPassword.IsEnabled = false;
                 signin.Content = "Logging In";
                 signin.IsEnabled = false;
             }
@@ -154,7 +154,7 @@ namespace BlitsMe.Agent.UI.WPF
                 NewUser.IsEnabled = true;
                 Username.IsEnabled = true;
                 Password.IsEnabled = true;
-                ForgotPassword.IsEnabled = true;
+                //ForgotPassword.IsEnabled = true;
                 signin.Content = "Sign In";
                 signin.IsEnabled = true;
             }

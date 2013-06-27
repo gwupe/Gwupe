@@ -40,11 +40,11 @@ namespace BlitsMe.Agent.Managers
         // Gets an engagement, creates it if its not there
         public Engagement GetNewEngagement(String username)
         {
-            if (_engagementLookup.ContainsKey(username))
+            if (_engagementLookup.ContainsKey(username.ToLower()))
             {
-                return _engagementLookup[username];
+                return _engagementLookup[username.ToLower()];
             }
-            Person servicePerson = _appContext.RosterManager.GetServicePerson(username);
+            Person servicePerson = _appContext.RosterManager.GetServicePerson(username.ToLower());
             if(servicePerson == null)
             {
                 throw new Exception("Unable to find service person [" + username + "]");
@@ -52,8 +52,8 @@ namespace BlitsMe.Agent.Managers
             var newEngagement = new Engagement(_appContext, servicePerson);
             newEngagement.Chat.NewMessage += OnChatEvent;
             Engagements.Add(newEngagement);
-            _engagementLookup[username] = newEngagement;
-            return _engagementLookup[username];
+            _engagementLookup[username.ToLower()] = newEngagement;
+            return _engagementLookup[username.ToLower()];
         }
 
         private void OnChatEvent(object sender, ChatEventArgs args)

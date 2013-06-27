@@ -18,9 +18,9 @@
 			<Hyperlink Name="NewUser" RequestNavigate="NewUserCreate" NavigateUri="" IsEnabled="False">
 				I am a new user
 			</Hyperlink><LineBreak/>
-			<Hyperlink Name="ForgotPassword" RequestNavigate="Click_ForgotPassword" NavigateUri="" IsEnabled="False">
+			<!--<Hyperlink Name="ForgotPassword" RequestNavigate="Click_ForgotPassword" NavigateUri="" IsEnabled="False">
 				<Run Language="en-za" Text="I forgot my password"/>
-			</Hyperlink>
+			</Hyperlink>-->
 		</TextBlock>
 	</Grid>
 </Window>

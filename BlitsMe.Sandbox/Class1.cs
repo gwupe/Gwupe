@@ -106,7 +106,13 @@ namespace BlitsMe.Sandbox
             NetworkInterface[] adapters = NetworkInterface.GetAllNetworkInterfaces();
             foreach (NetworkInterface nic in adapters)
             {
-                if (nic.OperationalStatus == OperationalStatus.Up)
+                if (nic.OperationalStatus == OperationalStatus.Up &&
+                    (nic.NetworkInterfaceType == NetworkInterfaceType.Ethernet3Megabit ||
+                    nic.NetworkInterfaceType == NetworkInterfaceType.Ethernet ||
+                    nic.NetworkInterfaceType == NetworkInterfaceType.FastEthernetT ||
+                    nic.NetworkInterfaceType == NetworkInterfaceType.Wireless80211 ||
+                    nic.NetworkInterfaceType == NetworkInterfaceType.GigabitEthernet ||
+                    nic.NetworkInterfaceType == NetworkInterfaceType.FastEthernetFx))
                 {
                     foreach (UnicastIPAddressInformation ipInfo in nic.GetIPProperties().UnicastAddresses)
                     {

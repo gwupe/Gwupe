@@ -8,14 +8,14 @@
         <ResourceDictionary Source="./Style.xaml" />
     </ResourceDictionary.MergedDictionaries>
     <!-- Resource dictionary entries should be defined here. -->
-    <Style x:Key="RosterStyle" TargetType="Grid">
+    <!--<Style x:Key="RosterStyle" TargetType="Grid">
         <Setter Property="HorizontalAlignment" Value="Left" />
         <Setter Property="Margin" Value="8,8,0,8"  />
         <Setter Property="Width" Value="181" />
-    </Style>
+    </Style> -->
     <Style x:Key="TeamList" TargetType="ListBox">
         <Setter Property="HorizontalContentAlignment" Value="Stretch" />
-        <Setter Property="Margin" Value="0,74,0,0" />
+        <Setter Property="Margin" Value="0,5,0,5" />
         <Setter Property="Background" Value="{x:Null}" />
         <Setter Property="BorderBrush" Value="{x:Null}" />
         <Setter Property="FontFamily" Value="Corbel" />
@@ -25,10 +25,10 @@
         <Setter Property="Margin" Value="0,5,0,0" />
     </Style>-->
     <Style x:Key="TeamMemberBorder" TargetType="Border">
-        <Setter Property="CornerRadius" Value="6" />
+        <Setter Property="CornerRadius" Value="0" />
         <Setter Property="Background" Value="#FF2B519B" />
         <Setter Property="BorderBrush" Value="Black"  />
-        <Setter Property="BorderThickness" Value="1,1,1,1"  />
+        <Setter Property="BorderThickness" Value="0"  />
         <Setter Property="Padding" Value="5" />
     </Style>
     <Style x:Key="TeamMemberBorderActive" TargetType="Border" BasedOn="{StaticResource TeamMemberBorder}">
@@ -109,7 +109,7 @@
     </DataTemplate>
 
 	<DataTemplate x:Key="TeamMemberInActive">
-	<Border Style="{StaticResource TeamMemberBorderActive}" Margin="0,0,0,1">
+	<Border Style="{StaticResource TeamMemberBorderActive}" Margin="0,0,0,2">
         <Grid Margin="0" MaxWidth="160">
             <Rectangle x:Name="ImageContainer"
       Width="50" Height="50" StrokeThickness="0" VerticalAlignment="center" HorizontalAlignment="Left" Margin="0">
@@ -140,7 +140,7 @@
 	</DataTemplate>
 
 	<DataTemplate x:Key="TeamMemberActive">
-	<Border Style="{StaticResource TeamMemberBorder}" Margin="0,0,0,1">
+	<Border Style="{StaticResource TeamMemberBorder}" Margin="0,0,0,2">
         <Grid Margin="0" MaxWidth="160">
             <Rectangle x:Name="ImageContainer"
       Width="50" Height="50" StrokeThickness="0" VerticalAlignment="center" HorizontalAlignment="Left" Margin="0">
