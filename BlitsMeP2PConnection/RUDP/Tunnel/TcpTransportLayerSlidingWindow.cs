@@ -401,6 +401,13 @@ namespace BlitsMe.Communication.P2P.RUDP.Tunnel
             _srtt = (ushort)((_rtt_alpha * _srtt) + (_rtt_beta * rtt));
             _deviation = (_rtt_alpha * _deviation) + (_rtt_beta * Math.Abs(_srtt - rtt));
             _retryInterval = (int)(_srtt + (4 * _deviation));
+            if (_retryInterval < 1)
+            {
+#if DEBUG
+                Logger.Debug("_retryInterval was too low, adjusting it to be 1");
+#endif
+                _retryInterval = 1;
+            }
         }
 
         private void RetryPacketSend()
