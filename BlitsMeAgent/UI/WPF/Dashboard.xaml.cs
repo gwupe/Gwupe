@@ -50,10 +50,21 @@ namespace BlitsMe.Agent.UI.WPF
             // Setup the various data contexts and sources
             DashboardData = new DashboardDataContext();
             DataContext = DashboardData;
-            SetupCurrentUserListener();
             _appContext.CurrentUserManager.CurrentUserChanged += delegate { SetupCurrentUserListener(); };
             SetupEngagementWindows();
+            IsEnabledChanged += OnIsEnabledChanged;
             Logger.Info("Dashboard setup completed");
+        }
+
+        private void OnIsEnabledChanged(object sender, DependencyPropertyChangedEventArgs dependencyPropertyChangedEventArgs)
+        {
+            if(this.IsEnabled)
+            {
+                Panel.SetZIndex(DisableScreen,-1);
+            } else
+            {
+                Panel.SetZIndex(DisableScreen,1);
+            }
         }
 
         private void SetupEngagementWindows()

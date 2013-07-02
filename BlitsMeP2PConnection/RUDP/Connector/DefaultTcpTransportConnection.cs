@@ -4,7 +4,7 @@ using BlitsMe.Communication.P2P.RUDP.Socket.API;
 
 namespace BlitsMe.Communication.P2P.RUDP.Connector
 {
-    public delegate bool ProcessTransportRead(byte[] data, TcpTransportConnection connection);
+    public delegate bool ProcessTransportRead(byte[] data, int length, TcpTransportConnection connection);
 
     public class DefaultTcpTransportConnection : TcpTransportConnection
     {
@@ -15,17 +15,13 @@ namespace BlitsMe.Communication.P2P.RUDP.Connector
             _reader = reader;
         }
 
-        protected override void _Start()
-        {
-        }
-
         protected override void _Close()
         {
         }
 
-        protected override bool ProcessTransportRead(byte[] data)
+        protected override bool ProcessTransportSocketRead(byte[] data, int length)
         {
-            return _reader(data, this);
+            return _reader(data, length, this);
         }
     }
 }

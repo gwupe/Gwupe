@@ -85,20 +85,20 @@ namespace BlitsMe.Agent.Components.Functions.FileSend
             return connection;
         }
 
-        private bool Reader(byte[] data, TcpTransportConnection connection)
+        private bool Reader(byte[] data, int length, TcpTransportConnection connection)
         {
-            if (data.Length > 0)
+            if (length > 0)
             {
                 try
                 {
-                    _binWriter.Write(data);
+                    _binWriter.Write(data,0,length);
                 }
                 catch (Exception e)
                 {
                     Logger.Error("Failed to write data to file " + _fileInfo.Filename + " : " + e.Message, e);
                     return false;
                 }
-                _dataWriteSize += data.Length;
+                _dataWriteSize += length;
                 OnDataRead(EventArgs.Empty);
             }
             return true;

@@ -24,10 +24,10 @@ namespace BlitsMe.Communication.P2P.RUDP.Connector
             return connection;
         }
 
-        private bool Reader(byte[] data, TcpTransportConnection connection)
+        private bool Reader(byte[] data, int length, TcpTransportConnection connection)
         {
-            Logger.Debug("Got some data to echo " + Encoding.UTF8.GetString(data));
-            return connection.SendDataToTransport(data);
+            Logger.Debug("Got some data to echo " + Encoding.UTF8.GetString(data,0,length));
+            return connection.SendDataToTransportSocket(data, length);
         }
     }
 }

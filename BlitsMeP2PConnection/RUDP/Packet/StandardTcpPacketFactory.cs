@@ -30,6 +30,9 @@ namespace BlitsMe.Communication.P2P.RUDP.Packet
                 case BasicTcpPacket.PKT_TYPE_DISCONNECT:
                     packet = new StandardDisconnectPacket();
                     break;
+                case BasicTcpPacket.PKT_TYPE_DISCONNECT_ACK:
+                    packet = new StandardDisconnectAckPacket();
+                    break;
                 case BasicTcpPacket.PKT_TYPE_DISCONNECT_RS:
                     packet = new StandardDisconnectRsPacket();
                     break;

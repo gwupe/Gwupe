@@ -12,20 +12,16 @@ namespace BlitsMe.Communication.P2P.RUDP.Connector
     {
         private static readonly ILog Logger = LogManager.GetLogger(typeof(ProxyTcpConnection));
 
-        private readonly Thread _proxyReverseThread;
+        private readonly Thread _tcpClientProxyReader;
         private readonly TcpClient _tcpClient;
 
         internal ProxyTcpConnection(TcpClient client, ITcpOverUdptSocket socket)
             : base(socket)
         {
             _tcpClient = client;
-            _proxyReverseThread = new Thread(ProxyTransportWriter) { IsBackground = true };
-            _proxyReverseThread.Name = "_proxyReverseThread[" + _proxyReverseThread.ManagedThreadId + "]";
-        }
-
-        protected override void _Start()
-        {
-            _proxyReverseThread.Start();
+            _tcpClientProxyReader = new Thread(ProxyTransportSocketWriter) { IsBackground = true };
+            _tcpClientProxyReader.Name = "_tcpClientProxyReader[" + _tcpClientProxyReader.ManagedThreadId + "]";
+            _tcpClientProxyReader.Start();
         }
 
         protected override void _Close()
@@ -40,36 +36,38 @@ namespace BlitsMe.Communication.P2P.RUDP.Connector
 #endif
                 _tcpClient.Close();
             }
-            if (_proxyReverseThread.IsAlive && !_proxyReverseThread.Equals(Thread.CurrentThread))
+            // this guy will close with the closing of the sockets/clients
+            /*
+            if (_tcpClientProxyReader.IsAlive && !_tcpClientProxyReader.Equals(Thread.CurrentThread))
             {
 #if(DEBUG)
                 Logger.Debug("Shutting of reverse proxy thread.");
 #endif
-                _proxyReverseThread.Abort();
-            }
+                _tcpClientProxyReader.Abort();
+            }*/
         }
 
-        protected override bool ProcessTransportRead(byte[] read)
+        protected override bool ProcessTransportSocketRead(byte[] read, int length)
         {
             if (_tcpClient.Connected)
             {
 
-                _tcpClient.GetStream().Write(read, 0, read.Length);
+                _tcpClient.GetStream().Write(read, 0, length);
 #if(DEBUG)
-                Logger.Debug("Wrote " + read.Length + " to tcp socket.");
+                Logger.Debug("Wrote " + length + " to tcp socket.");
 #endif
             }
             else
             {
 #if(DEBUG)
-                Logger.Debug("Outgoing connection has been closed, stopping forward proxy");
+                Logger.Debug("Outgoing connection has been closed");
 #endif
                 return false;
             }
             return true;
         }
 
-        private void ProxyTransportWriter()
+        private void ProxyTransportSocketWriter()
         {
             try
             {
@@ -85,7 +83,13 @@ namespace BlitsMe.Communication.P2P.RUDP.Connector
 #endif
                         try
                         {
-                            if (!SendDataToTransport(tmpRead, read)) break;
+                            if (!SendDataToTransportSocket(tmpRead, read))
+                            {
+#if DEBUG
+                                Logger.Debug("Failed to read from the transport socket, closing.");
+#endif
+                                break;
+                            }
                         }
                         catch (Exception e)
                         {
@@ -93,12 +97,10 @@ namespace BlitsMe.Communication.P2P.RUDP.Connector
                             break;
                         }
                     }
-#if(DEBUG)
                     else
                     {
-                        Logger.Debug("Incoming tcp stream has closed");
+                        Logger.Info("Proxied tcp stream has closed");
                     }
-#endif
                 }
             }
             catch (Exception ex)

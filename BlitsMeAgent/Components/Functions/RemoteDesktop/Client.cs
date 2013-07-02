@@ -70,9 +70,12 @@ namespace BlitsMe.Agent.Components.Functions.RemoteDesktop
                 Closing = true;
                 if (_connector != null)
                 {
+                    // Close all active connections
                     _connector.CloseConnections();
+                    // Close the connector itself
                     _connector.Close();
                 }
+                // Notify listeners that we are done
                 OnConnectionClosed();
             }
             _connector = null;

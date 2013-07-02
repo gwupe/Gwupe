@@ -1,7 +1,6 @@
 ﻿using System;
 using System.IO;
 using System.Threading;
-using System.Timers;
 using BlitsMe.Communication.P2P.Exceptions;
 using BlitsMe.Communication.P2P.RUDP.Packet.API;
 using BlitsMe.Communication.P2P.RUDP.Packet.TCP;
@@ -38,8 +37,18 @@ namespace BlitsMe.Communication.P2P.RUDP.Tunnel
         private int _currentTimeout;
         private Thread dataSenderThread;
         public TcpSlidingWindowStats Stats;
-        private int _lastAckPacketSeq = 0;
+        private ushort _lastAckPacketSeq = 0;
         private int _lastAckPacketCount = 0;
+        private bool _disconnected;
+        private event EventHandler dataSenderComplete;
+        private readonly Object _processDataLock = new Object();
+        private bool _isDisconnecting;
+
+        public override ushort LastSeqSent
+        {
+            get { return (ushort)(_nextDataSeqOut - 1); }
+        }
+
         public override byte ProtocolId { get { return 2; } }
 
         public TcpTransportLayerSlidingWindow(ITCPTransport transport, byte connectionId, byte remoteConnectionId)
@@ -49,13 +58,20 @@ namespace BlitsMe.Communication.P2P.RUDP.Tunnel
             _recvWindow = new ITcpPacket[WindowSize];
             _sendBuffer = new CircularBuffer<byte>(BufferSize);
             Stats = new TcpSlidingWindowStats();
-            // setup our start seq numbers
-            _nextDataSeqOut = _nextDataSeqIn = _sendWindowNextFree = _oldestUnackedPacket = _recvWindowsNextFree = 0;
+            // setup our start seq numbers and window numbering
+            _sendWindowNextFree = _recvWindowsNextFree = _oldestUnackedPacket = 0;
+            _nextDataSeqOut = _nextDataSeqIn = 0;
             _highestDataSeqIn = ushort.MaxValue;
             _retryTimer = new System.Timers.Timer(_retryInterval) { AutoReset = false };
             _retryTimer.Elapsed += delegate { RetryPacketSend(); };
-            dataSenderThread = new Thread(DataSender) { IsBackground = true };
+            dataSenderThread = new Thread(DataSender) { IsBackground = true, Name = "dataSender[" + connectionId + "-" + remoteConnectionId + "]" };
             dataSenderThread.Start();
+        }
+
+        private void OnDataSenderComplete(EventArgs e)
+        {
+            EventHandler handler = dataSenderComplete;
+            if (handler != null) handler(this, e);
         }
 
         // Received this data packet
@@ -63,99 +79,102 @@ namespace BlitsMe.Communication.P2P.RUDP.Tunnel
         {
             if (!Closed)
             {
-                Stats.DataPacketsReceived++;
-                int compareSequences = BasicTcpPacket.compareSequences(_nextDataSeqIn, packet.Sequence);
-                if (compareSequences == 0)
+                lock (_processDataLock)
                 {
-                    Stats.ExpectedDataPacketsReceived++;
-                    Stats.ExpectedOverReceivedPercentage = (float) Stats.ExpectedDataPacketsReceived/
-                                                           Stats.DataPacketsReceived;
-                    if (BasicTcpPacket.compareSequences(packet.Sequence, _highestDataSeqIn) > 0)
-                        _highestDataSeqIn = packet.Sequence;
-                    // This is exactly what we were expecting
-                    // pop it in our list
-                    ITcpPacket currentPacket = _recvWindow[_recvWindowsNextFree] = packet;
-                    // Now flush our window until we get to a gap
-                    while (_recvWindow[_recvWindowsNextFree] != null)
+                    Stats.DataPacketsReceived++;
+                    int compareSequences = BasicTcpPacket.compareSequences(_nextDataSeqIn, packet.Sequence);
+                    if (compareSequences == 0)
                     {
-                        currentPacket = _recvWindow[_recvWindowsNextFree];
-                        // Send Data Upstream
-                        Socket.BufferClientData(currentPacket.Data);
-                        // clear this space in our window
-                        _recvWindow[_recvWindowsNextFree] = null;
-                        // increment our pointer to next space
-                        _recvWindowsNextFree = (byte) ((_recvWindowsNextFree + 1)%WindowSize);
-                        // increment our next next expected sequence number
-                        _nextDataSeqIn++;
-#if DEBUG
-                        Logger.Debug("Processed sq=" + currentPacket.Sequence + " upstream, nextDataSeqIn=" +
-                                     _nextDataSeqIn + ", recvWindowNextFree=" + _recvWindowsNextFree +
-                                     ", highestDataSeqIn=" + _highestDataSeqIn);
-#endif
-                    }
-                    // Send Ack (only when done with sending all the packets we can)
-                    SendAck(currentPacket, true);
-                    _lastAckedPacket = currentPacket;
-                }
-                else if (compareSequences > 0)
-                {
-                    Stats.OldDataPacketsReceived++;
-                    if (packet.ResendCount > 0) Stats.OldDataResendPacketsReceived++;
-                    Stats.OldOverReceivedPercentage = (float) Stats.OldDataPacketsReceived/Stats.DataPacketsReceived;
-                    // This is an old packet, don't process (already did that), just send ack
-#if(DEBUG)
-                    Logger.Debug("Got old Data packet (resend=" + packet.ResendCount +
-                                 "), sending ACK, data already processed.");
-#endif
-                    SendAck(packet, false);
-                }
-                else
-                {
-                    Stats.FutureDataPacketsReceived++;
-                    Stats.FutureOverReceivedPercentage = (float) Stats.FutureDataPacketsReceived/
-                                                         Stats.DataPacketsReceived;
-                    // This is an out of sequence packet from the future, 
-                    // if it fits in our window, we need to save it for future use
-                    int differenceInSequences = DifferenceInSequences(_nextDataSeqIn, packet.Sequence);
-                    if (differenceInSequences < WindowSize)
-                    {
-                        // ok we can put it in
-                        _recvWindow[(_recvWindowsNextFree + differenceInSequences)%WindowSize] = packet;
+                        Stats.ExpectedDataPacketsReceived++;
+                        Stats.ExpectedOverReceivedPercentage = (float)Stats.ExpectedDataPacketsReceived /
+                                                               Stats.DataPacketsReceived;
                         if (BasicTcpPacket.compareSequences(packet.Sequence, _highestDataSeqIn) > 0)
                             _highestDataSeqIn = packet.Sequence;
-#if(DEBUG)
-                        Logger.Warn("Queued sq=" + packet.Sequence + " in window, nextDataSeqIn=" + _nextDataSeqIn +
-                                    ", recvWindowNextFree=" + _recvWindowsNextFree + ", highestDataSeqIn=" +
-                                    _highestDataSeqIn);
-#endif
-                        // Now we send an ack for the last in sequence packet we received
-                        if (_lastAckedPacket != null)
+                        // This is exactly what we were expecting
+                        // pop it in our list
+                        ITcpPacket currentPacket = _recvWindow[_recvWindowsNextFree] = packet;
+                        // Now flush our window until we get to a gap
+                        while (_recvWindow[_recvWindowsNextFree] != null)
                         {
-                            SendAck(_lastAckedPacket, false);
-                            Stats.HoldingAcksSent++;
+                            currentPacket = _recvWindow[_recvWindowsNextFree];
+                            // Send Data Upstream (only it not closed)
+                            if (!Socket.Closed && !Socket.Closing)
+                            {
+                                Socket.BufferClientData(currentPacket.Data);
+                            }
+                            else
+                            {
+                                Logger.Debug("Got a data packet, but not writing to socket, because its closed or closing");
+                            }
+                            // clear this space in our window
+                            _recvWindow[_recvWindowsNextFree] = null;
+                            // increment our pointer to next space
+                            _recvWindowsNextFree = (byte)((_recvWindowsNextFree + 1) % WindowSize);
+                            // increment our next next expected sequence number
+                            _nextDataSeqIn++;
+                            Logger.Debug("Processed sq=" + currentPacket.Sequence + " upstream, nextDataSeqIn=" +
+                                         _nextDataSeqIn + ", recvWindowNextFree=" + _recvWindowsNextFree +
+                                         ", highestDataSeqIn=" + _highestDataSeqIn);
                         }
+                        // Send Ack (only when done with sending all the packets we can)
+                        SendAck(currentPacket, true);
+                        _lastAckedPacket = currentPacket;
+                    }
+                    else if (compareSequences > 0)
+                    {
+                        Stats.OldDataPacketsReceived++;
+                        if (packet.ResendCount > 0) Stats.OldDataResendPacketsReceived++;
+                        Stats.OldOverReceivedPercentage = (float)Stats.OldDataPacketsReceived / Stats.DataPacketsReceived;
+                        // This is an old packet, don't process (already did that), just send ack
+                        Logger.Debug("Got old Data packet (resend=" + packet.ResendCount +
+                                     "), sending ACK, data already processed.");
+                        SendAck(packet, false);
                     }
                     else
                     {
-#if(DEBUG)
-                        Logger.Warn("Got too far in the future sequence (expected " + _nextDataSeqIn + ") from packet " +
-                                    packet + ", dropping");
-#endif
-                        // Now we send an ack for the last in sequence packet we received
-                        if (_lastAckedPacket != null)
+                        Stats.FutureDataPacketsReceived++;
+                        Stats.FutureOverReceivedPercentage = (float)Stats.FutureDataPacketsReceived /
+                                                             Stats.DataPacketsReceived;
+                        // This is an out of sequence packet from the future, 
+                        // if it fits in our window, we need to save it for future use
+                        int differenceInSequences = DifferenceInSequences(_nextDataSeqIn, packet.Sequence);
+                        if (differenceInSequences < WindowSize)
                         {
-                            SendAck(_lastAckedPacket, false);
-                            Stats.HoldingAcksSent++;
+                            // ok we can put it in
+                            _recvWindow[(_recvWindowsNextFree + differenceInSequences) % WindowSize] = packet;
+                            if (BasicTcpPacket.compareSequences(packet.Sequence, _highestDataSeqIn) > 0)
+                                _highestDataSeqIn = packet.Sequence;
+                            Logger.Warn("Queued sq=" + packet.Sequence + " in window, nextDataSeqIn=" + _nextDataSeqIn +
+                                        ", recvWindowNextFree=" + _recvWindowsNextFree + ", highestDataSeqIn=" +
+                                        _highestDataSeqIn);
+                            // Now we send an ack for the last in sequence packet we received
+                            if (_lastAckedPacket != null)
+                            {
+                                SendAck(_lastAckedPacket, false);
+                                Stats.HoldingAcksSent++;
+                            }
+                        }
+                        else
+                        {
+                            Logger.Warn("Got too far in the future sequence (expected " + _nextDataSeqIn + ") from packet " +
+                                        packet + ", dropping");
+                            // Now we send an ack for the last in sequence packet we received
+                            if (_lastAckedPacket != null)
+                            {
+                                SendAck(_lastAckedPacket, false);
+                                Stats.HoldingAcksSent++;
+                            }
                         }
                     }
+                    if (Stats.DataPacketsReceived % 1000 == 0)
+                    {
+                        Logger.Debug("Received Stats:\n" + Stats.GetReceiverStats());
+                    }
+
+                    Monitor.PulseAll(_processDataLock);
                 }
-#if DEBUG
-                if (Stats.DataPacketsReceived%1000 == 0)
-                {
-                    Logger.Debug("Received Stats:\n" + Stats.GetReceiverStats());
-                }
-#endif
-            } else
+            }
+            else
             {
                 Logger.Error("Failed to process data packet, the connection closed.");
             }
@@ -172,9 +191,7 @@ namespace BlitsMe.Communication.P2P.RUDP.Tunnel
                     Stats.AcksSent++;
                 else
                     Stats.AcksResent++;
-#if DEBUG
                 Logger.Debug("Sent ack [" + outPacket + "]");
-#endif
             }
             catch (Exception e)
             {
@@ -183,22 +200,21 @@ namespace BlitsMe.Communication.P2P.RUDP.Tunnel
 
         }
 
-        public override void SendData(byte[] data, int timeout)
+        public override void SendData(byte[] data, int length, int timeout)
         {
             if (!Closing && !Closed)
             {
                 BlockIfNotEstablished(20000);
                 _currentTimeout = timeout;
-                _sendBuffer.Add(data, timeout);
+                _sendBuffer.Add(data, length, timeout);
                 Stats.DataPacketBufferCount++;
-#if DEBUG
-                Logger.Debug("Added " + data.Length + " bytes to the sendBuffer, " + _sendBuffer.Count + " in buffer");
-                if (Stats.DataPacketSendCount%1000 == 0)
+                Logger.Debug("Added " + length + " bytes to the sendBuffer, " + _sendBuffer.Count + " in buffer");
+                if (Stats.DataPacketSendCount % 1000 == 0)
                 {
                     Logger.Debug("Sender Stats:\n" + Stats.GetSenderStats());
                 }
-#endif
-            } else
+            }
+            else
             {
                 throw new IOException("Cannot send data, connection has been closed");
             }
@@ -208,80 +224,75 @@ namespace BlitsMe.Communication.P2P.RUDP.Tunnel
         {
             try
             {
-                while (_sendBuffer.Count > 0 || !Closing)
+                // if we still have stuff to send or we are still open
+                while (_sendBuffer.Count > 0 || (!Closing && !Closed))
                 {
                     long waitStart = Environment.TickCount;
                     lock (_ackWaitingLock)
                     {
+                        Logger.Warn("Waited " + (Environment.TickCount - waitStart) + "ms for ack lock");
+                        // wait until there is space in the window. ( we can't send stuff to far into the future )
                         while (!SpaceInWindow())
                         {
                             Stats.NoSpaceInWindow++;
-#if DEBUG
                             Logger.Debug("Pausing send, no space left in window");
-#endif
+                            // timeout waiting for space in the window
                             if (!Monitor.Wait(_ackWaitingLock, _currentTimeout))
                             {
-                                throw new TimeoutException("Timeout occured while sending data to " + Transport.TransportManager.RemoteIp);
+                                throw new TimeoutException("Timeout occured while waiting for space in the window to " + Transport.TransportManager.RemoteIp);
                             }
-#if DEBUG
                             Logger.Debug("AckWaitLock release, probably space in window now");
-#endif
                         }
 
                     }
+                    Logger.Warn("Waited " + (Environment.TickCount - waitStart) + "ms for space to become available");
+                    // ok now there is space in the window, we will need to send some data and add it to the window.
                     byte[] payload = _sendBuffer.Get(TcpChunkSize);
                     if (payload.Length > 0)
                     {
-#if DEBUG
                         Logger.Debug("Got " + payload.Length + " bytes from the sendBuffer, " + _sendBuffer.Count +
                                      " left in buffer");
-#endif
                         StandardTcpDataPacket packet = new StandardTcpDataPacket { Data = payload, ConnectionId = ConnectionId, Sequence = _nextDataSeqOut };
-#if(DEBUG)
-                        Logger.Debug("Sending packet " + packet);
-#endif
-                        //long startTime = DateTime.Now.Ticks;
-                        if (!Established)
-                        {
-#if(DEBUG)
-                            Logger.Debug("Connection is down, aborting data send");
-#endif
-                            throw new ConnectionException("Cannot send data, connection is down");
-                        }
+                        // make sure there is nothing in the next window space
                         if (_sendWindow[_sendWindowNextFree] != null)
                             throw new ConnectionException(
                                 "Cannot insert packet into window, there is something already there! [" +
                                 _sendWindow[_sendWindowNextFree].Sequence + "]");
+                        // actually send the packet
                         Transport.SendData(packet);
+                        // calculate some stats
                         Stats.AvgSendWaitTime = (Stats.AvgSendWaitTime * Stats.DataPacketSendCount +
                                                  (Environment.TickCount - waitStart)) / (Stats.DataPacketSendCount + 1);
                         Stats.DataPacketSendCount++;
+                        // timestamp the packet so we know when it was sent, this will help us when it comes to retrying packets
                         packet.Timestamp = Environment.TickCount;
+                        // put it in the next free space in the window and update the free space, expected next data seq etc.
                         _sendWindow[_sendWindowNextFree] = packet;
                         _sendWindowNextFree = (byte)((_sendWindowNextFree + 1) % WindowSize);
                         _nextDataSeqOut++;
-                        if (!_retryTimer.Enabled)
+                        lock (_retryTimer)
                         {
-                            _retryTimer.Interval = _retryInterval;
-                            _retryTimer.Start();
-#if DEBUG
-                            Logger.Debug("Setup retry time for " + packet.Sequence + " to " + _retryInterval + "ms");
-#endif
+                            // if we are not currently pending for a retry of an earlier packet, start the timer now.
+                            if (!_retryTimer.Enabled)
+                            {
+                                _retryTimer.Interval = _retryInterval;
+                                _retryTimer.Start();
+                                Logger.Debug("Setup retry time for " + packet.Sequence + " to " + _retryInterval + "ms");
+                            }
                         }
-#if DEBUG
                         Logger.Debug("Sent packet " + packet.Sequence + ", nextDataSeqOut=" + _nextDataSeqOut +
                                      ", sendWindowNextFree=" + _sendWindowNextFree + ", oldestUnackedPacket=" +
                                      _oldestUnackedPacket);
-#endif
                     }
                 }
+                Logger.Debug("Data sender has completed, no more data to send and connection is closing or closed.");
             }
             catch (Exception e)
             {
                 Logger.Error("DataSender caught Exception while running buffer : " + e.Message, e);
-                if (!Closing)
-                    _Close();
+                Close();
             }
+            OnDataSenderComplete(EventArgs.Empty);
         }
 
         private bool SpaceInWindow()
@@ -318,10 +329,8 @@ namespace BlitsMe.Communication.P2P.RUDP.Tunnel
 
                         _sendWindow[_oldestUnackedPacket] = null;
                         _oldestUnackedPacket = (byte)((_oldestUnackedPacket + 1) % WindowSize);
-#if DEBUG
                         Logger.Debug("Cleared old packet " + currentPacket.Sequence + ", oldestUnackedPacket=" +
                                      _oldestUnackedPacket);
-#endif
                         // save the last ack we received (and the count)
                         _lastAckPacketSeq = currentPacket.Sequence;
                         _lastAckPacketCount = 1;
@@ -333,23 +342,23 @@ namespace BlitsMe.Communication.P2P.RUDP.Tunnel
                                 // we can check the RTT here
                                 long rtt = Environment.TickCount - currentPacket.Timestamp;
                                 AdjustRetryInterval(rtt);
-#if DEBUG
                                 Logger.Debug("RTT of " + currentPacket.Sequence + " is " + rtt + ", srtt=" + _srtt +
                                              ", deviation=" + _deviation + ", retryInterval=" + _retryInterval);
-#endif
                             }
-                            // reset the time against the next unacked packet
-                            long timeLeft = _retryInterval - (Environment.TickCount - currentPacket.Timestamp);
-                            if (timeLeft <= 0) timeLeft = 1;
-                            if (_retryTimer.Enabled)
+                            lock (_retryTimer)
                             {
-                                _retryTimer.Stop();
+                                // reset the time against the next unacked packet
+                                long timeLeft = _retryInterval - (Environment.TickCount - currentPacket.Timestamp);
+                                if (timeLeft <= 0) timeLeft = 1;
+                                if (_retryTimer.Enabled)
+                                {
+                                    _retryTimer.Stop();
+                                }
+                                _retryTimer.Interval = timeLeft;
+                                Logger.Debug("Setup retransmit timeout for " + currentPacket.Sequence + " to " +
+                                             timeLeft + "ms.");
+                                _retryTimer.Start();
                             }
-                            _retryTimer.Interval = timeLeft;
-#if DEBUG
-                            Logger.Debug("Setup retransmit timeout for " + currentPacket.Sequence + " to " + timeLeft + "ms.");
-#endif
-                            _retryTimer.Start();
                             break;
                         }
                     }
@@ -359,41 +368,40 @@ namespace BlitsMe.Communication.P2P.RUDP.Tunnel
                         if (packet.Sequence == _lastAckPacketSeq)
                         {
                             _lastAckPacketCount++;
+                            Logger.Debug("Discarding the last ack again " + packet + "[" + _lastAckPacketCount + " times], checking for retransmit");
                             // we only resend via fast transmit if it is a count of 3 and it hasn't been resent before
-                            if (_lastAckPacketCount == 3 && currentPacket.ResendCount == 0)
+                            if (_lastAckPacketCount == 3)
                             {
-                                if (_retryTimer.Enabled)
+                                lock (_retryTimer)
                                 {
-                                    _retryTimer.Stop();
+                                    if (_retryTimer.Enabled)
+                                    {
+                                        _retryTimer.Stop();
+                                    }
+                                    // fast retransmit
+                                    Logger.Warn("Received 3 acks of seq=" + _lastAckPacketSeq + ", running fast retransmit of " + currentPacket);
+                                    RetryPacketSend();
+                                    Stats.DataPacketFastRetransmitCount++;
+                                    //_lastAckPacketCount = 0;
                                 }
-                                // fast retransmit
-#if DEBUG
-                                Logger.Warn("Received 3 acks of seq=" + _lastAckPacketSeq + ", running fast retransmit of " + currentPacket);
-#endif
-                                RetryPacketSend();
-                                Stats.DataPacketFastRetransmitCount++;
-                                //_lastAckPacketCount = 0;
                             }
                         }
                         else
                         {
-#if DEBUG
                             Logger.Debug("Discarding old ack " + packet);
-#endif
                             Stats.OldAcksReceived++;
                         }
                         break;
                     }
                 }
-#if DEBUG
                 Logger.Debug("Finished processing ack " + packet.Sequence + ", expecting next ack to be " +
                              (_sendWindow[_oldestUnackedPacket] == null
                                   ? "none"
                                   : _sendWindow[_oldestUnackedPacket].Sequence.ToString()));
-#endif
                 Monitor.PulseAll(_ackWaitingLock);
             }
         }
+
 
         private void AdjustRetryInterval(long rtt)
         {
@@ -403,9 +411,7 @@ namespace BlitsMe.Communication.P2P.RUDP.Tunnel
             _retryInterval = (int)(_srtt + (4 * _deviation));
             if (_retryInterval < 1)
             {
-#if DEBUG
                 Logger.Debug("_retryInterval was too low, adjusting it to be 1");
-#endif
                 _retryInterval = 1;
             }
         }
@@ -419,7 +425,7 @@ namespace BlitsMe.Communication.P2P.RUDP.Tunnel
             }
             if (nextDataPacket != null)
             {
-                if (Established)
+                if (!Closed)
                 {
                     if (nextDataPacket.ResendCount > 15)
                     {
@@ -447,53 +453,102 @@ namespace BlitsMe.Communication.P2P.RUDP.Tunnel
             }
         }
 
+        public override void ProcessDisconnect(StandardDisconnectPacket packet)
+        {
+            if (!_isDisconnecting)
+            {
+                _isDisconnecting = true;
+                // we need to make sure we have all the data that this connection sent.
+                long startTime = Environment.TickCount;
+                int elapsedTime = 0;
+                int timeout = 60000;
+                lock (_processDataLock)
+                {
+                    Logger.Debug("Waiting for all data which was sent to arrive, up until " + packet.Sequence);
+                    while (elapsedTime < timeout &&
+                           (_lastAckedPacket == null || _lastAckedPacket.Sequence < packet.Sequence))
+                    {
+                        Monitor.Wait(_processDataLock, timeout - elapsedTime);
+                        elapsedTime = (int)(Environment.TickCount - startTime);
+                    }
+                }
+                if (_lastAckedPacket == null || _lastAckedPacket.Sequence < packet.Sequence)
+                {
+                    Logger.Error("Failed to receive all the sent data packets during disconnect, timeout while waiting, last acked packet is " + _lastAckedPacket + ", we wanted " + packet.Sequence);
+                }
+                else
+                {
+                    Logger.Debug("We have successfully received all the data that was sent : expected " + packet.Sequence + ", got " + _lastAckedPacket.Sequence);
+                }
+                // Mark it as disconnected
+                _disconnected = true;
+                // ok close everything
+                Close();
+                // and now send disconnect response
+                //Transport.SendData(new StandardDisconnectRsPacket(packet.ConnectionId));
+            }
+        }
+
+        public override bool Disconnected
+        {
+            get { return _disconnected; }
+        }
+
         public override void Close()
         {
             if (Established && !Closing && !Closed)
             {
-                // block until DataSender completes
+                Logger.Debug("Closing connection " + ConnectionId + "-" + RemoteConnectionId);
                 Closing = true;
-#if DEBUG
-                Logger.Debug("Waiting for data sender to complete");
-#endif
+                dataSenderComplete += delegate { CompleteClose(); };
+                // release a potentially blocked data sender
                 _sendBuffer.Release();
-                dataSenderThread.Join();
-#if DEBUG
-                Logger.Debug("Data sender has completed, continuing with shutting down.");
-#endif
-                // wait to empty our queue
-                long startTime = Environment.TickCount;
-                int elapsedTime = 0;
-                int timeout = 30000;
-                lock (_ackWaitingLock)
+
+            }
+        }
+
+        private void CompleteClose()
+        {
+            Logger.Debug("Data Sender has completed, closing remaining connections");
+            Established = false;
+            // close the socket (this will return immediately if the socket is already 
+            // closed doing nothing further, i.e. if the close has come from upstream)
+            Socket.Close();
+            // wait to empty our window of unacked data
+            WaitOnPendingAcks();
+            // Log
+            Logger.Info("Sender Stats:\n" + Stats.GetSenderStats());
+            Logger.Info("Receiver Stats:\n" + Stats.GetReceiverStats());
+            // close the connection maintained by the transport
+            OnConnectionClose(EventArgs.Empty);
+            // Close
+            Closing = false;
+            Closed = true;
+        }
+
+        private void WaitOnPendingAcks()
+        {
+            long startTime = Environment.TickCount;
+            int elapsedTime = 0;
+            int timeout = 60000;
+            lock (_ackWaitingLock)
+            {
+                // wait 60 seconds for it to close down nicely
+                Logger.Debug("Waiting for all outgoing data to be acked");
+                while (elapsedTime < timeout && _sendWindow[_oldestUnackedPacket] != null)
                 {
-                    // wait 10 seconds for it to close down nicely
-#if DEBUG
-                    Logger.Debug("Waiting for all outgoing data to be acked");
-#endif
-                    while (elapsedTime < timeout && _sendWindow[_oldestUnackedPacket] != null)
-                    {
-                        Monitor.Wait(_ackWaitingLock, timeout - elapsedTime);
-                        elapsedTime = (int)(Environment.TickCount - startTime);
-                    }
-                    if (_sendWindow[_oldestUnackedPacket] != null)
-                    {
-                        Logger.Error("Closing connection while there are still unacked data packets, we have timed out this connection.");
-                    }
-                    else
-                    {
-#if DEBUG
-                        Logger.Debug("All send data has been acked");
-#endif
-                    }
+                    Monitor.Wait(_ackWaitingLock, timeout - elapsedTime);
+                    elapsedTime = (int)(Environment.TickCount - startTime);
                 }
-                _Close();
-#if DEBUG
-                Logger.Debug("Sender Stats:\n" + Stats.GetSenderStats());
-                Logger.Debug("Receiver Stats:\n" + Stats.GetReceiverStats());
-#endif
-                Closing = false;
-                Closed = true;
+                if (_sendWindow[_oldestUnackedPacket] != null)
+                {
+                    Logger.Error(
+                        "Closing connection while there are still unacked data packets, we have timed out this connection.");
+                }
+                else
+                {
+                    Logger.Debug("All send data has been acked");
+                }
             }
         }
     }

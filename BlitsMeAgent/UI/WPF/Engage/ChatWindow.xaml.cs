@@ -29,6 +29,7 @@ namespace BlitsMe.Agent.UI.WPF.Engage
             _chat.NewMessage += ChatOnNewMessage;
             ChatPanelViewer.ScrollToBottom();
             DataContext = new ChatWindowDataContext(_appContext, this);
+            Logger.Debug(ChatPanel.Items.Count + " vs " + _chat.Conversation.Exchange.Count);
         }
 
         #region EventHandlers

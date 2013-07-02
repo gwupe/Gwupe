@@ -14,41 +14,34 @@ namespace BlitsMe.Communication.P2P.RUDP.Connector.API
 
         private static readonly ILog Logger = LogManager.GetLogger(typeof(TcpTransportConnection));
 
-        private readonly Thread _transportReaderThread;
+        private readonly Thread _transportSocketReader;
 
         private readonly ITcpOverUdptSocket _socket;
 
-        internal bool Started { get; private set; }
         internal bool Closing { get; private set; }
-        internal event EventHandler Closed;
+        internal bool Closed { get; private set; }
 
-        private void OnClosed()
+        internal event EventHandler CloseConnection;
+
+        private void OnCloseConnection()
         {
-            EventHandler handler = Closed;
+            EventHandler handler = CloseConnection;
             if (handler != null) handler(this, EventArgs.Empty);
         }
 
         internal TcpTransportConnection(ITcpOverUdptSocket socket)
         {
             _socket = socket;
-            _transportReaderThread = new Thread(TransportReader) { IsBackground = true };
-            _transportReaderThread.Name = "_transportReaderThread[" + _transportReaderThread.ManagedThreadId + "]";
-        }
-
-        protected abstract void _Start();
-
-        public void Start()
-        {
-            _transportReaderThread.Start();
-            _Start();
-            Started = true;
+            _transportSocketReader = new Thread(TransportSocketReader) { IsBackground = true };
+            _transportSocketReader.Name = "_transportSocketReader[" + _transportSocketReader.ManagedThreadId + "]";
+            _transportSocketReader.Start();
         }
 
         protected abstract void _Close();
 
         public void Close()
         {
-            if (!Closing && Started)
+            if (!Closing && !Closed)
             {
                 Closing = true;
                 _Close();
@@ -59,29 +52,32 @@ namespace BlitsMe.Communication.P2P.RUDP.Connector.API
                 Logger.Debug("Closing Socket");
 #endif
                 _socket.Close();
+                /* this will close with the surrounding connections
                 // Only abort the thread if we are not it.
-                if (_transportReaderThread.IsAlive && !_transportReaderThread.Equals(Thread.CurrentThread))
+                if (_transportSocketReader.IsAlive && !_transportSocketReader.Equals(Thread.CurrentThread))
                 {
 #if(DEBUG)
                     Logger.Debug("Shutting of forward proxy thread.");
 #endif
-                    _transportReaderThread.Abort();
+                    _transportSocketReader.Abort();
                 }
-                Started = false;
-                OnClosed();
+                */
+                Closing = false;
+                Closed = true;
+                OnCloseConnection();
             }
         }
 
-        protected abstract bool ProcessTransportRead(byte[] data);
+        protected abstract bool ProcessTransportSocketRead(byte[] data, int length);
 
-        private void TransportReader()
+        private void TransportSocketReader()
         {
             try
             {
-                int read = -1;
                 while (!_socket.Closed && !_socket.Closing)
                 {
                     byte[] tmpRead = new byte[8192];
+                    int read;
                     try
                     {
                         read = _socket.Read(tmpRead, tmpRead.Length);
@@ -93,18 +89,17 @@ namespace BlitsMe.Communication.P2P.RUDP.Connector.API
                     if (read > 0)
                     {
 #if(DEBUG)
-                        Logger.Debug("Read " + read + " bytes from tcp layer socket, writing to upstream handler [md5=" +
-                                     Util.getSingleton().getMD5Hash(tmpRead, 0, read) + "]");
+                        Logger.Debug("Read " + read + " bytes from transport socket, writing to upstream handler");
 #endif
                         try
                         {
-                            if (read < 8192)
+                            if (!ProcessTransportSocketRead(tmpRead, read))
                             {
-                                var data = new byte[read];
-                                Array.Copy(tmpRead, data, read);
-                                tmpRead = data;
+#if DEBUG
+                                Logger.Debug("Upstream handler failed to process the transport socket read data.");
+#endif
+                                break;
                             }
-                            if (!ProcessTransportRead(tmpRead)) break;
                         }
                         catch (Exception e)
                         {
@@ -133,33 +128,27 @@ namespace BlitsMe.Communication.P2P.RUDP.Connector.API
             }
         }
 
-        public bool SendDataToTransport(byte[] tmpRead, int read)
+        public bool SendDataToTransportSocket(byte[] data, int length)
         {
-            byte[] write = new byte[read];
-            Array.Copy(tmpRead, 0, write, 0, read);
-            return SendDataToTransport(write);
-        }
-
-        public bool SendDataToTransport(byte[] write)
-        {
-            if (!Closing)
-            {
-                if (!_socket.Closed)
+                if (!Closing && !Closed)
                 {
-                    _socket.Send(write, 30000);
+                    if (!_socket.Closed)
+                    {
+                        _socket.Send(data, length, 30000);
+                    }
+                    else
+                    {
+#if(DEBUG)
+                        Logger.Debug("Outgoing transport socket has been closed");
+#endif
+                        return false;
+                    }
                 }
                 else
                 {
-#if(DEBUG)
-                    Logger.Debug("Outgoing transportManager socket has been closed");
-#endif
+                    Logger.Debug("Cannot write data to Transport socket, connection is closing or is closed");
                     return false;
                 }
-            } else
-            {
-                Logger.Debug("Cannot write data to Transport, connection is closing");
-                return false;
-            }
             return true;
         }
     }

@@ -1,7 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading;
 using BlitsMe.Communication.P2P.RUDP.Packet.API;
 using BlitsMe.Communication.P2P.RUDP.Packet.TCP;
@@ -9,27 +6,43 @@ using BlitsMe.Communication.P2P.RUDP.Socket;
 using BlitsMe.Communication.P2P.RUDP.Socket.API;
 using BlitsMe.Communication.P2P.RUDP.Tunnel.API;
 using log4net;
-using log4net.Repository.Hierarchy;
 
 namespace BlitsMe.Communication.P2P.RUDP.Tunnel
 {
     public abstract class TcpTransportLayer : ITcpTransportLayer
     {
-        private static readonly ILog Logger = LogManager.GetLogger(typeof (TcpTransportLayer));
+        private static readonly ILog Logger = LogManager.GetLogger(typeof(TcpTransportLayer));
 
         private readonly byte _connectionId;
         protected ITCPTransport Transport;
         private readonly byte _remoteConnectionId;
-        private bool _isEstablished;
         protected readonly Object CheckEstablishedLock = new Object();
         public abstract byte ProtocolId { get; }
         public IInternalTcpOverUdptSocket Socket { get; private set; }
-        public bool Established { get { return _isEstablished; } }
+        public bool Established { protected set; get; }
+        public abstract ushort LastSeqSent { get; }
         public bool Closing { protected set; get; }
         public bool Closed { protected set; get; }
         public abstract void ProcessDataPacket(ITcpPacket packet);
-        public abstract void SendData(byte[] data, int timeout);
+        public abstract void SendData(byte[] data, int length, int timeout);
         public abstract void ProcessAck(StandardAckPacket packet);
+        public event EventHandler ConnectionOpen;
+
+        public void OnConnectionOpen(EventArgs e)
+        {
+            EventHandler handler = ConnectionOpen;
+            if (handler != null) handler(this, e);
+        }
+
+        public event EventHandler ConnectionClose;
+        public abstract void ProcessDisconnect(StandardDisconnectPacket packet);
+        public abstract bool Disconnected { get; }
+
+        public void OnConnectionClose(EventArgs e)
+        {
+            EventHandler handler = ConnectionClose;
+            if (handler != null) handler(this, e);
+        }
 
         // Properties
         public byte ConnectionId
@@ -50,26 +63,13 @@ namespace BlitsMe.Communication.P2P.RUDP.Tunnel
             Socket = new BufferedTcpOverUdptSocket(this);
         }
 
-
-        public void _Close()
-        {
-            if (_isEstablished)
-            {
-                _isEstablished = false;
-                // close the socket
-                Socket.Close();
-                // close the connection maintained by the transportManager
-                Transport.CloseConnection(_connectionId);
-            }
-        }
-
-
         public void Open()
         {
             lock (CheckEstablishedLock)
             {
-                _isEstablished = true;
+                Established = true;
                 Monitor.Pulse(CheckEstablishedLock);
+                OnConnectionOpen(EventArgs.Empty);
             }
         }
 

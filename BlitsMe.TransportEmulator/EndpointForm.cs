@@ -100,7 +100,7 @@ namespace BlitsMe.TransportEmulator
                     rand.NextBytes(buffer);
                     int startSend = Environment.TickCount;
                     Logger.Info("Sending packet [" + count + "] of " + sendSize + "b");
-                    transportConnection.SendDataToTransport(buffer);
+                    transportConnection.SendDataToTransportSocket(buffer,buffer.Length);
                     sent += sendSize;
                     Logger.Info("Sent packet [" + count + "] of " + sendSize + "b, took " + (Environment.TickCount - startSend) + "ms, " + (buffSize - sent) + "b left.");
                     Array.Copy(buffer, 0, data, sent - sendSize, sendSize);
@@ -137,27 +137,27 @@ namespace BlitsMe.TransportEmulator
         }
 
 
-        public bool ListeningReader(byte[] data, TcpTransportConnection connection)
+        public bool ListeningReader(byte[] data, int length, TcpTransportConnection connection)
         {
-            Logger.Info("Received packet [size=" + data.Length + "]");
+            Logger.Info("Received packet [size=" + length + "]");
 
-            long totalInBytes = Convert.ToInt64(inBytes.Text) + data.Length;
+            long totalInBytes = Convert.ToInt64(inBytes.Text) + length;
             Invoke(
                 new Action(() => { inKbps.Text = (totalInBytes / (Environment.TickCount - startTime) * 1000 / 1024).ToString(); }
 
                     ));
             Invoke(new Action(() => { inBytes.Text = totalInBytes.ToString(); }));
-            byte[] newBuffer = new byte[recvBuffer.Length + data.Length];
+            byte[] newBuffer = new byte[recvBuffer.Length + length];
             Array.Copy(recvBuffer, newBuffer, recvBuffer.Length);
-            Array.Copy(data, 0, newBuffer, recvBuffer.Length, data.Length);
+            Array.Copy(data, 0, newBuffer, recvBuffer.Length, length);
             recvBuffer = newBuffer;
             int markerCount = recvBuffer.Length / marker;
-            int length = markerCount * marker;
+            int markerLength = markerCount * marker;
             Invoke(
                 new Action(
                     () =>
                     {
-                        md5total.Text = markerCount.ToString() + "M"; md5sum.Text = Util.getSingleton().getMD5Hash(recvBuffer, 0, length);
+                        md5total.Text = markerCount.ToString() + "M"; md5sum.Text = Util.getSingleton().getMD5Hash(recvBuffer, 0, markerLength);
                     }));
             return true;
         }

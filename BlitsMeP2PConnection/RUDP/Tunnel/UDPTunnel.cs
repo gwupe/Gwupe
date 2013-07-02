@@ -66,7 +66,7 @@ namespace BlitsMe.Communication.P2P.RUDP.Tunnel
         {
             get { return _pingFailCount > 0; }
         }
-        
+
         // are we synced
         public bool IsTunnelEstablished
         {
@@ -108,6 +108,7 @@ namespace BlitsMe.Communication.P2P.RUDP.Tunnel
             Id = Util.getSingleton().generateString(8);
             IPEndPoint endPoint = new IPEndPoint(IPAddress.Any, port);
             _udpClient = new UdpClient(endPoint);
+            PeerLatency = 50;
             InitReceiver();
         }
 
@@ -141,17 +142,19 @@ namespace BlitsMe.Communication.P2P.RUDP.Tunnel
 #if(DEBUG)
                         Logger.Debug("Pinging peer " + _peer);
 #endif
-                        PeerLatency = _pinger.Ping(_peer, 10000, _udpClient, _localConnection);
+                        var ping = _pinger.Ping(_peer, 10000, _udpClient, _localConnection);
+                        // Average out the last 10 pings
+                        PeerLatency = ((PeerLatency * 9) + ping) / 10;
                         if (_pingFailCount > 0)
                         {
-                            Logger.Info("Pinged successfully, recovered from " + _pingFailCount + " ping failure(s).");
+                            Logger.Info("Pinged successfully [" + ping + "ms (" + PeerLatency + "ms avg)], recovered from " + _pingFailCount + " ping failure(s).");
                         }
                         _pingFailCount = 0;
                     }
                     catch (Exception e)
                     {
                         _pingFailCount++;
-                        Logger.Warn("Ping threw an exception [failCount=" + _pingFailCount + ", max=" + AllowedPingFailCount + "] : " + e.Message);
+                        Logger.Warn("Ping failed [failCount=" + _pingFailCount + ", max=" + AllowedPingFailCount + "] : " + e.Message);
                         if (_pingFailCount >= AllowedPingFailCount)
                         {
                             Logger.Error("Peer failed to respond after " + _pingFailCount + " attempts, shutting down link");
@@ -222,14 +225,15 @@ namespace BlitsMe.Communication.P2P.RUDP.Tunnel
         public void SendData(byte[] data)
         {
             StandardTunnelDataPacket packet = new StandardTunnelDataPacket();
-            if(EncryptData != null)
+            if (EncryptData != null)
             {
                 try
                 {
                     EncryptData(ref data);
-                } catch(Exception e)
+                }
+                catch (Exception e)
                 {
-                    Logger.Error("Encryption failed, shutting down tunnel : " + e.Message,e);
+                    Logger.Error("Encryption failed, shutting down tunnel : " + e.Message, e);
                     this.Close();
                 }
             }
@@ -316,8 +320,15 @@ namespace BlitsMe.Communication.P2P.RUDP.Tunnel
                         Logger.Debug("Remote host stated ICMP port closed, ignoring");
 #endif
                     }
+                    else if (e.ErrorCode == 10052) // Got a ttl expired which can happen since we are spamming both internal and external IP's, ignore
+                    {
+#if(DEBUG)
+                        Logger.Debug("Ttl on one of our packets has expired, ignoring.");
+#endif
+                    }
                     else
                     {
+                        Logger.Warn("Caught a socket exception [" + e.ErrorCode + "], this looks spurious, ignoring : " + e.Message);
                         Logger.Error("Caught a socket exception [" + e.ErrorCode + "], shutting down read thread : " + e.Message);
                         this.Close();
                         break;
@@ -326,7 +337,7 @@ namespace BlitsMe.Communication.P2P.RUDP.Tunnel
                 catch (ThreadAbortException e)
                 {
 #if DEBUG
-                    Logger.Debug("Thread is aborting, closing : " + e.Message); 
+                    Logger.Debug("Thread is aborting, closing : " + e.Message);
 #endif
                     this.Close();
                     break;

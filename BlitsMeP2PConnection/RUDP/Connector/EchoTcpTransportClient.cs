@@ -26,7 +26,6 @@ namespace BlitsMe.Communication.P2P.RUDP.Connector
         public TcpTransportConnection Connect()
         {
             _transportConnection = new DefaultTcpTransportConnection(_transportManager.TCPTransport.OpenConnection("ECHO"),ReadReply);
-            _transportConnection.Start();
             _waiter = new AutoResetEvent(false);
             return _transportConnection;
         }
@@ -38,7 +37,8 @@ namespace BlitsMe.Communication.P2P.RUDP.Connector
                 lock (locker)
                 {
                     _echoStore = message;
-                    _transportConnection.SendDataToTransport(Encoding.UTF8.GetBytes(message));
+                    var bytes = Encoding.UTF8.GetBytes(message);
+                    _transportConnection.SendDataToTransportSocket(bytes, bytes.Length);
                     if (_waiter.WaitOne(10000))
                     {
                         Logger.Info("Successfully received echo for " + message);
@@ -53,9 +53,9 @@ namespace BlitsMe.Communication.P2P.RUDP.Connector
             }
         }
 
-        private bool ReadReply(byte[] bytes, TcpTransportConnection connection)
+        private bool ReadReply(byte[] bytes, int length, TcpTransportConnection connection)
         {
-            var reply = Encoding.UTF8.GetString(bytes, 0, bytes.Length);
+            var reply = Encoding.UTF8.GetString(bytes, 0, length);
             if(reply.Equals(_echoStore))
             {
                 Logger.Info("Received " + reply);

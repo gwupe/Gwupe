@@ -26,6 +26,7 @@ namespace BlitsMe.Cloud.Communication
         public event ConnectionEvent Disconnected;
         public event ConnectionEvent Connected;
         private readonly X509Certificate2 _cacert;
+        public long LastPing { get; private set; }
 
         public AutoResetEvent ConnectionOpenEvent = new AutoResetEvent(false);
         public AutoResetEvent ConnectionCloseEvent = new AutoResetEvent(false);
@@ -143,10 +144,11 @@ namespace BlitsMe.Cloud.Communication
         {
             try
             {
-                long startTime = DateTime.Now.Ticks;
-                PingRs pong = WebSocketClient.SendRequest<PingRq, PingRs>(new PingRq());
+                long startTime = Environment.TickCount;
+                WebSocketClient.SendRequest<PingRq, PingRs>(new PingRq());
+                LastPing = Environment.TickCount - startTime;
 #if DEBUG
-                Logger.Debug("Ping to blitsme [" + _connection.Client.Client.RemoteEndPoint + "] succeeded, round trip " + ((DateTime.Now.Ticks - startTime) / 10000) + " ms");
+                Logger.Debug("Ping to blitsme [" + _connection.Client.Client.RemoteEndPoint + "] succeeded, round trip " + LastPing + " ms");
 #endif
                 return true;
             }
@@ -165,8 +167,11 @@ namespace BlitsMe.Cloud.Communication
 
         protected virtual void OnDisconnect(EventArgs e)
         {
-            _connectionEstablished = false;
-            Disconnected(this, e);
+            if (_connectionEstablished)
+            {
+                _connectionEstablished = false;
+                Disconnected(this, e);
+            }
         }
 
         public void Connect(Uri uri)
@@ -200,12 +205,11 @@ namespace BlitsMe.Cloud.Communication
 
         private void CloseConnection(int code, String reason)
         {
-            _connectionEstablished = false;
             if (IsConnected())
             {
                 _connection.Close(code, reason);
             }
-            //OnDisconnect(new EventArgs());
+            OnDisconnect(new EventArgs());
         }
     }
 

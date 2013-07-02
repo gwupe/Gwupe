@@ -20,7 +20,9 @@ namespace BlitsMe.Sandbox
 
         public Class1()
         {
-            TestWaver();
+            ushort hello = 0;
+            hello = (ushort)(hello - 1);
+            //TestWaver();
             //RunBufferTest();
         }
 

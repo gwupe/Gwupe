@@ -102,7 +102,7 @@ namespace BlitsMe.Communication.P2P.RUDP.Connector
         {
             if (!Listening)
             {
-                _listener = new System.Net.Sockets.TcpListener(IPAddress.Loopback, port);
+                _listener = new TcpListener(IPAddress.Loopback, port);
                 _listener.Start();
                 Listening = true;
 #if DEBUG
@@ -182,8 +182,7 @@ namespace BlitsMe.Communication.P2P.RUDP.Connector
                 ITcpOverUdptSocket socket = _transportManager.TCPTransport.OpenConnection(Name);
                 OnConnectionAccepted();
                 ProxyTcpConnection proxyTcpConnection = new ProxyTcpConnection(client, socket);
-                proxyTcpConnection.Closed += delegate { ProxyConnectionOnClosed(proxyTcpConnection); };
-                proxyTcpConnection.Start();
+                proxyTcpConnection.CloseConnection += delegate { ProxyConnectionOnClosed(proxyTcpConnection); };
                 _openConnections.Add(proxyTcpConnection);
             }
             catch (Exception e)

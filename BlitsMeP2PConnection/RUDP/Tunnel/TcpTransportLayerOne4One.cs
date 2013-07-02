@@ -23,6 +23,8 @@ namespace BlitsMe.Communication.P2P.RUDP.Tunnel
         private ushort _sequenceIn = ushort.MaxValue - 50; // sequence number we last received in
         private ushort _sequenceOut = ushort.MaxValue - 50; // sequence number we last sent out
         private readonly Object _sendingLock = new Object(); // lock to make sending thread safe
+        private ushort _lastSeqSent;
+        private bool _disconnected;
         public int AckWaitInterval { get; private set; }
         public override byte ProtocolId { get { return 1; } }
 
@@ -41,7 +43,7 @@ namespace BlitsMe.Communication.P2P.RUDP.Tunnel
             AckWaitInterval = 300;
         }
 
-        public override void SendData(byte[] data, int timeout)
+        public override void SendData(byte[] data, int length, int timeout)
         {
             BlockIfNotEstablished(timeout);
             long waitTime = timeout * 10000;
@@ -49,7 +51,9 @@ namespace BlitsMe.Communication.P2P.RUDP.Tunnel
             {
                 _sequenceOut++;
                 StandardTcpDataPacket packet = new StandardTcpDataPacket(_sequenceOut);
-                packet.Data = data;
+                byte[] packetData = new byte[length];
+                Array.Copy(data,packetData,length);
+                packet.Data = packetData;
                 packet.ConnectionId = ConnectionId;
 #if(DEBUG)
                 Logger.Debug("Sending packet " + packet.ToString());
@@ -103,6 +107,11 @@ namespace BlitsMe.Communication.P2P.RUDP.Tunnel
             }
         }
 
+
+        public override ushort LastSeqSent
+        {
+            get { return _lastSeqSent; }
+        }
 
         public override void ProcessDataPacket(ITcpPacket packet)
         {
@@ -169,9 +178,19 @@ namespace BlitsMe.Communication.P2P.RUDP.Tunnel
             }
         }
 
+        public override void ProcessDisconnect(StandardDisconnectPacket packet)
+        {
+            throw new NotImplementedException();
+        }
+
+        public override bool Disconnected
+        {
+            get { return _disconnected; }
+        }
+
         public override void Close()
         {
-            _Close();
+            
         }
     }
 }

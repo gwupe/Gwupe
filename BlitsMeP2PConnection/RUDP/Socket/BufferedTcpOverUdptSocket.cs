@@ -25,9 +25,9 @@ namespace BlitsMe.Communication.P2P.RUDP.Socket
             get { return _connection; }
         }
 
-        public void Send(byte[] data, int timeout)
+        public void Send(byte[] data, int length, int timeout)
         {
-            Connection.SendData(data, timeout);
+            Connection.SendData(data, length, timeout);
         }
 
         public int Read(byte[] data, int maxRead)
@@ -61,7 +61,7 @@ namespace BlitsMe.Communication.P2P.RUDP.Socket
         {
             try
             {
-                clientBuffer.Add(data, 10000);
+                clientBuffer.Add(data, data.Length, 10000);
                 Logger.Debug("Received " + data.Length + " bytes, added to client buffer, now " + clientBuffer.Count + " in size.");
                 return clientBuffer.Available;
             }

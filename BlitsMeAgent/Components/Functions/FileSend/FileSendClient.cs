@@ -53,7 +53,6 @@ namespace BlitsMe.Agent.Components.Functions.FileSend
                 {
                     _transportConnection =
                         new DefaultTcpTransportConnection(_transportManager.TCPTransport.OpenConnection(fileInfo.FileSendId), ReadReply);
-                    _transportConnection.Start();
                     try
                     {
                         byte[] read;
@@ -62,7 +61,7 @@ namespace BlitsMe.Agent.Components.Functions.FileSend
                             read = binReader.ReadBytes(8192);
                             if (read.Length > 0)
                             {
-                                _transportConnection.SendDataToTransport(read);
+                                _transportConnection.SendDataToTransportSocket(read,read.Length);
                                 _dataWriteSize += read.Length;
                                 OnDataWritten(EventArgs.Empty);
                             }
@@ -103,7 +102,7 @@ namespace BlitsMe.Agent.Components.Functions.FileSend
             }
         }
 
-        private bool ReadReply(byte[] data, TcpTransportConnection connection)
+        private bool ReadReply(byte[] data, int length, TcpTransportConnection connection)
         {
             return true;
         }

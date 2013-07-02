@@ -79,6 +79,8 @@ namespace BlitsMe.Agent
             ScheduleManager.AddTask(new CheckServiceTask(this) { PeriodSeconds = 120 });
             ScheduleManager.AddTask(new DetectIdleTask(this));
             ScheduleManager.Start();
+            // Annoying how long it takes to show the window, so load it here
+            SetupAndRunDashboard();
         }
 
         internal bool Debug
@@ -200,8 +202,7 @@ namespace BlitsMe.Agent
         {
             ElevateTokenRq erq = new ElevateTokenRq();
             ElevateTokenRs ers = ConnectionManager.Connection.Request<ElevateTokenRq, ElevateTokenRs>(erq);
-            ElevateApprovalWindow approvalWindow = new ElevateApprovalWindow();
-            approvalWindow.Owner = parentWindow;
+            ElevateApprovalWindow approvalWindow = new ElevateApprovalWindow {Owner = parentWindow};
             parentWindow.IsEnabled = false;
             approvalWindow.ShowDialog();
             parentWindow.IsEnabled = true;
@@ -230,10 +231,10 @@ namespace BlitsMe.Agent
                 DashboardUiThread = new Thread(RunDashboard) { Name = "dashboardUIThread" };
                 DashboardUiThread.SetApartmentState(ApartmentState.STA);
                 DashboardUiThread.Start();
-                while (UIDashBoard == null || !UIDashBoard.IsInitialized)
+                /*while (UIDashBoard == null || !UIDashBoard.IsInitialized)
                 {
                     Thread.Sleep(50);
-                }
+                }*/
             }
         }
 

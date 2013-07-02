@@ -94,23 +94,12 @@ namespace BlitsMe.TransportEmulator
                 periodLeft = PeriodLength;
             }
             _bytesThisPeriod += packet.GetBytes().Length;
-            // drop the packet here
-            if (rand.Next(100) < _transportForm.PacketLoss)
-            {
-                Logger.Warn("Ooops dropped a packet : " + packet);
-                if (_client)
-                    _transportForm.ClientPacketLoss++;
-                else
-                    _transportForm.ServerPacketLoss++;
-            }
-            else
-            {
-                // dump it onto the physical layer of the other proxy
-                proxy.PhysicalLayer.Enqueue(new PhysicalPacketHolder(packet));
-                Logger.Info("Sent packet through physical layer, " + _bytesThisPeriod + " so far this period, " + periodLeft + "ms left.");
-                lock (proxy.PhysicalLayerLock)
-                    Monitor.Pulse(proxy.PhysicalLayerLock);
-            }
+
+            // dump it onto the physical layer of the other proxy
+            proxy.PhysicalLayer.Enqueue(new PhysicalPacketHolder(packet));
+            Logger.Info("Sent packet through physical layer, " + _bytesThisPeriod + " so far this period, " + periodLeft + "ms left.");
+            lock (proxy.PhysicalLayerLock)
+                Monitor.Pulse(proxy.PhysicalLayerLock);
 
 
         }
@@ -151,21 +140,35 @@ namespace BlitsMe.TransportEmulator
                 while (PhysicalLayer.Count > 0)
                 {
                     var packetHolder = (PhysicalPacketHolder)PhysicalLayer.Dequeue();
-                    long latencySoFar = Environment.TickCount - packetHolder._sendTime;
-                    // latency is done here
-                    if (latencySoFar < currentLatencyValue)
+                    // drop the packet (maybe)
+                    if (rand.Next(100) < _transportForm.PacketLoss)
                     {
-                        //Logger.Info("Implementing remainder latency of " + (currentLatencyValue - latencySoFar) + "ms");
-                        Thread.Sleep(TimeSpan.FromMilliseconds(currentLatencyValue - latencySoFar));
+                        Logger.Warn("Ooops dropped a packet : " + packetHolder._packet);
+                        if (_client)
+                            _transportForm.ClientPacketLoss++;
+                        else
+                            _transportForm.ServerPacketLoss++;
                     }
-                    // Now pass this onto my Transport
-                    Logger.Info("Received packet [size=" + packetHolder._packet.Data.Length + "] from physical layer, " + PhysicalLayer.Count + " still on the wire.");
-                    TCPTransport.ProcessPacket(packetHolder._packet.GetBytes());
-                    var actualLatency = Environment.TickCount - packetHolder._sendTime;
-                    if (_client)
-                        _transportForm.ClientLatency = actualLatency;
                     else
-                        _transportForm.ServerLatency = actualLatency;
+                    {
+
+                        long latencySoFar = Environment.TickCount - packetHolder._sendTime;
+                        // latency is done here
+                        if (latencySoFar < currentLatencyValue)
+                        {
+                            //Logger.Info("Implementing remainder latency of " + (currentLatencyValue - latencySoFar) + "ms");
+                            Thread.Sleep(TimeSpan.FromMilliseconds(currentLatencyValue - latencySoFar));
+                        }
+                        // Now pass this onto my Transport
+                        Logger.Info("Received packet [size=" + packetHolder._packet.Data.Length +
+                                    "] from physical layer, " + PhysicalLayer.Count + " still on the wire.");
+                        TCPTransport.ProcessPacket(packetHolder._packet.GetBytes());
+                        var actualLatency = Environment.TickCount - packetHolder._sendTime;
+                        if (_client)
+                            _transportForm.ClientLatency = actualLatency;
+                        else
+                            _transportForm.ServerLatency = actualLatency;
+                    }
                 }
 
             }

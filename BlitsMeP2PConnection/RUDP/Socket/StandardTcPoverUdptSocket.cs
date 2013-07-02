@@ -36,9 +36,9 @@ namespace BlitsMe.Communication.P2P.RUDP.Socket
             Closed = false;
         }
 
-        public void Send(byte[] data, int timeout)
+        public void Send(byte[] data, int length, int timeout)
         {
-            Connection.SendData(data, timeout);
+            Connection.SendData(data, length, timeout);
         }
 
         public void Close()

@@ -85,6 +85,7 @@
     <Compile Include="RUDP\Packet\API\ITunnelPacket.cs" />
     <Compile Include="RUDP\Packet\API\IUdpPacket.cs" />
     <Compile Include="RUDP\Packet\TCP\BasicTcpPacket.cs" />
+    <Compile Include="RUDP\Packet\TCP\StandardDisconnectAckPacket.cs" />
     <Compile Include="RUDP\Packet\TCP\StandardDisconnectRsPacket.cs" />
     <Compile Include="RUDP\Packet\TCP\StandardAckPacket.cs" />
     <Compile Include="RUDP\Packet\TCP\StandardConnectRsAckPacket.cs" />

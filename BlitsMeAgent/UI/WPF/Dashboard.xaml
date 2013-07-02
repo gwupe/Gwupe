@@ -22,6 +22,7 @@
     </Window.Resources>
 
     <Grid x:Name="LayoutRoot" Style="{StaticResource MainLayout}" >
+		<Grid Name="DisableScreen" Panel.ZIndex="-1" Background="White" Opacity="0.6"/>
         <Grid HorizontalAlignment="Left" Width="190">
         	<DockPanel LastChildFill="True" Margin="0">
         		<Grid DockPanel.Dock="Top" >

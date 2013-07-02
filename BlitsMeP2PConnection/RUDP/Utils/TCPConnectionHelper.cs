@@ -17,6 +17,7 @@ namespace BlitsMe.Communication.P2P.RUDP.Utils
         private readonly Dictionary<byte,AutoResetEvent> _connectEvents = new Dictionary<byte, AutoResetEvent>();
         private readonly Dictionary<byte,AutoResetEvent> _disconnectEvents = new Dictionary<byte, AutoResetEvent>();
         private readonly Dictionary<byte, StandardNamedConnectRsPacket> _connectResults = new Dictionary<byte, StandardNamedConnectRsPacket>();
+        private readonly Dictionary<byte, StandardDisconnectAckPacket> _disconnectAcks = new Dictionary<byte, StandardDisconnectAckPacket>(); 
 
         public TCPConnectionHelper(TCPTransport transport)
         {
@@ -38,10 +39,8 @@ namespace BlitsMe.Communication.P2P.RUDP.Utils
             _connectEvents.Add(connectionId,new AutoResetEvent(false));
             do
             {
-#if(DEBUG)
-                Logger.Debug("Sending connect packet : " + packet);
-#endif
                 _transport.SendData(packet);
+                packet.ResendCount++;
                 var timeSpan = new TimeSpan(DateTime.Now.Ticks - startTime);
                 if (timeSpan.TotalMilliseconds > waitTime)
                 {
@@ -109,29 +108,38 @@ namespace BlitsMe.Communication.P2P.RUDP.Utils
             } else
             {
                 // we know nothing about this (probably timed out), close this connection
-                Logger.Warn("Got a Connect Response with an Id we don't have [" + packet.ConnectionId + "], closing it");
-                CloseConnection(packet.ConnectionId);
+                Logger.Error("Got a Connect Response with an Id we don't have [" + packet.ConnectionId + "]");
+                //CloseConnection(packet.ConnectionId, packet.Sequence);
             }
         }
 
-        public void CloseConnection(byte connectionId)
+        public void CloseConnection(byte connectionId, ushort seq)
         {
-            long waitTime = 120000; // 2 minute disconnect time
+            const long waitTime = 120000; // 2 minute disconnect time
+            const int disconnectRetryTimeout = 20000;
 #if(DEBUG)
             Logger.Debug("Disconnecting tcp session " + connectionId);
 #endif
             try
             {
                 var packet = new StandardDisconnectPacket(connectionId);
+                packet.Sequence = seq;
                 long startTime = DateTime.Now.Ticks;
                 _disconnectEvents[connectionId] = new AutoResetEvent(false);
                 do
                 {
-#if(DEBUG)
-                    Logger.Debug("Sending disconnect packet : " + packet);
+                    // we only do this if we haven't received the ack of our disconnect
+                    if (!_disconnectAcks.ContainsKey(connectionId))
+                    {
+                        _transport.SendData(packet);
+                        packet.ResendCount++;
+#if DEBUG
+                    }
+                    else
+                    {
+                        Logger.Debug("Will not resend disconnect request, remote side has acked it already");
 #endif
-                    _transport.SendData(packet);
-                    packet.ResendCount++;
+                    }
                     var timeSpan = new TimeSpan(DateTime.Now.Ticks - startTime);
                     if (timeSpan.TotalMilliseconds > waitTime)
                     {
@@ -143,7 +151,7 @@ namespace BlitsMe.Communication.P2P.RUDP.Utils
 #if(DEBUG)
                     Logger.Debug("Waiting for disconnect response for connection id " + connectionId);
 #endif
-                } while (_disconnectEvents.ContainsKey(connectionId) && !_disconnectEvents[connectionId].WaitOne(20000));
+                } while (_disconnectEvents.ContainsKey(connectionId) && !_disconnectEvents[connectionId].WaitOne(disconnectRetryTimeout));
 
                 if(_disconnectEvents.ContainsKey(connectionId))
                 {
@@ -156,6 +164,19 @@ namespace BlitsMe.Communication.P2P.RUDP.Utils
                 Logger.Error("Failed to send the close packet, closing connection anyway. : " + e.Message, e);
             }
             if (_disconnectEvents.ContainsKey(connectionId)) _disconnectEvents.Remove(connectionId);
+            if (_disconnectAcks.ContainsKey(connectionId)) _disconnectAcks.Remove(connectionId);
+        }
+
+        public void ProcessDisconnectAck(StandardDisconnectAckPacket packet)
+        {
+            // only process if we are waiting for one
+            if (_disconnectEvents.ContainsKey(packet.ConnectionId))
+            {
+                if (!_disconnectAcks.ContainsKey(packet.ConnectionId))
+                {
+                    _disconnectAcks.Add(packet.ConnectionId, packet);
+                }
+            }
         }
 
         public void ProcessDisconnectRs(StandardDisconnectRsPacket packet)
@@ -175,14 +196,6 @@ namespace BlitsMe.Communication.P2P.RUDP.Utils
                 // we know nothing about this (probably timed out), close this connection
                 Logger.Warn("Got a disconnect Response with an Id we don't have [" + packet.ConnectionId + "], ignoring");
             }
-        }
-
-        public void AckConnectionResponse(byte connectionId)
-        {
-#if(DEBUG)
-            Logger.Debug("Acking tcp connection " + connectionId);
-#endif
-            _transport.SendData(new StandardConnectRsAckPacket(connectionId));
         }
     }
 }

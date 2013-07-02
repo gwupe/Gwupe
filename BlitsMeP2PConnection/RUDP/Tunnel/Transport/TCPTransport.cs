@@ -20,7 +20,7 @@ namespace BlitsMe.Communication.P2P.RUDP.Tunnel.Transport
         private static readonly ILog Logger = LogManager.GetLogger(typeof(TCPTransport));
         private readonly TCPConnectionHelper _tcpConnectionHelper;
         private readonly Dictionary<String, NamedTCPListener> _listeningNamedTCPEndPoints; // listeners
-        private readonly TcpConnectionList _activeTCPConnections; // All the Active Connections
+        private readonly TcpConnectionList _tcpConnections; // All the Active Connections
         private readonly ITransportManager _transportManager;
 
         private byte _lastConnectionId = byte.MaxValue;
@@ -30,6 +30,7 @@ namespace BlitsMe.Communication.P2P.RUDP.Tunnel.Transport
         private readonly object _disconnectLock = new Object();
         private readonly object _receiveConnectLock = new Object();
         private readonly object _lastConnectionLock = new Object();
+        private bool _isDisconnecting;
         private const byte MaxSupportedProtocolId = 2;
 
         public ITransportManager TransportManager { get { return _transportManager; } }
@@ -38,7 +39,7 @@ namespace BlitsMe.Communication.P2P.RUDP.Tunnel.Transport
         {
             _transportManager = transportManager;
             transportManager.Inactive += delegate { CloseConnections(); };
-            _activeTCPConnections = new TcpConnectionList();
+            _tcpConnections = new TcpConnectionList();
             _listeningNamedTCPEndPoints = new Dictionary<String, NamedTCPListener>();
             _tcpConnectionHelper = new TCPConnectionHelper(this);
         }
@@ -73,6 +74,9 @@ namespace BlitsMe.Communication.P2P.RUDP.Tunnel.Transport
                     case BasicTcpPacket.PKT_TYPE_CONNECT_RS_ACK:
                         ProcessConnectRsAck((StandardConnectRsAckPacket)packet);
                         break;
+                    case BasicTcpPacket.PKT_TYPE_DISCONNECT_ACK:
+                        _tcpConnectionHelper.ProcessDisconnectAck((StandardDisconnectAckPacket)packet);
+                        break;
                     case BasicTcpPacket.PKT_TYPE_DISCONNECT_RS:
                         _tcpConnectionHelper.ProcessDisconnectRs((StandardDisconnectRsPacket)packet);
                         break;
@@ -88,21 +92,19 @@ namespace BlitsMe.Communication.P2P.RUDP.Tunnel.Transport
 
         private void ProcessDisconnectPacket(StandardDisconnectPacket packet)
         {
-            lock (_disconnectLock)
+            // immediately acknowlege that we got it (with remote connection id as the connection id)
+            SendData(new StandardDisconnectAckPacket(packet.ConnectionId));
+            // if we are not disconnecting, start the process.
+            try
             {
-                try
-                {
-                    TcpConnectionHolder connectionHolder = _activeTCPConnections.GetRemoteConnection(packet.ConnectionId);
-                    // this closes everything, socket, connection and removes it from the list.
-                    _activeTCPConnections.Remove(connectionHolder.Connection.ConnectionId);
-                    connectionHolder.Connection.Close();
-                }
-                catch (Exception e)
-                {
-                    Logger.Error("Failed to close connection [remote id = " + packet.ConnectionId + "] : " + e.Message);
-                }
-                var disconnectRsPacket = new StandardDisconnectRsPacket(packet.ConnectionId);
-                SendData(disconnectRsPacket);
+                // do we have it in our list?
+                TcpConnectionHolder connectionHolder = _tcpConnections.GetRemoteConnection(packet.ConnectionId);
+                // this method will send the disconnectRs packet
+                connectionHolder.Connection.ProcessDisconnect(packet);
+            }
+            catch (Exception e)
+            {
+                Logger.Error("Failed to close connection [remote id = " + packet.ConnectionId + "] : " + e.Message);
             }
         }
 
@@ -110,7 +112,7 @@ namespace BlitsMe.Communication.P2P.RUDP.Tunnel.Transport
         {
             try
             {
-                TcpConnectionHolder conn = _activeTCPConnections.GetRemoteConnection(packet.ConnectionId);
+                TcpConnectionHolder conn = _tcpConnections.GetRemoteConnection(packet.ConnectionId);
                 // If the connect response ack packet was lost, its possible that this connection is not open, we need to open it now
                 if (!conn.Connection.Established)
                 {
@@ -138,7 +140,7 @@ namespace BlitsMe.Communication.P2P.RUDP.Tunnel.Transport
         {
             try
             {
-                TcpConnectionHolder conn = _activeTCPConnections.GetRemoteConnection(packet.ConnectionId);
+                TcpConnectionHolder conn = _tcpConnections.GetRemoteConnection(packet.ConnectionId);
                 // Lock sending while we process this packet (we will still be able to receive)
                 // Now TcpConnection doesn't have to be threadsafe, but each connection 
                 // can process acks independently at full speed.
@@ -159,7 +161,7 @@ namespace BlitsMe.Communication.P2P.RUDP.Tunnel.Transport
             TcpConnectionHolder conn = null;
             try
             {
-                conn = _activeTCPConnections.GetRemoteConnection(packet.ConnectionId);
+                conn = _tcpConnections.GetRemoteConnection(packet.ConnectionId);
                 try
                 {
                     conn.Connection.Open();
@@ -190,12 +192,12 @@ namespace BlitsMe.Communication.P2P.RUDP.Tunnel.Transport
             lock (_receiveConnectLock)
             {
                 // If this connection exists
-                if (_activeTCPConnections.IsRemoteConnection(packet.ConnectionId))
+                if (_tcpConnections.IsRemoteConnection(packet.ConnectionId))
                 {
 #if(DEBUG)
                     Logger.Debug("Request for connection id [" + packet.ConnectionId + "] already established, resending response");
 #endif
-                    TcpConnectionHolder tcpConnectionHolder = _activeTCPConnections.GetRemoteConnection(packet.ConnectionId);
+                    TcpConnectionHolder tcpConnectionHolder = _tcpConnections.GetRemoteConnection(packet.ConnectionId);
                     response.remoteConnectionId = tcpConnectionHolder.Connection.ConnectionId;
                     response.protocolId = tcpConnectionHolder.Connection.ProtocolId;
                     // we can respond that we are already established here
@@ -246,10 +248,12 @@ namespace BlitsMe.Communication.P2P.RUDP.Tunnel.Transport
                             {
                                 // only add the connection if 
                                 response.success =
-                                    _listeningNamedTCPEndPoints[packet.connectionName].connectCallback(connection.Socket);
+                                    _listeningNamedTCPEndPoints[packet.connectionName].ConnectCallback(connection.Socket);
                                 if (response.success)
                                 {
-                                    _activeTCPConnections.Add(connection);
+                                    // set it up to tie up loose ends when the connection dies
+                                    connection.ConnectionClose += ConnectionOnConnectionClose;
+                                    _tcpConnections.Add(connection);
                                     response.remoteConnectionId = localConnectionId;
                                 }
                             }
@@ -276,11 +280,13 @@ namespace BlitsMe.Communication.P2P.RUDP.Tunnel.Transport
                 // which will open this connection, but should that ack not arrive, let set a timer to automatically
                 // open this connection after 10 seconds
                 // we know that the sender will retry the connection should it not receive our response.
-                _activeTCPConnections.GetLocalConnection(response.remoteConnectionId).StartTimerToOpen();
+                _tcpConnections.GetLocalOpenConnection(response.remoteConnectionId).StartTimerToOpen();
             }
         }
 
         #endregion
+
+        #region Sending
 
         public void SendData(ITcpPacket packet)
         {
@@ -290,31 +296,41 @@ namespace BlitsMe.Communication.P2P.RUDP.Tunnel.Transport
 #if DEBUG
                 Logger.Debug("Sent packet : " + packet);
 #endif
-            } else
+            }
+            else
             {
                 throw new IOException("Transport manager is inactive (has no tunnels), cannot send data.");
             }
         }
+
+        #endregion Sending
+
+        #region Connection Handling
 
         public ITcpOverUdptSocket OpenConnection(string endPoint)
         {
             return OpenConnection(endPoint, MaxSupportedProtocolId);
         }
 
-        #region Connection Handling
-
         public ITcpOverUdptSocket OpenConnection(String endPoint, byte protocolId)
         {
             lock (_connectLock)
             {
                 byte connectionId = GetNextConnectionId();
+                // this method will send the necessary packet requesting connection, handle the response
                 ITcpTransportLayer connection = _tcpConnectionHelper.ConnectNamed(connectionId, endPoint, 10000, protocolId);
 #if(DEBUG)
                 Logger.Debug("Successfully connected to service " + endPoint + " local connection [" + connectionId + "], remote connection [" + connection.RemoteConnectionId + "]");
 #endif
-                _activeTCPConnections.Add(connection);
-                _tcpConnectionHelper.AckConnectionResponse(connectionId);
+                // add the connection to our list of active connections
+                _tcpConnections.Add(connection);
+                // notify remote endpoint we are ready to accept and send data on this connection
+                SendData(new StandardConnectRsAckPacket(connectionId));
+                // set it up to tie up loose ends when the connection dies
+                connection.ConnectionClose += ConnectionOnConnectionClose;
+                // notify the connection it can start
                 connection.Open();
+                // return the socket to upstream so it can start reading/writing
                 return connection.Socket;
             }
         }
@@ -324,7 +340,7 @@ namespace BlitsMe.Communication.P2P.RUDP.Tunnel.Transport
             lock (_lastConnectionLock)
             {
                 byte saveLast = _lastConnectionId;
-                while (_activeTCPConnections.IsLocalConnection(++_lastConnectionId))
+                while (_tcpConnections.IsLocalOpenConnection(++_lastConnectionId))
                 {
                     if (_lastConnectionId != saveLast)
                     {
@@ -372,47 +388,68 @@ namespace BlitsMe.Communication.P2P.RUDP.Tunnel.Transport
         // Close a client connection with an id
         public void CloseConnection(byte connectionId)
         {
-            if (_activeTCPConnections.IsLocalConnection(connectionId))
+            // if this is id is in our list of local connections
+            if (_tcpConnections.IsLocalOpenConnection(connectionId))
             {
-                var connectionHolder = _activeTCPConnections.Remove(connectionId);
-                connectionHolder.Connection.Close();
-                _tcpConnectionHelper.CloseConnection(connectionId);
+                // we close the connection (if its in the process of being closed, this will do nothing)
+                _tcpConnections.GetLocalOpenConnection(connectionId).Connection.Close();
             }
         }
+
+        private void CloseConnections()
+        {
+            foreach (TcpConnectionHolder tcpConnectionHolder in _tcpConnections.GetActiveConnectionList())
+            {
+                CloseConnection(tcpConnectionHolder.Connection.ConnectionId);
+            }
+        }
+
+        // this is called when a connection closes
+        private void ConnectionOnConnectionClose(object sender, EventArgs eventArgs)
+        {
+            ITcpTransportLayer connection = (ITcpTransportLayer)sender;
+            if (!connection.Disconnected)
+            {
+                // Send the disconnect packet sequence (-> dis <- ack <- dis_rs)
+                _tcpConnectionHelper.CloseConnection(connection.ConnectionId, connection.LastSeqSent);
+            } else
+            {
+                SendData(new StandardDisconnectRsPacket(connection.RemoteConnectionId));
+            }
+            // remove the connection from our list of open connections
+            _tcpConnections.Remove(connection.ConnectionId);
+        }
+
 
         #endregion
 
         public void Close()
         {
-            if (!Closing)
+            if (!Closing && !Closed)
             {
                 Closing = true;
                 CloseConnections();
                 _listeningNamedTCPEndPoints.Clear();
                 Closing = false;
+                Closed = true;
             }
         }
 
-        protected bool Closing;
+        protected bool Closed { get; private set; }
 
-        private void CloseConnections()
-        {
-            foreach (TcpConnectionHolder tcpConnectionHolder in _activeTCPConnections.GetList())
-            {
-                CloseConnection(tcpConnectionHolder.Connection.ConnectionId);
-            }
-        }
+        protected bool Closing { get; private set; }
+
     }
 
     internal class NamedTCPListener
     {
-        internal String listenerName;
-        internal Func<ITcpOverUdptSocket, bool> connectCallback;
+        internal String ListenerName;
+        internal Func<ITcpOverUdptSocket, bool> ConnectCallback;
 
         internal NamedTCPListener(String name, Func<ITcpOverUdptSocket, bool> callback)
         {
-            this.listenerName = name;
-            this.connectCallback = callback;
+            this.ListenerName = name;
+            this.ConnectCallback = callback;
         }
 
     }
@@ -461,26 +498,29 @@ namespace BlitsMe.Communication.P2P.RUDP.Tunnel.Transport
         }
     }
 
-    /* This class is for keeping a list of current tcp connections 
+    /* This class is for keeping a list of current and closing tcp connections 
      * as well as providing a lookup function
      */
 
     internal class TcpConnectionList
     {
-        private readonly Dictionary<byte, TcpConnectionHolder> _list;
+        private static readonly ILog Logger = LogManager.GetLogger(typeof(TcpConnectionList));
+        private readonly Dictionary<byte, TcpConnectionHolder> _localOpenConnectionList;
         private readonly Dictionary<byte, byte> _remoteLocalIdMap;
+        private readonly Object _connectionLock;
 
         internal TcpConnectionList()
         {
-            _list = new Dictionary<byte, TcpConnectionHolder>();
+            _localOpenConnectionList = new Dictionary<byte, TcpConnectionHolder>();
             _remoteLocalIdMap = new Dictionary<byte, byte>();
+            _connectionLock = new object();
         }
 
         internal void Add(ITcpTransportLayer connection)
         {
-            lock (_list)
+            lock (_connectionLock)
             {
-                _list.Add(connection.ConnectionId, new TcpConnectionHolder(connection));
+                _localOpenConnectionList.Add(connection.ConnectionId, new TcpConnectionHolder(connection));
                 _remoteLocalIdMap.Add(connection.RemoteConnectionId, connection.ConnectionId);
             }
         }
@@ -488,56 +528,56 @@ namespace BlitsMe.Communication.P2P.RUDP.Tunnel.Transport
         internal TcpConnectionHolder Remove(byte localConnectionId)
         {
             TcpConnectionHolder holder = null;
-            lock (_list)
+            lock (_connectionLock)
             {
-                if (_list.TryGetValue(localConnectionId, out holder))
+                if (_localOpenConnectionList.TryGetValue(localConnectionId, out holder))
                 {
-                    _list.Remove(localConnectionId);
+                    _localOpenConnectionList.Remove(localConnectionId);
                     if (_remoteLocalIdMap.ContainsKey(holder.Connection.RemoteConnectionId))
                     {
                         _remoteLocalIdMap.Remove(holder.Connection.RemoteConnectionId);
                     }
+#if DEBUG
+                    Logger.Debug("Removed connection " + localConnectionId + " to from lists.");
+#endif
                 }
             }
             return holder;
         }
 
-        internal TcpConnectionHolder[] GetList()
+        internal TcpConnectionHolder[] GetActiveConnectionList()
         {
-            lock (_list)
+            lock (_connectionLock)
             {
-                TcpConnectionHolder[] list = new TcpConnectionHolder[_list.Count];
-                _list.Values.CopyTo(list, 0);
+                TcpConnectionHolder[] list = new TcpConnectionHolder[_localOpenConnectionList.Count];
+                _localOpenConnectionList.Values.CopyTo(list, 0);
                 return list;
             }
         }
 
-        internal TcpConnectionHolder GetLocalConnection(byte connectionId)
+        internal TcpConnectionHolder GetLocalOpenConnection(byte connectionId)
         {
             TcpConnectionHolder conn;
-            if (_list.TryGetValue(connectionId, out conn))
+            if (_localOpenConnectionList.TryGetValue(connectionId, out conn))
             {
                 return conn;
             }
-            else
-            {
-                throw new ConnectionException("Connection id " + connectionId + " unknown");
-            }
+            throw new ConnectionException("Connection id " + connectionId + " unknown in open connections list");
         }
 
         internal TcpConnectionHolder GetRemoteConnection(byte remoteConnectionId)
         {
-            lock (_list)
+            lock (_connectionLock)
             {
                 byte localConnectionId;
                 if (_remoteLocalIdMap.TryGetValue(remoteConnectionId, out localConnectionId))
                 {
-                    return GetLocalConnection(localConnectionId);
+                    if (_localOpenConnectionList.ContainsKey(localConnectionId))
+                    {
+                        return GetLocalOpenConnection(localConnectionId);
+                    }
                 }
-                else
-                {
-                    throw new ConnectionException("No local connection id found for remote connection [" + remoteConnectionId + "]");
-                }
+                throw new ConnectionException("No local connection id found for remote connection [" + remoteConnectionId + "]");
             }
         }
 
@@ -546,10 +586,9 @@ namespace BlitsMe.Communication.P2P.RUDP.Tunnel.Transport
             return _remoteLocalIdMap.ContainsKey(remoteConnectionId);
         }
 
-        internal bool IsLocalConnection(byte localConnectionId)
+        internal bool IsLocalOpenConnection(byte localConnectionId)
         {
-            return _list.ContainsKey(localConnectionId);
+            return _localOpenConnectionList.ContainsKey(localConnectionId);
         }
-
     }
 }

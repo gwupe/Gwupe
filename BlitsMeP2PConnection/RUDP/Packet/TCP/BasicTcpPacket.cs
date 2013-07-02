@@ -20,9 +20,10 @@ namespace BlitsMe.Communication.P2P.RUDP.Packet.TCP
         internal const byte PKT_TYPE_CONNECT_PROXY_RQ = 10;
         internal const byte PKT_TYPE_CONNECT_PROXY_RS = 11;
         internal const byte PKT_TYPE_CONNECT_RS_ACK = 12;
-        internal const byte PKT_TYPE_DISCONNECT_RS = 13;
         internal const byte PKT_TYPE_NOP = 32;
         internal const byte PKT_TYPE_DISCONNECT = 33;
+        internal const byte PKT_TYPE_DISCONNECT_ACK = 34;
+        internal const byte PKT_TYPE_DISCONNECT_RS = 35;
 
         // Internal data
         public ushort Sequence { get; set; }

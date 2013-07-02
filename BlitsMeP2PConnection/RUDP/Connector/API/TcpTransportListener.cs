@@ -101,13 +101,12 @@ namespace BlitsMe.Communication.P2P.RUDP.Connector.API
             // Fire connection accepted event
             OnConnectionAccepted();
             // Make sure we know when it has closed
-            tcpConnection.Closed += TcpConnectionOnClosed;
-            tcpConnection.Start();
+            tcpConnection.CloseConnection += TcpConnectionOnCloseConnection;
             _openConnections.Add(tcpConnection);
             return true;
         }
 
-        private void TcpConnectionOnClosed(object sender, EventArgs eventArgs)
+        private void TcpConnectionOnCloseConnection(object sender, EventArgs eventArgs)
         {
             var proxyConnect = sender as TcpTransportConnection;
             if (_openConnections.Contains(proxyConnect))

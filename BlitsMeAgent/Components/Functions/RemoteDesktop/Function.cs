@@ -66,7 +66,7 @@ namespace BlitsMe.Agent.Components.Functions.RemoteDesktop
             // Loop through existing notifications to see if we already have a remote desktop request
             // from the SecondParty. If the .From and Type of the notification match the SecondParty.UserName
             // and RDPNotification type
-            foreach (TrueFalseNotification n in _appContext.NotificationManager.Notifications)
+            foreach (Components.Notification.Notification n in _appContext.NotificationManager.Notifications)
             {
                 if (n.AssociatedUsername == _engagement.SecondParty.Username && n is RDPNotification)
                 {
@@ -74,24 +74,36 @@ namespace BlitsMe.Agent.Components.Functions.RemoteDesktop
                     bExists = true;
                 }
             }
-            // only process this notification if they don't already exist AND 
-            // we are not currently in a remote session
-            if (!bExists && !Server.Listening && !Server.Established)
+            if (!bExists)
             {
-                IsActive = true;
-                // Set the shortcode, to make sure we connect to the right caller.
-                _engagement.SecondParty.ShortCode = shortCode;
-                RDPNotification rdpNotification = new RDPNotification()
+                if (!Server.Established)
                 {
-                    Message = _engagement.SecondParty.Name + " would like to access your desktop.",
-                    AssociatedUsername = _engagement.SecondParty.Username,
-                    DeleteTimeout = 300
-                };
-                rdpNotification.AnsweredTrue += delegate { ProcessAnswer(true); };
-                rdpNotification.AnsweredFalse += delegate { ProcessAnswer(false); };
-                _appContext.NotificationManager.AddNotification(rdpNotification);
-                _engagement.Chat.LogSystemMessage(_engagement.SecondParty.Name + " sent you a request to control your desktop.");
-                OnRDPIncomingRequestEvent(new RDPIncomingRequestArgs(_engagement));
+                    if (!Server.Listening)
+                    {
+                        // only process this notification if they don't already exist AND 
+                        // we are not currently in a remote session
+                        IsActive = true;
+                        // Set the shortcode, to make sure we connect to the right caller.
+                        _engagement.SecondParty.ShortCode = shortCode;
+                        RDPNotification rdpNotification = new RDPNotification()
+                            {
+                                Message = _engagement.SecondParty.Name + " would like to access your desktop.",
+                                AssociatedUsername = _engagement.SecondParty.Username,
+                                DeleteTimeout = 300
+                            };
+                        rdpNotification.AnsweredTrue += delegate { ProcessAnswer(true); };
+                        rdpNotification.AnsweredFalse += delegate { ProcessAnswer(false); };
+                        _appContext.NotificationManager.AddNotification(rdpNotification);
+                        _engagement.Chat.LogSystemMessage(_engagement.SecondParty.Name +
+                                                          " sent you a request to control your desktop.");
+                        OnRDPIncomingRequestEvent(new RDPIncomingRequestArgs(_engagement));
+                    }
+                    else
+                    {
+                        // a request when we are already listening
+
+                    }
+                }
             }
         }
 
@@ -117,41 +129,32 @@ namespace BlitsMe.Agent.Components.Functions.RemoteDesktop
                 {
                     Logger.Error("Failed to start server : " + e.Message, e);
                 }
-                RDPRequestResponseRq request = new RDPRequestResponseRq()
-                    {
-                        accepted = true,
-                        shortCode = _engagement.SecondParty.ShortCode,
-                        username = _engagement.SecondParty.Username
-                    };
-                try
-                {
-                    _appContext.ConnectionManager.Connection.RequestAsync<RDPRequestResponseRq, RDPRequestResponseRs>(
-                        request, RDPRequestAcceptResponseHandler);
-                }
-                catch (Exception e)
-                {
-                    Logger.Error("Failed to send a RDP acceptance request to " + _engagement.SecondParty.Username, e);
-                }
+                SendRDPRequestResponse(true, delegate(RDPRequestResponseRq rq, RDPRequestResponseRs rs, Exception arg3) { IsActive = arg3 == null; });
             }
             else
             {
                 _engagement.Chat.LogSystemMessage("You denied the desktop assistance request from " + _engagement.SecondParty.Name);
-                RDPRequestResponseRq request = new RDPRequestResponseRq() { accepted = false, shortCode = _engagement.SecondParty.ShortCode, username = _engagement.SecondParty.Username };
-                try
-                {
-                    _appContext.ConnectionManager.Connection.RequestAsync<RDPRequestResponseRq, RDPRequestResponseRs>(request, delegate
-                        { IsActive = false; });
-                }
-                catch (Exception e)
-                {
-                    Logger.Error("Failed to send a RDP denial request to " + _engagement.SecondParty.Username, e);
-                }
+                SendRDPRequestResponse(false, delegate(RDPRequestResponseRq rq, RDPRequestResponseRs rs, Exception arg3) { IsActive = false; });
             }
         }
 
-        private void RDPRequestAcceptResponseHandler(RDPRequestResponseRq rdpRequestResponseRq, RDPRequestResponseRs rdpRequestResponseRs, Exception e)
+        private void SendRDPRequestResponse(bool answer, Action<RDPRequestResponseRq, RDPRequestResponseRs, Exception> handler)
         {
-            IsActive = e == null;
+            RDPRequestResponseRq request = new RDPRequestResponseRq()
+                {
+                    accepted = answer,
+                    shortCode = _engagement.SecondParty.ShortCode,
+                    username = _engagement.SecondParty.Username
+                };
+            try
+            {
+                _appContext.ConnectionManager.Connection.RequestAsync<RDPRequestResponseRq, RDPRequestResponseRs>(
+                    request, handler);
+            }
+            catch (Exception e)
+            {
+                Logger.Error("Failed to send a RDP request (answer=" + answer + ") to " + _engagement.SecondParty.Username, e);
+            }
         }
 
         private Client _client;
@@ -190,8 +193,8 @@ namespace BlitsMe.Agent.Components.Functions.RemoteDesktop
             // Added: JH 2013-04-26
             // _bmssHandle stores the process information of the launched bmss process
             // if that is null - no session is in progress otherwise check that window is open and that its title contains BlitsMe
-            
-            if (_bmssHandle != null && !_bmssHandle.HasExited && IsWindow(_bmssHandle.MainWindowHandle) && _bmssHandle.MainWindowTitle.Contains("BlitsMe")) 
+
+            if (_bmssHandle != null && !_bmssHandle.HasExited && IsWindow(_bmssHandle.MainWindowHandle) && _bmssHandle.MainWindowTitle.Contains("BlitsMe"))
             {
                 // First call SwitchToThisWindow to unminimize it if it is minimized
                 SwitchToThisWindow(_bmssHandle.MainWindowHandle, true);

@@ -18,12 +18,12 @@ namespace BlitsMe.Communication.P2P.RUDP.Utils
             _releaseGet = false;
         }
 
-        public void Add(T[] additions, int timeout = 0)
+        public void Add(T[] additions, int length, int timeout = 0)
         {
             lock (_locker)
             {
                 int added = 0;
-                while (added < additions.Length)
+                while (added < length)
                 {
                     while (Available == 0)
                     {
@@ -39,7 +39,7 @@ namespace BlitsMe.Communication.P2P.RUDP.Utils
                     }
 
                     // we have some space (we will add as much as we can)
-                    int remainingLength = additions.Length - added;
+                    int remainingLength = length - added;
                     int canAdd = Available < remainingLength ? Available : remainingLength;
                     int nextFree = (_current + _usedCount) % _array.Length;
                     int availableBeforeEnd = _array.Length - nextFree;
