@@ -208,6 +208,20 @@ namespace BlitsMe.Agent.Components.Chat
             ChatEvent handler = NewMessage;
             if (handler != null) handler(this, args);
         }
+
+        public ChatElement LogErrorMessage(string message)
+        {
+            _lastActivity = DateTime.Now.Ticks;
+            ChatElement chatElement = Conversation.AddMessage(message, "_SYSTEM_ERROR");
+            // Fire the event
+            OnNewMessage(new ChatEventArgs(_engagement)
+            {
+                From = "_SYSTEM_ERROR",
+                To = _appContext.LoginManager.LoginDetails.username,
+                Message = message
+            });
+            return chatElement;
+        }
     }
 
     internal class ChatEventArgs : EngagementActivityArgs

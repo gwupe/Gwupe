@@ -14,7 +14,7 @@
         }
         public override string ToString()
         {
-            return "[" + ConnectionId + "] DISCONNECT (payloadLength=" + Data.Length + ",sendCount=" + ResendCount + ")";
+            return base.ToString() + " DISCONNECT";
         }
     }
 }

@@ -35,8 +35,13 @@ namespace BlitsMe.Agent.Components
                 _secondParty.PropertyChanged += SecondPartyPropertyChanged;
             }
         }
-
-        private readonly double _timeoutToTunnelClose = TimeSpan.FromMinutes(2).TotalMilliseconds;
+#if DEBUG
+        // 2 minutes timeout
+        private const double TimeoutToTunnelClose = 120000;
+#else
+        // 30 minutes timeout
+        private const double TimeoutToTunnelClose = 1800000;
+#endif
         private readonly Timer _countdownToDeactivation;
         internal bool Active
         {
@@ -141,7 +146,7 @@ namespace BlitsMe.Agent.Components
         {
             if(Active)
             {
-                Logger.Debug("Starting countdown to deactivation in " + _timeoutToTunnelClose/60000 + " mins");
+                Logger.Debug("Starting countdown to deactivation in " + TimeoutToTunnelClose/60000 + " mins");
                 _countdownToDeactivation.Stop();
                 _countdownToDeactivation.Start();
             }
@@ -155,7 +160,7 @@ namespace BlitsMe.Agent.Components
             // This is to pickup logouts/connection disconnections
             _appContext.LoginManager.LoggedOut += LogoutOccurred;
             SecondParty = person;
-            _countdownToDeactivation = new Timer(_timeoutToTunnelClose) {AutoReset = false};
+            _countdownToDeactivation = new Timer(TimeoutToTunnelClose) {AutoReset = false};
             _countdownToDeactivation.Elapsed += (sender, args) => CompleteDeactivation();
             Activate += OnActivate;
             Deactivate += OnDeactivate;
@@ -323,7 +328,7 @@ namespace BlitsMe.Agent.Components
                                                    Convert.ToInt32(response.externalEndpointPort))
                                     ), 10000);
                     OnPropertyChanged(new PropertyChangedEventArgs("OutgoingTunnel"));
-                    Logger.Info("Successfully completed incoming sync with " + SecondParty.Username + "-" + SecondParty.ShortCode);
+                    Logger.Info("Successfully completed outgoing sync with " + SecondParty.Username + "-" + SecondParty.ShortCode);
                 }
                 catch (Exception e)
                 {

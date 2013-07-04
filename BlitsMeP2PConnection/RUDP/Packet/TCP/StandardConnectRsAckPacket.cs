@@ -14,7 +14,7 @@
 
         public override string ToString()
         {
-            return base.ToString("CONNECT_RS_ACK");
+            return base.ToString() + " CONNECT_RS_ACK";
         }
     }
 }

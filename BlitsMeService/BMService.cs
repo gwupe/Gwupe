@@ -36,6 +36,7 @@ namespace BlitsMe.Service
         private const int VncServiceTimeoutMs = 30000;
         private readonly String _version;
         private X509Certificate2 _cacert;
+        private bool _checkingUpdate;
 
         public List<String> Servers;
         private System.ServiceModel.ServiceHost _serviceHost;
@@ -55,8 +56,6 @@ namespace BlitsMe.Service
 #endif
             // Check for update on startup
 
-            // Don't do this hear, it could hold up starting of the service and thats tre bad
-            //CheckForNewVersion();
             // check for updates every interval
             _updateCheck = new Timer(UpdateCheckInterval * 1000);
             _updateCheck.Elapsed += delegate { CheckForNewVersion(); };
@@ -65,71 +64,81 @@ namespace BlitsMe.Service
 
         private void CheckForNewVersion()
         {
-            if (_webClient == null)
+            if (!_checkingUpdate)
             {
-                _webClient = new WebClient();
+                _checkingUpdate = true;
+                if (_webClient == null)
+                {
+                    _webClient = new WebClient();
+                    try
+                    {
+                        var stream =
+                            Assembly.GetExecutingAssembly().GetManifestResourceStream("BlitsMe.Service.cacert.pem");
+                        Byte[] certificateData = new Byte[stream.Length];
+                        stream.Read(certificateData, 0, certificateData.Length);
+                        _cacert = new X509Certificate2(certificateData);
+                        Logger.Info("Will use certificate from CA " + _cacert.GetNameInfo(X509NameType.SimpleName, true) +
+                                    ", verified? " + _cacert.Verify());
+                    }
+                    catch (Exception e)
+                    {
+                        Logger.Error("Failed to get the certificate : " + e.Message, e);
+                    }
+                }
+
+                ServicePointManager.ServerCertificateValidationCallback += ValidateServerWithCA;
                 try
                 {
-                    var stream = Assembly.GetExecutingAssembly().GetManifestResourceStream("BlitsMe.Service.cacert.pem");
-                    Byte[] certificateData = new Byte[stream.Length];
-                    stream.Read(certificateData, 0, certificateData.Length);
-                    _cacert = new X509Certificate2(certificateData);
-                    Logger.Info("Will use certificate from CA " + _cacert.GetNameInfo(X509NameType.SimpleName, true) +
-                                ", verified? " + _cacert.Verify());
-                }
-                catch (Exception e)
-                {
-                    Logger.Error("Failed to get the certificate : " + e.Message, e);
-                }
-            }
-
-            ServicePointManager.ServerCertificateValidationCallback += ValidateServerWithCA;
-            try
-            {
-                Version assemblyVersion = new Version(_version);
-                String versionInfomation = _webClient.DownloadString("https://" + UpdateServer + "/updates/update.php?ver=" + assemblyVersion + "&hwid=" + HardwareFingerprint());
-                if (Regex.Match(versionInfomation, "^[0-9]+\\.[0-9]+\\.[0-9]+:BlitsMeSetup.*").Success)
-                {
-                    String[] versionParts = versionInfomation.Split('\n')[0].Split(':');
-                    Version updateVersion = new Version(versionParts[0]);
-                    if (assemblyVersion.CompareTo(updateVersion) < 0)
+                    Version assemblyVersion = new Version(_version);
+                    String versionInfomation =
+                        _webClient.DownloadString("https://" + UpdateServer + "/updates/update.php?ver=" +
+                                                  assemblyVersion + "&hwid=" + HardwareFingerprint());
+                    if (Regex.Match(versionInfomation, "^[0-9]+\\.[0-9]+\\.[0-9]+:BlitsMeSetup.*").Success)
                     {
-                        Logger.Debug("Upgrade Available : " + assemblyVersion + " => " + updateVersion);
-                        try
+                        String[] versionParts = versionInfomation.Split('\n')[0].Split(':');
+                        Version updateVersion = new Version(versionParts[0]);
+                        if (assemblyVersion.CompareTo(updateVersion) < 0)
                         {
+                            Logger.Debug("Upgrade Available : " + assemblyVersion + " => " + updateVersion);
+                            try
+                            {
 
-                            Logger.Info("Downloading update " + versionParts[1]);
-                            String fileLocation = Path.GetTempPath() + versionParts[1];
-                            _webClient.DownloadFile("https://" + UpdateServer + "/updates/" + versionParts[1],
-                                                    fileLocation);
-                            Logger.Info("Downloaded update " + versionParts[1]);
-                            String logfile = Path.GetTempPath() + "BlitsMeInstall.log";
-                            Logger.Info("Executing " + fileLocation + ", log file is " + logfile);
-                            Process.Start(fileLocation, "/qn /lvx " + logfile);
+                                Logger.Info("Downloading update " + versionParts[1]);
+                                String fileLocation = Path.GetTempPath() + versionParts[1];
+                                _webClient.DownloadFile("https://" + UpdateServer + "/updates/" + versionParts[1],
+                                                        fileLocation);
+                                Logger.Info("Downloaded update " + versionParts[1]);
+                                String logfile = Path.GetTempPath() + "BlitsMeInstall.log";
+                                Logger.Info("Executing " + fileLocation + ", log file is " + logfile);
+                                Process.Start(fileLocation, "/qn /lvx " + logfile);
+                            }
+                            catch (Exception e)
+                            {
+                                Logger.Error("Failed to download update : " + e.Message, e);
+                            }
                         }
-                        catch (Exception e)
+                        else
                         {
-                            Logger.Error("Failed to download update : " + e.Message, e);
+                            Logger.Debug("No update available, current version " + assemblyVersion +
+                                         ", available version " +
+                                         updateVersion + ", checking again in " + (UpdateCheckInterval/60) + " minutes.");
                         }
                     }
                     else
                     {
-                        Logger.Debug("No update available, current version " + assemblyVersion + ", available version " +
-                                     updateVersion + ", checking again in " + (UpdateCheckInterval / 60) + " minutes.");
+                        Logger.Error("Failed to check for updates, the update request return invalid information : " +
+                                     versionInfomation);
                     }
                 }
-                else
+                catch (Exception e)
                 {
-                    Logger.Error("Failed to check for updates, the update request return invalid information : " + versionInfomation);
+                    Logger.Warn("Failed to check for update : " + e.Message, e);
                 }
-            }
-            catch (Exception e)
-            {
-                Logger.Warn("Failed to check for update : " + e.Message, e);
-            }
-            finally
-            {
-                ServicePointManager.ServerCertificateValidationCallback -= ValidateServerWithCA;
+                finally
+                {
+                    ServicePointManager.ServerCertificateValidationCallback -= ValidateServerWithCA;
+                    _checkingUpdate = false;
+                }
             }
         }
 

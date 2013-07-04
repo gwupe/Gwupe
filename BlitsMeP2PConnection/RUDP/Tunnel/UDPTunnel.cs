@@ -278,7 +278,7 @@ namespace BlitsMe.Communication.P2P.RUDP.Tunnel
 
         private void InitReceiver()
         {
-            _receiveThread = new Thread(ListenForPackets) { IsBackground = true, Name = "_receiveThread" };
+            _receiveThread = new Thread(ListenForPackets) { IsBackground = true, Name = "_receiveThread[" + Id + "]" };
             _receiveThread.Start();
         }
 
@@ -382,7 +382,7 @@ namespace BlitsMe.Communication.P2P.RUDP.Tunnel
                         }
                         // a new thread needs to handle this upstream otherwise upstream can hang the whole process
                         Thread processDataThread = new Thread(() => ProcessData(data, Id)) { IsBackground = true };
-                        processDataThread.Name = "processDataThread[" + processDataThread.ManagedThreadId + "]";
+                        processDataThread.Name = "processTunnelData[" + Id + "-" + processDataThread.ManagedThreadId + "]";
                         processDataThread.Start();
                     }
                     catch (Exception e)

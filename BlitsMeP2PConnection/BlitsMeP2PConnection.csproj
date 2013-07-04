@@ -82,6 +82,7 @@
     <Compile Include="RUDP\Connector\ProxyFromTcpConnector.cs" />
     <Compile Include="RUDP\Connector\ProxyTcpTransportListener.cs" />
     <Compile Include="RUDP\Packet\API\IPacket.cs" />
+    <Compile Include="RUDP\Packet\API\ITcpDataPacket.cs" />
     <Compile Include="RUDP\Packet\API\ITunnelPacket.cs" />
     <Compile Include="RUDP\Packet\API\IUdpPacket.cs" />
     <Compile Include="RUDP\Packet\TCP\BasicTcpPacket.cs" />
@@ -91,6 +92,7 @@
     <Compile Include="RUDP\Packet\TCP\StandardConnectRsAckPacket.cs" />
     <Compile Include="RUDP\Packet\TCP\StandardDisconnectPacket.cs" />
     <Compile Include="RUDP\Packet\TCP\StandardNamedConnectPacket.cs" />
+    <Compile Include="RUDP\Packet\TCP\StandardNamedConnectRsPacket.cs" />
     <Compile Include="RUDP\Packet\TCP\StandardTcpDataPacket.cs" />
     <Compile Include="RUDP\Packet\TCP\StandardTcpNopPacket.cs" />
     <Compile Include="RUDP\Packet\StandardTcpPacketFactory.cs" />

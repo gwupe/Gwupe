@@ -32,8 +32,11 @@ namespace BlitsMe.Communication.P2P.RUDP.Connector.API
         internal TcpTransportConnection(ITcpOverUdptSocket socket)
         {
             _socket = socket;
-            _transportSocketReader = new Thread(TransportSocketReader) { IsBackground = true };
-            _transportSocketReader.Name = "_transportSocketReader[" + _transportSocketReader.ManagedThreadId + "]";
+            _transportSocketReader = new Thread(TransportSocketReader)
+                {
+                    IsBackground = true,
+                    Name = "_transportSockReaderToUpstreamWriter[" + socket.Connection.ConnectionId + "]"
+                };
             _transportSocketReader.Start();
         }
 
@@ -46,22 +49,9 @@ namespace BlitsMe.Communication.P2P.RUDP.Connector.API
                 Closing = true;
                 _Close();
 #if(DEBUG)
-                Logger.Debug("Closing tcp connection components");
-#endif
-#if(DEBUG)
                 Logger.Debug("Closing Socket");
 #endif
                 _socket.Close();
-                /* this will close with the surrounding connections
-                // Only abort the thread if we are not it.
-                if (_transportSocketReader.IsAlive && !_transportSocketReader.Equals(Thread.CurrentThread))
-                {
-#if(DEBUG)
-                    Logger.Debug("Shutting of forward proxy thread.");
-#endif
-                    _transportSocketReader.Abort();
-                }
-                */
                 Closing = false;
                 Closed = true;
                 OnCloseConnection();
@@ -103,8 +93,7 @@ namespace BlitsMe.Communication.P2P.RUDP.Connector.API
                         }
                         catch (Exception e)
                         {
-                            Logger.Error(
-                                "Processing a read from the transportManager failed, shutting down TcpConnection");
+                            Logger.Error("Writing to upstream handler failed, shutting down TcpConnection");
                             break;
                         }
                     }

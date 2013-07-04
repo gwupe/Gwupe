@@ -10,7 +10,7 @@ namespace BlitsMe.Communication.P2P.RUDP.Packet.TCP
         public const byte PKT_POS_TYPE = 2;
         private const byte PKT_POS_RESEND_COUNT = 3;
         private const byte PKT_POS_CONNECTION_ID = 4;
-        private const byte PKT_POS_DATA = 5;
+        private const byte PKT_POS_PAYLOAD = 5;
 
         // Types
         internal const byte PKT_TYPE_DATA = 0;
@@ -30,15 +30,15 @@ namespace BlitsMe.Communication.P2P.RUDP.Packet.TCP
         public byte Type { get; set; }
         public byte ResendCount { get; set; }
         public byte ConnectionId { get; set; }
-        public byte[] Data
+
+        private byte[] _payload;
+        public byte[] Payload
         {
-            get { return realData ?? new byte[0]; }
-            set { realData = value; }
+            get { return _payload ?? new byte[0]; }
+            set { _payload = value; }
         }
 
         public long Timestamp { get; set; }
-
-        private byte[] realData;
 
         private const int SEQ_UPPER_BOUND = ushort.MaxValue + 1;
 
@@ -48,13 +48,13 @@ namespace BlitsMe.Communication.P2P.RUDP.Packet.TCP
             Type = sequencedBytes[PKT_POS_TYPE];
             ResendCount = sequencedBytes[PKT_POS_RESEND_COUNT];
             ConnectionId = sequencedBytes[PKT_POS_CONNECTION_ID];
-            Data = new byte[sequencedBytes.Length - PKT_POS_DATA];
-            Array.Copy(sequencedBytes, PKT_POS_DATA, Data, 0, Data.Length);
+            Payload = new byte[sequencedBytes.Length - PKT_POS_PAYLOAD];
+            Array.Copy(sequencedBytes, PKT_POS_PAYLOAD, Payload, 0, Payload.Length);
         }
 
         public virtual byte[] GetBytes()
         {
-            byte[] bytes = new byte[Data.Length + PKT_POS_DATA];
+            byte[] bytes = new byte[Payload.Length + PKT_POS_PAYLOAD];
             // Sequence
             Array.Copy(BitConverter.GetBytes(Sequence), 0, bytes, PKT_POS_SEQ, 2);
             // Type
@@ -64,17 +64,17 @@ namespace BlitsMe.Communication.P2P.RUDP.Packet.TCP
             // Connection id 
             bytes[PKT_POS_CONNECTION_ID] = ConnectionId;
             // Data
-            Array.Copy(Data, 0, bytes, PKT_POS_DATA, Data.Length);
+            Array.Copy(Payload, 0, bytes, PKT_POS_PAYLOAD, Payload.Length);
             return bytes;
         }
 
         public int CompareTo(Object obj)
         {
             ITcpPacket packet = (ITcpPacket)obj;
-            return compareSequences(Sequence, packet.Sequence);
+            return CompareSequences(Sequence, packet.Sequence);
         }
 
-        public static int compareSequences(int seq1, int seq2)
+        public static int CompareSequences(int seq1, int seq2)
         {
             int result = 0;
             if ((SEQ_UPPER_BOUND - seq1 < 256) && (seq2 < 256))
@@ -95,11 +95,7 @@ namespace BlitsMe.Communication.P2P.RUDP.Packet.TCP
 
         public override string ToString()
         {
-            return ToString(Type.ToString());
-        }
-
-        protected string ToString(String typeName) {
-            return "[" + ConnectionId + "] " + typeName + " (sq=" + Sequence + ",payloadLength=" + Data.Length + ",sendCount=" + ResendCount + ")";
+            return "[" + ConnectionId + "-" + Sequence + "-" + ResendCount + "-" + Payload.Length + "]";
         }
     }
 }

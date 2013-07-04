@@ -160,7 +160,7 @@ namespace BlitsMe.TransportEmulator
                             Thread.Sleep(TimeSpan.FromMilliseconds(currentLatencyValue - latencySoFar));
                         }
                         // Now pass this onto my Transport
-                        Logger.Info("Received packet [size=" + packetHolder._packet.Data.Length +
+                        Logger.Info("Received packet [size=" + packetHolder._packet.Payload.Length +
                                     "] from physical layer, " + PhysicalLayer.Count + " still on the wire.");
                         TCPTransport.ProcessPacket(packetHolder._packet.GetBytes());
                         var actualLatency = Environment.TickCount - packetHolder._sendTime;

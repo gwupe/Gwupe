@@ -25,6 +25,7 @@ namespace BlitsMe.Communication.P2P.RUDP.Tunnel
         private readonly Object _sendingLock = new Object(); // lock to make sending thread safe
         private ushort _lastSeqSent;
         private bool _disconnected;
+        private ushort _nextSeqToSend;
         public int AckWaitInterval { get; private set; }
         public override byte ProtocolId { get { return 1; } }
 
@@ -37,7 +38,7 @@ namespace BlitsMe.Communication.P2P.RUDP.Tunnel
         public int PacketCountTransmitDataFirst { get; private set; }
         public int PacketCountTransmitDataResend { get; private set; }
 
-        public TcpTransportLayerOne4One(ITCPTransport transport, byte connectionId, byte remoteConnectionId)
+        public TcpTransportLayerOne4One(ITCPTransport transport, byte connectionId, byte remoteConnectionId, ushort firstLocalSequence, ushort firstRemoteSequence)
             : base(transport, connectionId, remoteConnectionId)
         {
             AckWaitInterval = 300;
@@ -113,9 +114,14 @@ namespace BlitsMe.Communication.P2P.RUDP.Tunnel
             get { return _lastSeqSent; }
         }
 
-        public override void ProcessDataPacket(ITcpPacket packet)
+        public override ushort NextSeqToSend
         {
-            if (BasicTcpPacket.compareSequences((ushort)(_sequenceIn + 1), packet.Sequence) == 0)
+            get { return _nextSeqToSend; }
+        }
+
+        public override void ProcessDataPacket(ITcpDataPacket packet)
+        {
+            if (BasicTcpPacket.CompareSequences((ushort)(_sequenceIn + 1), packet.Sequence) == 0)
             {
                 // This is exactly what we were expecting
                 _sequenceIn++;
@@ -124,7 +130,7 @@ namespace BlitsMe.Communication.P2P.RUDP.Tunnel
                 SendAck(packet, true);
                 Socket.BufferClientData(packet.Data);
             }
-            else if (BasicTcpPacket.compareSequences((ushort)(_sequenceIn + 1), packet.Sequence) > 0)
+            else if (BasicTcpPacket.CompareSequences((ushort)(_sequenceIn + 1), packet.Sequence) > 0)
             {
                 // This is an old packet, don't process (already did that), just send ack
 #if(DEBUG)

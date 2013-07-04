@@ -31,6 +31,7 @@ namespace BlitsMe.Communication.P2P.RUDP.Tunnel.Transport
         private readonly object _receiveConnectLock = new Object();
         private readonly object _lastConnectionLock = new Object();
         private bool _isDisconnecting;
+        private Random _rand;
         private const byte MaxSupportedProtocolId = 2;
 
         public ITransportManager TransportManager { get { return _transportManager; } }
@@ -42,6 +43,7 @@ namespace BlitsMe.Communication.P2P.RUDP.Tunnel.Transport
             _tcpConnections = new TcpConnectionList();
             _listeningNamedTCPEndPoints = new Dictionary<String, NamedTCPListener>();
             _tcpConnectionHelper = new TCPConnectionHelper(this);
+            _rand = new Random();
         }
 
         #region Incoming Packet Handling
@@ -185,10 +187,10 @@ namespace BlitsMe.Communication.P2P.RUDP.Tunnel.Transport
 
         private void ProcessNamedConnectionRequest(StandardNamedConnectRqPacket packet)
         {
-            StandardNamedConnectRsPacket response = new StandardNamedConnectRsPacket();
+            StandardNamedConnectRsPacket response = new StandardNamedConnectRsPacket
+                {ConnectionId = packet.ConnectionId};
             // By default the conn id going back is the conn id of the request
             // this will change if the connection is a success, then it will be our conn id.
-            response.ConnectionId = packet.ConnectionId;
             lock (_receiveConnectLock)
             {
                 // If this connection exists
@@ -198,44 +200,41 @@ namespace BlitsMe.Communication.P2P.RUDP.Tunnel.Transport
                     Logger.Debug("Request for connection id [" + packet.ConnectionId + "] already established, resending response");
 #endif
                     TcpConnectionHolder tcpConnectionHolder = _tcpConnections.GetRemoteConnection(packet.ConnectionId);
-                    response.remoteConnectionId = tcpConnectionHolder.Connection.ConnectionId;
-                    response.protocolId = tcpConnectionHolder.Connection.ProtocolId;
+                    response.RemoteConnectionId = tcpConnectionHolder.Connection.ConnectionId;
+                    response.ProtocolId = tcpConnectionHolder.Connection.ProtocolId;
+                    response.Sequence = tcpConnectionHolder.Connection.NextSeqToSend;
                     // we can respond that we are already established here
-                    response.success = true;
+                    response.Success = true;
                 }
                 else
                 {
                     lock (_listeningNamedTCPEndPoints)
                     {
-                        if (_listeningNamedTCPEndPoints.ContainsKey(packet.connectionName))
+                        if (_listeningNamedTCPEndPoints.ContainsKey(packet.ConnectionName))
                         {
                             byte localConnectionId = GetNextConnectionId();
 #if(DEBUG)
-                            Logger.Debug("Found a listener for " + packet.connectionName + " connecting local conn [" + localConnectionId + "] to remote conn [" + packet.ConnectionId + "]");
+                            Logger.Debug("Found a listener for " + packet.ConnectionName + " connecting local conn [" + localConnectionId + "] to remote conn [" + packet.ConnectionId + "]");
 #endif
-                            byte agreedProtocolId = packet.protocolId;
-                            if (packet.protocolId > MaxSupportedProtocolId)
+                            byte agreedProtocolId = packet.ProtocolId;
+                            if (packet.ProtocolId > MaxSupportedProtocolId)
                             {
 #if(DEBUG)
-                                Logger.Debug("They wanted protocol " + packet.protocolId + ", but I only support up to " + MaxSupportedProtocolId + ", so I propose it.");
+                                Logger.Debug("They wanted protocol " + packet.ProtocolId + ", but I only support up to " + MaxSupportedProtocolId + ", so I propose it.");
 #endif
                                 agreedProtocolId = MaxSupportedProtocolId;
                             }
 #if(DEBUG)
                             Logger.Debug("I have agreed to protocol " + agreedProtocolId);
 #endif
-                            response.protocolId = agreedProtocolId;
+                            response.ProtocolId = agreedProtocolId;
+                            response.Sequence = (ushort) (_rand.Next(ushort.MaxValue));
                             ITcpTransportLayer connection = null;
                             switch (agreedProtocolId)
                             {
-                                case (1):
-                                    {
-                                        connection = new TcpTransportLayerOne4One(this, localConnectionId, packet.ConnectionId);
-                                        break;
-                                    }
                                 case (2):
                                     {
-                                        connection = new TcpTransportLayerSlidingWindow(this, localConnectionId, packet.ConnectionId);
+                                        connection = new TcpTransportLayerSlidingWindow(this, localConnectionId, packet.ConnectionId, response.Sequence, packet.Sequence);
                                         break;
                                     }
                                 default:
@@ -247,25 +246,25 @@ namespace BlitsMe.Communication.P2P.RUDP.Tunnel.Transport
                             if (connection != null)
                             {
                                 // only add the connection if 
-                                response.success =
-                                    _listeningNamedTCPEndPoints[packet.connectionName].ConnectCallback(connection.Socket);
-                                if (response.success)
+                                response.Success =
+                                    _listeningNamedTCPEndPoints[packet.ConnectionName].ConnectCallback(connection.Socket);
+                                if (response.Success)
                                 {
                                     // set it up to tie up loose ends when the connection dies
                                     connection.ConnectionClose += ConnectionOnConnectionClose;
                                     _tcpConnections.Add(connection);
-                                    response.remoteConnectionId = localConnectionId;
+                                    response.RemoteConnectionId = localConnectionId;
                                 }
                             }
                             else
                             {
-                                response.success = false;
+                                response.Success = false;
                             }
                         }
                         else
                         {
-                            Logger.Warn("No listener for " + packet.connectionName);
-                            response.success = false;
+                            Logger.Warn("No listener for " + packet.ConnectionName);
+                            response.Success = false;
                         }
                     }
                 }
@@ -274,13 +273,13 @@ namespace BlitsMe.Communication.P2P.RUDP.Tunnel.Transport
             Logger.Debug("Sending connection response : " + response);
 #endif
             SendData(response);
-            if (response.success)
+            if (response.Success)
             {
                 // This sends a positive response, we would like to get an Ack of this connection response
                 // which will open this connection, but should that ack not arrive, let set a timer to automatically
                 // open this connection after 10 seconds
                 // we know that the sender will retry the connection should it not receive our response.
-                _tcpConnections.GetLocalOpenConnection(response.remoteConnectionId).StartTimerToOpen();
+                _tcpConnections.GetLocalOpenConnection(response.RemoteConnectionId).StartTimerToOpen();
             }
         }
 
@@ -411,7 +410,7 @@ namespace BlitsMe.Communication.P2P.RUDP.Tunnel.Transport
             if (!connection.Disconnected)
             {
                 // Send the disconnect packet sequence (-> dis <- ack <- dis_rs)
-                _tcpConnectionHelper.CloseConnection(connection.ConnectionId, connection.LastSeqSent);
+                _tcpConnectionHelper.DisconnectConnection(connection.ConnectionId, connection.LastSeqSent);
             } else
             {
                 SendData(new StandardDisconnectRsPacket(connection.RemoteConnectionId));

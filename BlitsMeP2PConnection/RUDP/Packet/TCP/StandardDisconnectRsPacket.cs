@@ -14,7 +14,7 @@
 
         public override string ToString()
         {
-            return base.ToString("DISCONNECT_RS");
+            return base.ToString() + " DISCONNECT_RS";
         }
     }
 }

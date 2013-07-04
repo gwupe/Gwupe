@@ -8,9 +8,10 @@ namespace BlitsMe.Communication.P2P.RUDP.Socket
 {
     class BufferedTcpOverUdptSocket : IInternalTcpOverUdptSocket
     {
-        private static readonly ILog Logger = LogManager.GetLogger(typeof (BufferedTcpOverUdptSocket));
+        private static readonly ILog Logger = LogManager.GetLogger(typeof(BufferedTcpOverUdptSocket));
         private ITcpTransportLayer _connection;
         private CircularBuffer<byte> clientBuffer;
+        public byte ConnectionId { get { return _connection.ConnectionId; } }
 
         public bool Closing { get; private set; }
 
@@ -35,11 +36,12 @@ namespace BlitsMe.Communication.P2P.RUDP.Socket
             if (!Closing && !Closed)
             {
                 int returnValue = clientBuffer.Get(data, maxRead);
-                Logger.Debug("Read " + returnValue + " bytes from transport buffer");
+                Logger.Debug("[" + ConnectionId + "] Read " + returnValue + " bytes from transport buffer, buffSize=" + clientBuffer.Count);
                 return returnValue;
-            } else
+            }
+            else
             {
-                throw new ObjectDisposedException("Socket has been closed");
+                throw new ObjectDisposedException("[" + ConnectionId + "] Socket has been closed");
             }
         }
 
@@ -47,7 +49,7 @@ namespace BlitsMe.Communication.P2P.RUDP.Socket
 
         public void Close()
         {
-            if(!Closing && !Closed)
+            if (!Closing && !Closed)
             {
                 Closing = true;
                 clientBuffer.Release();
@@ -62,12 +64,12 @@ namespace BlitsMe.Communication.P2P.RUDP.Socket
             try
             {
                 clientBuffer.Add(data, data.Length, 10000);
-                Logger.Debug("Received " + data.Length + " bytes, added to client buffer, now " + clientBuffer.Count + " in size.");
+                Logger.Debug("[" + ConnectionId + "] Added " + data.Length + " bytes to client buffer, buffSize=" + clientBuffer.Count);
                 return clientBuffer.Available;
             }
             catch (Exception e)
             {
-                Logger.Error("Failed to buffer data from tcp layer : " + e.Message, e);
+                Logger.Error("[" + ConnectionId + "] Failed to buffer data from tcp layer : " + e.Message, e);
                 Close();
             }
             return 0;

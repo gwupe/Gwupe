@@ -12,7 +12,7 @@
         <ResourceDictionary Source="./Style.xaml" />
     </ResourceDictionary.MergedDictionaries>
     <DataTemplate x:Key="FailedImage">
-        <Image Source="/BlitsMe.Agent;component/UI/WPF/Images/messagebox_warning.png" Width="20" Margin="0,0,0,0" HorizontalAlignment="Left"></Image>
+        <Image Source="/BlitsMe.Agent;component/UI/WPF/Images/1364864637_alert.png" Width="20" Margin="0,0,0,0" HorizontalAlignment="Left"></Image>
     </DataTemplate>
 
     <DataTemplate x:Key="TryingImage">
@@ -89,14 +89,14 @@
         <Setter Property="FontFamily" Value="Calibri" />
         <Setter Property="FontSize" Value="12pt" />
         <Setter Property="HorizontalAlignment" Value="Center" />
-        <Setter Property="Background" Value="#FF254488" />
+        <Setter Property="Background" Value="#FFFFE64A" />
         <Setter Property="Margin" Value="30,0,30,0" />
         <Setter Property="Effect" >
             <Setter.Value>
                 <DropShadowEffect ShadowDepth="5" />
             </Setter.Value>
         </Setter>
-        <Setter Property="Foreground" Value="White"/>
+        <Setter Property="Foreground" Value="Black"/>
     </Style>
     <Style x:Key="ChatBubbleOther" BasedOn="{StaticResource ChatBubble}" TargetType="RichTextBox">
         <Setter Property="FontFamily" Value="Calibri" />
@@ -277,7 +277,7 @@
     </DataTemplate>
     <DataTemplate x:Key="ChatSystem">
         <StackPanel>
-            <RichTextBox Style="{StaticResource ChatBubbleSystem}" Background="#FFFFAF23" Foreground="Black">
+            <RichTextBox Style="{StaticResource ChatBubbleSystem}">
                 <FlowDocument>
                     <Paragraph>
                         <Run Text="{Binding Path=Message, FallbackValue=A message from the system}"/>
@@ -293,7 +293,24 @@
             </StackPanel>
         </StackPanel>
     </DataTemplate>
-
+	    <DataTemplate x:Key="ChatSystemError">
+        <StackPanel>
+            <RichTextBox Style="{StaticResource ChatBubbleSystem}" Background="#FFFF5555" Foreground="White">
+                <FlowDocument>
+                    <Paragraph>
+                        <Run Text="{Binding Path=Message, FallbackValue=An error message from the system}"/>
+                    </Paragraph>
+                </FlowDocument>
+            </RichTextBox>
+            <StackPanel Orientation="Horizontal" Margin="0,0,40,0" HorizontalAlignment="Right">
+                <TextBlock  Style="{StaticResource MessageTimeStyle}"
+							HorizontalAlignment="Left"
+							Margin="6,4,0,0"
+							Text="{Binding SpeakTime, Converter={StaticResource relativeMessageTimeConverter}, FallbackValue=Yesterday 8:49}"
+						/>
+            </StackPanel>
+        </StackPanel>
+    </DataTemplate>
     <Style x:Key="MessageBorder" TargetType="Border">
         <Setter Property="CornerRadius" Value="20" />
         <Setter Property="Background" Value="#FF2B519B" />

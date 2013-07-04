@@ -40,6 +40,9 @@
                                         <DataTrigger Binding="{Binding ChatType}" Value="ChatSystem">
                                             <Setter Property="ContentTemplate" Value="{StaticResource ChatSystem}" />
                                         </DataTrigger>
+                                        <DataTrigger Binding="{Binding ChatType}" Value="ChatSystemError">
+                                            <Setter Property="ContentTemplate" Value="{StaticResource ChatSystemError}" />
+                                        </DataTrigger>
                                         <DataTrigger Binding="{Binding ChatType}" Value="ChatServiceComplete">
                                             <Setter Property="ContentTemplate" Value="{StaticResource ChatServiceComplete}" />
                                         </DataTrigger>

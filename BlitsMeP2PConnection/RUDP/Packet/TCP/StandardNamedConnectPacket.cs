@@ -5,8 +5,11 @@ namespace BlitsMe.Communication.P2P.RUDP.Packet.TCP
 {
     public class StandardNamedConnectRqPacket : BasicTcpPacket
     {
-        public String connectionName;
-        public byte protocolId;
+        private const byte PKT_POS_PROTOCOL_ID = 0;
+        private const byte PKT_POS_CONNECTION_NAME = 1;
+
+        public String ConnectionName;
+        public byte ProtocolId;
 
         public StandardNamedConnectRqPacket()
         {
@@ -22,64 +25,26 @@ namespace BlitsMe.Communication.P2P.RUDP.Packet.TCP
         public override void ProcessPacket(byte[] sequencedBytes)
         {
             base.ProcessPacket(sequencedBytes);
-            if (Data != null)
+            if (Payload != null)
             {
-                protocolId = Data[0];
-                connectionName = Encoding.UTF8.GetString(Data,1,Data.Length-1);
+                ProtocolId = Payload[PKT_POS_PROTOCOL_ID];
+                ConnectionName = Encoding.UTF8.GetString(Payload, PKT_POS_CONNECTION_NAME, Payload.Length - 1);
             }
         }
 
         public override byte[] GetBytes()
         {
-            byte[] connectionNameData = Encoding.UTF8.GetBytes(connectionName);
-            Data = new byte[connectionNameData.Length + 1];
-            Data[0] = protocolId;
-            Array.Copy(connectionNameData,0,Data,1,connectionNameData.Length);
+            byte[] connectionNameData = Encoding.UTF8.GetBytes(ConnectionName);
+            Payload = new byte[connectionNameData.Length + 1];
+            Payload[PKT_POS_PROTOCOL_ID] = ProtocolId;
+            Array.Copy(connectionNameData, 0, Payload, PKT_POS_CONNECTION_NAME, connectionNameData.Length);
             return base.GetBytes();
         }
 
         public override string ToString()
         {
-            return base.ToString("NAMED_CONNECT_RQ (" + connectionName + ")");
+            return base.ToString() + " NAMED_CONNECT_RQ (connectionName=" + ConnectionName + ",protocolId=" + ProtocolId + ")";
         }
 
     }
-
-    public class StandardNamedConnectRsPacket : BasicTcpPacket
-    {
-        public bool success { get; set; }
-        public byte remoteConnectionId { get; set; }
-        public byte protocolId { get; set; }
-
-        public StandardNamedConnectRsPacket()
-        {
-            this.Type = PKT_TYPE_CONNECT_NAME_RS;
-        }
-
-        public override byte[] GetBytes()
-        {
-            Data = new byte[3];
-            Data[0] = success ? (byte)1 : (byte)0;
-            Data[1] = remoteConnectionId;
-            Data[2] = protocolId;
-            return base.GetBytes();
-        }
-
-        public override void ProcessPacket(byte[] sequencedBytes)
-        {
-            base.ProcessPacket(sequencedBytes);
-            if (Data != null && Data.Length == 3)
-            {
-                success = Data[0] == 0 ? false : true;
-                remoteConnectionId = Data[1];
-                protocolId = Data[2];
-            }
-        }
-
-        public override string ToString()
-        {
-            return base.ToString("[" + remoteConnectionId + "] NAMED_CONNECT_RS (" + (success ? "succeeded" : "failed") + ")");
-        }
-    }
-
 }

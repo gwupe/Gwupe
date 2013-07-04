@@ -22,8 +22,10 @@ namespace BlitsMe.Communication.P2P.RUDP.Tunnel.API
         bool Established { get; }
         // last sequence number sent
         ushort LastSeqSent { get; }
+        // next sequence number to be sent
+        ushort NextSeqToSend { get; }
         // this will be called by the tcp transport when a data packet is received, implement this to do something with that data packet
-        void ProcessDataPacket(ITcpPacket packet);
+        void ProcessDataPacket(ITcpDataPacket packet);
         // upstream socket will call this method to send data to remote connection
         void SendData(byte[] data, int length, int timeout);
         // tcp transport will call this when it receives an ack packet for processing by this layer

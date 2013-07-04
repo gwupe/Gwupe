@@ -82,6 +82,10 @@ namespace BlitsMe.Agent.Components.Chat
                 {
                     return "ChatSystem";
                 }
+                else if (Speaker.Equals("_SYSTEM_ERROR"))
+                {
+                    return "ChatSystemError";
+                }
                 else
                 {
                     if (LastWord)

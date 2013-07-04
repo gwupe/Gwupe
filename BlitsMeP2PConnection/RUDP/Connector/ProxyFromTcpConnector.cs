@@ -16,7 +16,7 @@ namespace BlitsMe.Communication.P2P.RUDP.Connector
     public class ProxyFromTcpConnector : API.INamedConnector
     {
         private static readonly ILog logger = LogManager.GetLogger(typeof(ProxyFromTcpConnector));
-        private System.Net.Sockets.TcpListener _listener;
+        private TcpListener _listener;
         private Thread _listenThread;
         private readonly ITransportManager _transportManager;
         public bool Listening { get; private set; }

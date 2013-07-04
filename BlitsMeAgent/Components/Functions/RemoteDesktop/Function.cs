@@ -62,7 +62,7 @@ namespace BlitsMe.Agent.Components.Functions.RemoteDesktop
 
         internal void ProcessIncomingRDPRequest(String shortCode)
         {
-            bool bExists = false;
+            bool notificationExists = false;
             // Loop through existing notifications to see if we already have a remote desktop request
             // from the SecondParty. If the .From and Type of the notification match the SecondParty.UserName
             // and RDPNotification type
@@ -71,38 +71,34 @@ namespace BlitsMe.Agent.Components.Functions.RemoteDesktop
                 if (n.AssociatedUsername == _engagement.SecondParty.Username && n is RDPNotification)
                 {
                     // if the notification exists set flag.
-                    bExists = true;
+                    notificationExists = true;
                 }
             }
-            if (!bExists)
+            if (!notificationExists)
             {
                 if (!Server.Established)
                 {
-                    if (!Server.Listening)
+                    if (Server.Listening)
                     {
-                        // only process this notification if they don't already exist AND 
-                        // we are not currently in a remote session
-                        IsActive = true;
-                        // Set the shortcode, to make sure we connect to the right caller.
-                        _engagement.SecondParty.ShortCode = shortCode;
-                        RDPNotification rdpNotification = new RDPNotification()
-                            {
-                                Message = _engagement.SecondParty.Name + " would like to access your desktop.",
-                                AssociatedUsername = _engagement.SecondParty.Username,
-                                DeleteTimeout = 300
-                            };
-                        rdpNotification.AnsweredTrue += delegate { ProcessAnswer(true); };
-                        rdpNotification.AnsweredFalse += delegate { ProcessAnswer(false); };
-                        _appContext.NotificationManager.AddNotification(rdpNotification);
-                        _engagement.Chat.LogSystemMessage(_engagement.SecondParty.Name +
-                                                          " sent you a request to control your desktop.");
-                        OnRDPIncomingRequestEvent(new RDPIncomingRequestArgs(_engagement));
+                        Server.Close();
                     }
-                    else
-                    {
-                        // a request when we are already listening
-
-                    }
+                    // only process this notification if they don't already exist AND 
+                    // we are not currently in a remote session
+                    IsActive = true;
+                    // Set the shortcode, to make sure we connect to the right caller.
+                    _engagement.SecondParty.ShortCode = shortCode;
+                    RDPNotification rdpNotification = new RDPNotification()
+                        {
+                            Message = _engagement.SecondParty.Name + " would like to access your desktop.",
+                            AssociatedUsername = _engagement.SecondParty.Username,
+                            DeleteTimeout = 300
+                        };
+                    rdpNotification.AnsweredTrue += delegate { ProcessAnswer(true); };
+                    rdpNotification.AnsweredFalse += delegate { ProcessAnswer(false); };
+                    _appContext.NotificationManager.AddNotification(rdpNotification);
+                    _engagement.Chat.LogSystemMessage(_engagement.SecondParty.Name +
+                                                      " sent you a request to control your desktop.");
+                    OnRDPIncomingRequestEvent(new RDPIncomingRequestArgs(_engagement));
                 }
             }
         }

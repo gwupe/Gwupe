@@ -17,11 +17,29 @@ namespace BlitsMe.Communication.P2P.RUDP.Utils
 
         public long ExpectedDataPacketsReceived { get; set; }
 
-        public float ExpectedOverReceivedPercentage { get; set; }
+        public float ExpectedOverReceivedPercentage
+        {
+            get
+            {
+                return DataPacketsReceived == 0 ? 0 : (float) ExpectedDataPacketsReceived / DataPacketsReceived;
+            }
+        }
 
-        public float OldOverReceivedPercentage { get; set; }
+        public float OldOverReceivedPercentage
+        {
+            get
+            {
+                return DataPacketsReceived == 0 ? 0 : (float)OldDataPacketsReceived / DataPacketsReceived;
+            }
+        }
 
-        public float FutureOverReceivedPercentage { get; set; }
+        public float FutureOverReceivedPercentage
+        {
+            get
+            {
+                return DataPacketsReceived == 0 ? 0 : (float)FutureDataPacketsReceived / DataPacketsReceived;
+            }
+        }
 
         public long AcksSent { get; set; }
 

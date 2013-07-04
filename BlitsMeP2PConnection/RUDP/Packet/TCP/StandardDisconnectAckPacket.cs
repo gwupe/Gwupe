@@ -14,7 +14,7 @@ namespace BlitsMe.Communication.P2P.RUDP.Packet.TCP
 
         public override string ToString()
         {
-            return base.ToString("DISCONNECT_ACK");
+            return base.ToString() + " DISCONNECT_ACK";
         }
     }
 }

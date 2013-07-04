@@ -17,11 +17,13 @@ namespace BlitsMe.Communication.P2P.RUDP.Utils
         private readonly Dictionary<byte,AutoResetEvent> _connectEvents = new Dictionary<byte, AutoResetEvent>();
         private readonly Dictionary<byte,AutoResetEvent> _disconnectEvents = new Dictionary<byte, AutoResetEvent>();
         private readonly Dictionary<byte, StandardNamedConnectRsPacket> _connectResults = new Dictionary<byte, StandardNamedConnectRsPacket>();
-        private readonly Dictionary<byte, StandardDisconnectAckPacket> _disconnectAcks = new Dictionary<byte, StandardDisconnectAckPacket>(); 
+        private readonly Dictionary<byte, StandardDisconnectAckPacket> _disconnectAcks = new Dictionary<byte, StandardDisconnectAckPacket>();
+        private Random _rand;
 
         public TCPConnectionHelper(TCPTransport transport)
         {
             _transport = transport;
+            _rand = new Random();
         }
 
         public ITcpTransportLayer ConnectNamed(byte connectionId, String namedEndPoint, int timeout, byte protocolId)
@@ -32,8 +34,9 @@ namespace BlitsMe.Communication.P2P.RUDP.Utils
 #endif
             StandardNamedConnectRqPacket packet = new StandardNamedConnectRqPacket(connectionId)
                 {
-                    connectionName = namedEndPoint,
-                    protocolId = protocolId,
+                    ConnectionName = namedEndPoint,
+                    ProtocolId = protocolId,
+                    Sequence = (ushort)(_rand.Next(ushort.MaxValue))
                 };
             long startTime = DateTime.Now.Ticks;
             _connectEvents.Add(connectionId,new AutoResetEvent(false));
@@ -58,30 +61,24 @@ namespace BlitsMe.Communication.P2P.RUDP.Utils
             try
             {
                 var response = _connectResults[connectionId];
-                if (response.success)
+                if (response.Success)
                 {
                     ITcpTransportLayer connection;
-                    switch (response.protocolId)
+                    switch (response.ProtocolId)
                     {
-                        case (1):
-                            {
-                                connection = new TcpTransportLayerOne4One(_transport, connectionId, response.remoteConnectionId);
-                                break;
-                            }
                         case (2):
                             {
-                                connection = new TcpTransportLayerSlidingWindow(_transport, connectionId,
-                                                                                response.remoteConnectionId);
+                                connection = new TcpTransportLayerSlidingWindow(_transport, connectionId, response.RemoteConnectionId, packet.Sequence, response.Sequence);
                                 break;
                             }
                         default:
                             {
                                 throw new ConnectionException("Failed to agree on a protocol, I don't support " +
-                                                              response.remoteConnectionId);
+                                                              response.RemoteConnectionId);
                             }
                     }
 #if(DEBUG)
-                    Logger.Debug("We have agreed to protocol " + response.protocolId);
+                    Logger.Debug("We have agreed to protocol " + response.ProtocolId);
 #endif
                     
                     return connection;
@@ -113,7 +110,7 @@ namespace BlitsMe.Communication.P2P.RUDP.Utils
             }
         }
 
-        public void CloseConnection(byte connectionId, ushort seq)
+        public void DisconnectConnection(byte connectionId, ushort seq)
         {
             const long waitTime = 120000; // 2 minute disconnect time
             const int disconnectRetryTimeout = 20000;
