@@ -64,16 +64,22 @@ namespace BlitsMe.Agent.Upgrade
             string query = "Select * From Win32_Process Where ProcessID = " + processId;
             ManagementObjectSearcher searcher = new ManagementObjectSearcher(query);
             ManagementObjectCollection processList = searcher.Get();
-
-            foreach (ManagementObject obj in processList)
+            try
             {
-                string[] argList = new string[] { string.Empty, string.Empty };
-                int returnVal = Convert.ToInt32(obj.InvokeMethod("GetOwner", argList));
-                if (returnVal == 0)
+                foreach (ManagementObject obj in processList)
                 {
-                    // return DOMAIN\user
-                    return argList[1] + "\\" + argList[0];
+                    string[] argList = new string[] { string.Empty, string.Empty };
+                    int returnVal = Convert.ToInt32(obj.InvokeMethod("GetOwner", argList));
+                    if (returnVal == 0)
+                    {
+                        // return DOMAIN\user
+                        return argList[1] + "\\" + argList[0];
+                    }
                 }
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine("Error getting owner of process " + processId,e);
             }
 
             return "NO OWNER";
