@@ -550,9 +550,11 @@ namespace BlitsMe.Communication.P2P.RUDP.Tunnel
                         Transport.SendData(nextDataPacket);
                         // Implement a retry backoff here.
                         //_retryInterval = _retryInterval * 2;
+#if DEBUG
                         Logger.Warn("Resent packet " + nextDataPacket.Sequence + " (resend=" +
                                      nextDataPacket.ResendCount + ") after timeout [" +
                                      _retryTimer.Interval + "ms], restarting timer to " + _retryInterval);
+#endif
                         _retryTimer.Interval = _retryInterval * 2;
                         _retryTimer.Start();
                     }

@@ -1,15 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Runtime.Serialization;
-using BlitsMe.Communication.P2P;
-using BlitsMe.Communication.P2P.RUDP.Utils;
+using BlitsMe.Cloud.Messaging.Elements;
 
 namespace BlitsMe.Cloud.Messaging.Response
 {
     [DataContract]
-    public class InitUDPConnectionRs : BlitsMe.Cloud.Messaging.API.Response
+    public class InitUDPConnectionRs : API.Response
     {
         public override String type
         {
@@ -17,21 +14,81 @@ namespace BlitsMe.Cloud.Messaging.Response
             set { }
         }
 
-        public void setUDPPeerInfo(PeerInfo info) {
-            this.internalIP = info.internalEndPoint.Address.ToString();
-            this.internalPort = info.internalEndPoint.Port;
-            this.externalIP = info.externalEndPoint.Address.ToString();
-            this.externalPort = info.externalEndPoint.Port;
+        public InitUDPConnectionRs()
+        {
+            internalEndPoints = new List<IpEndPointElement>();
         }
 
         [DataMember]
-        public String internalIP { get; set; }
+        public String internalIP
+        {
+            get { return internalEndPoints == null || internalEndPoints.Count == 0 ? null : internalEndPoints[0].address; }
+            set
+            {
+                if (internalEndPoints.Count == 0)
+                {
+                    internalEndPoints.Add(new IpEndPointElement() { address = value });
+                }
+                else
+                {
+                    internalEndPoints[0].address = value;
+                }
+            }
+        }
         [DataMember]
-        public String externalIP { get; set; }
+        public int internalPort
+        {
+            get { return internalEndPoints == null || internalEndPoints.Count == 0 ? 0 : internalEndPoints[0].port; }
+            set
+            {
+                if (internalEndPoints.Count == 0)
+                {
+                    internalEndPoints.Add(new IpEndPointElement() { port = value });
+                }
+                else
+                {
+                    internalEndPoints[0].port = value;
+                }
+            }
+
+        }
         [DataMember]
-        public int internalPort { get; set; }
+        public List<IpEndPointElement> internalEndPoints { get; set; }
         [DataMember]
-        public int externalPort { get; set; }
+        public String externalIP
+        {
+            get { return externalEndPoint == null ? null : externalEndPoint.address; }
+            set
+            {
+                if (externalEndPoint == null)
+                {
+                    externalEndPoint = new IpEndPointElement() { address = value };
+                }
+                else
+                {
+                    externalEndPoint.address = value;
+                }
+            }
+        }
+        [DataMember]
+        public int externalPort
+        {
+            get { return externalEndPoint == null ? 0 : externalEndPoint.port; }
+            set
+            {
+                if (externalEndPoint == null)
+                {
+                    externalEndPoint = new IpEndPointElement() { port = value };
+                }
+                else
+                {
+                    externalEndPoint.port = value;
+                }
+            }
+        }
+
+        [DataMember]
+        public IpEndPointElement externalEndPoint { get; set; }
 
     }
 }

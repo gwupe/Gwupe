@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Wix xmlns="http://schemas.microsoft.com/wix/2006/wi" xmlns:bal="http://schemas.microsoft.com/wix/BalExtension">
+  <Bundle Name="BlitsMe$(var.buildMarker)" Version="!(bind.PackageVersion.BlitsMeSetup)"
+           Manufacturer="BlitsMe Pty (Ltd)"
+           UpgradeCode="$(var.upgradeCode)"
+           IconSourceFile="icon-main.ico"
+    >
+    <BootstrapperApplicationRef 
+      Id="WixStandardBootstrapperApplication.HyperlinkLicense" 
+      >
+      <bal:WixStandardBootstrapperApplication 
+        SuppressOptionsUI="yes"
+        LicenseUrl=""
+        LogoFile="arrow.png"
+        />
+    </BootstrapperApplicationRef>
+
+    <Chain>
+      <!-- TODO: Define the list of chained packages. -->
+      <PackageGroupRef Id="NetFx40ClientWeb" />
+      <MsiPackage Id="BlitsMeSetup"
+        Compressed="yes"
+        SourceFile="$(var.BlitsMeSetup.TargetPath)"
+        Vital="yes"  />
+    </Chain>
+  </Bundle>
+</Wix>

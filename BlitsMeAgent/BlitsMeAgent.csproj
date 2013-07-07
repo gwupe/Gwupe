@@ -219,6 +219,9 @@
     <Compile Include="UI\WPF\ConfirmPasswordWindow.xaml.cs">
       <DependentUpon>ConfirmPasswordWindow.xaml</DependentUpon>
     </Compile>
+    <Compile Include="UI\WPF\ContactInfoWindow.xaml.cs">
+      <DependentUpon>ContactInfoWindow.xaml</DependentUpon>
+    </Compile>
     <Compile Include="UI\WPF\Dashboard.xaml.cs">
       <DependentUpon>Dashboard.xaml</DependentUpon>
     </Compile>
@@ -227,6 +230,10 @@
       <SubType>Designer</SubType>
     </Page>
     <Page Include="UI\WPF\ConfirmPasswordWindow.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="UI\WPF\ContactInfoWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>

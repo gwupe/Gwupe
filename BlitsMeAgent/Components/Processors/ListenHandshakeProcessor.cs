@@ -15,21 +15,28 @@ namespace BlitsMe.Agent.Components.Processors
         private static readonly ILog Logger = LogManager.GetLogger(typeof(ListenHandshakeProcessor));
         private readonly BlitsMeClientAppContext _appContext;
 
-        internal ListenHandshakeProcessor(BlitsMeClientAppContext appContext) : base(appContext)
+        internal ListenHandshakeProcessor(BlitsMeClientAppContext appContext)
+            : base(appContext)
         {
             _appContext = appContext;
         }
 
         internal override UserToUserResponse ProcessWithEngagement(Engagement engagement, UserToUserRequest req)
         {
-            ListenHandshakeRq request = (ListenHandshakeRq) req;
+            ListenHandshakeRq request = (ListenHandshakeRq)req;
             ListenHandshakeRs response = new ListenHandshakeRs();
             try
             {
-                var peerInfo = new PeerInfo(
-                    new IPEndPoint(IPAddress.Parse(request.internalEndpointIp), Convert.ToInt32(request.internalEndpointPort)),
-                    new IPEndPoint(IPAddress.Parse(request.externalEndpointIp), Convert.ToInt32(request.externalEndpointPort))
-                    );
+                var peerInfo = new PeerInfo()
+                    {
+                        ExternalEndPoint =
+                            new IPEndPoint(IPAddress.Parse(request.externalEndPoint.address),
+                                           request.externalEndPoint.port),
+                    };
+                foreach (var ipEndPointElement in request.internalEndPoints)
+                {
+                    peerInfo.InternalEndPoints.Add(new IPEndPoint(IPAddress.Parse(ipEndPointElement.address), ipEndPointElement.port));
+                }
                 SetupIncomingTunnel(engagement, _appContext.P2PManager.CompleteTunnel(request.uniqueId), peerInfo);
             }
             catch (Exception e)
@@ -45,7 +52,7 @@ namespace BlitsMe.Agent.Components.Processors
         {
             engagement.IncomingTunnel = awareIncomingTunnel;
             engagement.IncomingTunnel.Id = engagement.SecondParty.Username + "-" + engagement.SecondParty.ShortCode + "-incoming";
-            var p2pListenerThread = new Thread(() => IncomingTunnelWaitSync(engagement,peerinfo)) { IsBackground = true };
+            var p2pListenerThread = new Thread(() => IncomingTunnelWaitSync(engagement, peerinfo)) { IsBackground = true };
             p2pListenerThread.Name = "p2pListenerThread[" + p2pListenerThread.ManagedThreadId + "]";
             p2pListenerThread.Start();
         }

@@ -8,6 +8,7 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using BlitsMe.Common.Security;
 using BlitsMe.Communication.P2P.RUDP.Utils;
 
 namespace BlitsMe.Sandbox
@@ -20,16 +21,18 @@ namespace BlitsMe.Sandbox
 
         public Class1()
         {
-            ushort hello = 0;
-            hello = (ushort)(hello - 1);
+//            Console.WriteLine(FingerPrint.HardwareDescription());
+//            Console.WriteLine(FingerPrint.Value());
+            GetLocalIps();
             //TestWaver();
             //RunBufferTest();
+            ExitThread();
         }
 
         private void TestWaver()
         {
             //Guess2();
-            GuessLocalIp();
+            //GuessLocalIps();
         }
 
         private void RunBufferTest()
@@ -103,8 +106,9 @@ namespace BlitsMe.Sandbox
             buffer.Add(input, 1000);
         }
 
-        private IPAddress GuessLocalIp()
+        private List<IPAddress> GetLocalIps()
         {
+            var ips = new List<IPAddress>();
             NetworkInterface[] adapters = NetworkInterface.GetAllNetworkInterfaces();
             foreach (NetworkInterface nic in adapters)
             {
@@ -124,12 +128,13 @@ namespace BlitsMe.Sandbox
                             if ((address[0] == 172 && address[1] >= 16 && address[1] <= 31)
                                 || (address[0] == 10)
                                 || (address[0] == 192 && address[1] == 168))
-                                return ipInfo.Address;
+                            Console.WriteLine(ipInfo.Address);
+                                ips.Add(ipInfo.Address);
                         }
                     }
                 }
             }
-            return IPAddress.Any;
+            return ips;
         }
 
         private void Guess2()

@@ -18,7 +18,7 @@ namespace BlitsMe.Communication.P2P.RUDP.Tunnel
      * and guarantees 
      */
 
-    public class UDPTunnel : API.IUDPTunnel
+    public class UDPTunnel : IUDPTunnel
     {
         private static readonly ILog Logger = LogManager.GetLogger(typeof(UDPTunnel));
 
@@ -35,7 +35,8 @@ namespace BlitsMe.Communication.P2P.RUDP.Tunnel
         private int _pingFailCount = 0;
         private bool _pinging = false;
         private long _lastPing;
-        private bool _localConnection;
+        public bool LocalConnection { get; private set; }
+        private IPEndPoint _remoteEndpoint;
 
         #region Events
 
@@ -92,9 +93,9 @@ namespace BlitsMe.Communication.P2P.RUDP.Tunnel
         {
             get
             {
-                if (_peer != null)
+                if (_remoteEndpoint != null)
                 {
-                    return _localConnection ? _peer.internalEndPoint.Address : _peer.externalEndPoint.Address;
+                    return _remoteEndpoint.Address;
                 }
                 else
                 {
@@ -103,9 +104,12 @@ namespace BlitsMe.Communication.P2P.RUDP.Tunnel
             }
         }
 
-        public UDPTunnel(int port)
+        public UDPTunnel(int port, String id = null)
         {
-            Id = Util.getSingleton().generateString(8);
+            if (id == null)
+                Id = Util.getSingleton().generateString(8);
+            else
+                Id = id;
             IPEndPoint endPoint = new IPEndPoint(IPAddress.Any, port);
             _udpClient = new UdpClient(endPoint);
             PeerLatency = 50;
@@ -117,7 +121,7 @@ namespace BlitsMe.Communication.P2P.RUDP.Tunnel
         public void SyncWithPeer(PeerInfo peerIp, int timeout)
         {
             _syncer = new Syncer(Id);
-            _localConnection = _syncer.SyncWithPeer(peerIp, timeout, _udpClient);
+            _remoteEndpoint = _syncer.SyncWithPeer(peerIp, timeout, _udpClient);
             _peer = peerIp;
             IsTunnelEstablished = true;
             StartPinger();
@@ -140,9 +144,9 @@ namespace BlitsMe.Communication.P2P.RUDP.Tunnel
                     try
                     {
 #if(DEBUG)
-                        Logger.Debug("Pinging peer " + _peer);
+                        Logger.Debug("Pinging peer " + _remoteEndpoint);
 #endif
-                        var ping = _pinger.Ping(_peer, 10000, _udpClient, _localConnection);
+                        var ping = _pinger.Ping(_remoteEndpoint, 10000, _udpClient);
                         // Average out the last 10 pings
                         PeerLatency = ((PeerLatency * 9) + ping) / 10;
                         if (_pingFailCount > 0)
@@ -173,7 +177,7 @@ namespace BlitsMe.Communication.P2P.RUDP.Tunnel
         public void WaitForSyncFromPeer(PeerInfo peerIp, int timeout)
         {
             _syncer = new Syncer(Id);
-            _localConnection = _syncer.WaitForSyncFromPeer(peerIp, timeout, _udpClient);
+            _remoteEndpoint = _syncer.WaitForSyncFromPeer(peerIp, timeout, _udpClient);
             _peer = peerIp;
             IsTunnelEstablished = true;
             StartCheckerForPings();
@@ -194,7 +198,7 @@ namespace BlitsMe.Communication.P2P.RUDP.Tunnel
             if (elapsedMillisecondsSinceLastPing > (PingIntervalMilliseconds + 10000))
             {
                 _pingFailCount++;
-                Logger.Warn("Missing a ping from " + (_localConnection ? _peer.internalEndPoint : _peer.externalEndPoint) + " [failCount=" + _pingFailCount + ", max=" + AllowedPingFailCount + "]");
+                Logger.Warn("Missing a ping from " + _remoteEndpoint + " [failCount=" + _pingFailCount + ", max=" + AllowedPingFailCount + "]");
             }
             else
             {
@@ -206,7 +210,7 @@ namespace BlitsMe.Communication.P2P.RUDP.Tunnel
             }
             if (_pingFailCount >= AllowedPingFailCount)
             {
-                Logger.Error("Missing too many pings from " + (_localConnection ? _peer.internalEndPoint : _peer.externalEndPoint) + " [" + _pingFailCount + "], shutting down endPointManager");
+                Logger.Error("Missing too many pings from " + _remoteEndpoint + " [" + _pingFailCount + "], shutting down endPointManager");
                 Close();
             }
         }
@@ -249,7 +253,7 @@ namespace BlitsMe.Communication.P2P.RUDP.Tunnel
                 Logger.Debug("Sending packet " + packet.ToString());
 #endif
                 byte[] sendBytes = packet.getBytes();
-                _udpClient.Send(sendBytes, sendBytes.Length, (_localConnection ? _peer.internalEndPoint : _peer.externalEndPoint));
+                _udpClient.Send(sendBytes, sendBytes.Length, _remoteEndpoint);
             }
             else
             {
@@ -344,7 +348,7 @@ namespace BlitsMe.Communication.P2P.RUDP.Tunnel
                 }
                 catch (Exception e)
                 {
-                    Logger.Error("Exception while reading from UDP socket, shutting down read thread : " + e.Message);
+                    Logger.Error("Exception while reading from UDP socket, shutting down read thread : " + e.Message,e);
                     // Most likely the link has failed (this side) or the app is closing
                     // either way, close the thread for the moment
                     this.Close();
@@ -358,7 +362,8 @@ namespace BlitsMe.Communication.P2P.RUDP.Tunnel
 #if(DEBUG)
             Logger.Debug("Looking for handler for packet " + packet.ToString() + " from ip " + packet.ip);
 #endif
-            if (packet.type == BasicTunnelPacket.PKT_TYPE_DATA && (packet.ip.Equals(_peer.externalEndPoint) || packet.ip.Equals(_peer.internalEndPoint)))
+            // data packets must come from the established IP
+            if (packet.type == BasicTunnelPacket.PKT_TYPE_DATA && packet.ip.Equals(_remoteEndpoint))
             {
 #if(DEBUG)
                 Logger.Debug("Got a data packet");
@@ -437,7 +442,7 @@ namespace BlitsMe.Communication.P2P.RUDP.Tunnel
                     Logger.Error("Cannot process sync response, invalid sync object");
                 }
             }
-            else if (packet.type == BasicTunnelPacket.PKT_TYPE_PONG)
+            else if (packet.type == BasicTunnelPacket.PKT_TYPE_PONG && packet.ip.Equals(_remoteEndpoint))
             {
 #if(DEBUG)
                 Logger.Debug("Got a pong");
@@ -451,7 +456,7 @@ namespace BlitsMe.Communication.P2P.RUDP.Tunnel
                     Logger.Error("Cannot process pong, invalid ping object");
                 }
             }
-            else if (packet.type == BasicTunnelPacket.PKT_TYPE_PING)
+            else if (packet.type == BasicTunnelPacket.PKT_TYPE_PING && packet.ip.Equals(_remoteEndpoint))
             {
 #if(DEBUG)
                 Logger.Debug("Got a ping");
@@ -472,7 +477,7 @@ namespace BlitsMe.Communication.P2P.RUDP.Tunnel
                 Logger.Debug("Got a nop");
 #endif
             }
-            else if (packet.type == BasicTunnelPacket.PKT_TYPE_CLOSE)
+            else if (packet.type == BasicTunnelPacket.PKT_TYPE_CLOSE && packet.ip.Equals(_remoteEndpoint))
             {
 #if(DEBUG)
                 Logger.Debug("Got a close package, initialising close");
@@ -495,7 +500,7 @@ namespace BlitsMe.Communication.P2P.RUDP.Tunnel
             {
                 // Set the state that we are closing
                 this.Closing = true;
-                Logger.Debug("Closing UDP endPointManager to " + _peer);
+                Logger.Debug("Closing UDP tunnel to " + _peer);
                 // If we initiated it, send a close to peer (fire and forget)
                 SendUDPClose();
                 // Mark the endPointManager as stopped

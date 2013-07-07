@@ -14,18 +14,6 @@
 	</Style>
 	<Style x:Key="MainLayout" TargetType="Grid">
 		<Setter Property="TextOptions.TextFormattingMode" Value="Display" />
-		<!--<Setter Property="Background">
-			<Setter.Value>
-				<ImageBrush 
-					ImageSource="/BlitsMe.Agent;component/UI/WPF/Images/brushedsteel1366x1024.jpg" 
-					Stretch="None" 
-					TileMode="Tile"
-					Viewport="0,0,1366,1024"
-			        ViewportUnits="Absolute"
-        			AlignmentX="Left"
-        			AlignmentY="Top"/>
-			</Setter.Value>
-		</Setter> -->
 	</Style>
 	<Style x:Key="ScorecardStarEmpty" TargetType="ed:RegularPolygon">
         <Setter Property="HorizontalAlignment" Value="Left" />
@@ -42,8 +30,18 @@
 	<Style x:Key="PersonBorder" TargetType="Border">
         <Setter Property="CornerRadius" Value="6" />
         <Setter Property="Background" Value="White" />
-        <!--<Setter Property="BorderBrush" Value="Black"  />-->
         <Setter Property="BorderThickness" Value="1,1,1,1"  />
         <Setter Property="Padding" Value="5" />
     </Style>
+	<Style x:Key="InfoLabel" TargetType="Label">
+		<Setter Property="HorizontalAlignment" Value="Left" />
+		<Setter Property="Margin" Value="0" />
+		<Setter Property="VerticalAlignment" Value="Center" />
+		<Setter Property="Width" Value="65" />
+	</Style>
+	<Style x:Key="InfoContent" TargetType="Label">
+		<Setter Property="HorizontalAlignment" Value="Stretch" />
+		<Setter Property="Margin" Value="75,0,0,0" />
+		<Setter Property="VerticalAlignment" Value="Center" />
+	</Style>
 </ResourceDictionary>

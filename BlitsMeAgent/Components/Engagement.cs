@@ -321,12 +321,16 @@ namespace BlitsMe.Agent.Components
 #if DEBUG
                     Logger.Debug("Got endPointManager from p2p manager");
 #endif
-                    OutgoingTunnel.SyncWithPeer(new PeerInfo(
-                                    new IPEndPoint(IPAddress.Parse(response.internalEndpointIp),
-                                                   Convert.ToInt32(response.internalEndpointPort)),
-                                    new IPEndPoint(IPAddress.Parse(response.externalEndpointIp),
-                                                   Convert.ToInt32(response.externalEndpointPort))
-                                    ), 10000);
+                    var peer = new PeerInfo()
+                        {
+                            ExternalEndPoint = new IPEndPoint(IPAddress.Parse(response.externalEndpointIp),
+                                                              Convert.ToInt32(response.externalEndpointPort))
+                        };
+                    foreach (var ipEndPointElement in response.internalEndPoints)
+                    {
+                        peer.InternalEndPoints.Add(new IPEndPoint(IPAddress.Parse(ipEndPointElement.address), ipEndPointElement.port));
+                    }
+                    OutgoingTunnel.SyncWithPeer(peer, 10000);
                     OnPropertyChanged(new PropertyChangedEventArgs("OutgoingTunnel"));
                     Logger.Info("Successfully completed outgoing sync with " + SecondParty.Username + "-" + SecondParty.ShortCode);
                 }

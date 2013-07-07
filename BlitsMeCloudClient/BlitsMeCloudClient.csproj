@@ -81,6 +81,7 @@
     <Compile Include="Messaging\API\Request.cs" />
     <Compile Include="Messaging\API\Response.cs" />
     <Compile Include="Messaging\API\UserToUserRequest.cs" />
+    <Compile Include="Messaging\Elements\IpEndPointElement.cs" />
     <Compile Include="Messaging\Elements\PresenceElement.cs" />
     <Compile Include="Messaging\Elements\ResultElement.cs" />
     <Compile Include="Messaging\Elements\RosterElement.cs" />

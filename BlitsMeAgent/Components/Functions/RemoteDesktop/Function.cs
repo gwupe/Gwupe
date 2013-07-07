@@ -177,9 +177,7 @@ namespace BlitsMe.Agent.Components.Functions.RemoteDesktop
         private void ServerOnConnectionClosed(object sender, EventArgs eventArgs)
         {
             IsActive = false;
-#if DEBUG
             Logger.Debug("Server connection closed, notifying end of service.");
-#endif
             _engagement.Chat.LogServiceCompleteMessage("You were just helped by " + _engagement.SecondParty.Name + ", please rate his service below.");
         }
 
@@ -239,11 +237,13 @@ namespace BlitsMe.Agent.Components.Functions.RemoteDesktop
                 try
                 {
                     int port = Client.Start();
+                    Client.ConnectionAccepted += ClientOnConnectionAccepted;
                     Client.ConnectionClosed += ClientOnConnectionClosed;
                     String viewerExe = System.IO.Path.GetDirectoryName(Environment.GetCommandLineArgs()[0]) +
                                        "\\bmss.exe";
-                    Logger.Debug("Checking the following location for the exe " + viewerExe);
-                    _bmssHandle = Process.Start(viewerExe, "-username=\"" + _engagement.SecondParty.Name + "\" -scale=auto 127.0.0.1:" + port);
+                    var parameters = "-username=\"" + _engagement.SecondParty.Name + "\" -scale=auto 127.0.0.1::" + port;
+                    Logger.Debug("Running " + viewerExe + " " + parameters);
+                    _bmssHandle = Process.Start(viewerExe, parameters);
 
                 }
                 catch (Exception e)
@@ -258,6 +258,11 @@ namespace BlitsMe.Agent.Components.Functions.RemoteDesktop
                 IsActive = false;
                 _engagement.Chat.LogSystemMessage(_engagement.SecondParty.Name + " did not accept your remote assistance request.");
             }
+        }
+
+        private void ClientOnConnectionAccepted(object sender, EventArgs eventArgs)
+        {
+            Logger.Debug("A RDP client has connected to the proxy.");
         }
 
         private void ClientOnConnectionClosed(object sender, EventArgs eventArgs)

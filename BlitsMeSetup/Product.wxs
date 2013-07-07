@@ -21,23 +21,28 @@
     <Property Id="ARPNOMODIFY" Value="yes" Secure="yes" />
     <Property Id="START_VIA_REGISTRY">1</Property>
     <Property Id="MSIDISABLERMRESTART">0</Property>
+    <!-- we have included some custom actions -->
     <Binary Id="BlitsMeSetupCustomAction.dll"
       SourceFile="$(var.BlitsMeSetupCustomAction.TargetDir)\BlitsMeSetupCustomAction.CA.dll" />
+    <!-- the action which kills blitsme agent -->
     <CustomAction Id="CloseApps"
       Return="check"
       Execute="immediate"
       BinaryKey="BlitsMeSetupCustomAction.dll"
       DllEntry="CloseBlitsMeAgents" />
+    <!-- this action opens the agent if it isn't open -->
     <CustomAction Id="OpenBlitsMeAgentIfNotOpen"
       Return="check"
       Execute="immediate"
       BinaryKey="BlitsMeSetupCustomAction.dll"
       DllEntry="OpenBlitsMeAgentIfNotOpen" />
+    <!-- this just starts the agent -->
     <CustomAction Id="StartAgent"
       FileKey= "BlitsMe.Agent.exe"
       ExeCommand="[INSTALLFOLDER]BlitsMe.Agent.exe"
       Execute="immediate"
       Return="asyncNoWait" />
+    <!-- when installing we have 2 modes, user install or installed by service (automatically upgraded) -->
     <InstallExecuteSequence>
       <!-- These actions will only be executed if the user upgrades manually, if its the service upgrading, the agent will restart itself when it realises
       its version has changed -->
@@ -50,6 +55,7 @@
     </InstallExecuteSequence>
   </Product>
 
+  <!-- this sets up where to put everything and menu items etc -->
   <Fragment>
     <Directory Id="TARGETDIR" Name="SourceDir">
       <Directory Id="ProgramFilesFolder">
@@ -70,20 +76,25 @@
         <RegistryValue Root="HKCU" Key="Software\Microsoft\BlitsMe$(var.buildMarker)" Name="installed" Type="integer" Value="1" KeyPath="yes"/>
       </Component>
     </DirectoryRef>
-
   </Fragment>
+  
+  <!-- inside here is the actual installation process -->
   <Fragment>
     <ComponentGroup Id="ProductComponents" Directory="INSTALLFOLDER">
       <!-- TODO: Remove the comments around this Component element and the ComponentRef below in order to add resources to this installer. -->
+      <!-- this installs the actual agent -->
       <Component Id="BlitsmeAgent">
         <File Id="BlitsMe.Agent.exe" Source="$(var.BlitsMeAgent.TargetPath)" KeyPath="yes" />
       </Component>
+      <!-- the blits me upgrader -->
       <Component Id="BlitsMeUpgradeAgent">
         <File Id="BlitsMe.Agent.Upgrade.exe" Source="$(var.BlitsMeUpgradeAgent.TargetPath)" KeyPath="yes" />
       </Component>
+      <!-- this installs the vnc client -->
       <Component Id="BlitsMeAgentSupportScreen">
         <File Source="$(var.BlitsMeAgent.TargetDir)\\bmss.exe" KeyPath="yes" />
       </Component>
+      <!-- this installs the blits me service -->
       <Component Id='c_BlitsMeService'>
         <File Id='f_BlitsMeService' Name='BlitsMeService.exe' Vital='yes' Source="$(var.BlitsMeService.TargetPath)" KeyPath='yes'/>
         <ServiceInstall
@@ -101,6 +112,7 @@
          />
         <ServiceControl Id="StartService" Start="install" Stop="both" Remove="uninstall" Name="BlitsMeService$(var.buildMarker)" Wait="yes" />
       </Component>
+      <!-- this installs the vnc service -->
       <Component Id='c_BlitsMeSupportService'>
         <File Id='f_BlitsMeSupportService' Name='bmserver.exe' Vital='yes' Source="$(var.BlitsMeService.TargetDir)/bmserver.exe" KeyPath='yes'/>
         <ServiceInstall
@@ -119,17 +131,8 @@
          />
         <ServiceControl Id="StartSupportService" Start="install" Stop="both" Remove="uninstall" Name="BlitsMeSupportService$(var.buildMarker)" Wait="yes" />
       </Component>
-<!--
-      <Component Id="RegistryEntries">
-        <RegistryKey Root="HKLM"
-                     Key="Software\BlitsMe$(var.buildMarker)"
-              >
-          <RegistryValue Type="string" Name="Version" Value="[ProductVersion]" KeyPath="yes"/>
-        </RegistryKey>
-      </Component>
--->
       <ComponentRef Id="ApplicationShortcut" />
-      <!-- Auto-start via Registry -->
+      <!-- Auto-start for all users via Registry -->
       <Component Id="BlitsMeAutoStart">
         <RegistryValue Id="BMAuthoStart.Reg" Root="HKMU" Action="write"
                        Key="Software\Microsoft\Windows\CurrentVersion\Run"
@@ -139,26 +142,31 @@
         <Condition>START_VIA_REGISTRY</Condition>
       </Component>
       <Component Id="BlitsMeServerSettings">
+        <!-- turns off  http connections for vnc -->
         <RegistryValue Id="AcceptHttpConnections.Reg" Root="HKLM" Action="write"
                      Key="Software\BlitsMe$(var.buildMarker)\Server"
                      Name="AcceptHttpConnections"
                      Value="0"
                      Type="integer" />
+        <!-- Allows loopback connections -->
         <RegistryValue Id="AllowLoopback.Reg" Root="HKLM" Action="write"
                        Key="Software\BlitsMe$(var.buildMarker)\Server"
                        Name="AllowLoopback"
                        Value="1"
                        Type="integer" />
+        <!-- Only allows loopback connections -->
         <RegistryValue Id="LoopbackOnly.Reg" Root="HKLM" Action="write"
                        Key="Software\BlitsMe$(var.buildMarker)\Server"
                        Name="LoopbackOnly"
                        Value="1"
                        Type="integer" />
+        <!-- Only States what port to listen on -->
         <RegistryValue Id="RfbPort.Reg" Root="HKLM" Action="write"
                        Key="Software\BlitsMe$(var.buildMarker)\Server"
                        Name="RfbPort"
                        Value="$(var.VNCServerPort)"
                        Type="integer" />
+        <!-- Disabled authentication -->
         <RegistryValue Id="UseVncAuthentication.Reg" Root="HKLM" Action="write"
                        Key="Software\BlitsMe$(var.buildMarker)\Server"
                        Name="UseVncAuthentication"

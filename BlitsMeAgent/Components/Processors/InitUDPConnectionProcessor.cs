@@ -4,6 +4,7 @@ using System.Linq;
 using System.Net;
 using System.Text;
 using BlitsMe.Cloud.Messaging.API;
+using BlitsMe.Cloud.Messaging.Elements;
 using BlitsMe.Cloud.Messaging.Request;
 using BlitsMe.Cloud.Messaging.Response;
 using BlitsMe.Communication.P2P.RUDP.Utils;
@@ -29,7 +30,11 @@ namespace BlitsMe.Agent.Components.Processors
             {
                 // Hit the stun server
                 PeerInfo self = _appContext.P2PManager.SetupTunnel(request.uniqueId, new IPEndPoint(IPAddress.Parse(request.facilitatorIP), Convert.ToInt32(request.facilitatorPort)), request.encryptionKey);
-                response.setUDPPeerInfo(self);
+                response.externalEndPoint = new IpEndPointElement(self.ExternalEndPoint);
+                foreach (var internalEndPoint in self.InternalEndPoints)
+                {
+                    response.internalEndPoints.Add(new IpEndPointElement(internalEndPoint));
+                }
             }
             catch (Exception e)
             {

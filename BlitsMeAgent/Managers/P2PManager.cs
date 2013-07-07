@@ -21,7 +21,7 @@ namespace BlitsMe.Agent.Managers
 
         public PeerInfo SetupTunnel(String uniqueId, IPEndPoint facilitatorEndPoint, String encryptionKey)
         {
-            IUDPTunnel tunnel = new UDPTunnel(0);
+            IUDPTunnel tunnel = new UDPTunnel(0, uniqueId);
             tunnel.EncryptData = (ref byte[] data) => EncryptData(ref data, encryptionKey);
             tunnel.DecryptData = (ref byte[] data) => DecryptData(ref data, encryptionKey);
             PeerInfo self = tunnel.Wave(facilitatorEndPoint, 15000);

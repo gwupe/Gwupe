@@ -4,58 +4,60 @@
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">x86</Platform>
     <ProductVersion>3.7</ProductVersion>
-    <ProjectGuid>41b5ab51-8d24-4d3d-9448-6f3584a34c34</ProjectGuid>
+    <ProjectGuid>e356991c-1a8c-4e27-b0d4-4447ca55ba45</ProjectGuid>
     <SchemaVersion>2.0</SchemaVersion>
-    <OutputName>BlitsMeSetup</OutputName>
-    <OutputType>Package</OutputType>
+    <OutputName>BlitsMeSetupFull</OutputName>
+    <OutputType>Bundle</OutputType>
     <WixTargetsPath Condition=" '$(WixTargetsPath)' == '' AND '$(MSBuildExtensionsPath32)' != '' ">$(MSBuildExtensionsPath32)\Microsoft\WiX\v3.x\Wix.targets</WixTargetsPath>
     <WixTargetsPath Condition=" '$(WixTargetsPath)' == '' ">$(MSBuildExtensionsPath)\Microsoft\WiX\v3.x\Wix.targets</WixTargetsPath>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|x86' ">
     <OutputPath>bin\$(Configuration)\</OutputPath>
     <IntermediateOutputPath>obj\$(Configuration)\</IntermediateOutputPath>
-    <DefineConstants>Debug;env=Debug;upgradeCode=60D58491-8172-4BF9-B2C5-CA405A5EA269;buildMarker=_Dev;VNCServerPort=10231</DefineConstants>
-    <WixVariables>
-    </WixVariables>
+    <DefineConstants>Debug;env=Debug;upgradeCode=B2EBB906-48C6-4170-A76E-13FD2ADB2BE6;buildMarker=_Dev</DefineConstants>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|x86' ">
     <OutputPath>bin\$(Configuration)\</OutputPath>
     <IntermediateOutputPath>obj\$(Configuration)\</IntermediateOutputPath>
-    <WixVariables>
-    </WixVariables>
-    <DefineConstants>env=Release;upgradeCode=53404183-1482-4C07-BBD0-F4F4FB6B3BEF;buildMarker=;VNCServerPort=10230</DefineConstants>
+    <DefineConstants>env=Release;upgradeCode=A42DEC7A-C820-46B7-BB0E-0E507EA13656;buildMarker=</DefineConstants>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="Product.wxs" />
+    <Compile Include="Bundle.wxs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\BlitsMeAgent\BlitsMeAgent.csproj">
-      <Name>BlitsMeAgent</Name>
-      <Project>{211d2399-36e1-4e1e-bfc5-fe76f7a8efcc}</Project>
-      <Private>True</Private>
-      <DoNotHarvest>True</DoNotHarvest>
-      <RefProjectOutputGroups>Binaries;Content;Satellites</RefProjectOutputGroups>
-      <RefTargetDir>INSTALLFOLDER</RefTargetDir>
-    </ProjectReference>
-    <ProjectReference Include="..\BlitsMeService\BlitsMeService.csproj">
-      <Name>BlitsMeService</Name>
-      <Project>{90b503c9-7032-4a9c-9d1a-b1187cdb56a8}</Project>
-      <Private>True</Private>
-      <DoNotHarvest>True</DoNotHarvest>
-      <RefProjectOutputGroups>Binaries;Content;Satellites</RefProjectOutputGroups>
-      <RefTargetDir>INSTALLFOLDER</RefTargetDir>
-    </ProjectReference>
-    <ProjectReference Include="..\BlitsMeSetupCustomAction\BlitsMeSetupCustomAction.csproj">
-      <Name>BlitsMeSetupCustomAction</Name>
-      <Project>{8266da82-5594-4cea-bf14-413bd5fa95e5}</Project>
-      <Private>True</Private>
-      <DoNotHarvest>True</DoNotHarvest>
-      <RefProjectOutputGroups>Binaries;Content;Satellites</RefProjectOutputGroups>
-      <RefTargetDir>INSTALLFOLDER</RefTargetDir>
-    </ProjectReference>
-    <ProjectReference Include="..\BlitsMeUpgradeAgent\BlitsMeUpgradeAgent.csproj">
-      <Name>BlitsMeUpgradeAgent</Name>
-      <Project>{6702e385-f3b9-4b63-b094-70eeb5c6126b}</Project>
+    <WixExtension Include="WixNetFxExtension">
+      <HintPath>$(WixExtDir)\WixNetFxExtension.dll</HintPath>
+      <Name>WixNetFxExtension</Name>
+    </WixExtension>
+    <WixExtension Include="WixPSExtension">
+      <HintPath>$(WixExtDir)\WixPSExtension.dll</HintPath>
+      <Name>WixPSExtension</Name>
+    </WixExtension>
+    <WixExtension Include="WixNetFxExtension">
+      <HintPath>$(WixExtDir)\WixNetFxExtension.dll</HintPath>
+      <Name>WixNetFxExtension</Name>
+    </WixExtension>
+    <WixExtension Include="WixNetFxExtension">
+      <HintPath>$(WixExtDir)\WixNetFxExtension.dll</HintPath>
+      <Name>WixNetFxExtension</Name>
+    </WixExtension>
+    <WixExtension Include="WixNetFxExtension">
+      <HintPath>$(WixExtDir)\WixNetFxExtension.dll</HintPath>
+      <Name>WixNetFxExtension</Name>
+    </WixExtension>
+    <WixExtension Include="WixBalExtension">
+      <HintPath>$(WixExtDir)\WixBalExtension.dll</HintPath>
+      <Name>WixBalExtension</Name>
+    </WixExtension>
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="arrow.png" />
+    <Content Include="icon-main.ico" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\BlitsMeSetup\BlitsMeSetup.wixproj">
+      <Name>BlitsMeSetup</Name>
+      <Project>{41b5ab51-8d24-4d3d-9448-6f3584a34c34}</Project>
       <Private>True</Private>
       <DoNotHarvest>True</DoNotHarvest>
       <RefProjectOutputGroups>Binaries;Content;Satellites</RefProjectOutputGroups>
@@ -71,7 +73,6 @@
 	<Target Name="AfterBuild">
 	</Target>
 	-->
-  <!--
   <Target Name="BeforeBuild">
     <GetAssemblyIdentity AssemblyFiles="$(SolutionDir)BlitsMeAgent\bin\$(Configuration)\BlitsMe.Agent.exe">
       <Output TaskParameter="Assemblies" ItemName="AssemblyVersions" />
@@ -89,5 +90,4 @@
       <Output TaskParameter="Value" PropertyName="TargetPath" />
     </CreateProperty>
   </Target>
-  -->
 </Project>

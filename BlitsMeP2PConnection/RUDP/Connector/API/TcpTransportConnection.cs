@@ -93,7 +93,7 @@ namespace BlitsMe.Communication.P2P.RUDP.Connector.API
                         }
                         catch (Exception e)
                         {
-                            Logger.Error("Writing to upstream handler failed, shutting down TcpConnection");
+                            Logger.Error("Writing to upstream handler failed, shutting down TcpConnection : " + e.Message,e);
                             break;
                         }
                     }

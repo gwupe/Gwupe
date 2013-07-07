@@ -8,22 +8,45 @@ namespace BlitsMe.Communication.P2P.RUDP.Utils
 {
     public class PeerInfo
     {
-        public IPEndPoint internalEndPoint;
-        public IPEndPoint externalEndPoint;
-
-        public PeerInfo(IPEndPoint internalEP, IPEndPoint externalEP)
+        public List<IPEndPoint> InternalEndPoints;
+        public IPEndPoint InternalEndPoint
         {
-            internalEndPoint = internalEP;
-            externalEndPoint = externalEP;
+            get { return InternalEndPoints == null || InternalEndPoints.Count == 0 ? null : InternalEndPoints[0]; }
+            set
+            {
+                if (InternalEndPoints == null)
+                {
+                    InternalEndPoints = new List<IPEndPoint>();
+                }
+                InternalEndPoints.Insert(0,value);
+            }
+        }
+        public IPEndPoint ExternalEndPoint;
+
+        public PeerInfo(IPEndPoint internalEp, IPEndPoint externalEp)
+        {
+            InternalEndPoint = internalEp;
+            ExternalEndPoint = externalEp;
         }
 
         public PeerInfo()
         {
+            InternalEndPoints = new List<IPEndPoint>();
         }
 
         public override String ToString()
         {
-            return "Internal => " + internalEndPoint + ", External => " + externalEndPoint;
+            String output = "Internal => ";
+            if (InternalEndPoints.Count == 0)
+            {
+                output += "none";
+            } else
+            {
+                output = InternalEndPoints.Aggregate(output, (current, internalEndPoint) => current + (internalEndPoint + ", "));
+            }
+                
+            output += "External => " + ExternalEndPoint;
+            return output;
         }
     }
 }

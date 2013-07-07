@@ -29,6 +29,7 @@ namespace BlitsMe.Agent.UI.WPF.Engage
         internal Engagement Engagement { get; set; }
         private readonly BlitsMeClientAppContext _appContext;
         private ChatWindow _chatWindow;
+        private ContactInfoWindow _contactInfoWindow;
         private static readonly ILog Logger = LogManager.GetLogger(typeof(EngagementWindow));
         private readonly CollectionViewSource _notificationView;
         private readonly EngagementWindowDataContext _ewDataContext;
@@ -167,7 +168,12 @@ namespace BlitsMe.Agent.UI.WPF.Engage
 
         private void ScorecardButtonClick(object sender, RoutedEventArgs e)
         {
-            EngagementContent.Content = null;
+            if(_contactInfoWindow == null)
+            {
+                _contactInfoWindow = new ContactInfoWindow();
+                _contactInfoWindow.DataContext = Engagement.SecondParty;
+            }
+            EngagementContent.Content = _contactInfoWindow;
         }
 
         private void SendFileButtonClick(object sender, RoutedEventArgs e)

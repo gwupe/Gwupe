@@ -32,6 +32,8 @@ namespace BlitsMe.Communication.P2P.RUDP.Tunnel.API
         int PeerLatency { get; }
         // The remote IP of the tunnel
         IPAddress RemoteIp { get; }
+        // Is it a local connection
+        bool LocalConnection { get; }
         // Initiates syncing with a peer
         void SyncWithPeer(PeerInfo peerIp, int timeout);
         // Other side of the sync, waiting to be contacted by a syncWithPeer

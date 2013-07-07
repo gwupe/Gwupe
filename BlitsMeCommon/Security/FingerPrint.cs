@@ -13,17 +13,32 @@ namespace BlitsMe.Common.Security
     /// </summary>
     public class FingerPrint
     {
-        private static string fingerPrint = string.Empty;
+        private static string _fingerPrint = string.Empty;
+        private static string _hardwareDescription = String.Empty;
         public static string Value()
         {
-            if (string.IsNullOrEmpty(fingerPrint))
+            if (string.IsNullOrEmpty(_fingerPrint))
             {
-                fingerPrint = GetHash("CPU >> " + cpuId() + "\nBIOS >> " + biosId() + "\nBASE >> " + baseId() + "\nMAC >> " + macId()
-                    +"\nDISK >> "+ diskId() + "\nVIDEO >> " + videoId()
-                                     );
+                _fingerPrint = GetHash(HardwareDescription());
             }
-            return fingerPrint;
+            return _fingerPrint;
         }
+
+        public static string HardwareDescription()
+        {
+            if (string.IsNullOrEmpty(_hardwareDescription))
+            {
+                _hardwareDescription =
+                    "CPU|" + CpuId() + "\n" +
+                    "BIOS|" + BiosId() + "\n" +
+                    "BASE|" + BaseId() + "\n" +
+                    "MAC|" + MacId() + "\n" +
+                    "DISK|" + DiskId() + "\n" +
+                    "VIDEO|" + VideoId();
+            }
+            return _hardwareDescription;
+        }
+
         private static string GetHash(string s)
         {
             MD5 sec = new MD5CryptoServiceProvider();
@@ -56,7 +71,7 @@ namespace BlitsMe.Common.Security
 
         #region Original Device ID Getting Code
         //Return a hardware identifier
-        private static string identifier(string wmiClass, string wmiProperty, string wmiMustBeTrue)
+        private static string Identifier(string wmiClass, string wmiProperty, string wmiMustBeTrue)
         {
             string result = "";
             System.Management.ManagementClass mc = new System.Management.ManagementClass(wmiClass);
@@ -70,7 +85,7 @@ namespace BlitsMe.Common.Security
                     {
                         try
                         {
-                            result = mo[wmiProperty].ToString();
+                            result = mo[wmiProperty] == null ? "" : mo[wmiProperty].ToString();
                             break;
                         }
                         catch
@@ -82,7 +97,7 @@ namespace BlitsMe.Common.Security
             return result;
         }
         //Return a hardware identifier
-        private static string identifier(string wmiClass, string wmiProperty)
+        private static string Identifier(string wmiClass, string wmiProperty)
         {
             string result = "";
             System.Management.ManagementClass mc = new System.Management.ManagementClass(wmiClass);
@@ -94,7 +109,7 @@ namespace BlitsMe.Common.Security
                 {
                     try
                     {
-                        result = mo[wmiProperty].ToString();
+                        result = mo[wmiProperty] == null ? "" : mo[wmiProperty].ToString();
                         break;
                     }
                     catch
@@ -104,63 +119,63 @@ namespace BlitsMe.Common.Security
             }
             return result;
         }
-        private static string cpuId()
+        private static string CpuId()
         {
             //Uses first CPU identifier available in order of preference
             //Don't get all identifiers, as very time consuming
-            string retVal = identifier("Win32_Processor", "UniqueId");
+            string retVal = Identifier("Win32_Processor", "UniqueId");
             if (retVal == "") //If no UniqueID, use ProcessorID
             {
-                retVal = identifier("Win32_Processor", "ProcessorId");
+                retVal = Identifier("Win32_Processor", "ProcessorId");
                 if (retVal == "") //If no ProcessorId, use Name
                 {
-                    retVal = identifier("Win32_Processor", "Name");
+                    retVal = Identifier("Win32_Processor", "Name");
                     if (retVal == "") //If no Name, use Manufacturer
                     {
-                        retVal = identifier("Win32_Processor", "Manufacturer");
+                        retVal = Identifier("Win32_Processor", "Manufacturer");
                     }
                     //Add clock speed for extra security
-                    retVal += identifier("Win32_Processor", "MaxClockSpeed");
+                    retVal += Identifier("Win32_Processor", "MaxClockSpeed");
                 }
             }
             return retVal;
         }
         //BIOS Identifier
-        private static string biosId()
+        private static string BiosId()
         {
-            return identifier("Win32_BIOS", "Manufacturer")
-            + identifier("Win32_BIOS", "SMBIOSBIOSVersion")
-            + identifier("Win32_BIOS", "IdentificationCode")
-            + identifier("Win32_BIOS", "SerialNumber")
-            + identifier("Win32_BIOS", "ReleaseDate")
-            + identifier("Win32_BIOS", "Version");
+            return Identifier("Win32_BIOS", "Manufacturer")
+            + Identifier("Win32_BIOS", "SMBIOSBIOSVersion")
+            + Identifier("Win32_BIOS", "IdentificationCode")
+            + Identifier("Win32_BIOS", "SerialNumber")
+            + Identifier("Win32_BIOS", "ReleaseDate")
+            + Identifier("Win32_BIOS", "Version");
         }
         //Main physical hard drive ID
-        private static string diskId()
+        private static string DiskId()
         {
-            return identifier("Win32_DiskDrive", "Model")
-            + identifier("Win32_DiskDrive", "Manufacturer")
-            + identifier("Win32_DiskDrive", "Signature")
-            + identifier("Win32_DiskDrive", "TotalHeads");
+            return Identifier("Win32_DiskDrive", "Model")
+            + Identifier("Win32_DiskDrive", "Manufacturer")
+            + Identifier("Win32_DiskDrive", "Signature")
+            + Identifier("Win32_DiskDrive", "TotalHeads");
         }
         //Motherboard ID
-        private static string baseId()
+        private static string BaseId()
         {
-            return identifier("Win32_BaseBoard", "Model")
-            + identifier("Win32_BaseBoard", "Manufacturer")
-            + identifier("Win32_BaseBoard", "Name")
-            + identifier("Win32_BaseBoard", "SerialNumber");
+            return Identifier("Win32_BaseBoard", "Model")
+            + Identifier("Win32_BaseBoard", "Manufacturer")
+            + Identifier("Win32_BaseBoard", "Name")
+            + Identifier("Win32_BaseBoard", "SerialNumber");
         }
         //Primary video controller ID
-        private static string videoId()
+        private static string VideoId()
         {
-            return identifier("Win32_VideoController", "DriverVersion")
-            + identifier("Win32_VideoController", "Name");
+            return Identifier("Win32_VideoController", "DriverVersion")
+            + Identifier("Win32_VideoController", "Name");
         }
         //First enabled network card ID
-        private static string macId()
+        private static string MacId()
         {
-            return identifier("Win32_NetworkAdapterConfiguration", "MACAddress", "IPEnabled");
+            return Identifier("Win32_NetworkAdapterConfiguration", "MACAddress", "IPEnabled");
         }
         #endregion
     }

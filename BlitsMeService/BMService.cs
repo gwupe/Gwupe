@@ -24,7 +24,7 @@ namespace BlitsMe.Service
         private readonly Timer _updateCheck;
 #if DEBUG
         private const String UpdateServer = "dev.blits.me";
-        private const int UpdateCheckInterval = 120;
+        private const int UpdateCheckInterval = 300;
         public const String BuildMarker = "_Dev";
 #else
         private const String UpdateServer = "blits.me";
@@ -77,8 +77,7 @@ namespace BlitsMe.Service
                         Byte[] certificateData = new Byte[stream.Length];
                         stream.Read(certificateData, 0, certificateData.Length);
                         _cacert = new X509Certificate2(certificateData);
-                        Logger.Info("Will use certificate from CA " + _cacert.GetNameInfo(X509NameType.SimpleName, true) +
-                                    ", verified? " + _cacert.Verify());
+                        Logger.Info("Will use certificate from CA " + _cacert.GetNameInfo(X509NameType.SimpleName, true));
                     }
                     catch (Exception e)
                     {
@@ -90,9 +89,10 @@ namespace BlitsMe.Service
                 try
                 {
                     Version assemblyVersion = new Version(_version);
+                    var downloadUrl = "https://" + UpdateServer + "/updates/update.php?ver=" + assemblyVersion + "&hwid=" + HardwareFingerprint() + "&upver=2.0";
+                    Logger.Debug("Checking for new version from " + downloadUrl);
                     String versionInfomation =
-                        _webClient.DownloadString("https://" + UpdateServer + "/updates/update.php?ver=" +
-                                                  assemblyVersion + "&hwid=" + HardwareFingerprint());
+                        _webClient.DownloadString(downloadUrl);
                     if (Regex.Match(versionInfomation, "^[0-9]+\\.[0-9]+\\.[0-9]+:BlitsMeSetup.*").Success)
                     {
                         String[] versionParts = versionInfomation.Split('\n')[0].Split(':');
@@ -110,7 +110,13 @@ namespace BlitsMe.Service
                                 Logger.Info("Downloaded update " + versionParts[1]);
                                 String logfile = Path.GetTempPath() + "BlitsMeInstall.log";
                                 Logger.Info("Executing " + fileLocation + ", log file is " + logfile);
-                                Process.Start(fileLocation, "/qn /lvx " + logfile);
+                                if(Regex.Match(fileLocation, ".*.msi$").Success)
+                                {
+                                    Process.Start(fileLocation, "/qn /lvx " + logfile);
+                                } else
+                                {
+                                    Process.Start(fileLocation, " /silent /passive /install /quiet /norestart /log " + logfile);
+                                }
                             }
                             catch (Exception e)
                             {
@@ -136,6 +142,7 @@ namespace BlitsMe.Service
                 }
                 finally
                 {
+                    Logger.Debug("Upgrade check complete.");
                     ServicePointManager.ServerCertificateValidationCallback -= ValidateServerWithCA;
                     _checkingUpdate = false;
                 }
@@ -204,6 +211,8 @@ namespace BlitsMe.Service
 
         public String HardwareFingerprint()
         {
+            //Logger.Debug("Got HardwareDesc : " + FingerPrint.HardwareDescription());
+            //Logger.Debug("Got fingerprint : " + FingerPrint.Value());
             return FingerPrint.Value();
         }
 
