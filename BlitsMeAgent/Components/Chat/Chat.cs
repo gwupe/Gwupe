@@ -48,7 +48,7 @@ namespace BlitsMe.Agent.Components.Chat
             this._appContext = appContext;
             this._engagement = engagement;
             this._to = engagement.SecondParty.Username;
-            Conversation = new Conversation();
+            Conversation = new Conversation(appContext);
             _chatQueue = new ConcurrentQueue<ChatElement>();
             _chatSender = new Thread(ProcessChats) { Name = "ChatSender-" + _to, IsBackground = true };
             _chatSender.Start();

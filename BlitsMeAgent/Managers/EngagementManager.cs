@@ -17,6 +17,7 @@ namespace BlitsMe.Agent.Managers
         private static readonly ILog Logger = LogManager.GetLogger(typeof(EngagementManager));
         private readonly BlitsMeClientAppContext _appContext;
         private readonly Dictionary<String, Engagement> _engagementLookup = new Dictionary<string, Engagement>();
+        private readonly object _engagementLookupLock = new object();
         public ObservableCollection<Engagement> Engagements { get; private set; }
 
         internal event EngagementActivityEvent NewActivity;
@@ -40,20 +41,25 @@ namespace BlitsMe.Agent.Managers
         // Gets an engagement, creates it if its not there
         public Engagement GetNewEngagement(String username)
         {
-            if (_engagementLookup.ContainsKey(username.ToLower()))
+            lock (_engagementLookupLock)
             {
+                Logger.Debug("Getting engagement for " + username);
+                if (_engagementLookup.ContainsKey(username.ToLower()))
+                {
+                    return _engagementLookup[username.ToLower()];
+                }
+
+                Person servicePerson = _appContext.RosterManager.GetServicePerson(username.ToLower());
+                if (servicePerson == null)
+                {
+                    throw new Exception("Unable to find service person [" + username + "]");
+                }
+                var newEngagement = new Engagement(_appContext, servicePerson);
+                newEngagement.Chat.NewMessage += OnChatEvent;
+                Engagements.Add(newEngagement);
+                _engagementLookup[username.ToLower()] = newEngagement;
                 return _engagementLookup[username.ToLower()];
             }
-            Person servicePerson = _appContext.RosterManager.GetServicePerson(username.ToLower());
-            if(servicePerson == null)
-            {
-                throw new Exception("Unable to find service person [" + username + "]");
-            }
-            var newEngagement = new Engagement(_appContext, servicePerson);
-            newEngagement.Chat.NewMessage += OnChatEvent;
-            Engagements.Add(newEngagement);
-            _engagementLookup[username.ToLower()] = newEngagement;
-            return _engagementLookup[username.ToLower()];
         }
 
         private void OnChatEvent(object sender, ChatEventArgs args)

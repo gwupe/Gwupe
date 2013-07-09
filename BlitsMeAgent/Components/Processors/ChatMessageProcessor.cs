@@ -9,7 +9,6 @@ namespace BlitsMe.Agent.Components.Processors
     internal class ChatMessageProcessor : UserToUserProcessor
     {
         private static readonly ILog Logger = LogManager.GetLogger(typeof(ChatMessageProcessor));
-        private readonly BlitsMeClientAppContext _appContext;
 
         internal ChatMessageProcessor(BlitsMeClientAppContext appContext) : base(appContext)
         {

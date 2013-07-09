@@ -52,7 +52,7 @@
 				<Grid Margin="0" DockPanel.Dock="Left">
                     <StackPanel Margin="0,0,0,0">
                         <TextBlock Style="{StaticResource TeamMemberNameText}" Text="{Binding Path=SecondParty.Name, FallbackValue=FirstName LastName}" />
-                        <ContentControl Content="{Binding Person.Rating}" >
+                        <ContentControl Content="{Binding SecondParty.Rating}" >
                   <ContentControl.Style>
                         <Style TargetType="{x:Type ContentControl}">
 						<Setter Property="ContentTemplate" Value="{StaticResource Rating}" />

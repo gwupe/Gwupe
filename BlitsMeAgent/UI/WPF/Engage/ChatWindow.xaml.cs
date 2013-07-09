@@ -17,7 +17,7 @@ namespace BlitsMe.Agent.UI.WPF.Engage
         private static readonly ILog Logger = LogManager.GetLogger(typeof(ChatWindow));
         private readonly BlitsMeClientAppContext _appContext;
         private readonly EngagementWindow _engagementWindow;
-        internal readonly Chat _chat;
+        internal readonly Chat Chat;
         private DateTime _lastMessage;
 
         public ChatWindow(BlitsMeClientAppContext appContext, EngagementWindow engagementWindow)
@@ -25,11 +25,12 @@ namespace BlitsMe.Agent.UI.WPF.Engage
             this.InitializeComponent();
             _appContext = appContext;
             _engagementWindow = engagementWindow;
-            _chat = _engagementWindow.Engagement.Chat;
-            _chat.NewMessage += ChatOnNewMessage;
+            Chat = _engagementWindow.Engagement.Chat;
+            Chat.NewMessage += ChatOnNewMessage;
             ChatPanelViewer.ScrollToBottom();
             DataContext = new ChatWindowDataContext(_appContext, this);
-            Logger.Debug(ChatPanel.Items.Count + " vs " + _chat.Conversation.Exchange.Count);
+            // need to do this here, because we get weird errors if its part of the data context.
+            ChatPanel.ItemsSource = new DispatchingCollection<ObservableCollection<ChatElement>, ChatElement>(Chat.Conversation.Exchange,Dispatcher);
         }
 
         #region EventHandlers
@@ -47,10 +48,15 @@ namespace BlitsMe.Agent.UI.WPF.Engage
                 ChatPanelViewer.ScrollToBottom();
                 if (_lastMessage.Day != DateTime.Now.Day)
                 {
+                    Logger.Debug("Rolling over into new day, adjusting times in " + _engagementWindow.Engagement.SecondParty.Username);
                     // This is to make sure that all the items 'friendly dates' remain correct on midnight rollover
                     ChatPanel.Items.Refresh();
+                } else  if(ChatPanel.Items.Count != Chat.Conversation.Exchange.Count)
+                {
+                    Logger.Error("Chat message count doesn't match, chatwindow = " + ChatPanel.Items.Count + ", chat = " + Chat.Conversation.Exchange.Count + ", refreshing");
                 }
                 _lastMessage = DateTime.Now;
+                
             }
         }
 
@@ -64,16 +70,16 @@ namespace BlitsMe.Agent.UI.WPF.Engage
         private readonly BlitsMeClientAppContext _appContext;
         private readonly ChatWindow _chatWindow;
         public Person Self { get; private set; }
-        public DispatchingCollection<ObservableCollection<ChatElement>, ChatElement> Exchange { get; private set; }
+        //public DispatchingCollection<ObservableCollection<ChatElement>, ChatElement> Exchange { get; private set; }
 
         public ChatWindowDataContext(BlitsMeClientAppContext appContext, ChatWindow chatWindow)
         {
             this._appContext = appContext;
             this._chatWindow = chatWindow;
             Self = _appContext.CurrentUserManager.CurrentUser;
-            this.Exchange =
-                new DispatchingCollection<ObservableCollection<ChatElement>, ChatElement>(
-                    _chatWindow._chat.Conversation.Exchange, chatWindow.Dispatcher);
+          //  this.Exchange =
+            //    new DispatchingCollection<ObservableCollection<ChatElement>, ChatElement>(
+              //      _chatWindow._chat.Conversation.Exchange, chatWindow.Dispatcher);
         }
 
         // Command Handler
@@ -81,7 +87,7 @@ namespace BlitsMe.Agent.UI.WPF.Engage
         {
             get
             {
-                return _sendMessage ?? (_sendMessage = new SendMessageCommand(_appContext, _chatWindow._chat, _chatWindow.messageBox));
+                return _sendMessage ?? (_sendMessage = new SendMessageCommand(_appContext, _chatWindow.Chat, _chatWindow.messageBox));
             }
         }
     }

@@ -105,6 +105,8 @@ namespace BlitsMe.Cloud.Communication
                         {
                             Connect(server);
                             Logger.Info("Successfully connected to server [" + server.ToString() + "]");
+                            // wait here for a second to initialise
+                            Thread.Sleep(5000);
                             break;
                         }
                         catch (Exception e)

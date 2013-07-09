@@ -6,15 +6,17 @@ namespace BlitsMe.Agent.Components.Chat
 {
     public class Conversation
     {
+        private readonly BlitsMeClientAppContext _appContext;
         private static readonly ILog Logger = LogManager.GetLogger(typeof (Conversation));
-        public ObservableCollection<ChatElement> Exchange{ get; set; }
+        public ObservableCollection<ChatElement> Exchange{ get; private set; }
         public DateTime Started { get; set; }
         public DateTime Stopped { get; set; }
         // 10 minute conversation groups
         private const Int64 MaxChatInterval = 6000000000;
 
-        public Conversation()
+        public Conversation(BlitsMeClientAppContext appContext)
         {
+            _appContext = appContext;
             Exchange = new ObservableCollection<ChatElement>();
         }
 

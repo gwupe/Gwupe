@@ -10,7 +10,7 @@ using log4net;
 
 namespace BlitsMe.Agent.UI.WPF.Engage
 {
-    class EngagementWindowList : ObservableListMirror<Engagement,EngagementWindow>
+    internal class EngagementWindowList : ObservableListMirror<Engagement,EngagementWindow>
     {
         private static readonly ILog Logger = LogManager.GetLogger(typeof(EngagementWindowList));
         private readonly BlitsMeClientAppContext _appContext;

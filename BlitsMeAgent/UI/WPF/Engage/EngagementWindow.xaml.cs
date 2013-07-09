@@ -212,8 +212,6 @@ namespace BlitsMe.Agent.UI.WPF.Engage
             if (_chatWindow == null)
             {
                 _chatWindow = new ChatWindow(_appContext, this);
-                Logger.Debug(_chatWindow.ChatPanel.Items.Count + " vs " + _chatWindow._chat.Conversation.Exchange.Count);
-
             }
             EngagementContent.Content = _chatWindow;
         }
