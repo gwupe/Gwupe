@@ -27,13 +27,16 @@ namespace BlitsMe.Cloud.Messaging.Response
             get { return internalEndPoints == null || internalEndPoints.Count == 0 ? null : internalEndPoints[0].address; }
             set
             {
-                if (internalEndPoints.Count == 0)
+                if (value != null)
                 {
-                    internalEndPoints.Add(new IpEndPointElement() { address = value });
-                }
-                else
-                {
-                    internalEndPoints[0].address = value;
+                    if (internalEndPoints.Count == 0)
+                    {
+                        internalEndPoints.Add(new IpEndPointElement() {address = value});
+                    }
+                    else
+                    {
+                        internalEndPoints[0].address = value;
+                    }
                 }
             }
         }
@@ -43,13 +46,17 @@ namespace BlitsMe.Cloud.Messaging.Response
             get { return internalEndPoints == null || internalEndPoints.Count == 0 ? 0 : internalEndPoints[0].port; }
             set
             {
-                if (internalEndPoints.Count == 0)
+                if (value != 0)
                 {
-                    internalEndPoints.Add(new IpEndPointElement() { port = value });
-                }
-                else
-                {
-                    internalEndPoints[0].port = value;
+
+                    if (internalEndPoints.Count == 0)
+                    {
+                        internalEndPoints.Add(new IpEndPointElement() {port = value});
+                    }
+                    else
+                    {
+                        internalEndPoints[0].port = value;
+                    }
                 }
             }
 
@@ -62,13 +69,16 @@ namespace BlitsMe.Cloud.Messaging.Response
             get { return externalEndPoint == null ? null : externalEndPoint.address; }
             set
             {
-                if (externalEndPoint == null)
+                if (value != null)
                 {
-                    externalEndPoint = new IpEndPointElement() { address = value };
-                }
-                else
-                {
-                    externalEndPoint.address = value;
+                    if (externalEndPoint == null)
+                    {
+                        externalEndPoint = new IpEndPointElement() {address = value};
+                    }
+                    else
+                    {
+                        externalEndPoint.address = value;
+                    }
                 }
             }
         }
@@ -78,13 +88,16 @@ namespace BlitsMe.Cloud.Messaging.Response
             get { return externalEndPoint == null ? 0 : externalEndPoint.port; }
             set
             {
-                if (externalEndPoint == null)
+                if (value != 0)
                 {
-                    externalEndPoint = new IpEndPointElement() { port = value };
-                }
-                else
-                {
-                    externalEndPoint.port = value;
+                    if (externalEndPoint == null)
+                    {
+                        externalEndPoint = new IpEndPointElement() {port = value};
+                    }
+                    else
+                    {
+                        externalEndPoint.port = value;
+                    }
                 }
             }
         }

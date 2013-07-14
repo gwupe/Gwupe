@@ -39,7 +39,7 @@ namespace BlitsMe.Communication.P2P.RUDP.Utils
             String output = "Internal => ";
             if (InternalEndPoints.Count == 0)
             {
-                output += "none";
+                output += "none, ";
             } else
             {
                 output = InternalEndPoints.Aggregate(output, (current, internalEndPoint) => current + (internalEndPoint + ", "));

@@ -41,7 +41,7 @@ namespace BlitsMe.Agent.Components.Processors
             }
             catch (Exception e)
             {
-                Logger.Error("Failed to start listening for UDP traffic from peer : " + e.Message);
+                Logger.Error("Failed to start listening for UDP traffic from peer : " + e.Message,e);
                 response.error = "LISTEN_ERROR";
                 response.errorMessage = "Failed to start listening for UDP traffic";
             }
