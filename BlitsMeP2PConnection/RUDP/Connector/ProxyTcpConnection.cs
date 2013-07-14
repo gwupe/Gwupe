@@ -22,18 +22,17 @@ namespace BlitsMe.Communication.P2P.RUDP.Connector
             _tcpClientProxyReader = new Thread(TcpReaderToTransportSocketWriter) { IsBackground = true };
             _tcpClientProxyReader.Name = "_tcpReaderToTransportSockWriter[" + socket.Connection.ConnectionId + "]";
             _tcpClientProxyReader.Start();
+            // start the base class processes
+            CompleteInit();
         }
 
         protected override void _Close()
         {
-#if(DEBUG)
-            Logger.Debug("Closing proxied connection components");
-#endif
+            Logger.Debug(_tcpClient);
+            Logger.Debug(_tcpClient.GetStream());
             if (_tcpClient.Connected)
             {
-#if(DEBUG)
                 Logger.Debug("Closing TCP Client");
-#endif
                 _tcpClient.GetStream().Close();
                 _tcpClient.Close();
             }
@@ -41,19 +40,23 @@ namespace BlitsMe.Communication.P2P.RUDP.Connector
 
         protected override bool ProcessTransportSocketRead(byte[] read, int length)
         {
-            if (_tcpClient.Connected)
+            if (_tcpClient != null)
             {
-
-                _tcpClient.GetStream().Write(read, 0, length);
+                if (_tcpClient.Connected)
+                {
+                    _tcpClient.GetStream().Write(read, 0, length);
 #if(DEBUG)
                 Logger.Debug("Wrote " + length + " to tcp socket.");
 #endif
-            }
-            else
+                }
+                else
+                {
+                    Logger.Debug("Outgoing connection has been closed");
+                    return false;
+                }
+            } else
             {
-#if(DEBUG)
-                Logger.Debug("Outgoing connection has been closed");
-#endif
+                Logger.Error("TcpClient is null, this should not be possible");
                 return false;
             }
             return true;
@@ -70,11 +73,10 @@ namespace BlitsMe.Communication.P2P.RUDP.Connector
                     try
                     {
                         read = _tcpClient.GetStream().Read(tmpRead, 0, tmpRead.Length);
-                    } catch(Exception e)
+                    }
+                    catch (Exception e)
                     {
-#if DEBUG
-                        Logger.Debug("Reading from the tcp stream caused an exception, most likely its gone.",e);
-#endif
+                        Logger.Debug("Reading from the tcp stream caused an exception, most likely its gone.", e);
                         read = 0;
                     }
                     if (read > 0)
@@ -86,15 +88,13 @@ namespace BlitsMe.Communication.P2P.RUDP.Connector
                         {
                             if (!SendDataToTransportSocket(tmpRead, read))
                             {
-#if DEBUG
                                 Logger.Debug("Failed to read from the transport socket, closing.");
-#endif
                                 break;
                             }
                         }
                         catch (Exception e)
                         {
-                            Logger.Error("Sending to transport failed, shutting down ProxyTransportWriter",e);
+                            Logger.Error("Sending to transport failed, shutting down ProxyTransportWriter", e);
                             break;
                         }
                     }
@@ -106,7 +106,7 @@ namespace BlitsMe.Communication.P2P.RUDP.Connector
             }
             catch (Exception ex)
             {
-                Logger.Error("Connection has failed : " + ex.Message,ex);
+                Logger.Error("Connection has failed : " + ex.Message, ex);
             }
             finally
             {

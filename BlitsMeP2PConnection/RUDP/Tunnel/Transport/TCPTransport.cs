@@ -118,9 +118,7 @@ namespace BlitsMe.Communication.P2P.RUDP.Tunnel.Transport
                 // If the connect response ack packet was lost, its possible that this connection is not open, we need to open it now
                 if (!conn.Connection.Established)
                 {
-#if DEBUG
                     Logger.Debug("Outgoing Connection [" + conn.Connection.ConnectionId + "] received data, means our connect rs ack was lost, auto opening");
-#endif
                     conn.Connection.Open();
                 }
                 // Lock receiving while we process this packet (we will still be able to send)
@@ -196,9 +194,7 @@ namespace BlitsMe.Communication.P2P.RUDP.Tunnel.Transport
                 // If this connection exists
                 if (_tcpConnections.IsRemoteConnection(packet.ConnectionId))
                 {
-#if(DEBUG)
                     Logger.Debug("Request for connection id [" + packet.ConnectionId + "] already established, resending response");
-#endif
                     TcpConnectionHolder tcpConnectionHolder = _tcpConnections.GetRemoteConnection(packet.ConnectionId);
                     response.RemoteConnectionId = tcpConnectionHolder.Connection.ConnectionId;
                     response.ProtocolId = tcpConnectionHolder.Connection.ProtocolId;
@@ -213,20 +209,15 @@ namespace BlitsMe.Communication.P2P.RUDP.Tunnel.Transport
                         if (_listeningNamedTCPEndPoints.ContainsKey(packet.ConnectionName))
                         {
                             byte localConnectionId = GetNextConnectionId();
-#if(DEBUG)
                             Logger.Debug("Found a listener for " + packet.ConnectionName + " connecting local conn [" + localConnectionId + "] to remote conn [" + packet.ConnectionId + "]");
-#endif
                             byte agreedProtocolId = packet.ProtocolId;
                             if (packet.ProtocolId > MaxSupportedProtocolId)
                             {
-#if(DEBUG)
                                 Logger.Debug("They wanted protocol " + packet.ProtocolId + ", but I only support up to " + MaxSupportedProtocolId + ", so I propose it.");
-#endif
                                 agreedProtocolId = MaxSupportedProtocolId;
                             }
-#if(DEBUG)
                             Logger.Debug("I have agreed to protocol " + agreedProtocolId);
-#endif
+
                             response.ProtocolId = agreedProtocolId;
                             response.Sequence = (ushort) (_rand.Next(ushort.MaxValue));
                             ITcpTransportLayer connection = null;
@@ -269,9 +260,7 @@ namespace BlitsMe.Communication.P2P.RUDP.Tunnel.Transport
                     }
                 }
             }
-#if(DEBUG)
             Logger.Debug("Sending connection response : " + response);
-#endif
             SendData(response);
             if (response.Success)
             {
@@ -318,9 +307,7 @@ namespace BlitsMe.Communication.P2P.RUDP.Tunnel.Transport
                 byte connectionId = GetNextConnectionId();
                 // this method will send the necessary packet requesting connection, handle the response
                 ITcpTransportLayer connection = _tcpConnectionHelper.ConnectNamed(connectionId, endPoint, 10000, protocolId);
-#if(DEBUG)
                 Logger.Debug("Successfully connected to service " + endPoint + " local connection [" + connectionId + "], remote connection [" + connection.RemoteConnectionId + "]");
-#endif
                 // add the connection to our list of active connections
                 _tcpConnections.Add(connection);
                 // notify remote endpoint we are ready to accept and send data on this connection
@@ -347,9 +334,7 @@ namespace BlitsMe.Communication.P2P.RUDP.Tunnel.Transport
                     }
                 }
             }
-#if(DEBUG)
             Logger.Debug("Found next connection id " + _lastConnectionId);
-#endif
             return _lastConnectionId;
         }
 
@@ -363,9 +348,7 @@ namespace BlitsMe.Communication.P2P.RUDP.Tunnel.Transport
                 }
                 _listeningNamedTCPEndPoints.Add(endPoint, new NamedTCPListener(endPoint, callback));
             }
-#if(DEBUG)
             Logger.Debug("Listening for " + endPoint);
-#endif
         }
 
         public void StopListen(string endPoint)
@@ -474,9 +457,7 @@ namespace BlitsMe.Communication.P2P.RUDP.Tunnel.Transport
                 {
                     if (!Connection.Established)
                     {
-#if DEBUG
-                        Logger.Debug("Connection timer elapsed, auto opening connection " + conn.ConnectionId);
-#endif
+                        Logger.Debug("Connection timer for " + conn.ConnectionId + " elapsed, auto opening connection " + conn.ConnectionId);
                         Connection.Open();
                     }
                 };
@@ -536,9 +517,7 @@ namespace BlitsMe.Communication.P2P.RUDP.Tunnel.Transport
                     {
                         _remoteLocalIdMap.Remove(holder.Connection.RemoteConnectionId);
                     }
-#if DEBUG
                     Logger.Debug("Removed connection " + localConnectionId + " to from lists.");
-#endif
                 }
             }
             return holder;

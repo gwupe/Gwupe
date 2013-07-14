@@ -62,7 +62,7 @@ namespace BlitsMe.Communication.P2P.RUDP.Utils
         {
             lock (_syncRsLock)
             {
-                Logger.Debug("Got a sync response from " + packet.ip);
+                Logger.Debug("Got a sync response for " + Id + " from " + packet.ip);
                 if (_lastSyncPacketIp == null || _lastSyncPacketIp.Equals(packet.ip))
                 {
                     _lastSyncPacketIp = packet.ip;
@@ -70,7 +70,7 @@ namespace BlitsMe.Communication.P2P.RUDP.Utils
                 }
                 else
                 {
-                    Logger.Debug("Received a sync response packet from " + packet.ip +
+                    Logger.Debug("Received a sync response packet for " + Id + " from " + packet.ip +
                                  " after we have already received our first one from " + _lastSyncPacketIp +
                                  ", ignoring");
                 }
@@ -81,7 +81,7 @@ namespace BlitsMe.Communication.P2P.RUDP.Utils
         {
             lock (_syncRqLock)
             {
-                Logger.Debug("Got a sync request from " + packet.ip + ", last sync packet was from " + (_lastSyncRqPacketIp == null ? "nowhere" : _lastSyncRqPacketIp.ToString()));
+                Logger.Debug("Got a sync request for " + Id + " from " + packet.ip + ", last sync packet was from " + (_lastSyncRqPacketIp == null ? "nowhere" : _lastSyncRqPacketIp.ToString()));
                 if (_lastSyncRqPacketIp == null || _lastSyncRqPacketIp.Equals(packet.ip))
                 {
                     if (_expectedPeer.ExternalEndPoint.Equals(packet.ip) ||
@@ -101,7 +101,7 @@ namespace BlitsMe.Communication.P2P.RUDP.Utils
                 }
                 else
                 {
-                    Logger.Debug("Received a sync request packet from " + packet.ip +
+                    Logger.Debug("Received a sync request packet for " + Id + " from " + packet.ip +
                                  " after we have already received our first one from " + _lastSyncRqPacketIp +
                                  ", ignoring");
                 }

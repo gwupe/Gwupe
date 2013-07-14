@@ -86,10 +86,10 @@ namespace BlitsMe.Common
 
             foreach (Process pr in prs)
             {
-                if (pr.ProcessName == "BlitsMe.Agent" &&
+                if (pr.ProcessName == processName &&
                         (
-                            (!String.IsNullOrWhiteSpace(pathRegex) && Regex.Match(GetMainModuleFilepath(pr.Id), pathRegex).Success) ||
-                            (!String.IsNullOrWhiteSpace(path) && path.Equals(GetMainModuleFilepath(pr.Id)))
+                            (!String.IsNullOrEmpty(pathRegex) && Regex.Match(GetMainModuleFilepath(pr.Id), pathRegex).Success) ||
+                            (!String.IsNullOrEmpty(path) && path.Equals(GetMainModuleFilepath(pr.Id)))
                         ) &&
                         (Environment.UserDomainName + "\\" + Environment.UserName).Equals(GetProcessOwner(pr.Id)))
                 {

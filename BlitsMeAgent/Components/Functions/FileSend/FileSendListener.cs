@@ -64,7 +64,7 @@ namespace BlitsMe.Agent.Components.Functions.FileSend
         private void OnConnectionAccepted(object sender, NamedConnectionEventArgs namedConnectionEventArgs)
         {
             // open the file here
-            string pathDownload = OsUtils.IsWinVistaOrHigher() ? Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), "Downloads", _fileInfo.Filename) 
+            string pathDownload = OsUtils.IsWinVistaOrHigher ? Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), "Downloads", _fileInfo.Filename) 
                                       : Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Desktop), _fileInfo.Filename);
             _fileInfo.FilePath = pathDownload;
             try

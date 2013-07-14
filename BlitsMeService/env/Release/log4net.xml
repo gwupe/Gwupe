@@ -1,11 +1,11 @@
 <?xml version="1.0"?>
   <log4net>
     <root>
-      <level value="INFO" />
+      <level value="DEBUG" />
       <appender-ref ref="LogFileAppender" />
     </root>
     <appender name="LogFileAppender" type="log4net.Appender.RollingFileAppender" >
-      <param name="File" value="c:\\windows\\temp\\BlitsMeService.txt" />
+      <param name="File" type="log4net.Util.PatternString" value="%env{TEMP}\BlitsMeService.log" />
       <param name="AppendToFile" value="true" />
       <rollingStyle value="Size" />
       <maxSizeRollBackups value="10" />

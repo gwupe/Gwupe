@@ -61,13 +61,18 @@ namespace BlitsMe.Cloud.Messaging
                 Logger.Error("Failed to process message from json into an object : " + e.Message);
                 return;
             }
-            if (message is BlitsMe.Cloud.Messaging.API.Response)
+            ProcessMessage(message);
+        }
+
+        private void ProcessMessage(Message message)
+        {
+            if (message is API.Response)
             {
-                WebSocketClient.ProcessResponse((API.Response)message);
+                WebSocketClient.ProcessResponse((API.Response) message);
             }
-            else if (message is BlitsMe.Cloud.Messaging.API.Request)
+            else if (message is API.Request)
             {
-                WebSocketServer.ProcessRequest((API.Request)message);
+                WebSocketServer.ProcessRequest((API.Request) message);
             }
             else
             {
@@ -129,11 +134,16 @@ namespace BlitsMe.Cloud.Messaging
                 _messageBuffer.Write(rawData.GetBuffer(), 0, (int)rawData.Length);
                 return null;
             }
-            DataContractJsonSerializer detectSerializer = new DataContractJsonSerializer(typeof(MessageImpl));
+            return ParseDataToMessage(data);
+        }
+
+        private Message ParseDataToMessage(MemoryStream data)
+        {
+            DataContractJsonSerializer detectSerializer = new DataContractJsonSerializer(typeof (MessageImpl));
             MemoryStream copyData = new MemoryStream();
             data.CopyTo(copyData);
             data.Position = copyData.Position = 0;
-            MessageImpl messageDetect = (MessageImpl)detectSerializer.ReadObject(copyData);
+            MessageImpl messageDetect = (MessageImpl) detectSerializer.ReadObject(copyData);
             String[] typeInfo = messageDetect.type.Split('-');
             String className = "";
             if (typeInfo[1].Equals("RQ"))
@@ -152,7 +162,7 @@ namespace BlitsMe.Cloud.Messaging
             {
                 Type type = Type.GetType(className);
                 DataContractJsonSerializer messageSerializer = new DataContractJsonSerializer(type);
-                Message message = (Message)messageSerializer.ReadObject(data);
+                Message message = (Message) messageSerializer.ReadObject(data);
                 return message;
             }
             catch (Exception e)
@@ -161,10 +171,35 @@ namespace BlitsMe.Cloud.Messaging
             }
         }
 
-        private static string SanitiseMessage(string messageString)
+        private string SanitiseMessage(string messageString)
         {
             return Regex.Replace(Regex.Replace(messageString, "\"password\":\".*?\"", "\"password\":\"*******\""),
                 "\"([^\"]+)\":\"([^\"]{255}.*?)\"", "\"$1\":\"<LARGE_DATA>\"");
+        }
+
+        public void ProcessMessage(String s)
+        {
+            if (!Regex.Match(s, "\"type\":\"Ping").Success)
+            {
+                Logger.Debug("Received message [" + s.Length + "] : " + SanitiseMessage(s));
+            }
+            // Deserialise it once to get its type
+            Message message;
+            try
+            {
+                MemoryStream data = new MemoryStream(Encoding.UTF8.GetBytes(s));
+                message = ParseDataToMessage(data);
+                if (message == null)
+                {
+                    return;
+                }
+            }
+            catch (Exception e)
+            {
+                Logger.Error("Failed to process message from json into an object : " + e.Message);
+                return;
+            }
+            ProcessMessage(message);
         }
     }
 }

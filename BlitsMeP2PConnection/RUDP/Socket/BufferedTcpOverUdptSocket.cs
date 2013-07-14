@@ -36,7 +36,9 @@ namespace BlitsMe.Communication.P2P.RUDP.Socket
             if (!Closing && !Closed)
             {
                 int returnValue = clientBuffer.Get(data, maxRead);
+#if DEBUG
                 Logger.Debug("[" + ConnectionId + "] Read " + returnValue + " bytes from transport buffer, buffSize=" + clientBuffer.Count);
+#endif
                 return returnValue;
             }
             else
@@ -64,7 +66,9 @@ namespace BlitsMe.Communication.P2P.RUDP.Socket
             try
             {
                 clientBuffer.Add(data, data.Length, 10000);
+#if DEBUG
                 Logger.Debug("[" + ConnectionId + "] Added " + data.Length + " bytes to client buffer, buffSize=" + clientBuffer.Count);
+#endif
                 return clientBuffer.Available;
             }
             catch (Exception e)

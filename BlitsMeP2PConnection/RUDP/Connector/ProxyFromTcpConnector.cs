@@ -15,7 +15,7 @@ namespace BlitsMe.Communication.P2P.RUDP.Connector
 {
     public class ProxyFromTcpConnector : API.INamedConnector
     {
-        private static readonly ILog logger = LogManager.GetLogger(typeof(ProxyFromTcpConnector));
+        private static readonly ILog Logger = LogManager.GetLogger(typeof(ProxyFromTcpConnector));
         private TcpListener _listener;
         private Thread _listenThread;
         private readonly ITransportManager _transportManager;
@@ -105,9 +105,7 @@ namespace BlitsMe.Communication.P2P.RUDP.Connector
                 _listener = new TcpListener(IPAddress.Loopback, port);
                 _listener.Start();
                 Listening = true;
-#if DEBUG
-                logger.Debug("Started listening TCP connector on port " + ListenerEndpoint.Port + " for connections");
-#endif
+                Logger.Debug("Started listening TCP connector on port " + ListenerEndpoint.Port + " for connections");
                 _listenThread = new Thread(new ThreadStart(listenerMethod)) { IsBackground = true, Name = "_realTCPlistenThread[" + Name + "]" };
                 _listenThread.Start();
                 return ((IPEndPoint)_listener.LocalEndpoint).Port;
@@ -123,9 +121,7 @@ namespace BlitsMe.Communication.P2P.RUDP.Connector
         {
             if (Listening)
             {
-#if DEBUG
-                logger.Debug("Stopping listening on TCP for incoming connections to proxy through connection named " + Name);
-#endif
+                Logger.Debug("Stopping listening on TCP for incoming connections to proxy through connection named " + Name);
                 this.Listening = false;
                 if (this._listener != null)
                 {
@@ -153,7 +149,7 @@ namespace BlitsMe.Communication.P2P.RUDP.Connector
             }
             catch (Exception e)
             {
-                logger.Error("Exception while listening for connections, stopping listening : " + e.Message);
+                Logger.Error("Exception while listening for connections, stopping listening : " + e.Message);
             }
             StopListening();
         }
@@ -166,7 +162,7 @@ namespace BlitsMe.Communication.P2P.RUDP.Connector
             }
             catch (Exception e)
             {
-                logger.Error("Exception while listening for connections, stopping listening : " + e.Message);
+                Logger.Error("Exception while listening for connections, stopping listening : " + e.Message);
             }
             StopListening();
         }
@@ -174,20 +170,18 @@ namespace BlitsMe.Communication.P2P.RUDP.Connector
         private void ProcessConnection()
         {
             TcpClient client = this._listener.AcceptTcpClient();
-#if DEBUG
-            logger.Debug("Client connected from  " + client.Client.LocalEndPoint);
-#endif
+            Logger.Debug("Client connected from  " + client.Client.LocalEndPoint);
             try
             {
                 ITcpOverUdptSocket socket = _transportManager.TCPTransport.OpenConnection(Name);
-                OnConnectionAccepted();
                 ProxyTcpConnection proxyTcpConnection = new ProxyTcpConnection(client, socket);
                 proxyTcpConnection.CloseConnection += delegate { ProxyConnectionOnClosed(proxyTcpConnection); };
-                _openConnections.Add(proxyTcpConnection);
+                _openConnections.Add(proxyTcpConnection); 
+                OnConnectionAccepted();
             }
             catch (Exception e)
             {
-                logger.Error("Failed to connect to named endpoint " + Name + " : " + e.Message);
+                Logger.Error("Failed to connect to named endpoint " + Name + " : " + e.Message);
                 client.Close();
             }
         }
@@ -217,9 +211,7 @@ namespace BlitsMe.Communication.P2P.RUDP.Connector
 
         public void CloseConnections()
         {
-#if DEBUG
-            logger.Debug("Closing all active connections for named connection " + Name);
-#endif
+            Logger.Debug("Closing all active connections for named connection " + Name);
             while (_openConnections != null && _openConnections.Count > 0)
             {
                 var proxyConnection = _openConnections[0];

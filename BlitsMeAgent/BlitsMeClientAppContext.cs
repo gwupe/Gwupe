@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.Reflection;
 using System.Text.RegularExpressions;
@@ -7,7 +8,6 @@ using System.Windows;
 using System.Windows.Forms;
 using System.Windows.Threading;
 using BlitsMe.Agent.Components;
-using BlitsMe.Agent.Components.Person.Presence;
 using BlitsMe.Agent.Components.Schedule;
 using BlitsMe.Agent.Managers;
 using BlitsMe.Agent.Misc;
@@ -15,6 +15,7 @@ using BlitsMe.Agent.UI;
 using BlitsMe.Agent.UI.WPF;
 using BlitsMe.Cloud.Messaging.Request;
 using BlitsMe.Cloud.Messaging.Response;
+using BlitsMe.Common;
 using BlitsMe.Common.Security;
 using BlitsMe.ServiceProxy;
 using log4net;
@@ -25,8 +26,14 @@ using Dashboard = BlitsMe.Agent.UI.WPF.Dashboard;
 
 namespace BlitsMe.Agent
 {
+    public enum BlitsMeOption
+    {
+        Minimize
+    };
+
     public class BlitsMeClientAppContext : ApplicationContext
     {
+        internal List<BlitsMeOption> Options { get; private set; }
         private static readonly ILog Logger = LogManager.GetLogger(typeof(BlitsMeClientAppContext));
         internal readonly BlitsMeServiceProxy BlitsMeServiceProxy;
         private readonly SystemTray _systray;
@@ -46,12 +53,15 @@ namespace BlitsMe.Agent
         internal readonly String StartupVersion;
         internal readonly ScheduleManager ScheduleManager;
         private IdleState _idleState;
+        private readonly AutoResetEvent _dashboardReady;
 
         /// <summary>
         /// This class should be created and passed into Application.Run( ... )
         /// </summary>
-        public BlitsMeClientAppContext()
+        /// <param name="options"> </param>
+        public BlitsMeClientAppContext(List<BlitsMeOption> options)
         {
+            Options = options;
             XmlConfigurator.Configure(Assembly.GetExecutingAssembly().GetManifestResourceStream("BlitsMe.Agent.log4net.xml"));
             StartupVersion = Regex.Replace(FileVersionInfo.GetVersionInfo(Assembly.GetExecutingAssembly().Location).FileVersion, "\\.[0-9]+$", "");
             Logger.Info("BlitsMe" + Program.BuildMarker + ".Agent Starting up [" + StartupVersion + "]");
@@ -61,6 +71,7 @@ namespace BlitsMe.Agent
                 Logger.Debug("Embedded Resource : " + manifestResourceName);
             }
 #endif
+            _dashboardReady = new AutoResetEvent(false);
             BlitsMeServiceProxy = new BlitsMeServiceProxy();
             ConnectionManager = new ConnectionManager(this);
             LoginManager = new LoginManager(this);
@@ -70,7 +81,6 @@ namespace BlitsMe.Agent
             NotificationManager = new NotificationManager(this);
             SearchManager = new SearchManager(this);
             CurrentUserManager = new CurrentUserManager(this);
-            EngagementManager.NewActivity += OnNewEngagementActivity;
             _systray = new SystemTray(this);
             ConnectionManager.Start();
             _requestManager = new RequestManager(this);
@@ -81,6 +91,8 @@ namespace BlitsMe.Agent
             ScheduleManager.Start();
             // Annoying how long it takes to show the window, so load it here
             SetupAndRunDashboard();
+            EngagementManager.NewActivity += UIDashBoard.EngagementManagerOnNewActivity;
+            LoginManager.Start();
         }
 
         internal bool Debug
@@ -99,25 +111,6 @@ namespace BlitsMe.Agent
                                  (level > 2 ? "." + fullVersion.Revision : "")
                                : "")
                         : "");
-        }
-
-        private void OnNewEngagementActivity(object sender, EngagementActivityArgs args)
-        {
-            bool runEventManually = (UIDashBoard == null);
-            ShowDashboard();
-            // If we started up the dashboard with this event, it won't obviously have received it, so lets manually send it
-            if (runEventManually)
-            {
-                Logger.Debug("First startup, running event manually");
-                if (UIDashBoard.Dispatcher.CheckAccess())
-                {
-                    UIDashBoard.EngagementManagerOnNewActivity(sender, args);
-                }
-                else
-                {
-                    UIDashBoard.Dispatcher.Invoke(new Action(() => UIDashBoard.EngagementManagerOnNewActivity(sender, args)));
-                }
-            }
         }
 
         public BlitsMeServiceProxy BlitsMeService
@@ -145,7 +138,7 @@ namespace BlitsMe.Agent
             {
                 if (LoginManager.IsLoggedIn)
                 {
-                    ShowDashboard();
+                    UIDashBoard.Show();
                 }
                 else
                 {
@@ -154,47 +147,10 @@ namespace BlitsMe.Agent
             }
         }
 
-        internal void HideDashboard()
-        {
-            if (UIDashBoard != null)
-            {
-                if (UIDashBoard.Dispatcher.CheckAccess())
-                    UIDashBoard.Hide();
-                else
-                    UIDashBoard.Dispatcher.Invoke(new Action(() => UIDashBoard.Hide()));
-            }
-        }
-
-        internal void ShowDashboard()
-        {
-            if (LoginManager.IsLoggedIn)
-            {
-                SetupAndRunDashboard();
-                if (UIDashBoard.Dispatcher.CheckAccess())
-                {
-                    UIDashBoard.Show();
-                    UIDashBoard.Activate();
-                    UIDashBoard.Topmost = true;
-                    UIDashBoard.Topmost = false;
-                    UIDashBoard.Focus();
-                }
-                else
-                {
-                    UIDashBoard.Dispatcher.Invoke(new Action(() =>
-                        {
-                            UIDashBoard.Show();
-                            UIDashBoard.Activate();
-                            UIDashBoard.Topmost = true;
-                            UIDashBoard.Topmost = false;
-                            UIDashBoard.Focus();
-                        }));
-                }
-            }
-        }
-
         private void RunDashboard()
         {
             UIDashBoard = new Dashboard(this);
+            _dashboardReady.Set();
             Dispatcher.Run();
         }
 
@@ -231,12 +187,41 @@ namespace BlitsMe.Agent
                 DashboardUiThread = new Thread(RunDashboard) { Name = "dashboardUIThread" };
                 DashboardUiThread.SetApartmentState(ApartmentState.STA);
                 DashboardUiThread.Start();
-                /*while (UIDashBoard == null || !UIDashBoard.IsInitialized)
-                {
-                    Thread.Sleep(50);
-                }*/
+                _dashboardReady.WaitOne();
             }
         }
+
+        // Handle messages from the dashboard window
+        public IntPtr WndProc(IntPtr hwnd, int msg, IntPtr wParam, IntPtr lParam, ref bool handled)
+        {
+            if (msg == OsUtils.WM_SHOWBM)
+            {
+                Logger.Debug("Received show message to my handle " + hwnd);
+                if (LoginManager.IsLoggedIn)
+                {
+                    UIDashBoard.Show();
+                }
+                else
+                {
+                    LoginManager.ShowLoginWindow();
+                }
+                handled = true;
+            }
+            else if (msg == OsUtils.WM_SHUTDOWNBM)
+            {
+                Logger.Debug("Received shutdown message to my handle " + hwnd);
+                Thread shutdownThread = new Thread(Shutdown) { IsBackground = true, Name = "shutdownByMessageThread" };
+                shutdownThread.Start();
+            }
+            else if (msg == OsUtils.WM_UPGRADEBM)
+            {
+                Logger.Debug("Received upgrade message to my handle " + hwnd);
+                Thread upgradeThread = new Thread(new CheckUpgradeTask(this).RunTask) { IsBackground = true, Name = "upgradeByMessageThread" };
+                upgradeThread.Start();
+            }
+            return IntPtr.Zero;
+        }
+
 
         public void Shutdown()
         {
@@ -248,6 +233,8 @@ namespace BlitsMe.Agent
         {
             this.IsShuttingDown = true;
             // before we exit, lets cleanup
+            if (ScheduleManager != null)
+                ScheduleManager.Close();
             if (EngagementManager != null)
                 EngagementManager.Close();
             if (NotificationManager != null)

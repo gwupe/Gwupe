@@ -36,6 +36,12 @@
       Execute="immediate"
       BinaryKey="BlitsMeSetupCustomAction.dll"
       DllEntry="OpenBlitsMeAgentIfNotOpen" />
+    <!-- this action opens the agent if it isn't open -->
+    <CustomAction Id="RequestBlitsMeAgentsRestart"
+      Return="check"
+      Execute="immediate"
+      BinaryKey="BlitsMeSetupCustomAction.dll"
+      DllEntry="RequestBlitsMeAgentsRestart" />
     <!-- this just starts the agent -->
     <CustomAction Id="StartAgent"
       FileKey= "BlitsMe.Agent.exe"
@@ -51,6 +57,9 @@
       </Custom>
       <Custom Action="StartAgent" After="InstallFinalize">
         NOT(LogonUser="SYSTEM")
+      </Custom>
+      <Custom Action="RequestBlitsMeAgentsRestart" After="InstallFinalize">
+        LogonUser="SYSTEM"
       </Custom>
     </InstallExecuteSequence>
   </Product>
@@ -77,7 +86,7 @@
       </Component>
     </DirectoryRef>
   </Fragment>
-  
+
   <!-- inside here is the actual installation process -->
   <Fragment>
     <ComponentGroup Id="ProductComponents" Directory="INSTALLFOLDER">
@@ -109,7 +118,14 @@
           Account="[SERVICEACCOUNT]"
           Password="[SERVICEPASSWORD]"
           ErrorControl='normal'
-         />
+         >
+          <util:ServiceConfig xmlns:util="http://schemas.microsoft.com/wix/UtilExtension"
+                      FirstFailureActionType="restart"
+                      SecondFailureActionType="restart"
+                      ThirdFailureActionType="restart"
+                      ResetPeriodInDays="1"
+                      RestartServiceDelayInSeconds="60" />
+        </ServiceInstall>
         <ServiceControl Id="StartService" Start="install" Stop="both" Remove="uninstall" Name="BlitsMeService$(var.buildMarker)" Wait="yes" />
       </Component>
       <!-- this installs the vnc service -->
@@ -137,7 +153,7 @@
         <RegistryValue Id="BMAuthoStart.Reg" Root="HKMU" Action="write"
                        Key="Software\Microsoft\Windows\CurrentVersion\Run"
                        Name="BlitsMe$(var.buildMarker) Agent"
-                       Value="[INSTALLFOLDER]BlitsMe.Agent.exe"
+                       Value="[INSTALLFOLDER]BlitsMe.Agent.exe /minimize"
                        Type="string" KeyPath="yes" />
         <Condition>START_VIA_REGISTRY</Condition>
       </Component>

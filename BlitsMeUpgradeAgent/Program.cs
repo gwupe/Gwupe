@@ -27,9 +27,9 @@ namespace BlitsMe.Agent.Upgrade
             foreach (Process pr in prs)
             {
                 if (pr.ProcessName == "BlitsMe.Agent" &&
-                        (ProgramFilesx86() + "\\BlitsMe" + BuildMarker + "\\BlitsMe.Agent.exe")
-                            .Equals(GetMainModuleFilepath(pr.Id)) &&
-                            (Environment.UserDomainName + "\\" + Environment.UserName).Equals(GetProcessOwner(pr.Id)))
+                        (Common.OsUtils.ProgramFilesx86 + "\\BlitsMe" + BuildMarker + "\\BlitsMe.Agent.exe")
+                            .Equals(Common.OsUtils.GetMainModuleFilepath(pr.Id)) &&
+                            (Environment.UserDomainName + "\\" + Environment.UserName).Equals(Common.OsUtils.GetProcessOwner(pr.Id)))
                 {
                     try
                     {
@@ -59,58 +59,6 @@ namespace BlitsMe.Agent.Upgrade
             }
         }
 
-        public static string GetProcessOwner(int processId)
-        {
-            string query = "Select * From Win32_Process Where ProcessID = " + processId;
-            ManagementObjectSearcher searcher = new ManagementObjectSearcher(query);
-            ManagementObjectCollection processList = searcher.Get();
-            try
-            {
-                foreach (ManagementObject obj in processList)
-                {
-                    string[] argList = new string[] { string.Empty, string.Empty };
-                    int returnVal = Convert.ToInt32(obj.InvokeMethod("GetOwner", argList));
-                    if (returnVal == 0)
-                    {
-                        // return DOMAIN\user
-                        return argList[1] + "\\" + argList[0];
-                    }
-                }
-            }
-            catch (Exception e)
-            {
-                Console.WriteLine("Error getting owner of process " + processId,e);
-            }
 
-            return "NO OWNER";
-        }
-
-        static string ProgramFilesx86()
-        {
-            if (8 == IntPtr.Size
-                || (!String.IsNullOrEmpty(Environment.GetEnvironmentVariable("PROCESSOR_ARCHITEW6432"))))
-            {
-                return Environment.GetEnvironmentVariable("ProgramFiles(x86)");
-            }
-
-            return Environment.GetEnvironmentVariable("ProgramFiles");
-        }
-
-        private static string GetMainModuleFilepath(int processId)
-        {
-            string wmiQueryString = "SELECT ProcessId, ExecutablePath FROM Win32_Process WHERE ProcessId = " + processId;
-            using (var searcher = new ManagementObjectSearcher(wmiQueryString))
-            {
-                using (var results = searcher.Get())
-                {
-                    ManagementObject mo = results.Cast<ManagementObject>().FirstOrDefault();
-                    if (mo != null)
-                    {
-                        return (string)mo["ExecutablePath"];
-                    }
-                }
-            }
-            return null;
-        }
     }
 }

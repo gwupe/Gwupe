@@ -689,56 +689,42 @@ namespace Bauglir.Ex
             int lastCode = -1;
             int lastCode2 = -1;
             int errorCode = -1;
-            MemoryStream ms = new MemoryStream();
-            MemoryStream fms = new MemoryStream();
+            MemoryStream messageMemoryStream = new MemoryStream();
+            MemoryStream fullMessageMemoryStream = new MemoryStream();
             if (ConnectionOpen != null) ConnectionOpen(this);
             //fFullDataProcess
             while (true)
             {
-                readRes = ReadData(out final, out res1, out res2, out res3, out code, ms);
+                readRes = ReadData(out final, out res1, out res2, out res3, out code, messageMemoryStream);
                 if (readRes)
                 {
-                    ms.Position = 0;
-                    ProcessData(ref final, ref res1, ref res2, ref res3, ref code, ms);
-                    ms.Position = 0;
+                    messageMemoryStream.Position = 0;
+                    ProcessData(ref final, ref res1, ref res2, ref res3, ref code, messageMemoryStream);
+                    messageMemoryStream.Position = 0;
                     errorCode = -1;
 
-
-                    /*
-                              if (fReadCode in [wsCodeText, wsCodeBinary]) and fFullDataProcess then
-                              begin
-                                fFullDataStream.Size := 0;
-                                fFullDataStream.Position := 0;
-                              end;
-                              if (fReadCode in [wsCodeContinuation, wsCodeText, wsCodeBinary]) and fFullDataProcess then
-                              begin
-                                fReadStream.Position := 0;
-                                fFullDataStream.CopyFrom(fReadStream, fReadStream.Size);
-                                fReadStream.Position := 0;
-                              end;
-                     */
+                    // reset the full memory stream if its a new frame
                     if ((code == WebSocketFrame.Text) || (code == WebSocketFrame.Binary))
                     {
-                        fms.Position = 0;
-                        fms.SetLength(0);
-                        //aStream.Write(buffer, 0, buffer.Length);
+                        fullMessageMemoryStream.Position = 0;
+                        fullMessageMemoryStream.SetLength(0);
                     }
                     if ((code == WebSocketFrame.Continuation) || (code == WebSocketFrame.Text) || (code == WebSocketFrame.Binary))
                     {
-                        ms.Position = 0;
-                        fms.Write(ms.GetBuffer(), 0, (int)ms.Length);
-                        ms.Position = 0;
+                        messageMemoryStream.Position = 0;
+                        fullMessageMemoryStream.Write(messageMemoryStream.GetBuffer(), 0, (int)messageMemoryStream.Length);
+                        messageMemoryStream.Position = 0;
                     }
                     switch (code)
                     {
                         case WebSocketFrame.Continuation:
                             if (lastCode == WebSocketFrame.Text)
                             {
-                                ProcessTextContinuation(final, res1, res2, res3, Encoding.UTF8.GetString(ms.ToArray()));
+                                ProcessTextContinuation(final, res1, res2, res3, Encoding.UTF8.GetString(messageMemoryStream.ToArray()));
                             }
                             else if (lastCode == WebSocketFrame.Binary)
                             {
-                                ProcessStreamContinuation(final, res1, res2, res3, ms);
+                                ProcessStreamContinuation(final, res1, res2, res3, messageMemoryStream);
                             }
                             else
                             {
@@ -747,33 +733,33 @@ namespace Bauglir.Ex
                             if (final) lastCode = -1;
                             break;
                         case WebSocketFrame.Text:
-                            ProcessText(final, res1, res2, res3, Encoding.UTF8.GetString(ms.ToArray()));
+                            ProcessText(final, res1, res2, res3, Encoding.UTF8.GetString(messageMemoryStream.ToArray()));
                             if (!final) lastCode = code;
                             else lastCode = -1;
                             lastCode2 = code;
                             break;
                         case WebSocketFrame.Binary:
-                            ProcessStream(final, res1, res2, res3, ms);
+                            ProcessStream(final, res1, res2, res3, messageMemoryStream);
                             if (!final) lastCode = code;
                             else lastCode = -1;
                             lastCode2 = code;
                             break;
                         case WebSocketFrame.Ping:
-                            ProcessPing(Encoding.UTF8.GetString(ms.ToArray()));
+                            ProcessPing(Encoding.UTF8.GetString(messageMemoryStream.ToArray()));
                             break;
                         case WebSocketFrame.Pong:
-                            ProcessPong(Encoding.UTF8.GetString(ms.ToArray()));
+                            ProcessPong(Encoding.UTF8.GetString(messageMemoryStream.ToArray()));
                             break;
                         case WebSocketFrame.Close:
                             closeCode = WebSocketCloseCode.NoStatus;
                             closeReason = String.Empty;
-                            if (ms.Length > 1)
+                            if (messageMemoryStream.Length > 1)
                             {
-                                closeCode = ms.ReadByte() * 256 + ms.ReadByte();
-                                if (ms.Length > 2)
+                                closeCode = messageMemoryStream.ReadByte() * 256 + messageMemoryStream.ReadByte();
+                                if (messageMemoryStream.Length > 2)
                                 {
-                                    closeReasonB = new byte[ms.Length - 2];
-                                    ms.Read(closeReasonB, 0, closeReasonB.Length);
+                                    closeReasonB = new byte[messageMemoryStream.Length - 2];
+                                    messageMemoryStream.Read(closeReasonB, 0, closeReasonB.Length);
                                     closeReason = Encoding.UTF8.GetString(closeReasonB);
                                 }
                             }
@@ -795,8 +781,8 @@ namespace Bauglir.Ex
                     }
                     if (errorCode == -1)
                     {
-                        ms.Position = 0;
-                        if (ConnectionRead != null) ConnectionRead(this, final, res1, res2, res3, code, ms);
+                        messageMemoryStream.Position = 0;
+                        if (ConnectionRead != null) ConnectionRead(this, final, res1, res2, res3, code, messageMemoryStream);
                     }
                     else
                     {
@@ -805,12 +791,12 @@ namespace Bauglir.Ex
 
                     if (((code == WebSocketFrame.Continuation) || (code == WebSocketFrame.Text) || (code == WebSocketFrame.Binary)) && fFullDataProcess && final)
                     {
-                        fms.Position = 0;
+                        fullMessageMemoryStream.Position = 0;
                         if (lastCode2 == WebSocketFrame.Text)
-                            ProcessTextFull(Encoding.UTF8.GetString(fms.ToArray()));
+                            ProcessTextFull(Encoding.UTF8.GetString(fullMessageMemoryStream.ToArray()));
                         else if (lastCode2 == WebSocketFrame.Binary)
-                            ProcessStreamFull(fms);
-                        ConnectionReadFull(this, lastCode2, fms);
+                            ProcessStreamFull(fullMessageMemoryStream);
+                        if (ConnectionReadFull != null) ConnectionReadFull(this, lastCode2, fullMessageMemoryStream);
                     }
 
                 }
@@ -824,8 +810,8 @@ namespace Bauglir.Ex
             {
                 Close(errorCode, String.Empty);
             }
-            fms.Dispose();
-            ms.Dispose();
+            fullMessageMemoryStream.Dispose();
+            messageMemoryStream.Dispose();
         }
 
 

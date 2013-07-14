@@ -146,8 +146,17 @@ namespace BlitsMe.Cloud.Communication
 
         public void Close()
         {
+            Logger.Debug("Shutting down connection maintainer");
             _connectionMaintainer.Disconnect();
-            _connectionMaintainerThread.Join();
+            // now wait for 10 seconds for it to close, then kill it
+            if(!_connectionMaintainerThread.Join(10000))
+            {
+                Logger.Warn("Connection maintainer didn't die in 10s, killing it");
+                if(_connectionMaintainerThread.IsAlive)
+                {
+                    _connectionMaintainerThread.Abort();
+                }
+            }
         }
 
 

@@ -6,7 +6,8 @@
     <ProductVersion>3.7</ProductVersion>
     <ProjectGuid>41b5ab51-8d24-4d3d-9448-6f3584a34c34</ProjectGuid>
     <SchemaVersion>2.0</SchemaVersion>
-    <OutputName>BlitsMeSetup</OutputName>
+    <OutputName Condition=" '$(Configuration)' == 'Debug' ">BlitsMeSetup_Dev</OutputName>
+    <OutputName Condition=" '$(Configuration)' == 'Release' ">BlitsMeSetup</OutputName>
     <OutputType>Package</OutputType>
     <WixTargetsPath Condition=" '$(WixTargetsPath)' == '' AND '$(MSBuildExtensionsPath32)' != '' ">$(MSBuildExtensionsPath32)\Microsoft\WiX\v3.x\Wix.targets</WixTargetsPath>
     <WixTargetsPath Condition=" '$(WixTargetsPath)' == '' ">$(MSBuildExtensionsPath)\Microsoft\WiX\v3.x\Wix.targets</WixTargetsPath>
@@ -61,6 +62,12 @@
       <RefProjectOutputGroups>Binaries;Content;Satellites</RefProjectOutputGroups>
       <RefTargetDir>INSTALLFOLDER</RefTargetDir>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <WixExtension Include="WixUtilExtension">
+      <HintPath>$(WixExtDir)\WixUtilExtension.dll</HintPath>
+      <Name>WixUtilExtension</Name>
+    </WixExtension>
   </ItemGroup>
   <Import Project="$(WixTargetsPath)" />
   <!--

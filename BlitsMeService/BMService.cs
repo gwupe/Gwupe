@@ -21,7 +21,7 @@ namespace BlitsMe.Service
     {
         private static readonly ILog Logger = LogManager.GetLogger(typeof(BMService));
         private WebClient _webClient;
-        private readonly Timer _updateCheck;
+        private Timer _updateCheck;
 #if DEBUG
         private const String UpdateServer = "dev.blits.me";
         private const int UpdateCheckInterval = 300;
@@ -34,7 +34,7 @@ namespace BlitsMe.Service
         // FIXME: Move this to a global config file at some point
         private const string VncServiceName = "BlitsMeSupportService" + BuildMarker;
         private const int VncServiceTimeoutMs = 30000;
-        private readonly String _version;
+        private String _version;
         private X509Certificate2 _cacert;
         private bool _checkingUpdate;
 
@@ -43,10 +43,18 @@ namespace BlitsMe.Service
         public BMService()
         {
             InitializeComponent();
+            if (!EventLog.SourceExists("BMService"))
+                EventLog.CreateEventSource("BMService", "Application");
+            EventLog.WriteEntry("BMService", "Initialised the BlitsMeService" + BuildMarker);
+        }
+
+        protected override void OnStart(string[] args)
+        {
+            EventLog.WriteEntry("BMService", "Starting BlitsMeService" + BuildMarker);
             XmlConfigurator.Configure(Assembly.GetExecutingAssembly().GetManifestResourceStream("BlitsMe.Service.log4net.xml"));
             _version = Regex.Replace(FileVersionInfo.GetVersionInfo(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location) +
                                                    "/BlitsMe.Agent.exe").FileVersion, "\\.[0-9]+$", "");
-            Logger.Info("BlitsMeService Starting Up [" + System.Environment.UserName + ", " + _version + "]");
+            Logger.Info("BlitsMeService Starting Up [" + Environment.UserName + ", " + _version + "]");
             SaveVersion();
 #if DEBUG
             foreach (var manifestResourceName in Assembly.GetExecutingAssembly().GetManifestResourceNames())
@@ -60,6 +68,9 @@ namespace BlitsMe.Service
             _updateCheck = new Timer(UpdateCheckInterval * 1000);
             _updateCheck.Elapsed += delegate { CheckForNewVersion(); };
             _updateCheck.Start();
+            initServers();
+            _serviceHost = new System.ServiceModel.ServiceHost(new BlitsMeService(this), new Uri("net.pipe://localhost/BlitsMeService" + BuildMarker));
+            _serviceHost.Open();
         }
 
         private void CheckForNewVersion()
@@ -93,7 +104,7 @@ namespace BlitsMe.Service
                     Logger.Debug("Checking for new version from " + downloadUrl);
                     String versionInfomation =
                         _webClient.DownloadString(downloadUrl);
-                    if (Regex.Match(versionInfomation, "^[0-9]+\\.[0-9]+\\.[0-9]+:BlitsMeSetup.*").Success)
+                    if (Regex.Match(versionInfomation, "^[0-9]+\\.[0-9]+\\.[0-9]+:BlitsMeSetupFull" + BuildMarker + ".*").Success)
                     {
                         String[] versionParts = versionInfomation.Split('\n')[0].Split(':');
                         Version updateVersion = new Version(versionParts[0]);
@@ -108,12 +119,13 @@ namespace BlitsMe.Service
                                 _webClient.DownloadFile("https://" + UpdateServer + "/updates/" + versionParts[1],
                                                         fileLocation);
                                 Logger.Info("Downloaded update " + versionParts[1]);
-                                String logfile = Path.GetTempPath() + "BlitsMeInstall.log";
+                                String logfile = Path.GetTempPath() + "BlitsMeInstall" + BuildMarker + ".log";
                                 Logger.Info("Executing " + fileLocation + ", log file is " + logfile);
-                                if(Regex.Match(fileLocation, ".*.msi$").Success)
+                                if (Regex.Match(fileLocation, ".*.msi$").Success)
                                 {
                                     Process.Start(fileLocation, "/qn /lvx " + logfile);
-                                } else
+                                }
+                                else
                                 {
                                     Process.Start(fileLocation, " /silent /passive /install /quiet /norestart /log " + logfile);
                                 }
@@ -127,7 +139,7 @@ namespace BlitsMe.Service
                         {
                             Logger.Debug("No update available, current version " + assemblyVersion +
                                          ", available version " +
-                                         updateVersion + ", checking again in " + (UpdateCheckInterval/60) + " minutes.");
+                                         updateVersion + ", checking again in " + (UpdateCheckInterval / 60) + " minutes.");
                         }
                     }
                     else
@@ -162,15 +174,6 @@ namespace BlitsMe.Service
                 isValid = chain0.Build((X509Certificate2)certificate);
             }
             return isValid;
-        }
-
-        protected override void OnStart(string[] args)
-        {
-            initServers();
-            // do we need this connection?
-            //connection = new CloudConnection(servers);
-            _serviceHost = new System.ServiceModel.ServiceHost(new BlitsMeService(this), new Uri("net.pipe://localhost/BlitsMeService" + BuildMarker));
-            _serviceHost.Open();
         }
 
         private void initServers()
@@ -218,7 +221,7 @@ namespace BlitsMe.Service
 
         public void Ping()
         {
-            
+
         }
 
         public void saveServerIPs(List<String> newIPs)

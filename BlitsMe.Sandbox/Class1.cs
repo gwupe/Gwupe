@@ -1,32 +1,41 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Management;
 using System.Net;
 using System.Net.NetworkInformation;
+using System.Runtime.InteropServices;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
-using BlitsMe.Common.Security;
+using BlitsMe.Common;
 using BlitsMe.Communication.P2P.RUDP.Utils;
 
 namespace BlitsMe.Sandbox
 {
     class Class1 : ApplicationContext
     {
+
         private ushort me = ushort.MaxValue - 10;
         private Queue<byte> validate;
         private bool run = true;
 
         public Class1()
         {
-//            Console.WriteLine(FingerPrint.HardwareDescription());
-//            Console.WriteLine(FingerPrint.Value());
-            GetLocalIps();
-            //TestWaver();
-            //RunBufferTest();
-            ExitThread();
+            OpenExistingWindow();
+        }
+
+        private static void OpenExistingWindow()
+        {
+            OsUtils.PostMessage((IntPtr)OsUtils.HWND_BROADCAST, OsUtils.WM_SHOWBM, IntPtr.Zero, IntPtr.Zero);
+            Console.WriteLine("Sent Show message");
+            OsUtils.PostMessage((IntPtr)OsUtils.HWND_BROADCAST, OsUtils.WM_UPGRADEBM, IntPtr.Zero, IntPtr.Zero);
+            Console.WriteLine("Sent Upgrade message");
+            OsUtils.PostMessage((IntPtr)OsUtils.HWND_BROADCAST, OsUtils.WM_SHUTDOWNBM, IntPtr.Zero, IntPtr.Zero);
+            Console.WriteLine("Sent Shutdown message");
         }
 
         private void TestWaver()

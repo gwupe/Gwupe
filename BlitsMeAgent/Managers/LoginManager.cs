@@ -17,9 +17,9 @@ namespace BlitsMe.Agent.Managers
     public class LoginManager
     {
         private static readonly ILog Logger = LogManager.GetLogger(typeof(LoginManager));
-        private readonly Thread _loginManagerThread;
+        private Thread _loginManagerThread;
         private readonly AutoResetEvent _loginUiReadyEvent = new AutoResetEvent(false);
-        private readonly Thread _loginUiThread;
+        private Thread _loginUiThread;
         private readonly BLMRegistry _reg = new BLMRegistry();
         private readonly AutoResetEvent _signinEvent = new AutoResetEvent(false);
         private readonly BlitsMeClientAppContext _appContext;
@@ -56,10 +56,16 @@ namespace BlitsMe.Agent.Managers
             // Event Handlers
             _appContext.ConnectionManager.Connect += Connected;
             _appContext.ConnectionManager.Disconnect += Disconnected;
+        }
+
+        public void Start()
+        {
             // UI Thread
             _loginUiThread = new Thread(RunLoginUi) { Name = "_loginUiThread", IsBackground = true };
             _loginUiThread.SetApartmentState(ApartmentState.STA);
             _loginUiThread.Start();
+            // Wait for the Login UI to be initialised
+            _loginUiReadyEvent.WaitOne();
             // Manager thread
             _loginManagerThread = new Thread(Run) { IsBackground = true, Name = "_loginManagerThread" };
             _loginManagerThread.Start();
@@ -71,6 +77,10 @@ namespace BlitsMe.Agent.Managers
         {
             _loginWindow = new LoginWindow(_appContext, LoginDetails, _signinEvent);
             _loginUiReadyEvent.Set();
+            if (!_appContext.Options.Contains(BlitsMeOption.Minimize))
+            {
+                _loginWindow.Show();
+            }
             Dispatcher.Run();
         }
 
@@ -161,9 +171,6 @@ namespace BlitsMe.Agent.Managers
 
         public void Run()
         {
-            // Wait for the Login UI to be initialised
-            _loginUiReadyEvent.WaitOne();
-
             // Lets collect the information on startup if we have to.
             if (LoginDetails.username == null || LoginDetails.username.Equals("") || LoginDetails.passwordHash == null ||
                 LoginDetails.passwordHash.Equals(""))
@@ -214,7 +221,7 @@ namespace BlitsMe.Agent.Managers
                         if (_loginWindow.Visibility == Visibility.Visible)
                         {
                             HideLoginWindow();
-                            _appContext.ShowDashboard();
+                            _appContext.UIDashBoard.Show();
                         }
                     }
                     catch (LoginException e)
@@ -256,9 +263,9 @@ namespace BlitsMe.Agent.Managers
 
         internal void ShowLoginWindow()
         {
-            _appContext.HideDashboard();
             if (_loginWindow.Dispatcher.CheckAccess())
             {
+                _appContext.UIDashBoard.Hide();
                 _loginWindow.Show();
                 _loginWindow.Topmost = true;
                 _loginWindow.Topmost = false;

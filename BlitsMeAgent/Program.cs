@@ -1,6 +1,11 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
+using System.Management;
 using System.Reflection;
+using System.Runtime.InteropServices;
+using System.Text.RegularExpressions;
 using System.Threading;
 using System.Windows.Forms;
 
@@ -19,7 +24,7 @@ namespace BlitsMe.Agent
         /// The main entry point for the application.
         /// </summary>
         [STAThread]
-        static void Main()
+        static void Main(String[] args)
         {
             // never run as system user
             if (Environment.UserName.Equals("SYSTEM")) return;
@@ -27,19 +32,35 @@ namespace BlitsMe.Agent
             {
                 if (!mutex.WaitOne(0, false))
                 {
-                    MessageBox.Show("BlitsMe" + BuildMarker + " Is already running.");
+                    var process = Common.OsUtils.GetMyDoppleGangerProcess();
+                    if (process != null)
+                    {
+                        var outcome = Common.OsUtils.PostMessage((IntPtr)Common.OsUtils.HWND_BROADCAST, Common.OsUtils.WM_SHOWBM, IntPtr.Zero, IntPtr.Zero);
+                    }
+                    else
+                    {
+                        MessageBox.Show("BlitsMe" + BuildMarker + " Is already running.");
+                    }
                     return;
                 }
-
-                GC.Collect();
                 // Make sure we load certain namespaces as resources (they are embedded dll's)
                 AppDomain.CurrentDomain.AssemblyResolve += EmbeddedAssemblyResolver;
+
+                GC.Collect();
                 try
                 {
                     Thread.CurrentThread.Name = "MAIN";
                     Application.EnableVisualStyles();
                     Application.SetCompatibleTextRenderingDefault(false);
-                    Application.Run(new BlitsMeClientAppContext());
+                    var options = new List<BlitsMeOption>();
+                    foreach (string argument in args)
+                    {
+                        if (argument.ToLower().Equals("/minimize"))
+                        {
+                            options.Add(BlitsMeOption.Minimize);
+                        }
+                    }
+                    Application.Run(new BlitsMeClientAppContext(options));
                 }
 
                 catch
@@ -78,4 +99,5 @@ namespace BlitsMe.Agent
             return null;
         }
     }
+  
 }

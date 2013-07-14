@@ -7,13 +7,16 @@ using System.Timers;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
+using System.Windows.Interop;
 using BlitsMe.Agent.Components;
 using BlitsMe.Agent.Components.Alert;
 using BlitsMe.Agent.Components.Notification;
 using BlitsMe.Agent.Components.Person;
+using BlitsMe.Agent.Components.Schedule;
 using BlitsMe.Agent.UI.WPF.Engage;
 using BlitsMe.Agent.UI.WPF.Roster;
 using BlitsMe.Agent.UI.WPF.Search;
+using BlitsMe.Common;
 using log4net;
 using Timer = System.Timers.Timer;
 
@@ -34,7 +37,7 @@ namespace BlitsMe.Agent.UI.WPF
         private CollectionViewSource _notificationView;
         // Dispatching collection for notifications (to be used by everything)
         internal DispatchingCollection<ObservableCollection<Notification>, Notification> NotificationList { get; set; }
-        internal DispatchingCollection<ObservableCollection<Alert>, Alert> AlertList { get; set; } 
+        internal DispatchingCollection<ObservableCollection<Alert>, Alert> AlertList { get; set; }
         private SearchWindow _searchWindow;
         private UserInfoWindow _userInfoWindow;
         private Timer _searchCountDown;
@@ -58,18 +61,19 @@ namespace BlitsMe.Agent.UI.WPF
 
         private void OnIsEnabledChanged(object sender, DependencyPropertyChangedEventArgs dependencyPropertyChangedEventArgs)
         {
-            if(this.IsEnabled)
+            if (this.IsEnabled)
             {
-                Panel.SetZIndex(DisableScreen,-1);
-            } else
+                Panel.SetZIndex(DisableScreen, -1);
+            }
+            else
             {
-                Panel.SetZIndex(DisableScreen,1);
+                Panel.SetZIndex(DisableScreen, 1);
             }
         }
 
         private void SetupEngagementWindows()
         {
-// Setup the engagementWindow list as a mirror of the engagements
+            // Setup the engagementWindow list as a mirror of the engagements
             _engagementWindows = new EngagementWindowList(_appContext, NotificationList, Dispatcher);
             try
             {
@@ -96,7 +100,7 @@ namespace BlitsMe.Agent.UI.WPF
             NotificationList =
                 new DispatchingCollection<ObservableCollection<Notification>, Notification>(
                     _appContext.NotificationManager.Notifications, Dispatcher);
-            _notificationView = new CollectionViewSource {Source = NotificationList};
+            _notificationView = new CollectionViewSource { Source = NotificationList };
             _notificationView.Filter += NotificationFilter;
             Notifications.ItemsSource = _notificationView.View;
             AlertList = new DispatchingCollection<ObservableCollection<Alert>, Alert>(_appContext.NotificationManager.Alerts,
@@ -124,7 +128,8 @@ namespace BlitsMe.Agent.UI.WPF
             if (Dispatcher.CheckAccess())
             {
                 DashboardData.Title = _appContext.CurrentUserManager.CurrentUser.Name;
-            } else
+            }
+            else
             {
                 Dispatcher.Invoke(
                     new Action(() => { DashboardData.Title = _appContext.CurrentUserManager.CurrentUser.Name; }));
@@ -162,6 +167,7 @@ namespace BlitsMe.Agent.UI.WPF
         {
             if (_appContext.IsShuttingDown)
                 return;
+            Show();
             if (Dispatcher.CheckAccess())
             {
                 ShowEngagement(args.Engagement.SecondParty);
@@ -199,12 +205,40 @@ namespace BlitsMe.Agent.UI.WPF
             HideIfMinimized(sender, e);
         }
 
+        internal new void Hide()
+        {
+            if (Dispatcher.CheckAccess())
+            {
+                base.Hide();
+            }
+            else
+            {
+                Dispatcher.Invoke(new Action(Hide));
+            }
+        }
+
+        internal new void Show()
+        {
+            if (Dispatcher.CheckAccess())
+            {
+                base.Show();
+                Activate();
+                Topmost = true;
+                Topmost = false;
+                Focus();
+            }
+            else
+            {
+                Dispatcher.Invoke(new Action(Show));
+            }
+        }
+
         private void HideIfMinimized(object sender, EventArgs e)
         {
             if (WindowState.Minimized == this.WindowState)
             {
                 // Don't hide if minimized
-               // this.Hide();
+                // this.Hide();
             }
         }
 
@@ -359,9 +393,19 @@ namespace BlitsMe.Agent.UI.WPF
 
         private void ExitApplication(object sender, RoutedEventArgs e)
         {
-            Thread shutdownThread = new Thread(_appContext.Shutdown) { IsBackground = true };
+            Thread shutdownThread = new Thread(_appContext.Shutdown) { IsBackground = true, Name = "shutdownByUserThread" };
             shutdownThread.Start();
         }
+
+        // handle messages from other applications
+
+        protected override void OnSourceInitialized(EventArgs e)
+        {
+            base.OnSourceInitialized(e);
+            HwndSource source = PresentationSource.FromVisual(this) as HwndSource;
+            source.AddHook(_appContext.WndProc);
+        }
+
     }
 
     internal class DashboardDataContext : INotifyPropertyChanged

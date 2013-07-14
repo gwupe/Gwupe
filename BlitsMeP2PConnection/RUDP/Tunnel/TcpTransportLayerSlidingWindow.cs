@@ -334,9 +334,7 @@ namespace BlitsMe.Communication.P2P.RUDP.Tunnel
                         Logger.Debug("Not sending packet, remote side is disconnecting or disconnected.");
                     }
                 }
-#if DEBUG
                 Logger.Debug("Data sender has completed, buffer=" + _sendBuffer.Count + ", Closing=" + Closing + ", Closed=" + Closed + ", Disconnecting=" + _isDisconnecting + ", Disconnected=" + Disconnected);
-#endif
             }
             catch (Exception e)
             {
@@ -392,7 +390,8 @@ namespace BlitsMe.Communication.P2P.RUDP.Tunnel
                             }
                             else
                             {
-                                Logger.Error("Got an ack " + packet + " but can't find matching data packet.");
+                                Logger.Error("Got an ack " + packet + " but can't find matching data packet, oldest unacked is " 
+                                    + _sendWindow[_oldestUnackedPacket] + ", nextSeqOut=" + _nextDataSeqOut + ", nextSeqIn=" + _nextDataSeqIn + ", lastAckPaket=" + _lastAckPacket);
                             }
                         }
                         else
@@ -604,29 +603,23 @@ namespace BlitsMe.Communication.P2P.RUDP.Tunnel
                             "Failed to receive all the sent data packets during disconnect, timeout while waiting, last acked packet is " +
                             _lastAckedPacket + ", we wanted " + packet.Sequence);
                     }
-#if DEBUG
                     else
                     {
                         Logger.Debug("We have successfully received all the data that was sent : expected " +
                                      packet.Sequence + ", got " + _lastAckedPacket.Sequence);
                     }
-#endif
                 }
-#if DEBUG
                 else
                 {
                     Logger.Debug("Don't have to wait for all data to arrive, because none has been sent.");
                 }
-#endif
                 // Mark it as disconnected
                 _disconnected = true;
 
                 // Now close upstream
                 if (Established && !Closing && !Closed)
                 {
-#if DEBUG
                     Logger.Debug("Closing connection after disconnect " + ConnectionId + "-" + RemoteConnectionId);
-#endif
                     Closing = true;
                     var closer = new Thread(CompleteClose) { IsBackground = true, Name = "closer[" + ConnectionId + "-" + RemoteConnectionId + "]" };
                     closer.Start();
@@ -652,18 +645,14 @@ namespace BlitsMe.Communication.P2P.RUDP.Tunnel
         {
             if (Established && !Closing && !Closed)
             {
-#if DEBUG
                 Logger.Debug("Closing connection " + ConnectionId + "-" + RemoteConnectionId);
-#endif
                 Closing = true;
                 // if the data sender is alive, then make sure close completes after, otherwise fire of a background job to close it now.
                 if (dataSenderThread != null && dataSenderThread.IsAlive)
                 {
                     DataSenderComplete += delegate
                         {
-#if DEBUG
                             Logger.Debug("Data Sender has completed, closing remaining connections");
-#endif
                             CompleteClose();
                         };
                     ReleaseDataSender();
@@ -706,9 +695,7 @@ namespace BlitsMe.Communication.P2P.RUDP.Tunnel
                 lock (_ackWaitingLock)
                 {
                     // wait 60 seconds for it to close down nicely
-#if DEBUG
                     Logger.Debug("Waiting for all outgoing data to be acked");
-#endif
                     while (elapsedTime < timeout && _sendWindow[_oldestUnackedPacket] != null)
                     {
                         Monitor.Wait(_ackWaitingLock, timeout - elapsedTime);
@@ -719,12 +706,10 @@ namespace BlitsMe.Communication.P2P.RUDP.Tunnel
                         Logger.Error(
                             "Closing connection while there are still unacked data packets, we have timed out this connection.");
                     }
-#if DEBUG
                     else
                     {
                         Logger.Debug("All send data has been acked");
                     }
-#endif
                 }
             }
         }

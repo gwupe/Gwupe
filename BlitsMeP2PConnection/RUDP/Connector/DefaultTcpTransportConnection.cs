@@ -13,6 +13,7 @@ namespace BlitsMe.Communication.P2P.RUDP.Connector
         public DefaultTcpTransportConnection(ITcpOverUdptSocket socket, ProcessTransportRead reader) : base(socket)
         {
             _reader = reader;
+            CompleteInit();
         }
 
         protected override void _Close()

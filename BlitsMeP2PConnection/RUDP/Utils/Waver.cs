@@ -22,7 +22,7 @@ namespace BlitsMe.Communication.P2P.RUDP.Utils
             long waitTime = timeout * 10000;
             _udpClient = udpClient;
             Logger.Debug("Waving " + facilitatorIp + " for " + timeout + "ms");
-            var localEndPoints = GetLocalEndPoints(udpClient);
+            //var localEndPoints = GetLocalEndPoints(udpClient);
             //IPEndPoint myEndPoint = localEndPoints.Count > 0 ? localEndPoints[0] : new IPEndPoint(IPAddress.Any, ((IPEndPoint)udpClient.Client.LocalEndPoint).Port);
             var packet = new StandardWaveTunnelRqPacket { internalEndPoint = new IPEndPoint(IPAddress.Any, ((IPEndPoint)udpClient.Client.LocalEndPoint).Port) };
             long startTime = DateTime.Now.Ticks;

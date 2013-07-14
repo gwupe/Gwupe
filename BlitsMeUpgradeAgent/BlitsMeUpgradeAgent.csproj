@@ -54,6 +54,7 @@
     <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="OSUtils.cs" />
     <Compile Include="Program.cs" />
   </ItemGroup>
   <ItemGroup>

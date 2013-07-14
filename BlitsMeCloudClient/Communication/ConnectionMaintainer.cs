@@ -134,11 +134,11 @@ namespace BlitsMe.Cloud.Communication
                     if (_maintainConnection && (!this.IsConnected() || !Ping()))
                     {
                         Logger.Info("Connection seems to be down, marking it as such");
-                        this.CloseConnection(2, "Connection seems to be down");
+                        this.CloseConnection(WebSocketCloseCode.DataError, "Connection seems to be down");
                     }
                 }
             } // end maintain connection loop
-            this.CloseConnection(1, "Disconnect requested");
+            this.CloseConnection(WebSocketCloseCode.Normal, "Disconnect requested");
         }
 
 
@@ -178,12 +178,13 @@ namespace BlitsMe.Cloud.Communication
 
         public void Connect(Uri uri)
         {
-            _connection = new WebSocketClientSSLConnection(_cacert);
+            _connection = new WebSocketClientSSLConnection(_cacert, _wsMessageHandler);
             _connection.ConnectionClose += _wsMessageHandler.onClose;
             _connection.ConnectionClose += delegate { OnDisconnect(EventArgs.Empty); };
             _connection.ConnectionOpen += _wsMessageHandler.onOpen;
             _connection.ConnectionOpen += delegate { OnConnect(EventArgs.Empty); };
-            _connection.ConnectionRead += _wsMessageHandler.onMessage;
+            // we no longer do it this way, but process it via a called function on full
+            //_connection.ConnectionRead += _wsMessageHandler.onMessage;
             try
             {
                 if (!_connection.Start(uri.Host, uri.Port.ToString(), uri.PathAndQuery, true, "", Protocol))
@@ -217,14 +218,22 @@ namespace BlitsMe.Cloud.Communication
 
     internal class WebSocketClientSSLConnection : WebSocketClientConnection
     {
+        private static readonly ILog Logger = LogManager.GetLogger(typeof(WebSocketClientSSLConnection));
         private readonly X509Certificate2 _cacert;
+        private readonly WebSocketMessageHandler _wsMessageHandler;
 
-        public WebSocketClientSSLConnection(X509Certificate2 cacert)
+        public WebSocketClientSSLConnection(X509Certificate2 cacert, WebSocketMessageHandler wsMessageHandler)
             : base()
         {
             _cacert = cacert;
+            _wsMessageHandler = wsMessageHandler;
+            this.FullDataProcess = true;
         }
 
+        protected override void ProcessTextFull(string message)
+        {
+            _wsMessageHandler.ProcessMessage(message);
+        }
 
         protected override bool validateServerCertificate(object sender, X509Certificate certificate, X509Chain chain, SslPolicyErrors sslPolicyErrors)
         {
@@ -238,6 +247,7 @@ namespace BlitsMe.Cloud.Communication
                 chain0.ChainPolicy.VerificationFlags = X509VerificationFlags.AllowUnknownCertificateAuthority;
                 isValid = chain0.Build((X509Certificate2)certificate);
             }
+            Logger.Debug("Checking cert valid, " + isValid);
             return isValid;
         }
     }

@@ -60,6 +60,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="CustomAction.cs" />
+    <Compile Include="OSUtils.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Content Include="CustomAction.config" />
   </ItemGroup>

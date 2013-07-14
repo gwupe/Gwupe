@@ -72,6 +72,9 @@
     <Style x:Key="TeamMemberStarCoverActive" TargetType="Rectangle" BasedOn="{StaticResource TeamMemberStarCover}">
         <Setter Property="Fill" Value="#FF99b4d1" />
     </Style>
+    <Style x:Key="TeamMemberStarCoverRDP" TargetType="Rectangle" BasedOn="{StaticResource TeamMemberStarCover}">
+        <Setter Property="Fill" Value="Red" />
+    </Style>
     <DataTemplate x:Key="RatingActive">
         <Grid Margin="0,0,0,0" Height="15" HorizontalAlignment="Center">
             <ed:RegularPolygon Style="{StaticResource TeamMemberStarFull}" Margin="0,0,0,0" />
@@ -80,6 +83,21 @@
             <ed:RegularPolygon Style="{StaticResource TeamMemberStarFull}" Margin="45,0,0,0" />
             <ed:RegularPolygon Style="{StaticResource TeamMemberStarFull}" Margin="60,0,0,0" />
             <Rectangle Style="{StaticResource TeamMemberStarCoverActive}" Width="{Binding FallbackValue=25, Converter={StaticResource starRatingConverter}}" />
+            <ed:RegularPolygon Style="{StaticResource TeamMemberStarEmpty}" Margin="0,0,0,0" />
+            <ed:RegularPolygon Style="{StaticResource TeamMemberStarEmpty}" Margin="15,0,0,0" />
+            <ed:RegularPolygon Style="{StaticResource TeamMemberStarEmpty}" Margin="30,0,0,0" />
+            <ed:RegularPolygon Style="{StaticResource TeamMemberStarEmpty}" Margin="45,0,0,0" />
+            <ed:RegularPolygon Style="{StaticResource TeamMemberStarEmpty}" Margin="60,0,0,0" />
+        </Grid>
+    </DataTemplate>
+	<DataTemplate x:Key="RatingRDP">
+        <Grid Margin="0,0,0,0" Height="15" HorizontalAlignment="Center">
+            <ed:RegularPolygon Style="{StaticResource TeamMemberStarFull}" Margin="0,0,0,0" />
+            <ed:RegularPolygon Style="{StaticResource TeamMemberStarFull}" Margin="15,0,0,0" />
+            <ed:RegularPolygon Style="{StaticResource TeamMemberStarFull}" Margin="30,0,0,0" />
+            <ed:RegularPolygon Style="{StaticResource TeamMemberStarFull}" Margin="45,0,0,0" />
+            <ed:RegularPolygon Style="{StaticResource TeamMemberStarFull}" Margin="60,0,0,0" />
+            <Rectangle Style="{StaticResource TeamMemberStarCoverRDP}" Width="{Binding FallbackValue=25, Converter={StaticResource starRatingConverter}}" />
             <ed:RegularPolygon Style="{StaticResource TeamMemberStarEmpty}" Margin="0,0,0,0" />
             <ed:RegularPolygon Style="{StaticResource TeamMemberStarEmpty}" Margin="15,0,0,0" />
             <ed:RegularPolygon Style="{StaticResource TeamMemberStarEmpty}" Margin="30,0,0,0" />

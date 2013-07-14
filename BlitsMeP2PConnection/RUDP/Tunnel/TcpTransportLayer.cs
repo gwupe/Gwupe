@@ -83,13 +83,9 @@ namespace BlitsMe.Communication.P2P.RUDP.Tunnel
                 // block if connection is not established
                 while (!Established)
                 {
-#if(DEBUG)
                     Logger.Debug("Connection [" + ConnectionId + "] not yet established, waiting for connection");
-#endif
                     Monitor.Wait(CheckEstablishedLock, timeout);
-#if(DEBUG)
                     Logger.Debug("Connection [" + ConnectionId + "] established, continuing to send data");
-#endif
                 }
             }
         }

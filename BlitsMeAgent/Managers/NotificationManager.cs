@@ -30,17 +30,23 @@ namespace BlitsMe.Agent.Managers
         {
             lock (Notifications)
             {
-                if (Notifications.Remove(notification))
+                if (Notifications.Contains(notification))
                 {
-                    Logger.Debug("Successfully removed notification [" + notification.ToString() + "]");
-                }
-                else
+                    if (Notifications.Remove(notification))
+                    {
+                        Logger.Debug("Successfully removed notification [" + notification.ToString() + "]");
+                    }
+                    else
+                    {
+                        Logger.Warn("Failed to remove notication [" + notification.ToString() + "]");
+                    }
+                    if (Notifications.Count == 0)
+                    {
+                        _removerTimer.Stop();
+                    }
+                } else
                 {
-                    Logger.Warn("Failed to remove notication [" + notification.ToString() + "]");
-                }
-                if (Notifications.Count == 0)
-                {
-                    _removerTimer.Stop();
+                    Logger.Warn("Cannot remote notification " + notification + ", it doesn't exist.");
                 }
             }
         }

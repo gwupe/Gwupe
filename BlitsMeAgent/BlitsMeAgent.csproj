@@ -15,7 +15,7 @@
     <FileAlignment>512</FileAlignment>
     <IsWebBootstrapper>false</IsWebBootstrapper>
     <Utf8Output>true</Utf8Output>
-    <ExpressionBlendVersion>5.2.30810.0</ExpressionBlendVersion>
+    <ExpressionBlendVersion>5.0.31017.0</ExpressionBlendVersion>
     <PublishUrl>publish\</PublishUrl>
     <Install>true</Install>
     <InstallFrom>Disk</InstallFrom>
@@ -210,6 +210,7 @@
     <Compile Include="Managers\SearchManager.cs" />
     <Compile Include="Misc\BLMRegistry.cs" />
     <Compile Include="Managers\RosterManager.cs" />
+    <Compile Include="OSUtils.cs" />
     <Compile Include="Properties\Annotations.cs" />
     <Compile Include="UI\SystemTray.cs" />
     <Compile Include="UI\WPF\API\IDashboardContentControl.cs" />
@@ -356,6 +357,7 @@
       <DependentUpon>Resources.resx</DependentUpon>
       <DesignTime>True</DesignTime>
     </Compile>
+    <None Include="packages.config" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
@@ -406,9 +408,7 @@
     <EmbeddedResource Include="env\Release\cacert.pem">
       <LogicalName>BlitsMe.Agent.cacert.pem</LogicalName>
     </EmbeddedResource>
-    <RootContent Include="env\Release\bmss.exe">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </RootContent>
+    <None Include="env\Release\bmss.exe.broken" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="app.config" />
@@ -531,6 +531,9 @@
     <EmbeddedResource Include="..\WebSocketLib\bin\$(Configuration)\Bauglir.Ex.dll" />
     <EmbeddedResource Include="$(ProgramFiles)\Microsoft SDKs\Expression\Blend\.NETFramework\v4.0\Libraries\Microsoft.Expression.Drawing.dll" />
     <EmbeddedResource Include="$(ProgramFiles)\Microsoft SDKs\Expression\Blend\.NETFramework\v4.0\Libraries\Microsoft.Expression.Effects.dll" />
+    <RootContent Include="env\Release\bmss.exe">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </RootContent>
     <Content Include="icon-main.ico" />
     <Resource Include="UI\WPF\Images\arrow.png" />
     <Resource Include="UI\WPF\Images\arrow_limited_blue_bg.png" />

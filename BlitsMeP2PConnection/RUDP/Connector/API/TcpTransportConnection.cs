@@ -37,7 +37,14 @@ namespace BlitsMe.Communication.P2P.RUDP.Connector.API
                     IsBackground = true,
                     Name = "_transportSockReaderToUpstreamWriter[" + socket.Connection.ConnectionId + "]"
                 };
-            _transportSocketReader.Start();
+        }
+
+        protected void CompleteInit()
+        {
+            if (!_transportSocketReader.IsAlive)
+            {
+                _transportSocketReader.Start();
+            }
         }
 
         protected abstract void _Close();
@@ -48,9 +55,7 @@ namespace BlitsMe.Communication.P2P.RUDP.Connector.API
             {
                 Closing = true;
                 _Close();
-#if(DEBUG)
                 Logger.Debug("Closing Socket");
-#endif
                 _socket.Close();
                 Closing = false;
                 Closed = true;
@@ -85,15 +90,13 @@ namespace BlitsMe.Communication.P2P.RUDP.Connector.API
                         {
                             if (!ProcessTransportSocketRead(tmpRead, read))
                             {
-#if DEBUG
                                 Logger.Debug("Upstream handler failed to process the transport socket read data.");
-#endif
                                 break;
                             }
                         }
                         catch (Exception e)
                         {
-                            Logger.Error("Writing to upstream handler failed, shutting down TcpConnection : " + e.Message,e);
+                            Logger.Error("Writing to upstream handler failed, shutting down TcpConnection : " + e.Message, e);
                             break;
                         }
                     }
@@ -119,25 +122,23 @@ namespace BlitsMe.Communication.P2P.RUDP.Connector.API
 
         public bool SendDataToTransportSocket(byte[] data, int length)
         {
-                if (!Closing && !Closed)
+            if (!Closing && !Closed)
+            {
+                if (!_socket.Closed)
                 {
-                    if (!_socket.Closed)
-                    {
-                        _socket.Send(data, length, 30000);
-                    }
-                    else
-                    {
-#if(DEBUG)
-                        Logger.Debug("Outgoing transport socket has been closed");
-#endif
-                        return false;
-                    }
+                    _socket.Send(data, length, 30000);
                 }
                 else
                 {
-                    Logger.Debug("Cannot write data to Transport socket, connection is closing or is closed");
+                    Logger.Debug("Outgoing transport socket has been closed");
                     return false;
                 }
+            }
+            else
+            {
+                Logger.Debug("Cannot write data to Transport socket, connection is closing or is closed");
+                return false;
+            }
             return true;
         }
     }

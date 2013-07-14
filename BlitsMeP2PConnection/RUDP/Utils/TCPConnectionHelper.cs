@@ -18,7 +18,7 @@ namespace BlitsMe.Communication.P2P.RUDP.Utils
         private readonly Dictionary<byte,AutoResetEvent> _disconnectEvents = new Dictionary<byte, AutoResetEvent>();
         private readonly Dictionary<byte, StandardNamedConnectRsPacket> _connectResults = new Dictionary<byte, StandardNamedConnectRsPacket>();
         private readonly Dictionary<byte, StandardDisconnectAckPacket> _disconnectAcks = new Dictionary<byte, StandardDisconnectAckPacket>();
-        private Random _rand;
+        private readonly Random _rand;
 
         public TCPConnectionHelper(TCPTransport transport)
         {
@@ -29,9 +29,7 @@ namespace BlitsMe.Communication.P2P.RUDP.Utils
         public ITcpTransportLayer ConnectNamed(byte connectionId, String namedEndPoint, int timeout, byte protocolId)
         {
             long waitTime = timeout;
-#if(DEBUG)
             Logger.Debug("Connecting to " + namedEndPoint + ", timeout is " + waitTime + "ms");
-#endif
             StandardNamedConnectRqPacket packet = new StandardNamedConnectRqPacket(connectionId)
                 {
                     ConnectionName = namedEndPoint,
@@ -47,15 +45,11 @@ namespace BlitsMe.Communication.P2P.RUDP.Utils
                 var timeSpan = new TimeSpan(DateTime.Now.Ticks - startTime);
                 if (timeSpan.TotalMilliseconds > waitTime)
                 {
-#if(DEBUG)
                     Logger.Debug("Connect timeout : " + timeSpan.TotalMilliseconds + "ms");
-#endif
                     if (_connectEvents.ContainsKey(connectionId)) _connectEvents.Remove(connectionId);
                     throw new TimeoutException("Timeout occured while connecting to " + namedEndPoint);
                 }
-#if(DEBUG)
                 Logger.Debug("Waiting for connect response from " + namedEndPoint);
-#endif
             } while (_connectEvents.ContainsKey(connectionId) && !_connectEvents[connectionId].WaitOne(5000));
 
             try
@@ -77,9 +71,7 @@ namespace BlitsMe.Communication.P2P.RUDP.Utils
                                                               response.RemoteConnectionId);
                             }
                     }
-#if(DEBUG)
                     Logger.Debug("We have agreed to protocol " + response.ProtocolId);
-#endif
                     
                     return connection;
                 }
@@ -93,9 +85,7 @@ namespace BlitsMe.Communication.P2P.RUDP.Utils
 
         public void ProcessConnectRs(StandardNamedConnectRsPacket packet)
         {
-#if(DEBUG)
             Logger.Debug("Processing Connect Response " + packet);
-#endif
             // In a connection response, ConnectionId is set to the same as the connection request ConnectionId
             if (_connectEvents.ContainsKey(packet.ConnectionId))
             {
@@ -114,9 +104,7 @@ namespace BlitsMe.Communication.P2P.RUDP.Utils
         {
             const long waitTime = 120000; // 2 minute disconnect time
             const int disconnectRetryTimeout = 20000;
-#if(DEBUG)
             Logger.Debug("Disconnecting tcp session " + connectionId);
-#endif
             try
             {
                 var packet = new StandardDisconnectPacket(connectionId);
@@ -130,24 +118,18 @@ namespace BlitsMe.Communication.P2P.RUDP.Utils
                     {
                         _transport.SendData(packet);
                         packet.ResendCount++;
-#if DEBUG
                     }
                     else
                     {
                         Logger.Debug("Will not resend disconnect request, remote side has acked it already");
-#endif
                     }
                     var timeSpan = new TimeSpan(DateTime.Now.Ticks - startTime);
                     if (timeSpan.TotalMilliseconds > waitTime)
                     {
-#if(DEBUG)
                         Logger.Debug("Disconnect timeout : " + timeSpan.TotalMilliseconds + "ms");
-#endif
                         break;
                     }
-#if(DEBUG)
                     Logger.Debug("Waiting for disconnect response for connection id " + connectionId);
-#endif
                 } while (_disconnectEvents.ContainsKey(connectionId) && !_disconnectEvents[connectionId].WaitOne(disconnectRetryTimeout));
 
                 if(_disconnectEvents.ContainsKey(connectionId))
@@ -178,9 +160,7 @@ namespace BlitsMe.Communication.P2P.RUDP.Utils
 
         public void ProcessDisconnectRs(StandardDisconnectRsPacket packet)
         {
-#if(DEBUG)
             Logger.Debug("Processing Disconnect Response " + packet);
-#endif
             // In a connection response, ConnectionId is set to the same as the connection request ConnectionId
             if (_disconnectEvents.ContainsKey(packet.ConnectionId))
             {

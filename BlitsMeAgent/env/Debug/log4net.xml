@@ -8,7 +8,7 @@
     <appender-ref ref="LogFileAppender" />
   </root>
   <appender name="LogFileAppender" type="log4net.Appender.RollingFileAppender" >
-    <param name="File" value="${USERPROFILE}\BlitsMeAgent_Dev.txt" />
+    <param name="File" type="log4net.Util.PatternString" value="%env{APPDATA}\BlitsMe_Dev\BlitsMeAgent.log" />
     <param name="AppendToFile" value="true" />
     <rollingStyle value="Size" />
     <maxSizeRollBackups value="10" />

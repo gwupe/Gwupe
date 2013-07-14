@@ -32,8 +32,8 @@
 	                    <Label Content="Location" Name="LocationLabel" Style="{StaticResource InfoLabel}" />
 						<Label x:Name="Location" Content="{Binding Location, FallbackValue=City\, Place}" Style="{StaticResource InfoContent}"  />
 					</Grid>
-					<Grid>
-						
+					<Grid Height="28" VerticalAlignment="Center">
+						<CheckBox x:Name="UnattendedAccess"  Content="?Auto-accept desktop access requests" HorizontalAlignment="Left" FlowDirection="RightToLeft" Margin="5,0" VerticalContentAlignment="Center" VerticalAlignment="Center" IsChecked="{Binding Path=Relationship.UnattendedAccess}" />
 					</Grid>
 				</StackPanel>
                 <TextBlock Name="Description" HorizontalAlignment="Left" Height="66.04" TextWrapping="Wrap" Text="{Binding Description}" VerticalAlignment="Top" Width="410" Margin="10,202.96,0,0"/>

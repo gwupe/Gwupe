@@ -82,6 +82,14 @@ namespace BlitsMe.Agent.Managers
                 }
             }
         }
+
+        public void Close()
+        {
+            if(_schedulerTimer != null && _schedulerTimer.Enabled)
+            {
+                _schedulerTimer.Stop();
+            }
+        }
     }
 
 }

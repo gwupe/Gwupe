@@ -96,8 +96,8 @@ namespace BlitsMe.Agent.Components.Functions.RemoteDesktop
                     rdpNotification.AnsweredTrue += delegate { ProcessAnswer(true); };
                     rdpNotification.AnsweredFalse += delegate { ProcessAnswer(false); };
                     _appContext.NotificationManager.AddNotification(rdpNotification);
-                    _engagement.Chat.LogSystemMessage(_engagement.SecondParty.Name +
-                                                      " sent you a request to control your desktop.");
+                    _engagement.Chat.LogSystemMessage(_engagement.SecondParty.Firstname +
+                                                      " requested control of your desktop.");
                     OnRDPIncomingRequestEvent(new RDPIncomingRequestArgs(_engagement));
                 }
             }
@@ -156,7 +156,16 @@ namespace BlitsMe.Agent.Components.Functions.RemoteDesktop
         private Client _client;
         public Client Client
         {
-            get { return _client ?? (_client = new Client(_engagement.TransportManager)); }
+            get
+            {
+                if (_client == null)
+                {
+                    _client = new Client(_engagement.TransportManager);
+                    _client.ConnectionAccepted += ClientOnConnectionAccepted;
+                    _client.ConnectionClosed += ClientOnConnectionClosed;
+                }
+                return _client;
+            }
         }
 
         private Server _server;
@@ -167,17 +176,23 @@ namespace BlitsMe.Agent.Components.Functions.RemoteDesktop
                 if (_server == null)
                 {
                     _server = new Server(_engagement.TransportManager);
+                    _server.ConnectionAccepted += ServerOnConnectionAccepted;
                     _server.ConnectionClosed += ServerOnConnectionClosed;
                 }
                 return _server;
             }
         }
 
+        private void ServerOnConnectionAccepted(object sender, EventArgs eventArgs)
+        {
+            Logger.Info("The remote party has connected to the RDP server");
+        }
+
         // Client disconnected or we kicked him off muhahaha!
         private void ServerOnConnectionClosed(object sender, EventArgs eventArgs)
         {
             IsActive = false;
-            Logger.Debug("Server connection closed, notifying end of service.");
+            Logger.Info("Server connection closed, notifying end of service.");
             _engagement.Chat.LogServiceCompleteMessage("You were just helped by " + _engagement.SecondParty.Name + ", please rate his service below.");
         }
 
@@ -237,8 +252,6 @@ namespace BlitsMe.Agent.Components.Functions.RemoteDesktop
                 try
                 {
                     int port = Client.Start();
-                    Client.ConnectionAccepted += ClientOnConnectionAccepted;
-                    Client.ConnectionClosed += ClientOnConnectionClosed;
                     String viewerExe = System.IO.Path.GetDirectoryName(Environment.GetCommandLineArgs()[0]) +
                                        "\\bmss.exe";
                     var parameters = "-username=\"" + _engagement.SecondParty.Name + "\" -scale=auto 127.0.0.1::" + port;

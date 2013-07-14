@@ -1,15 +1,9 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
 using System.Windows.Input;
-using System.Windows.Media.Imaging;
-using System.Windows.Shapes;
+using System.Windows.Interop;
 using System.Windows.Navigation;
-using System.Windows.Media;
 using System.Threading;
 using System.ComponentModel;
 using BlitsMe.Agent.Components;
@@ -35,7 +29,7 @@ namespace BlitsMe.Agent.UI.WPF
             InitializeComponent();
             _appContext = appContext;
             _loginDetails = details;
-            if(_loginDetails != null)
+            if (_loginDetails != null)
             {
                 Username.Text = _loginDetails.username;
             }
@@ -137,7 +131,6 @@ namespace BlitsMe.Agent.UI.WPF
                 NewUser.IsEnabled = false;
                 Username.IsEnabled = false;
                 Password.IsEnabled = false;
-                //ForgotPassword.IsEnabled = false;
                 signin.Content = "Logging In";
                 signin.IsEnabled = false;
             }
@@ -154,7 +147,6 @@ namespace BlitsMe.Agent.UI.WPF
                 NewUser.IsEnabled = true;
                 Username.IsEnabled = true;
                 Password.IsEnabled = true;
-                //ForgotPassword.IsEnabled = true;
                 signin.Content = "Sign In";
                 signin.IsEnabled = true;
             }
