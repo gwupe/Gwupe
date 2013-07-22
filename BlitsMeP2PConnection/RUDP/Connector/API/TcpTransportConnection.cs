@@ -9,7 +9,7 @@ using log4net;
 
 namespace BlitsMe.Communication.P2P.RUDP.Connector.API
 {
-    public abstract class TcpTransportConnection
+    public abstract class TcpTransportConnection : ITcpTransportConnection
     {
 
         private static readonly ILog Logger = LogManager.GetLogger(typeof(TcpTransportConnection));

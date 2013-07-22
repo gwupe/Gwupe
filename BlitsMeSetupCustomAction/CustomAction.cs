@@ -19,7 +19,13 @@ namespace BlitsMeSetupCustomAction
         {
             session.Log("Begin open BlitsMeAgentIfNotOpen");
             // send messages to all blitsme agents
-            BlitsMe.Common.OsUtils.PostMessage((IntPtr)BlitsMe.Common.OsUtils.HWND_BROADCAST, BlitsMe.Common.OsUtils.WM_UPGRADEBM, IntPtr.Zero, IntPtr.Zero);
+            BlitsMe.Common.OsUtils.PostMessage((IntPtr)BlitsMe.Common.OsUtils.HWND_BROADCAST, BlitsMe.Common.OsUtils.WM_UPGRADEBM,
+#if DEBUG
+                            IntPtr.Zero, 
+#else
+                            new IntPtr(1),
+#endif
+                            IntPtr.Zero);
             return ActionResult.Success;
         }
 
@@ -51,7 +57,13 @@ namespace BlitsMeSetupCustomAction
         {
             session.Log("Begin terminate BlitsMeAgent");
             // send messages to all blitsme agents
-            BlitsMe.Common.OsUtils.PostMessage((IntPtr)BlitsMe.Common.OsUtils.HWND_BROADCAST,BlitsMe.Common.OsUtils.WM_SHUTDOWNBM, IntPtr.Zero, IntPtr.Zero);
+            BlitsMe.Common.OsUtils.PostMessage((IntPtr)BlitsMe.Common.OsUtils.HWND_BROADCAST, BlitsMe.Common.OsUtils.WM_SHUTDOWNBM,
+#if DEBUG
+                            IntPtr.Zero, 
+#else
+                            new IntPtr(1),
+#endif
+                            IntPtr.Zero);
 
             // now we kill if necessary
             Process[] prs = Process.GetProcesses();

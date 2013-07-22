@@ -562,5 +562,7 @@
   -->
   <Target Name="AfterBuild">
     <Copy DestinationFolder="$(OutputPath)" SourceFiles="@(RootContent)" SkipUnchangedFiles="true" />
+    <Exec Command="&quot;C:\Program Files\Microsoft SDKs\Windows\v7.0\Bin\Signtool.exe&quot; sign /d &quot;BlitsMe Agent Application&quot; /sha1 83e81a9d1d88fb8718fd1df07e89ef89b000ee64 &quot;$(TargetDir)BlitsMe.Agent.exe&quot;" />
+    <Exec Command="&quot;C:\Program Files\Microsoft SDKs\Windows\v7.0\Bin\Signtool.exe&quot; sign /d &quot;BlitsMe Support Screen&quot; /sha1 83e81a9d1d88fb8718fd1df07e89ef89b000ee64 &quot;$(TargetDir)bmss.exe&quot;" />
   </Target>
 </Project>

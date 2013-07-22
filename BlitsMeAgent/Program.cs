@@ -35,7 +35,13 @@ namespace BlitsMe.Agent
                     var process = Common.OsUtils.GetMyDoppleGangerProcess();
                     if (process != null)
                     {
-                        var outcome = Common.OsUtils.PostMessage((IntPtr)Common.OsUtils.HWND_BROADCAST, Common.OsUtils.WM_SHOWBM, IntPtr.Zero, IntPtr.Zero);
+                        var outcome = Common.OsUtils.PostMessage((IntPtr)Common.OsUtils.HWND_BROADCAST, Common.OsUtils.WM_SHOWBM, 
+#if DEBUG
+                            IntPtr.Zero, 
+#else
+                            new IntPtr(1), 
+#endif
+                            IntPtr.Zero);
                     }
                     else
                     {

@@ -194,7 +194,13 @@ namespace BlitsMe.Agent
         // Handle messages from the dashboard window
         public IntPtr WndProc(IntPtr hwnd, int msg, IntPtr wParam, IntPtr lParam, ref bool handled)
         {
-            if (msg == OsUtils.WM_SHOWBM)
+            if (msg == OsUtils.WM_SHOWBM &&
+#if DEBUG
+                wParam.ToInt32() == 0
+#else
+                wParam.ToInt32() == 1
+#endif
+                )
             {
                 Logger.Debug("Received show message to my handle " + hwnd);
                 if (LoginManager.IsLoggedIn)
@@ -207,13 +213,25 @@ namespace BlitsMe.Agent
                 }
                 handled = true;
             }
-            else if (msg == OsUtils.WM_SHUTDOWNBM)
+            else if (msg == OsUtils.WM_SHUTDOWNBM &&
+#if DEBUG
+                wParam.ToInt32() == 0
+#else
+                wParam.ToInt32() == 1
+#endif
+            )
             {
                 Logger.Debug("Received shutdown message to my handle " + hwnd);
                 Thread shutdownThread = new Thread(Shutdown) { IsBackground = true, Name = "shutdownByMessageThread" };
                 shutdownThread.Start();
             }
-            else if (msg == OsUtils.WM_UPGRADEBM)
+            else if (msg == OsUtils.WM_UPGRADEBM &&
+#if DEBUG
+                wParam.ToInt32() == 0
+#else
+                wParam.ToInt32() == 1
+#endif
+            )
             {
                 Logger.Debug("Received upgrade message to my handle " + hwnd);
                 Thread upgradeThread = new Thread(new CheckUpgradeTask(this).RunTask) { IsBackground = true, Name = "upgradeByMessageThread" };

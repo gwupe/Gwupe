@@ -78,23 +78,8 @@
 	<Target Name="AfterBuild">
 	</Target>
 	-->
-  <!--
-  <Target Name="BeforeBuild">
-    <GetAssemblyIdentity AssemblyFiles="$(SolutionDir)BlitsMeAgent\bin\$(Configuration)\BlitsMe.Agent.exe">
-      <Output TaskParameter="Assemblies" ItemName="AssemblyVersions" />
-    </GetAssemblyIdentity>
-    <FormatVersion Version="%(AssemblyVersions.Version)" Revision="0">
-      <Output TaskParameter="OutputVersion" PropertyName="RealVersion" />
-    </FormatVersion>
-    <CreateProperty Value="$(OutputName)-$(RealVersion)">
-      <Output TaskParameter="Value" PropertyName="TargetName" />
-    </CreateProperty>
-    <CreateProperty Value="$(TargetName)$(TargetExt)">
-      <Output TaskParameter="Value" PropertyName="TargetFileName" />
-    </CreateProperty>
-    <CreateProperty Value="$(TargetDir)$(TargetFileName)">
-      <Output TaskParameter="Value" PropertyName="TargetPath" />
-    </CreateProperty>
+  <Target Name="AfterBuild">
+    <Exec Condition=" '$(Configuration)' == 'Debug' " Command="&quot;C:\Program Files\Microsoft SDKs\Windows\v7.0\Bin\Signtool.exe&quot; sign /d &quot;BlitsMe Setup MSI&quot; /sha1 83e81a9d1d88fb8718fd1df07e89ef89b000ee64 &quot;$(TargetDir)BlitsMeSetup_Dev.msi&quot;" />
+    <Exec Condition=" '$(Configuration)' == 'Release' " Command="&quot;C:\Program Files\Microsoft SDKs\Windows\v7.0\Bin\Signtool.exe&quot; sign /d &quot;BlitsMe Setup MSI&quot; /sha1 83e81a9d1d88fb8718fd1df07e89ef89b000ee64 &quot;$(TargetDir)BlitsMeSetup.msi&quot;" />
   </Target>
-  -->
 </Project>
