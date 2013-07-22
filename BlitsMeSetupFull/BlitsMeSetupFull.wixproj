@@ -11,6 +11,7 @@
     <OutputType>Bundle</OutputType>
     <WixTargetsPath Condition=" '$(WixTargetsPath)' == '' AND '$(MSBuildExtensionsPath32)' != '' ">$(MSBuildExtensionsPath32)\Microsoft\WiX\v3.x\Wix.targets</WixTargetsPath>
     <WixTargetsPath Condition=" '$(WixTargetsPath)' == '' ">$(MSBuildExtensionsPath)\Microsoft\WiX\v3.x\Wix.targets</WixTargetsPath>
+    <SignOutput>true</SignOutput>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|x86' ">
     <OutputPath>bin\$(Configuration)\</OutputPath>
@@ -71,9 +72,19 @@
 	Other similar extension points exist, see Wix.targets.
 	<Target Name="BeforeBuild">
 	</Target>
-	<Target Name="AfterBuild">
-	</Target>
 	-->
+  <Target Name="SignBundleEngine">
+    <SignFile CertificateThumbprint="83e81a9d1d88fb8718fd1df07e89ef89b000ee64"
+      SigningTarget="@(SignBundleEngine)"
+ />
+  </Target>
+  <Target Name="SignBundle">
+    <SignFile CertificateThumbprint="83e81a9d1d88fb8718fd1df07e89ef89b000ee64"
+      SigningTarget="@(SignBundle)"
+ />
+    <!-- move the filename to its final name after signing -->
+    <Exec Command="ren &quot;$(TargetPath)&quot; &quot;$(FinalTargetFileName)&quot;" />
+  </Target>
   <Target Name="BeforeBuild">
     <GetAssemblyIdentity AssemblyFiles="$(SolutionDir)BlitsMeAgent\bin\$(Configuration)\BlitsMe.Agent.exe">
       <Output TaskParameter="Assemblies" ItemName="AssemblyVersions" />
@@ -82,13 +93,19 @@
       <Output TaskParameter="OutputVersion" PropertyName="RealVersion" />
     </FormatVersion>
     <CreateProperty Value="$(OutputName)-$(RealVersion)">
-      <Output TaskParameter="Value" PropertyName="TargetName" />
+      <Output TaskParameter="Value" PropertyName="FinalTargetName" />
     </CreateProperty>
-    <CreateProperty Value="$(TargetName)$(TargetExt)">
-      <Output TaskParameter="Value" PropertyName="TargetFileName" />
+    <CreateProperty Value="$(FinalTargetName)$(TargetExt)">
+      <Output TaskParameter="Value" PropertyName="FinalTargetFileName" />
     </CreateProperty>
-    <CreateProperty Value="$(TargetDir)$(TargetFileName)">
-      <Output TaskParameter="Value" PropertyName="TargetPath" />
+    <CreateProperty Value="$(TargetDir)$(FinalTargetFileName)">
+      <Output TaskParameter="Value" PropertyName="FinalTargetPath" />
     </CreateProperty>
+  </Target>
+  <Target Name="AfterBuild">
+    <!--<Exec Command="ren &quot;$(TargetPath)&quot; &quot;$(FinalTargetPath)&quot;" />-->
+    <!-- 
+      <Exec Command="&quot;C:\Program Files\Microsoft SDKs\Windows\v7.0\Bin\Signtool.exe&quot; sign /d &quot;BlitsMe Full Setup EXE&quot; /sha1 83e81a9d1d88fb8718fd1df07e89ef89b000ee64 &quot;$(TargetPath)&quot;" /> 
+    -->
   </Target>
 </Project>
