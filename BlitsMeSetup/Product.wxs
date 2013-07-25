@@ -73,6 +73,23 @@
       <Directory Id="ProgramMenuFolder">
         <Directory Id="ApplicationProgramsFolder" Name="BlitsMe$(var.buildMarker)"/>
       </Directory>
+      <Directory Id="DesktopFolder" Name="Desktop">
+        <Component Id="ApplicationShortcutDesktop" Guid="{AEA96F71-DE3C-4BD5-9C3A-A04D138CE83C}">
+          <Shortcut Id="ApplicationDesktopShortcut"
+             Name="BlitsMe$(var.buildMarker)"
+             Description="Launch BlitsMe$(var.buildMarker)"
+             Target="[INSTALLFOLDER]BlitsMe.Agent.exe"
+             WorkingDirectory="INSTALLFOLDER"/>
+          <RemoveFolder Id="DesktopFolder" On="uninstall"/>
+          <RegistryValue
+            Root="HKCU"
+            Key="Software/BlitsMe$(var.buildMarker)"
+            Name="installed"
+            Type="integer"
+            Value="1"
+            KeyPath="yes"/>
+        </Component>
+      </Directory>
     </Directory>
     <DirectoryRef Id="ApplicationProgramsFolder">
       <Component Id="ApplicationShortcut">
@@ -148,6 +165,7 @@
         <ServiceControl Id="StartSupportService" Start="install" Stop="both" Remove="uninstall" Name="BlitsMeSupportService$(var.buildMarker)" Wait="yes" />
       </Component>
       <ComponentRef Id="ApplicationShortcut" />
+      <ComponentRef Id="ApplicationShortcutDesktop" />
       <!-- Auto-start for all users via Registry -->
       <Component Id="BlitsMeAutoStart">
         <RegistryValue Id="BMAuthoStart.Reg" Root="HKMU" Action="write"
