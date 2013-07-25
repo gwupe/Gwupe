@@ -33,19 +33,24 @@ namespace BlitsMe.Communication.P2P.RUDP.Utils
                 udpClient.Send(sendBytes, sendBytes.Length, facilitatorIp);
                 if (DateTime.Now.Ticks - startTime > waitTime)
                 {
-                    Logger.Debug("Wave timeout : " + (DateTime.Now.Ticks - startTime));
-                    throw new TimeoutException("Timeout occured while waving");
+                    Logger.Error("Wave timeout : " + (DateTime.Now.Ticks - startTime));
+                    //throw new TimeoutException("Timeout occured while waving");
+                    break;
                 }
                 Logger.Debug("Waiting for wave response from " + facilitatorIp);
             } while (!_waveEvent.WaitOne(2000));
-
+            if(_waveResult == null)
+            {
+                _waveResult = new PeerInfo();
+            }
+            _waveResult.InternalEndPoints = GetLocalEndPoints(_udpClient);
             return _waveResult;
         }
 
         public void ProcessWaveRs(StandardWaveTunnelRsPacket packet)
         {
             Logger.Debug("Processing Wave Response from " + packet.ip);
-            _waveResult = new PeerInfo() { ExternalEndPoint = packet.externalEndPoint, InternalEndPoints = GetLocalEndPoints(_udpClient) };
+            _waveResult = new PeerInfo() { ExternalEndPoint = packet.externalEndPoint };
             _waveEvent.Set();
         }
 

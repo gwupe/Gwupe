@@ -43,6 +43,8 @@ namespace BlitsMe.Agent.Components
         private const double TimeoutToTunnelClose = 1800000;
 #endif
         private readonly Timer _countdownToDeactivation;
+        public object TunnelWaitLock = new object();
+
         internal bool Active
         {
             get { return _active; }
@@ -96,7 +98,8 @@ namespace BlitsMe.Agent.Components
                     // Another one will start straight away because of the tunnel disconnected event
                     OutgoingTunnel.Close();
                     OnPropertyChanged(new PropertyChangedEventArgs("OutgoingTunnel"));
-                } else
+                }
+                else
                 {
                     SetupOutgoingTunnel();
                 }
@@ -144,9 +147,9 @@ namespace BlitsMe.Agent.Components
 
         private void SuggestCountdownToDeactivation()
         {
-            if(Active)
+            if (Active)
             {
-                Logger.Debug("Starting countdown to deactivation in " + TimeoutToTunnelClose/60000 + " mins");
+                Logger.Debug("Starting countdown to deactivation in " + TimeoutToTunnelClose / 60000 + " mins");
                 _countdownToDeactivation.Stop();
                 _countdownToDeactivation.Start();
             }
@@ -160,7 +163,7 @@ namespace BlitsMe.Agent.Components
             // This is to pickup logouts/connection disconnections
             _appContext.LoginManager.LoggedOut += LogoutOccurred;
             SecondParty = person;
-            _countdownToDeactivation = new Timer(TimeoutToTunnelClose) {AutoReset = false};
+            _countdownToDeactivation = new Timer(TimeoutToTunnelClose) { AutoReset = false };
             _countdownToDeactivation.Elapsed += (sender, args) => CompleteDeactivation();
             Activate += OnActivate;
             Deactivate += OnDeactivate;
@@ -194,7 +197,8 @@ namespace BlitsMe.Agent.Components
             if (!IsChildrenActive)
             {
                 Active = false;
-            } else
+            }
+            else
             {
                 Logger.Warn("Cannot deativate, children are still busy, resetting timer");
                 SuggestCountdownToDeactivation();
@@ -236,8 +240,13 @@ namespace BlitsMe.Agent.Components
 
         private void OutgoingTunnelOnConnected(object sender, EventArgs args)
         {
-            _transportManager.AddTunnel(_outgoingTunnel, (_incomingTunnel == null || !_incomingTunnel.IsTunnelEstablished) ? 1 : 2);
+            _transportManager.AddTunnel(_outgoingTunnel,
+                                        (_incomingTunnel == null || !_incomingTunnel.IsTunnelEstablished) ? 1 : 2);
             OnPropertyChanged(new PropertyChangedEventArgs("OutgoingTunnel"));
+            lock (TunnelWaitLock)
+            {
+                Monitor.PulseAll(TunnelWaitLock);
+            }
         }
 
         private void OutgoingTunnelOnDisconnected(object sender, EventArgs args)
@@ -248,6 +257,10 @@ namespace BlitsMe.Agent.Components
                 SetupOutgoingTunnel();
             }
             OnPropertyChanged(new PropertyChangedEventArgs("OutgoingTunnel"));
+            lock (TunnelWaitLock)
+            {
+                Monitor.PulseAll(TunnelWaitLock);
+            }
         }
 
 
@@ -268,15 +281,32 @@ namespace BlitsMe.Agent.Components
             }
         }
 
+        public bool IsTunnelActive
+        {
+            get
+            {
+                return (_incomingTunnel != null && _incomingTunnel.IsTunnelEstablished) ||
+                       (_outgoingTunnel != null && _outgoingTunnel.IsTunnelEstablished);
+            }
+        }
+
         private void IncomingTunnelOnConnected(object sender, EventArgs args)
         {
             _transportManager.AddTunnel(_incomingTunnel, (_outgoingTunnel == null || !_outgoingTunnel.IsTunnelEstablished) ? 1 : 2);
             OnPropertyChanged(new PropertyChangedEventArgs("IncomingTunnel"));
+            lock (TunnelWaitLock)
+            {
+                Monitor.PulseAll(TunnelWaitLock);
+            }
         }
 
         private void IncomingTunnelOnDisconnected(object sender, EventArgs args)
         {
             OnPropertyChanged(new PropertyChangedEventArgs("IncomingTunnel"));
+            lock (TunnelWaitLock)
+            {
+                Monitor.PulseAll(TunnelWaitLock);
+            }
         }
 
         private void SetupOutgoingTunnel()
@@ -290,9 +320,11 @@ namespace BlitsMe.Agent.Components
                     Logger.Debug("Starting up thread to setup outgoing tunnel to " + SecondParty.Username);
 #endif
 
-                    _p2PConnectionCreatorThread = new Thread(InitP2PConnection) {IsBackground = true};
-                    _p2PConnectionCreatorThread.Name = "_p2pConnectionCreatorThread[" +
-                                                       _p2PConnectionCreatorThread.ManagedThreadId + "]";
+                    _p2PConnectionCreatorThread = new Thread(InitP2PConnection)
+                        {
+                            IsBackground = true,
+                            Name = "_p2pConnectionCreator[" + SecondParty.Username + "-" + SecondParty.ShortCode + "-outgoing" + "]"
+                        };
                     _p2PConnectionCreatorThread.Start();
                 }
                 else
@@ -323,8 +355,8 @@ namespace BlitsMe.Agent.Components
 #endif
                     var peer = new PeerInfo()
                         {
-                            ExternalEndPoint = new IPEndPoint(IPAddress.Parse(response.externalEndpointIp),
-                                                              Convert.ToInt32(response.externalEndpointPort))
+                            ExternalEndPoint = response.externalEndPoint != null ? new IPEndPoint(IPAddress.Parse(response.externalEndPoint.address),
+                                                              Convert.ToInt32(response.externalEndPoint.port)) : null,
                         };
                     foreach (var ipEndPointElement in response.internalEndPoints)
                     {

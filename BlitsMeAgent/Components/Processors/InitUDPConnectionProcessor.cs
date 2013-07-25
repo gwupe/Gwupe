@@ -30,7 +30,7 @@ namespace BlitsMe.Agent.Components.Processors
             {
                 // Hit the stun server
                 PeerInfo self = _appContext.P2PManager.SetupTunnel(request.uniqueId, new IPEndPoint(IPAddress.Parse(request.facilitatorIP), Convert.ToInt32(request.facilitatorPort)), request.encryptionKey);
-                response.externalEndPoint = new IpEndPointElement(self.ExternalEndPoint);
+                response.externalEndPoint = self.ExternalEndPoint != null ? new IpEndPointElement(self.ExternalEndPoint) : null;
                 foreach (var internalEndPoint in self.InternalEndPoints)
                 {
                     response.internalEndPoints.Add(new IpEndPointElement(internalEndPoint));

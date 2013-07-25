@@ -39,16 +39,15 @@ namespace BlitsMe.Communication.P2P.RUDP.Utils
             do
             {
                 byte[] syncBytes = syncRq.getBytes();
-                udpClient.Send(syncBytes, syncBytes.Length, peer.ExternalEndPoint);
-                // attempt to sync with all internal endpoints
-                foreach (var internalEndPoint in peer.InternalEndPoints)
+                // attempt to sync with all endpoints, external is done first
+                foreach (var endPoint in peer.EndPoints)
                 {
-                    udpClient.Send(syncBytes, syncBytes.Length, internalEndPoint);
+                    udpClient.Send(syncBytes, syncBytes.Length, endPoint);
                 }
                 if (DateTime.Now.Ticks - startTime > waitTime)
                 {
                     Logger.Debug("Tunnel " + Id + ", sync Timeout : " + (DateTime.Now.Ticks - startTime));
-                    throw new TimeoutException("Tunnel " + Id + ", timeout occured while attempting sync with peer " + peer.ExternalEndPoint + "/" + peer.InternalEndPoint);
+                    throw new TimeoutException("Tunnel " + Id + ", timeout occured while attempting sync with peer " + peer);
                 }
                 Logger.Debug("Tunnel " + Id + ", sent requests, waiting for sync response from " + peer);
             } while (!_syncEvent.WaitOne(1000));
@@ -84,8 +83,7 @@ namespace BlitsMe.Communication.P2P.RUDP.Utils
                 Logger.Debug("Got a sync request for " + Id + " from " + packet.ip + ", last sync packet was from " + (_lastSyncRqPacketIp == null ? "nowhere" : _lastSyncRqPacketIp.ToString()));
                 if (_lastSyncRqPacketIp == null || _lastSyncRqPacketIp.Equals(packet.ip))
                 {
-                    if (_expectedPeer.ExternalEndPoint.Equals(packet.ip) ||
-                        _expectedPeer.InternalEndPoints.Contains(packet.ip))
+                    if (_expectedPeer.EndPoints.Contains(packet.ip))
                     {
                         _lastSyncRqPacketIp = packet.ip;
                         _syncRqEvent.Set();
@@ -119,11 +117,10 @@ namespace BlitsMe.Communication.P2P.RUDP.Utils
             do
             {
                 byte[] nopBytes = nop.getBytes();
-                udpClient.Send(nopBytes, nopBytes.Length, peer.ExternalEndPoint);
-                // attempt to open comms with all internal endpoints
-                foreach (var internalEndPoint in peer.InternalEndPoints)
+                // attempt to open comms with all endpoints, external is done first
+                foreach (var endPoint in peer.EndPoints)
                 {
-                    udpClient.Send(nopBytes, nopBytes.Length, internalEndPoint);
+                    udpClient.Send(nopBytes, nopBytes.Length, endPoint);
                 }
                 if (DateTime.Now.Ticks - startTime > waitTime)
                 {

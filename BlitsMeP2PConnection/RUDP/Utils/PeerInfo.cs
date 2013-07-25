@@ -23,12 +23,6 @@ namespace BlitsMe.Communication.P2P.RUDP.Utils
         }
         public IPEndPoint ExternalEndPoint;
 
-        public PeerInfo(IPEndPoint internalEp, IPEndPoint externalEp)
-        {
-            InternalEndPoint = internalEp;
-            ExternalEndPoint = externalEp;
-        }
-
         public PeerInfo()
         {
             InternalEndPoints = new List<IPEndPoint>();
@@ -47,6 +41,23 @@ namespace BlitsMe.Communication.P2P.RUDP.Utils
                 
             output += "External => " + ExternalEndPoint;
             return output;
+        }
+
+        public List<IPEndPoint> EndPoints
+        {
+            get
+            {
+                var endpoints = new List<IPEndPoint>();
+                if (ExternalEndPoint != null)
+                {
+                    endpoints.Add(ExternalEndPoint);
+                }
+                if (InternalEndPoints != null)
+                {
+                    endpoints.AddRange(InternalEndPoints);
+                }
+                return endpoints;
+            }
         }
     }
 }

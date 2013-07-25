@@ -43,7 +43,6 @@ namespace BlitsMe.Agent.Managers
         {
             lock (_engagementLookupLock)
             {
-                Logger.Debug("Getting engagement for " + username);
                 if (_engagementLookup.ContainsKey(username.ToLower()))
                 {
                     return _engagementLookup[username.ToLower()];

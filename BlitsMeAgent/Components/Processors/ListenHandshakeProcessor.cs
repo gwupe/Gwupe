@@ -30,8 +30,8 @@ namespace BlitsMe.Agent.Components.Processors
                 var peerInfo = new PeerInfo()
                     {
                         ExternalEndPoint =
-                            new IPEndPoint(IPAddress.Parse(request.externalEndPoint.address),
-                                           request.externalEndPoint.port),
+                            request.externalEndPoint != null ? new IPEndPoint(IPAddress.Parse(request.externalEndPoint.address),
+                                           request.externalEndPoint.port) : null,
                     };
                 foreach (var ipEndPointElement in request.internalEndPoints)
                 {
@@ -52,8 +52,7 @@ namespace BlitsMe.Agent.Components.Processors
         {
             engagement.IncomingTunnel = awareIncomingTunnel;
             engagement.IncomingTunnel.Id = engagement.SecondParty.Username + "-" + engagement.SecondParty.ShortCode + "-incoming";
-            var p2pListenerThread = new Thread(() => IncomingTunnelWaitSync(engagement, peerinfo)) { IsBackground = true };
-            p2pListenerThread.Name = "p2pListenerThread[" + p2pListenerThread.ManagedThreadId + "]";
+            var p2pListenerThread = new Thread(() => IncomingTunnelWaitSync(engagement, peerinfo)) { IsBackground = true, Name = "p2pListener[" + engagement.IncomingTunnel.Id + "]" };
             p2pListenerThread.Start();
         }
 
@@ -61,8 +60,9 @@ namespace BlitsMe.Agent.Components.Processors
         {
             try
             {
+                long startTime = Environment.TickCount;
                 engagement.IncomingTunnel.WaitForSyncFromPeer(peerIP, 10000);
-                Logger.Info("Successfully completed incoming sync with " + engagement.SecondParty.Username + "-" + engagement.SecondParty.ShortCode);
+                Logger.Info("Successfully completed incoming sync in " + (Environment.TickCount - startTime) + "ms");
             }
             catch (Exception e)
             {

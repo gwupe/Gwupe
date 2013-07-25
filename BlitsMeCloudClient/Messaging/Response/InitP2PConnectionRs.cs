@@ -114,9 +114,10 @@ namespace BlitsMe.Cloud.Messaging.Response
         public override bool isValid()
         {
             return base.isValid() &&
-                this.externalEndPoint != null && 
+                ((this.externalEndPoint != null && 
                 !"0.0.0.0".Equals(externalEndPoint.address) &&
-                this.externalEndPoint.port != 0 &&
+                this.externalEndPoint.port != 0) 
+                || (this.internalEndPoints != null && this.internalEndPoints.Count > 0)) &&
                 !string.IsNullOrEmpty(this.username) &&
                 !string.IsNullOrEmpty(this.shortCode);
         }

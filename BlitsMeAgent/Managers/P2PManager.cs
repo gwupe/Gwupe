@@ -24,10 +24,16 @@ namespace BlitsMe.Agent.Managers
             IUDPTunnel tunnel = new UDPTunnel(0, uniqueId);
             tunnel.EncryptData = (ref byte[] data) => EncryptData(ref data, encryptionKey);
             tunnel.DecryptData = (ref byte[] data) => DecryptData(ref data, encryptionKey);
-            PeerInfo self = tunnel.Wave(facilitatorEndPoint, 15000);
-#if DEBUG
-            Logger.Debug("Successfully waved to facilitator, my details are " + self.ToString());
-#endif
+            PeerInfo self = tunnel.Wave(facilitatorEndPoint, 20000);
+            Logger.Debug("After wave, local endpoints are " + self);
+            if(self.ExternalEndPoint == null)
+            {
+                Logger.Warn("Failed to get external endpoint : " + self);
+            }
+            if (self.EndPoints.Count == 0)
+            {
+                throw new Exception("Failed to determine any local endpoints : " + self.ToString());
+            }
             _pendingTunnels.Add(uniqueId, tunnel);
             return self;
         }

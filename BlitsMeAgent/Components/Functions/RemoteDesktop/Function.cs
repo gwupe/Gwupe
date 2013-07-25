@@ -1,13 +1,9 @@
 ﻿using System;
 using System.Diagnostics;
-using System.Reflection;
-using System.Windows;
+using System.Threading;
 using BlitsMe.Agent.Components.Chat;
 using BlitsMe.Agent.Components.Functions.API;
-using BlitsMe.Agent.Components.Functions.FileSend;
 using BlitsMe.Agent.Components.Functions.RemoteDesktop.Notification;
-using BlitsMe.Agent.Components.Notification;
-using BlitsMe.Cloud.Messaging.API;
 using BlitsMe.Cloud.Messaging.Request;
 using BlitsMe.Cloud.Messaging.Response;
 using log4net;
@@ -109,7 +105,7 @@ namespace BlitsMe.Agent.Components.Functions.RemoteDesktop
             if (accept)
             {
                 _engagement.Chat.LogSystemMessage("You accepted the desktop assistance request from " +
-                                                  _engagement.SecondParty.Name);
+                                                  _engagement.SecondParty.Firstname);
                 try
                 {
                     if (_appContext.BlitsMeServiceProxy.VNCStartService())
@@ -129,7 +125,7 @@ namespace BlitsMe.Agent.Components.Functions.RemoteDesktop
             }
             else
             {
-                _engagement.Chat.LogSystemMessage("You denied the desktop assistance request from " + _engagement.SecondParty.Name);
+                _engagement.Chat.LogSystemMessage("You denied the desktop assistance request from " + _engagement.SecondParty.Firstname);
                 SendRDPRequestResponse(false, delegate(RDPRequestResponseRq rq, RDPRequestResponseRs rs, Exception arg3) { IsActive = false; });
             }
         }
@@ -217,13 +213,13 @@ namespace BlitsMe.Agent.Components.Functions.RemoteDesktop
             RDPRequestRq request = new RDPRequestRq() { shortCode = _engagement.SecondParty.ShortCode, username = _engagement.SecondParty.Username };
             try
             {
-                ChatElement chatElement = _engagement.Chat.LogSystemMessage("You sent " + _engagement.SecondParty.Name + " a request to control their desktop.");
+                ChatElement chatElement = _engagement.Chat.LogSystemMessage("You sent " + _engagement.SecondParty.Firstname + " a request to control their desktop.");
                 _appContext.ConnectionManager.Connection.RequestAsync<RDPRequestRq, RDPRequestRs>(request, (req, res, ex) => ProcessRequestRDPSessionResponse(req, res, ex, chatElement));
             }
             catch (Exception ex)
             {
                 Logger.Error("Error during request for RDP Session : " + ex.Message, ex);
-                _engagement.Chat.LogSystemMessage("An error occured trying to send " + _engagement.SecondParty.Name + " a request to control their desktop.");
+                _engagement.Chat.LogSystemMessage("An error occured trying to send " + _engagement.SecondParty.Firstname + " a request to control their desktop.");
             }
         }
 
@@ -248,7 +244,24 @@ namespace BlitsMe.Agent.Components.Functions.RemoteDesktop
             if (request.accepted)
             {
                 IsActive = true;
-                _engagement.Chat.LogSystemMessage(_engagement.SecondParty.Name + " accepted your remote assistance request.");
+                _engagement.Chat.LogSystemMessage(_engagement.SecondParty.Firstname + " accepted your remote assistance request, please wait while we establish a connection...");
+                // Wait for a tunnel
+                lock(_engagement.TunnelWaitLock)
+                {
+                    Logger.Debug("Testing is tunnel to " + _engagement.SecondParty.Username + " is active");
+                    while (!_engagement.IsTunnelActive)
+                    {
+                        Logger.Debug("Tunnel to " + _engagement.SecondParty.Username + " is not active, waiting");
+                        if (!Monitor.Wait(_engagement.TunnelWaitLock, 30000))
+                        {
+                            _engagement.Chat.LogErrorMessage("Failed to create a connection to " +
+                                                             _engagement.SecondParty.Firstname);
+                            Logger.Error("Failed to create a tunnel between " + _appContext.CurrentUserManager.CurrentUser.Name + "(me) and " + _engagement.SecondParty.Username + " : timed out waiting for tunnel");
+                            IsActive = false;
+                            return;
+                        }
+                    }
+                }
                 try
                 {
                     int port = Client.Start();
@@ -262,25 +275,27 @@ namespace BlitsMe.Agent.Components.Functions.RemoteDesktop
                 catch (Exception e)
                 {
                     IsActive = false;
-                    Logger.Error("Failed to start RDP client : " + e.Message, e);
+                    Logger.Error("Failed to start RDP client to " + _engagement.SecondParty.Username + " : " + e.Message, e);
                     throw e;
                 }
             }
             else
             {
                 IsActive = false;
-                _engagement.Chat.LogSystemMessage(_engagement.SecondParty.Name + " did not accept your remote assistance request.");
+                _engagement.Chat.LogSystemMessage(_engagement.SecondParty.Firstname + " did not accept your remote assistance request.");
             }
         }
 
         private void ClientOnConnectionAccepted(object sender, EventArgs eventArgs)
         {
-            Logger.Debug("A RDP client has connected to the proxy.");
+            _engagement.Chat.LogSystemMessage("You connected to " + _engagement.SecondParty.Firstname + "'s desktop.");
+            Logger.Info("RDP client has connected to the proxy to " + _engagement.SecondParty.Username + ".");
         }
 
         private void ClientOnConnectionClosed(object sender, EventArgs eventArgs)
         {
-            Logger.Debug("Client closed its connection");
+            _engagement.Chat.LogSystemMessage("You disconnected from " + _engagement.SecondParty.Firstname + "'s desktop.");
+            Logger.Info("RDP client has disconnected from the proxy to " + _engagement.SecondParty.Username + ".");
             IsActive = false;
         }
 
