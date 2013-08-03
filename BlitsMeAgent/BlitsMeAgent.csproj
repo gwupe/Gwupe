@@ -15,7 +15,7 @@
     <FileAlignment>512</FileAlignment>
     <IsWebBootstrapper>false</IsWebBootstrapper>
     <Utf8Output>true</Utf8Output>
-    <ExpressionBlendVersion>5.0.31017.0</ExpressionBlendVersion>
+    <ExpressionBlendVersion>5.0.40218.0</ExpressionBlendVersion>
     <PublishUrl>publish\</PublishUrl>
     <Install>true</Install>
     <InstallFrom>Disk</InstallFrom>
@@ -250,10 +250,6 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Page Include="UI\WPF\RosterArea.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-    </Page>
     <Page Include="UI\WPF\Roster\AddPersonControl.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -311,6 +307,9 @@
     <Compile Include="UI\WPF\SignUpWindow.xaml.cs">
       <DependentUpon>SignUpWindow.xaml</DependentUpon>
     </Compile>
+    <Compile Include="UI\WPF\UpdateNotification.xaml.cs">
+      <DependentUpon>UpdateNotification.xaml</DependentUpon>
+    </Compile>
     <Compile Include="UI\WPF\UserInfoWindow.xaml.cs">
       <DependentUpon>UserInfoWindow.xaml</DependentUpon>
     </Compile>
@@ -334,9 +333,6 @@
       <DependentUpon>SearchWindow.xaml</DependentUpon>
     </Compile>
     <Compile Include="UI\WPF\Utils\ObservableListMirror.cs" />
-    <Compile Include="UI\WPF\RosterArea.xaml.cs">
-      <DependentUpon>RosterArea.xaml</DependentUpon>
-    </Compile>
     <Compile Include="UI\WPF\Roster\RosterElement.xaml.cs">
       <DependentUpon>RosterElement.xaml</DependentUpon>
     </Compile>
@@ -376,6 +372,10 @@
       <SubType>Designer</SubType>
     </Page>
     <Page Include="UI\WPF\TestWindow.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="UI\WPF\UpdateNotification.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
@@ -446,6 +446,8 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Resource>
     <Resource Include="UI\WPF\Images\1364864637_alert.png" />
+    <Resource Include="UI\WPF\Images\1375404724_tune.png" />
+    <Resource Include="UI\WPF\Images\1375406488_Cute Ball - Search.png" />
     <Resource Include="UI\WPF\Images\close.png" />
     <Resource Include="UI\WPF\Images\fileclose.png" />
     <Resource Include="UI\WPF\Images\floppy_unmount.png" />
@@ -534,6 +536,7 @@
     <RootContent Include="env\Release\bmss.exe">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </RootContent>
+    <EmbeddedResource Include="changelog.txt" />
     <Content Include="icon-main.ico" />
     <Resource Include="UI\WPF\Images\arrow.png" />
     <Resource Include="UI\WPF\Images\arrow_limited_blue_bg.png" />

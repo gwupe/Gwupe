@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Diagnostics;
+using System.IO;
 using System.Reflection;
 using System.Text.RegularExpressions;
 using System.Threading;
@@ -48,12 +50,15 @@ namespace BlitsMe.Agent
         internal NotificationManager NotificationManager { get; private set; }
         internal SearchManager SearchManager { get; private set; }
         internal Thread DashboardUiThread;
+        internal UpdateNotification UpdateNotification;
         internal bool IsShuttingDown { get; private set; }
         internal readonly BLMRegistry Reg = new BLMRegistry();
         internal readonly String StartupVersion;
         internal readonly ScheduleManager ScheduleManager;
         private IdleState _idleState;
         private readonly AutoResetEvent _dashboardReady;
+        internal ObservableCollection<String> ChangeLog = new ObservableCollection<string>();
+        internal String ChangeDescription;
 
         /// <summary>
         /// This class should be created and passed into Application.Run( ... )
@@ -93,6 +98,46 @@ namespace BlitsMe.Agent
             SetupAndRunDashboard();
             EngagementManager.NewActivity += UIDashBoard.EngagementManagerOnNewActivity;
             LoginManager.Start();
+            if (!StartupVersion.Equals(Reg.LastVersion))
+            {
+                try
+                {
+                    using (
+                        Stream stream =
+                            Assembly.GetExecutingAssembly().GetManifestResourceStream("BlitsMe.Agent.changelog.txt"))
+                    {
+                        using (StreamReader reader = new StreamReader(stream))
+                        {
+                            if (reader.Peek() >= 0)
+                            {
+                                ChangeDescription = reader.ReadLine();
+                            }
+                            while (reader.Peek() >= 0)
+                            {
+                                ChangeLog.Add(reader.ReadLine());
+                            }
+                        }
+                    }
+                    SetupAndRunUpdateNotificationWindow();
+                }
+                catch (Exception e)
+                {
+                    Logger.Error("Failed to read changelog file : " + e.Message);
+                }
+            }
+            Reg.LastVersion = StartupVersion;
+        }
+
+        private void SetupAndRunUpdateNotificationWindow()
+        {
+            Thread thread = new Thread(() =>
+                {
+                    UpdateNotification = new UpdateNotification(this);
+                    UpdateNotification.Show();
+                    Dispatcher.Run();
+                }) { Name = "updateNotificationThread" };
+            thread.SetApartmentState(ApartmentState.STA);
+            thread.Start();
         }
 
         internal bool Debug
@@ -259,6 +304,10 @@ namespace BlitsMe.Agent
                 NotificationManager.Close();
             if (RosterManager != null)
                 RosterManager.Close();
+            if(UpdateNotification != null)
+            {
+                UpdateNotification.Close();
+            }
             if (DashboardUiThread != null)
             {
                 UIDashBoard.Dispatcher.InvokeShutdown();

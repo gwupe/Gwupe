@@ -25,9 +25,6 @@
 		<Grid Name="DisableScreen" Panel.ZIndex="-1" Background="White" Opacity="0.6"/>
         <Grid HorizontalAlignment="Left" Width="190">
         	<DockPanel LastChildFill="True" Margin="0">
-        		<Grid DockPanel.Dock="Top" >
-        			<TextBox x:Name="SearchBox" Margin="5,5,5,0" TextWrapping="Wrap" Text="Search" VerticalAlignment="Top" FontFamily="Calibri" FontSize="16" TextChanged="Search_TextChanged" GotFocus="SearchBox_GotFocus" LostFocus="SearchBox_LostFocus" Background="#FF2B519B" Foreground="White" HorizontalAlignment="Center" Width="180" Height="23"/>
-        		</Grid>
         		<StackPanel Margin="5" Orientation="Horizontal" Height="32" HorizontalAlignment="Center" DockPanel.Dock="Top">
         			<StackPanel.Resources>
         				<Style TargetType="{x:Type Button}">
@@ -37,12 +34,19 @@
         			<Button x:Name="UserInfo" ToolTip="My Details" Background="White" BorderThickness="0" Click="UserInfo_Click">
         				<Image Source="Images/User.png" Margin="1"/>
         			</Button>
+        			<Button ToolTip="Settings" Click="Settings" Background="White" BorderThickness="0">
+        				<Image Source="Images/1375404724_tune.png" Margin="1"/>
+        			</Button>
         			<Button ToolTip="Logout" Click="Logout" Background="White" BorderThickness="0">
         				<Image Source="Images/Logoff.png" Margin="1"/>
         			</Button>
         			<Button ToolTip="Quit" Click="ExitApplication" Background="White" BorderThickness="0">
         				<Image Source="Images/exit.png" Margin="1"/>
         			</Button>
+        		</StackPanel>
+        		<StackPanel DockPanel.Dock="Top" Orientation="Horizontal" Margin="0,0,0,5">
+					<Image Margin="5,0,0,0" Source="Images/1375406488_Cute Ball - Search.png" Height="24" />
+        			<TextBox x:Name="SearchBox" Margin="3,0,5,0" TextWrapping="Wrap" Text="Search..." VerticalAlignment="Top" FontFamily="Calibri" FontSize="16" TextChanged="Search_TextChanged" GotFocus="SearchBox_GotFocus" LostFocus="SearchBox_LostFocus" Background="#FFA4B6E4" Foreground="#FF706C6C" HorizontalAlignment="Center" Width="151.333" Height="24"/>
         		</StackPanel>
         		<ItemsControl x:Name="Alerts" DockPanel.Dock="Bottom" Margin="5,0,5,5">
         			<ItemsControl.ItemsPanel>
@@ -53,7 +57,7 @@
         			</ItemsControl.ItemsPanel>
         		</ItemsControl>
         		<!-- This is the Roster section -->
-        		<ListBox x:Name="Team" ItemsSource="{Binding}" 
+        		<ListBox x:Name="Team" ItemsSource="{Binding}" ScrollViewer.CanContentScroll="False"
         			FontFamily="Corbel" Margin="5,0" DockPanel.Dock="Bottom" ScrollViewer.HorizontalScrollBarVisibility="Disabled">
         			<ListBox.Resources>
         				<Style TargetType="{x:Type ListBoxItem}">
@@ -75,7 +79,7 @@
         </Grid>
         <Grid Margin="190,5,5,5">
             <DockPanel LastChildFill="True">
-                <ItemsControl x:Name="Notifications" DockPanel.Dock="Top" Margin="8,0">
+                <ItemsControl x:Name="Notifications" DockPanel.Dock="Bottom" Margin="0">
                     <ItemsControl.ItemsPanel>
                         <ItemsPanelTemplate>
                             <StackPanel VerticalAlignment="Bottom" d:LayoutOverrides="VerticalAlignment" />
@@ -83,7 +87,7 @@
                     </ItemsControl.ItemsPanel>
                 </ItemsControl>
                 <!-- Now this is the desktop area -->
-                <ContentControl x:Name="ActiveContent" BorderThickness="1" Background="#FFC8C8C8" BorderBrush="Black" DockPanel.Dock="Bottom" />
+                <ContentControl x:Name="ActiveContent" BorderThickness="1" Background="#FFC8C8C8" BorderBrush="Black" DockPanel.Dock="Top" />
             </DockPanel>
         </Grid>
     </Grid>

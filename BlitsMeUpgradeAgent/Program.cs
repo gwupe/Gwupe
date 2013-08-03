@@ -24,31 +24,35 @@ namespace BlitsMe.Agent.Upgrade
             if (System.Environment.UserName.Equals("SYSTEM")) return;
             Process[] prs = Process.GetProcesses();
 
-            foreach (Process pr in prs)
+            try
             {
-                if (pr.ProcessName == "BlitsMe.Agent" &&
+                foreach (Process pr in prs)
+                {
+                    if (pr.ProcessName == "BlitsMe.Agent" &&
                         (Common.OsUtils.ProgramFilesx86 + "\\BlitsMe" + BuildMarker + "\\BlitsMe.Agent.exe")
                             .Equals(Common.OsUtils.GetMainModuleFilepath(pr.Id)) &&
-                            (Environment.UserDomainName + "\\" + Environment.UserName).Equals(Common.OsUtils.GetProcessOwner(pr.Id)))
-                {
-                    try
+                        (Environment.UserDomainName + "\\" + Environment.UserName).Equals(
+                            Common.OsUtils.GetProcessOwner(pr.Id)))
                     {
-                        if (!pr.WaitForExit(20000))
+                        try
                         {
-                            try
+                            if (!pr.WaitForExit(20000))
                             {
-                                pr.Kill();
-                            }
-                            catch (Exception e)
-                            {
+                                try
+                                {
+                                    pr.Kill();
+                                }
+                                catch (Exception e)
+                                {
+                                }
                             }
                         }
-                    }
-                    catch (Exception e)
-                    {
+                        catch (Exception e)
+                        {
+                        }
                     }
                 }
-            }
+            }catch (Exception e) {}
             // Now start BlitsMe
             try
             {

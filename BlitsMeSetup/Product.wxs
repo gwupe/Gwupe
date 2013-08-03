@@ -83,8 +83,8 @@
           <RemoveFolder Id="DesktopFolder" On="uninstall"/>
           <RegistryValue
             Root="HKCU"
-            Key="Software/BlitsMe$(var.buildMarker)"
-            Name="installed"
+            Key="Software\BlitsMe$(var.buildMarker)"
+            Name="ds_shortcut"
             Type="integer"
             Value="1"
             KeyPath="yes"/>
@@ -99,7 +99,12 @@
                   Target="[INSTALLFOLDER]BlitsMe.Agent.exe"
                   WorkingDirectory="INSTALLFOLDER" />
         <RemoveFolder Id="ApplicationProgramsFolder" On="uninstall"/>
-        <RegistryValue Root="HKCU" Key="Software\Microsoft\BlitsMe$(var.buildMarker)" Name="installed" Type="integer" Value="1" KeyPath="yes"/>
+        <RegistryValue Root="HKCU"
+                       Key="Software\BlitsMe$(var.buildMarker)"
+                       Name="sm_shortcut"
+                       Type="integer"
+                       Value="1"
+                       KeyPath="yes"/>
       </Component>
     </DirectoryRef>
   </Fragment>

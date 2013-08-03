@@ -28,7 +28,7 @@ namespace BlitsMe.Agent.Managers
 
         internal void Search(String search)
         {
-            SearchRq request = new SearchRq() { query = search };
+            SearchRq request = new SearchRq() { query = search, pageSize = 20 };
             if (_appContext.ConnectionManager.IsOnline())
             {
                 _appContext.ConnectionManager.Connection.RequestAsync<SearchRq,SearchRs>(request, SearchResponseHandler);

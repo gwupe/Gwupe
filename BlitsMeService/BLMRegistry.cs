@@ -7,8 +7,9 @@ namespace BlitsMe.Service
 {
     class BLMRegistry
     {
-        public const String root = @"SOFTWARE\BlitsMe" + BMService.BuildMarker;
-        public const String serverIPsKey = "serverIPs";
-        public const String version = "Version";
+        public static string PreReleaseKey = "PreRelease";
+        public const String Root = @"SOFTWARE\BlitsMe" + BMService.BuildMarker;
+        public const String ServerIPsKey = "serverIPs";
+        public const String VersionKey = "Version";
     }
 }

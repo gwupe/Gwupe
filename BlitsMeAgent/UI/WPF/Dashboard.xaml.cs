@@ -8,6 +8,7 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
 using System.Windows.Interop;
+using System.Windows.Media;
 using BlitsMe.Agent.Components;
 using BlitsMe.Agent.Components.Alert;
 using BlitsMe.Agent.Components.Notification;
@@ -116,9 +117,15 @@ namespace BlitsMe.Agent.UI.WPF
             else
             {
                 ActiveContent.Content = null;
-                SearchBox.Text = "Search";
+                ResetSearchBox();
                 _searchWindow = null;
             }
+        }
+
+        private void ResetSearchBox()
+        {
+            SearchBox.Text = "Search...";
+            SearchBox.Foreground = new SolidColorBrush(Color.FromRgb(112, 108, 108));
         }
 
         private void SetupCurrentUserListener()
@@ -223,9 +230,12 @@ namespace BlitsMe.Agent.UI.WPF
             {
                 base.Show();
                 Activate();
-                Topmost = true;
-                Topmost = false;
                 Focus();
+                if (_appContext.UpdateNotification != null && !_appContext.UpdateNotification.IsClosed)
+                {
+                    _appContext.UpdateNotification.Show();
+                }
+
             }
             else
             {
@@ -277,6 +287,7 @@ namespace BlitsMe.Agent.UI.WPF
             {
                 ActiveContent.Content = egw;
                 egw.SetAsMain(this);
+                egw.ShowChat();
                 try
                 {
                     ClearActiveRosterElement();
@@ -307,7 +318,7 @@ namespace BlitsMe.Agent.UI.WPF
             // This gets called on init (where appContext is null), but we don't want to search that anyway
             if (_appContext != null)
             {
-                if (!SearchBox.Text.Equals("") && !SearchBox.Text.Equals("Search"))
+                if (!SearchBox.Text.Equals("") && !SearchBox.Text.StartsWith("Search"))
                 {
                     lock (_searchLock)
                     {
@@ -325,8 +336,9 @@ namespace BlitsMe.Agent.UI.WPF
 
         private void SearchBox_GotFocus(object sender, System.Windows.RoutedEventArgs e)
         {
-            if ("Search".Equals(SearchBox.Text))
+            if (SearchBox.Text.StartsWith("Search"))
             {
+                SearchBox.Foreground = new SolidColorBrush(Colors.Black);
                 SearchBox.Text = "";
             }
             if (_searchWindow == null)
@@ -371,7 +383,7 @@ namespace BlitsMe.Agent.UI.WPF
         {
             if ("".Equals(SearchBox.Text))
             {
-                SearchBox.Text = "Search";
+                ResetSearchBox();
             }
         }
 
@@ -404,6 +416,11 @@ namespace BlitsMe.Agent.UI.WPF
             base.OnSourceInitialized(e);
             HwndSource source = PresentationSource.FromVisual(this) as HwndSource;
             source.AddHook(_appContext.WndProc);
+        }
+
+        private void Settings(object sender, System.Windows.RoutedEventArgs e)
+        {
+        	// TODO: Add event handler implementation here.
         }
 
     }

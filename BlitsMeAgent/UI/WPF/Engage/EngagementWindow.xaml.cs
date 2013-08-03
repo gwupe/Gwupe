@@ -52,7 +52,6 @@ namespace BlitsMe.Agent.UI.WPF.Engage
             }
             _notificationView = new CollectionViewSource { Source = notificationList };
             _notificationView.Filter += NotificationFilter;
-            Notifications.ItemsSource = _notificationView.View;
             _notificationView.View.Refresh();
             notificationList.CollectionChanged += NotificationListOnCollectionChanged;
             SetTunnelIndicator(Engagement.IncomingTunnel, IncomingTunnelIndicator);
@@ -207,11 +206,12 @@ namespace BlitsMe.Agent.UI.WPF.Engage
         }
 
 
-        private void ShowChat()
+        internal void ShowChat()
         {
             if (_chatWindow == null)
             {
                 _chatWindow = new ChatWindow(_appContext, this);
+                _chatWindow.Notifications.ItemsSource = _notificationView.View;
             }
             EngagementContent.Content = _chatWindow;
         }

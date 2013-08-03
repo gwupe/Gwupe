@@ -76,14 +76,7 @@
         </Grid>
         <Grid Margin="0,62,0,0">
         	<DockPanel LastChildFill="True">
-            <ItemsControl x:Name="Notifications" DockPanel.Dock="Top" Margin="8,0">
-                <ItemsControl.ItemsPanel>
-                    <ItemsPanelTemplate>
-                        <StackPanel VerticalAlignment="Bottom" d:LayoutOverrides="VerticalAlignment" />
-                    </ItemsPanelTemplate>
-                </ItemsControl.ItemsPanel>
-            </ItemsControl>
-            <ContentControl Name="EngagementContent" Content="{Binding Path=Content}" DockPanel.Dock="Bottom" />
+	            <ContentControl Name="EngagementContent" Content="{Binding Path=Content}" DockPanel.Dock="Top" />
 			</DockPanel>
         </Grid>
     </Grid>

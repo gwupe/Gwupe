@@ -267,9 +267,11 @@ namespace BlitsMe.Agent.Managers
             {
                 _appContext.UIDashBoard.Hide();
                 _loginWindow.Show();
-                _loginWindow.Topmost = true;
-                _loginWindow.Topmost = false;
                 _loginWindow.Focus();
+                if (_appContext.UpdateNotification != null && !_appContext.UpdateNotification.IsClosed)
+                {
+                    _appContext.UpdateNotification.Show();
+                }
             }
             else
                 _loginWindow.Dispatcher.Invoke(new Action(ShowLoginWindow));

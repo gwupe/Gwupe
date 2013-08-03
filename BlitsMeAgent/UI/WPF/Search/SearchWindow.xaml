@@ -16,7 +16,7 @@
 	</UserControl.Resources>
 
 	<Grid x:Name="LayoutRoot">
-		<ListBox ItemsSource="{Binding}" x:Name="SearchResults" HorizontalContentAlignment="Stretch" Background="{x:Null}" ScrollViewer.HorizontalScrollBarVisibility="Disabled" BorderThickness="0">
+		<ListBox ItemsSource="{Binding}" x:Name="SearchResults" HorizontalContentAlignment="Stretch" Background="{x:Null}" ScrollViewer.HorizontalScrollBarVisibility="Disabled" BorderThickness="0" ScrollViewer.CanContentScroll="False">
 			
 		</ListBox>
 		<!--

@@ -100,7 +100,7 @@ namespace BlitsMe.Service
                 try
                 {
                     Version assemblyVersion = new Version(_version);
-                    var downloadUrl = "https://" + UpdateServer + "/updates/update.php?ver=" + assemblyVersion + "&hwid=" + HardwareFingerprint() + "&upver=2.0";
+                    var downloadUrl = GetUpdateUrl(assemblyVersion);
                     Logger.Debug("Checking for new version from " + downloadUrl);
                     String versionInfomation =
                         _webClient.DownloadString(downloadUrl);
@@ -116,7 +116,7 @@ namespace BlitsMe.Service
 
                                 Logger.Info("Downloading update " + versionParts[1]);
                                 String fileLocation = Path.GetTempPath() + versionParts[1];
-                                _webClient.DownloadFile("https://" + UpdateServer + "/updates/" + versionParts[1],
+                                _webClient.DownloadFile(GetDownloadUrl(versionParts[1]),
                                                         fileLocation);
                                 Logger.Info("Downloaded update " + versionParts[1]);
                                 String logfile = Path.GetTempPath() + "BlitsMeInstall" + BuildMarker + ".log";
@@ -161,6 +161,41 @@ namespace BlitsMe.Service
             }
         }
 
+        private string GetDownloadUrl(string filename)
+        {
+            return "https://" + UpdateServer + "/updates/" + (IsPreRelease() ? "prerelease/" : "") + filename;
+        }
+
+        private string GetUpdateUrl(Version assemblyVersion)
+        {
+            
+            return "https://" + UpdateServer + "/updates/update.php" +
+                "?ver=" + assemblyVersion + 
+                "&hwid=" + HardwareFingerprint() + 
+                "&upver=2.0" +
+                (IsPreRelease() ? "&prerelease=true" : "");
+        }
+
+        private bool IsPreRelease()
+        {
+            try
+            {
+                RegistryKey bmKey =
+                    RegistryKey.OpenBaseKey(RegistryHive.LocalMachine, RegistryView.Registry32).OpenSubKey(
+                        BLMRegistry.Root);
+                String preRelease = (String) bmKey.GetValue(BLMRegistry.PreReleaseKey);
+                if (preRelease != null)
+                {
+                    return true;
+                }
+            } catch(Exception e)
+            {
+                Logger.Debug("Threw exception trying to get preReleaseKey from Registry : " + e.Message);
+                return false;
+            }
+            return false;
+        }
+
         private bool ValidateServerWithCA(object sender, X509Certificate certificate, X509Chain chain, SslPolicyErrors sslPolicyErrors)
         {
             bool isValid = false;
@@ -194,8 +229,8 @@ namespace BlitsMe.Service
 
         public List<String> getServerIPs()
         {
-            RegistryKey bmKey = RegistryKey.OpenBaseKey(RegistryHive.LocalMachine, RegistryView.Registry32).OpenSubKey(BLMRegistry.root);
-            String ipKey = (String)bmKey.GetValue(BLMRegistry.serverIPsKey);
+            RegistryKey bmKey = RegistryKey.OpenBaseKey(RegistryHive.LocalMachine, RegistryView.Registry32).OpenSubKey(BLMRegistry.Root);
+            String ipKey = (String)bmKey.GetValue(BLMRegistry.ServerIPsKey);
             return new List<String>(ipKey.Split(','));
         }
 
@@ -203,8 +238,8 @@ namespace BlitsMe.Service
         {
             try
             {
-                RegistryKey root = RegistryKey.OpenBaseKey(RegistryHive.LocalMachine, RegistryView.Registry32).CreateSubKey(BLMRegistry.root, RegistryKeyPermissionCheck.ReadWriteSubTree);
-                root.SetValue(BLMRegistry.version, _version);
+                RegistryKey root = RegistryKey.OpenBaseKey(RegistryHive.LocalMachine, RegistryView.Registry32).CreateSubKey(BLMRegistry.Root, RegistryKeyPermissionCheck.ReadWriteSubTree);
+                root.SetValue(BLMRegistry.VersionKey, _version);
             }
             catch (Exception e)
             {
@@ -229,8 +264,8 @@ namespace BlitsMe.Service
             // Lets add some
             try
             {
-                RegistryKey ips = RegistryKey.OpenBaseKey(RegistryHive.LocalMachine, RegistryView.Registry32).CreateSubKey(BLMRegistry.root, RegistryKeyPermissionCheck.ReadWriteSubTree);
-                ips.SetValue(BLMRegistry.serverIPsKey, String.Join(",", newIPs.ToArray()));
+                RegistryKey ips = RegistryKey.OpenBaseKey(RegistryHive.LocalMachine, RegistryView.Registry32).CreateSubKey(BLMRegistry.Root, RegistryKeyPermissionCheck.ReadWriteSubTree);
+                ips.SetValue(BLMRegistry.ServerIPsKey, String.Join(",", newIPs.ToArray()));
             }
             catch (Exception e2)
             {

@@ -14,6 +14,7 @@ namespace BlitsMe.Agent.Misc
         public const String usernameKey = "username";
         public const String profileKey = "profile";
         public const String passwordHashKey = "password";
+        public const String lastVersionKey = "lastVersion";
 
         public string Username {
             get { return getRegValue(usernameKey); }
@@ -26,6 +27,12 @@ namespace BlitsMe.Agent.Misc
         public string Profile {
             get { return getRegValue(profileKey); }
             set { setRegValue(profileKey, value); }
+        }
+
+        public string LastVersion
+        {
+            get { return getRegValue(lastVersionKey); }
+            set { setRegValue(lastVersionKey, value);}
         }
 
         public List<String> getServerIPs()

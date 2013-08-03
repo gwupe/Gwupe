@@ -1,0 +1,33 @@
+﻿<Window
+	xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+	x:Class="BlitsMe.Agent.UI.WPF.UpdateNotification"
+	x:Name="Window"
+	Title="UpdateNotification"
+	Width="400" Height="300"
+	WindowStyle="None"
+    AllowsTransparency="False"
+    ResizeMode="CanResize" MinWidth="400" MaxWidth="400" MinHeight="300" MaxHeight="300" 
+	WindowStartupLocation="CenterScreen">
+
+	<Grid x:Name="LayoutRoot">
+		<Image Margin="10,10,0,0" Source="Images/arrow.png" Stretch="Fill" VerticalAlignment="Top" HorizontalAlignment="Left" Height="100" Width="100" />
+		<TextBlock Height="58" Margin="123,10,14,0" TextWrapping="Wrap" VerticalAlignment="Top" FontSize="20" FontWeight="Bold">
+			<Run Text="BlitsMe Update Installed"/><LineBreak/>
+			<Run Text="Version: "/><Run Text="{Binding Path=Version, FallbackValue=v0.0.0, Mode=OneWay}" /><LineBreak/>
+		</TextBlock>
+		<TextBlock HorizontalAlignment="Left" Height="36" Margin="123,73,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="255">
+			<Run Text="{Binding Path=Description, FallbackValue=Description, Mode=OneWay}"/>
+		</TextBlock>
+		<ScrollViewer x:Name="ChangeLogViewer" Margin="5,114,5,41" VerticalScrollBarVisibility="Auto" Padding="0,0,0,0" BorderThickness="5" Background="White" BorderBrush="Black">
+            <ItemsControl x:Name="ChangeLog" ItemsSource="{Binding Changes, Mode=OneWay}" VerticalAlignment="Top">
+                <ItemsControl.ItemTemplate>
+                    <DataTemplate>
+						<TextBlock Text="{Binding Mode=OneWay}"/>
+					</DataTemplate>
+				</ItemsControl.ItemTemplate>
+			</ItemsControl>
+		</ScrollViewer>
+		<Button Content="OK" HorizontalAlignment="Center" Height="25" Margin="0,0,0,11" VerticalAlignment="Bottom" Width="124" Click="Button_Click"/>
+	</Grid>
+</Window>

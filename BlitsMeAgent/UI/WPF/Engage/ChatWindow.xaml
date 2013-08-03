@@ -16,78 +16,87 @@
         </ResourceDictionary>
     </UserControl.Resources>
     <Grid x:Name="LayoutRoot">
-        <ScrollViewer x:Name="ChatPanelViewer" Margin="8,8,8,92" VerticalScrollBarVisibility="Auto" Padding="0,0,0,0" BorderThickness="5" Background="White" BorderBrush="Black" d:LayoutOverrides="GridBox">
-            <ItemsControl x:Name="ChatPanel" ItemsSource="{Binding Exchange}">
-                <ItemsControl.ItemTemplate>
-                    <DataTemplate>
-                        <ContentControl Content="{Binding }">
-                            <ContentControl.Style>
-                                <Style TargetType="{x:Type ContentControl}">
-                                    <Setter Property="ContentTemplate" Value="{StaticResource ChatMeSingle}" />
-                                    <Style.Triggers>
-                                        <DataTrigger Binding="{Binding ChatType}" Value="ChatOtherSingle">
-                                            <Setter Property="ContentTemplate" Value="{StaticResource ChatOtherSingle}" />
-                                        </DataTrigger>
-                                        <DataTrigger Binding="{Binding ChatType}" Value="ChatMeSingle">
-                                            <Setter Property="ContentTemplate" Value="{StaticResource ChatMeSingle}" />
-                                        </DataTrigger>
-                                        <DataTrigger Binding="{Binding ChatType}" Value="ChatMeGroup">
-                                            <Setter Property="ContentTemplate" Value="{StaticResource ChatMeGroup}" />
-                                        </DataTrigger>
-                                        <DataTrigger Binding="{Binding ChatType}" Value="ChatOtherGroup">
-                                            <Setter Property="ContentTemplate" Value="{StaticResource ChatOtherGroup}" />
-                                        </DataTrigger>
-                                        <DataTrigger Binding="{Binding ChatType}" Value="ChatSystem">
-                                            <Setter Property="ContentTemplate" Value="{StaticResource ChatSystem}" />
-                                        </DataTrigger>
-                                        <DataTrigger Binding="{Binding ChatType}" Value="ChatSystemError">
-                                            <Setter Property="ContentTemplate" Value="{StaticResource ChatSystemError}" />
-                                        </DataTrigger>
-                                        <DataTrigger Binding="{Binding ChatType}" Value="ChatServiceComplete">
-                                            <Setter Property="ContentTemplate" Value="{StaticResource ChatServiceComplete}" />
-                                        </DataTrigger>
-                                    </Style.Triggers>
-                                </Style>
-                            </ContentControl.Style>
-                        </ContentControl>
-                    </DataTemplate>
-                </ItemsControl.ItemTemplate>
-                <ItemsControl.ItemsPanel>
-                    <ItemsPanelTemplate>
-                        <StackPanel Margin="4,4,4,0" />
-                    </ItemsPanelTemplate>
-                </ItemsControl.ItemsPanel>
-            </ItemsControl>
-        </ScrollViewer>
-        <Grid Height="92" VerticalAlignment="Bottom" Grid.ColumnSpan="2">
-            <Image Margin="8,0,0,8" Source="/BlitsMe.Agent;component/UI/WPF/Images/Thought Bubble Left.png" Height="80" VerticalAlignment="Bottom" HorizontalAlignment="Left" Width="1135">
-                <Image.Effect>
-                    <DropShadowEffect/>
-                </Image.Effect>
-            </Image>
-            <Grid x:Name="BubbleCover" Margin="0,0,0,8" Height="80" VerticalAlignment="Bottom" HorizontalAlignment="Right" Width="320" Background="#FF2B519B" >
-            </Grid>
-            <Image Margin="0,0,62,8" Source="/BlitsMe.Agent;component/UI/WPF/Images/Thought Bubble Right.png" Height="80" VerticalAlignment="Bottom" HorizontalAlignment="Right" Width="277">
-                <Image.Effect>
-                    <DropShadowEffect/>
-                </Image.Effect>
-            </Image>
-			<Rectangle x:Name="ImageContainer"
-      Width="50" Height="50" StrokeThickness="0" HorizontalAlignment="Right" Margin="0,0,12,23" VerticalAlignment="Bottom">
-            <Rectangle.Fill>
-                <ImageBrush
-          Stretch="Uniform" ImageSource="{Binding Path=Self.Avatar, Converter={StaticResource imageStreamReader}}"
-          PresentationOptions:Freeze="True" />
-            </Rectangle.Fill>
-        </Rectangle>
-            <TextBox x:Name="messageBox" Margin="20,19,144,23" BorderThickness="0" SpellCheck.IsEnabled="True" VerticalScrollBarVisibility="Auto" TextWrapping="Wrap" >
-                <TextBox.InputBindings>
-                    <KeyBinding Key="Enter" Command="{Binding SendMessage}" />
-                </TextBox.InputBindings>
-            </TextBox>
-            <Button HorizontalAlignment="Right" Margin="0,19,104,23" Width="36" Height="36" Command="{Binding SendMessage}">
-                <Image Source="/BlitsMe.Agent;component/UI/WPF/Images/single chat.png" />
-            </Button>
-        </Grid>
+		<DockPanel LastChildFill="True">
+			<Grid Height="92" VerticalAlignment="Bottom" Grid.ColumnSpan="2" DockPanel.Dock="Bottom">
+				<Image Margin="8,0,0,8" Source="/BlitsMe.Agent;component/UI/WPF/Images/Thought Bubble Left.png" Height="80" VerticalAlignment="Bottom" HorizontalAlignment="Left" Width="1135">
+					<Image.Effect>
+						<DropShadowEffect/>
+					</Image.Effect>
+				</Image>
+				<Grid x:Name="BubbleCover" Margin="0,0,0,8" Height="80" VerticalAlignment="Bottom" HorizontalAlignment="Right" Width="320" Background="#FF2B519B" >
+				</Grid>
+				<Image Margin="0,0,62,8" Source="/BlitsMe.Agent;component/UI/WPF/Images/Thought Bubble Right.png" Height="80" VerticalAlignment="Bottom" HorizontalAlignment="Right" Width="277">
+					<Image.Effect>
+						<DropShadowEffect/>
+					</Image.Effect>
+				</Image>
+				<Rectangle x:Name="ImageContainer"
+		  Width="50" Height="50" StrokeThickness="0" HorizontalAlignment="Right" Margin="0,0,12,23" VerticalAlignment="Bottom">
+					<Rectangle.Fill>
+						<ImageBrush
+			  Stretch="Uniform" ImageSource="{Binding Path=Self.Avatar, Converter={StaticResource imageStreamReader}}"
+			  PresentationOptions:Freeze="True" />
+					</Rectangle.Fill>
+				</Rectangle>
+				<TextBox x:Name="messageBox" Margin="20,19,144,23" BorderThickness="0" SpellCheck.IsEnabled="True" VerticalScrollBarVisibility="Auto" TextWrapping="Wrap" >
+					<TextBox.InputBindings>
+						<KeyBinding Key="Enter" Command="{Binding SendMessage}" />
+					</TextBox.InputBindings>
+				</TextBox>
+				<Button HorizontalAlignment="Right" Margin="0,19,104,23" Width="36" Height="36" Command="{Binding SendMessage}">
+					<Image Source="/BlitsMe.Agent;component/UI/WPF/Images/single chat.png" />
+				</Button>
+			</Grid>
+			<ItemsControl x:Name="Notifications" DockPanel.Dock="Bottom" Margin="8,0">
+				<ItemsControl.ItemsPanel>
+					<ItemsPanelTemplate>
+						<StackPanel VerticalAlignment="Bottom" d:LayoutOverrides="VerticalAlignment" />
+					</ItemsPanelTemplate>
+				</ItemsControl.ItemsPanel>
+			</ItemsControl>
+			<ScrollViewer x:Name="ChatPanelViewer" Margin="5" VerticalScrollBarVisibility="Auto" Padding="0" BorderThickness="5" Background="White" BorderBrush="Black" d:LayoutOverrides="GridBox" DockPanel.Dock="Top">
+				<ItemsControl x:Name="ChatPanel" ItemsSource="{Binding Exchange}">
+					<ItemsControl.ItemTemplate>
+						<DataTemplate>
+							<ContentControl Content="{Binding }">
+								<ContentControl.Style>
+									<Style TargetType="{x:Type ContentControl}">
+										<Setter Property="ContentTemplate" Value="{StaticResource ChatMeSingle}" />
+										<Style.Triggers>
+											<DataTrigger Binding="{Binding ChatType}" Value="ChatOtherSingle">
+												<Setter Property="ContentTemplate" Value="{StaticResource ChatOtherSingle}" />
+											</DataTrigger>
+											<DataTrigger Binding="{Binding ChatType}" Value="ChatMeSingle">
+												<Setter Property="ContentTemplate" Value="{StaticResource ChatMeSingle}" />
+											</DataTrigger>
+											<DataTrigger Binding="{Binding ChatType}" Value="ChatMeGroup">
+												<Setter Property="ContentTemplate" Value="{StaticResource ChatMeGroup}" />
+											</DataTrigger>
+											<DataTrigger Binding="{Binding ChatType}" Value="ChatOtherGroup">
+												<Setter Property="ContentTemplate" Value="{StaticResource ChatOtherGroup}" />
+											</DataTrigger>
+											<DataTrigger Binding="{Binding ChatType}" Value="ChatSystem">
+												<Setter Property="ContentTemplate" Value="{StaticResource ChatSystem}" />
+											</DataTrigger>
+											<DataTrigger Binding="{Binding ChatType}" Value="ChatSystemError">
+												<Setter Property="ContentTemplate" Value="{StaticResource ChatSystemError}" />
+											</DataTrigger>
+											<DataTrigger Binding="{Binding ChatType}" Value="ChatServiceComplete">
+												<Setter Property="ContentTemplate" Value="{StaticResource ChatServiceComplete}" />
+											</DataTrigger>
+										</Style.Triggers>
+									</Style>
+								</ContentControl.Style>
+							</ContentControl>
+						</DataTemplate>
+					</ItemsControl.ItemTemplate>
+					<ItemsControl.ItemsPanel>
+						<ItemsPanelTemplate>
+							<StackPanel Margin="4,4,4,0" />
+						</ItemsPanelTemplate>
+					</ItemsControl.ItemsPanel>
+				</ItemsControl>
+			</ScrollViewer>
+		</DockPanel>
     </Grid>
 </UserControl>
