@@ -189,7 +189,7 @@ namespace BlitsMe.Agent.Components.Functions.RemoteDesktop
         {
             IsActive = false;
             Logger.Info("Server connection closed, notifying end of service.");
-            _engagement.Chat.LogServiceCompleteMessage("You were just helped by " + _engagement.SecondParty.Name + ", please rate his service below.");
+            _engagement.Chat.LogServiceCompleteMessage("You were just helped by " + _engagement.SecondParty.Name + ", please rate their service below.");
         }
 
         // Called When we send a rdp request

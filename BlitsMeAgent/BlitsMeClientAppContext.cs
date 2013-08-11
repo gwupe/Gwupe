@@ -59,6 +59,7 @@ namespace BlitsMe.Agent
         private readonly AutoResetEvent _dashboardReady;
         internal ObservableCollection<String> ChangeLog = new ObservableCollection<string>();
         internal String ChangeDescription;
+        internal BlitsMeClientAppContext CurrentBlitsMeAppContext;
 
         /// <summary>
         /// This class should be created and passed into Application.Run( ... )
@@ -66,6 +67,7 @@ namespace BlitsMe.Agent
         /// <param name="options"> </param>
         public BlitsMeClientAppContext(List<BlitsMeOption> options)
         {
+            CurrentBlitsMeAppContext = this;
             Options = options;
             XmlConfigurator.Configure(Assembly.GetExecutingAssembly().GetManifestResourceStream("BlitsMe.Agent.log4net.xml"));
             StartupVersion = Regex.Replace(FileVersionInfo.GetVersionInfo(Assembly.GetExecutingAssembly().Location).FileVersion, "\\.[0-9]+$", "");

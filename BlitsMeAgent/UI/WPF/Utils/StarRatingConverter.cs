@@ -7,13 +7,16 @@ namespace BlitsMe.Agent.UI.WPF.Utils
 {
     public class StarRatingConverter : IValueConverter
     {
+        private const int MaxCoverLength = 75;
         private static readonly ILog Logger = LogManager.GetLogger(typeof (StarRatingConverter));
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
             if (value != null)
             {
                 int rating = (int) value;
-                return 75 - (rating*75/100);
+                var widthOfCover = MaxCoverLength - (rating*MaxCoverLength/100);
+                Logger.Debug("Width of cover is now " + widthOfCover);
+                return widthOfCover;
             }
             return 0;
         }

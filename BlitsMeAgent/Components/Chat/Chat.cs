@@ -145,7 +145,13 @@ namespace BlitsMe.Agent.Components.Chat
         internal void LogServiceCompleteMessage(String message)
         {
             _lastActivity = DateTime.Now.Ticks;
-            Conversation.AddMessage(message, "_SERVICE_COMPLETE");
+            Conversation.AddMessage(new ServiceCompleteChatElement()
+            {
+                Message = message,
+                Speaker = "_SERVICE_COMPLETE",
+                DeliveryState = ChatDeliveryState.Delivered,
+                SpeakTime = DateTime.Now
+            });
             // Fire the event
             OnNewMessage(new ChatEventArgs(_engagement)
             {

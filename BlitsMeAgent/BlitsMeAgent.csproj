@@ -152,6 +152,7 @@
     <Compile Include="Components\Chat\ChatElement.cs" />
     <Compile Include="Components\Chat\ChatEventArgs.cs" />
     <Compile Include="Components\Chat\Conversation.cs" />
+    <Compile Include="Components\Chat\ServiceCompleteChatElement.cs" />
     <Compile Include="Components\Engagement.cs" />
     <Compile Include="Components\EngagementActivityArgs.cs" />
     <Compile Include="Components\Functions\API\IFunction.cs" />
@@ -250,6 +251,10 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
+    <Page Include="UI\WPF\Engage\RatingControl.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
     <Page Include="UI\WPF\Roster\AddPersonControl.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -275,6 +280,10 @@
       <SubType>Designer</SubType>
     </Page>
     <Page Include="UI\WPF\Style\NotificationStyle.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="UI\WPF\Style\RatingStyle.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
@@ -304,6 +313,9 @@
       <DependentUpon>EngagementWindow.xaml</DependentUpon>
     </Compile>
     <Compile Include="UI\WPF\Engage\EngagementWindowList.cs" />
+    <Compile Include="UI\WPF\Engage\RatingControl.xaml.cs">
+      <DependentUpon>RatingControl.xaml</DependentUpon>
+    </Compile>
     <Compile Include="UI\WPF\SignUpWindow.xaml.cs">
       <DependentUpon>SignUpWindow.xaml</DependentUpon>
     </Compile>

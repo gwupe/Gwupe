@@ -1,7 +1,3 @@
-﻿Maintenance and BugFix Release
-Fixed local connections if wave server is not available (UDP blocked)
-Minor UI fixes
-Added Update Notification UI
-Moved Notification list to chat window
-Added better chat detection and windows switching
-Remodeled Search Button
+﻿Ratings Implementation Release
+Enabled Ratings UI on completion of RDP session
+

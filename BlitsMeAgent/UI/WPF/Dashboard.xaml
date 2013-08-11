@@ -79,7 +79,7 @@
         </Grid>
         <Grid Margin="190,5,5,5">
             <DockPanel LastChildFill="True">
-                <ItemsControl x:Name="Notifications" DockPanel.Dock="Bottom" Margin="0">
+                <ItemsControl x:Name="Notifications" DockPanel.Dock="Top" Margin="0">
                     <ItemsControl.ItemsPanel>
                         <ItemsPanelTemplate>
                             <StackPanel VerticalAlignment="Bottom" d:LayoutOverrides="VerticalAlignment" />
@@ -87,7 +87,7 @@
                     </ItemsControl.ItemsPanel>
                 </ItemsControl>
                 <!-- Now this is the desktop area -->
-                <ContentControl x:Name="ActiveContent" BorderThickness="1" Background="#FFC8C8C8" BorderBrush="Black" DockPanel.Dock="Top" />
+                <ContentControl x:Name="ActiveContent" BorderThickness="1" Background="#FFC8C8C8" BorderBrush="Black" DockPanel.Dock="Bottom" />
             </DockPanel>
         </Grid>
     </Grid>
