@@ -1,10 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.IO;
 using System.Linq;
 using System.Management;
 using System.Net;
 using System.Net.NetworkInformation;
+using System.Net.Sockets;
 using System.Runtime.InteropServices;
 using System.Text;
 using System.Text.RegularExpressions;
@@ -25,11 +27,39 @@ namespace BlitsMe.Sandbox
 
         public Class1()
         {
-            OpenExistingWindow();
+            var proxy = WebRequest.DefaultWebProxy.GetProxy(new Uri("https://aHost"));
+            Console.WriteLine("Found a web proxy " + proxy);
+            TcpClient client = new TcpClient(proxy.Host,proxy.Port);
+            StreamWriter writer = new StreamWriter(client.GetStream());
+            StreamReader reader = new StreamReader(client.GetStream());
+            writer.AutoFlush = true;
+            writer.WriteLine("CONNECT dev.blits.me:443 HTTP/1.0");
+            writer.WriteLine("");
+            Console.Write("'" + reader.ReadLine());
+            Console.Write("'" + reader.ReadLine());
+            Console.Write("'" + reader.ReadLine());
+            Console.Write("'" + reader.ReadLine());
+            Console.Write("'" + reader.ReadLine());
+            Console.Write("'" + reader.ReadLine());
+            writer.WriteLine("GET / HTTP/1.0");
+            writer.WriteLine("Host: www.google.com");
+            writer.WriteLine("");
+            writer.WriteLine("");
+            Console.Write(reader.ReadLine());
+            Console.Write(reader.ReadLine());
+            Console.Write(reader.ReadLine());
+            Console.Write(reader.ReadLine());
+            Console.Write(reader.ReadLine());
+            Console.Write(reader.ReadLine());
+            Console.Write(reader.ReadLine());
+            Console.Write(reader.ReadLine());
+            Console.Write(reader.ReadLine());
+            client.Close();
         }
 
         private static void OpenExistingWindow()
         {
+            OpenExistingWindow();
             OsUtils.PostMessage((IntPtr)OsUtils.HWND_BROADCAST, OsUtils.WM_SHOWBM, IntPtr.Zero, IntPtr.Zero);
             Console.WriteLine("Sent Show message");
             OsUtils.PostMessage((IntPtr)OsUtils.HWND_BROADCAST, OsUtils.WM_UPGRADEBM, IntPtr.Zero, IntPtr.Zero);

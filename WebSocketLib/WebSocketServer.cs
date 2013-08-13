@@ -33,6 +33,7 @@ using System.Security.Cryptography.X509Certificates;
 using System.Security.Authentication;
 using System.Net.Security;
 using log4net;
+using log4net.Repository.Hierarchy;
 
 namespace Bauglir.Ex
 {
@@ -1044,7 +1045,7 @@ namespace Bauglir.Ex
     /// </summary>
     public class WebSocketClientConnection : WebSocketConnection
     {
-        private static readonly ILog logger = LogManager.GetLogger(typeof(WebSocketClientConnection));
+        private static readonly ILog Logger = LogManager.GetLogger(typeof(WebSocketClientConnection));
         public WebSocketClientConnection()
         {
             fMasking = true;
@@ -1082,7 +1083,47 @@ namespace Bauglir.Ex
 
             try
             {
-                fClient = new TcpClient(aHost, int.Parse(aPort));
+                // try connect directly
+                try
+                {
+                    fClient = new TcpClient(aHost, int.Parse(aPort));
+                }
+                catch (SocketException e)
+                {
+                    Logger.Warn("Failed to connect to host, attempting to find a proxy");
+                    var proxy = WebRequest.DefaultWebProxy.GetProxy(new Uri("https://" + aHost + ":" + aPort));
+                    if (proxy != null)
+                    {
+                        Logger.Debug("Found a web proxy at " + proxy);
+                        fClient = new TcpClient(proxy.Host, proxy.Port);
+                        StreamReader proxyReader = new StreamReader(fClient.GetStream());
+                        StreamWriter proxyWriter = new StreamWriter(fClient.GetStream());
+                        proxyWriter.WriteLine("CONNECT " + aHost + ":" + aPort + " HTTP/1.0");
+                        proxyWriter.WriteLine("");
+                        proxyWriter.Flush();
+                        String readerOut = proxyReader.ReadLine();
+                        if (!String.IsNullOrEmpty(readerOut) && readerOut.StartsWith("HTTP/1.0 200"))
+                        {
+                            // Now clear other data from it until we get a blank line
+                            while (!String.IsNullOrEmpty(readerOut))
+                            {
+                                readerOut = proxyReader.ReadLine();
+                            }
+                            // now we are ready to proceed normally through the proxied tunnel
+                        }
+                        else
+                        {
+                            Logger.Error("Failed to connect via proxy, proxy responded with " + readerOut);
+                            throw e;
+                        }
+                    }
+                    else
+                    {
+                        Logger.Error("No system proxy setup, cannot continue");
+                        throw e;
+                    }
+                }
+
                 if (fSsl)
                 {
                     fSslStream = new SslStream(fClient.GetStream(), false, new RemoteCertificateValidationCallback(validateServerCertificate), null);
@@ -1169,18 +1210,18 @@ namespace Bauglir.Ex
                         }
                     } else
                     {
-                        logger.Error("Failed to upgrade connection, server did not return correct headers [" + fHeaders.ToHeaders() + "]");
+                        Logger.Error("Failed to upgrade connection, server did not return correct headers [" + fHeaders.ToHeaders() + "]");
                         throw new Exception("Failed to upgrade connection");
                     }
                 }
             }
             catch (Exception e)
             {
-                logger.Error("Failed to connect to server : " + e.Message);
+                Logger.Error("Failed to connect to server",e);
                 throw e;
             }
             try { fClient.Close(); }
-            catch (Exception e) { logger.Warn("Error closing connection : " + e.Message); }
+            catch (Exception e) { Logger.Warn("Error closing connection : " + e.Message); }
             return false;
         }
         public bool Start(string aHost, string aPort, string aResourceName, bool aSsl, string aOrigin, string aProtocol, string aExtension, string aCookie)
