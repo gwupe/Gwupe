@@ -11,6 +11,7 @@ namespace BlitsMe.Agent.Components.Person.Presence
         private readonly Dictionary<String, IPresence> _presences = new Dictionary<string, IPresence>();
         private readonly object _presenceLock = new Object();
 
+        public String ShortCode { get { return _presences.Count > 0 ? GetHighestPriorityPresence().ShortCode : null; } }
         public PresenceMode Mode { get { return _presences.Count > 0 ? GetHighestPriorityPresence().Mode : PresenceMode.available; } }
         public PresenceType Type { get { return _presences.Count > 0 ? GetHighestPriorityPresence().Type : PresenceType.unavailable; } }
         public int Priority { get { return _presences.Count > 0 ? GetHighestPriorityPresence().Priority : 0; } }
@@ -85,7 +86,7 @@ namespace BlitsMe.Agent.Components.Person.Presence
 
         public override string ToString()
         {
-            return _presences.Count > 0 ? GetHighestPriorityPresence() + " (LogonCount="+_presences.Count+")" : "";
+            return _presences.Count > 0 ? GetHighestPriorityPresence() + " (LogonCount=" + _presences.Count + ")" : "";
         }
 
         public event PropertyChangedEventHandler PropertyChanged;

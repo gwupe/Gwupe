@@ -74,7 +74,7 @@ namespace BlitsMe.Agent
                     ex)
                 {
 
-                    MessageBox.Show(ex.Message + (ex.InnerException != null ? " : " + ex.InnerException.Message : ""),
+                    MessageBox.Show(ex.Message + (ex.InnerException != null ? " : " + ex.InnerException.Message : "") + " : " + ex.StackTrace,
                                     "Program Terminated Unexpectedly",
                                     MessageBoxButtons.OK, MessageBoxIcon.Error);
                 }

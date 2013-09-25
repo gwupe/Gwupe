@@ -21,9 +21,7 @@ namespace BlitsMe.Communication.P2P.RUDP.Utils
         {
             long waitTime = timeout * 10000;
             _udpClient = udpClient;
-            Logger.Debug("Waving " + facilitatorIp + " for " + timeout + "ms");
-            //var localEndPoints = GetLocalEndPoints(udpClient);
-            //IPEndPoint myEndPoint = localEndPoints.Count > 0 ? localEndPoints[0] : new IPEndPoint(IPAddress.Any, ((IPEndPoint)udpClient.Client.LocalEndPoint).Port);
+            Logger.Debug("Waving at " + facilitatorIp + " from local port " + ((IPEndPoint)udpClient.Client.LocalEndPoint).Port + " for " + timeout + "ms");
             var packet = new StandardWaveTunnelRqPacket { internalEndPoint = new IPEndPoint(IPAddress.Any, ((IPEndPoint)udpClient.Client.LocalEndPoint).Port) };
             long startTime = DateTime.Now.Ticks;
             _waveEvent.Reset();
@@ -37,7 +35,7 @@ namespace BlitsMe.Communication.P2P.RUDP.Utils
                     //throw new TimeoutException("Timeout occured while waving");
                     break;
                 }
-                Logger.Debug("Waiting for wave response from " + facilitatorIp);
+                Logger.Debug("Waiting for wave response from " + facilitatorIp + " to local port " + ((IPEndPoint)udpClient.Client.LocalEndPoint).Port);
             } while (!_waveEvent.WaitOne(2000));
             if(_waveResult == null)
             {

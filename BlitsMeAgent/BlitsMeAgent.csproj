@@ -120,6 +120,10 @@
       <HintPath>..\BlitsMeCommon\log4net.dll</HintPath>
       <Private>False</Private>
     </Reference>
+    <Reference Include="MahApps.Metro">
+      <HintPath>..\packages\MahApps.Metro.0.10.1.1\lib\net40\MahApps.Metro.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
     <Reference Include="Microsoft.Expression.Drawing">
       <Private>False</Private>
     </Reference>
@@ -135,6 +139,10 @@
     <Reference Include="System.Runtime.Serialization" />
     <Reference Include="System.ServiceModel" />
     <Reference Include="System.ServiceProcess" />
+    <Reference Include="System.Windows.Interactivity, Version=4.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\MahApps.Metro.0.10.1.1\lib\net40\System.Windows.Interactivity.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
     <Reference Include="System.Xaml" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
@@ -148,14 +156,16 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Components\Alert\Alert.cs" />
-    <Compile Include="Components\Chat\Chat.cs" />
-    <Compile Include="Components\Chat\ChatElement.cs" />
-    <Compile Include="Components\Chat\ChatEventArgs.cs" />
-    <Compile Include="Components\Chat\Conversation.cs" />
-    <Compile Include="Components\Chat\ServiceCompleteChatElement.cs" />
+    <Compile Include="Components\DataSubmitErrorArgs.cs" />
     <Compile Include="Components\Engagement.cs" />
-    <Compile Include="Components\EngagementActivityArgs.cs" />
+    <Compile Include="Components\EngagementActivity.cs" />
+    <Compile Include="Components\Functions\API\FunctionImpl.cs" />
     <Compile Include="Components\Functions\API\IFunction.cs" />
+    <Compile Include="Components\Functions\Chat\ChatElement.cs" />
+    <Compile Include="Components\Functions\Chat\Conversation.cs" />
+    <Compile Include="Components\Functions\Chat\Function.cs" />
+    <Compile Include="Components\Functions\Chat\Processors\ChatMessageProcessor.cs" />
+    <Compile Include="Components\Functions\Chat\ServiceCompleteChatElement.cs" />
     <Compile Include="Components\Functions\FileSend\FileSendClient.cs" />
     <Compile Include="Components\Functions\FileSend\FileSendInfo.cs" />
     <Compile Include="Components\Functions\FileSend\FileSendListener.cs" />
@@ -171,6 +181,8 @@
     <Compile Include="Components\Functions\RemoteDesktop\Processors\RDPRequestProcessor.cs" />
     <Compile Include="Components\Functions\RemoteDesktop\Processors\RDPRequestResponseProcessor.cs" />
     <Compile Include="Components\IdleState.cs" />
+    <Compile Include="Components\Interaction.cs" />
+    <Compile Include="Components\Interactions.cs" />
     <Compile Include="Components\Notification\AnswerTrueFalseCommand.cs" />
     <Compile Include="Components\Notification\CancellableNotification.cs" />
     <Compile Include="Components\Notification\CancelCommand.cs" />
@@ -179,16 +191,17 @@
     <Compile Include="Components\Notification\Notification.cs" />
     <Compile Include="Components\Notification\AddBuddyNotification.cs" />
     <Compile Include="Components\Notification\TrueFalseNotification.cs" />
+    <Compile Include="Components\Person\Attendance.cs" />
     <Compile Include="Components\Person\Person.cs" />
     <Compile Include="Components\Person\Presence\IPresence.cs" />
     <Compile Include="Components\Person\Presence\MultiPresence.cs" />
     <Compile Include="Components\Person\Presence\Presence.cs" />
-    <Compile Include="Components\Processors\ChatMessageProcessor.cs" />
     <Compile Include="Components\Processors\ListenHandshakeProcessor.cs" />
     <Compile Include="Components\Processors\InitUDPConnectionProcessor.cs" />
     <Compile Include="Components\Processors\SubscribeProcessor.cs" />
     <Compile Include="Components\Processors\UserToUserProcessor.cs" />
     <Compile Include="Components\Processors\PresenceChangeProcessor.cs" />
+    <Compile Include="Components\Rating.cs" />
     <Compile Include="Components\Schedule\CheckServiceTask.cs" />
     <Compile Include="Components\Schedule\CheckUpgradeTask.cs" />
     <Compile Include="Components\Schedule\DetectIdleTask.cs" />
@@ -199,16 +212,18 @@
     <Compile Include="Components\Functions\RemoteDesktop\Client.cs" />
     <Compile Include="Components\Functions\RemoteDesktop\Server.cs" />
     <Compile Include="DispatchingCollection.cs" />
+    <Compile Include="FlashWindowHelper.cs" />
     <Compile Include="Managers\ConnectionManager.cs" />
     <Compile Include="Managers\CurrentUserManager.cs" />
     <Compile Include="Managers\EngagementManager.cs" />
-    <Compile Include="Managers\LoginEventArgs.cs" />
+    <Compile Include="Components\Login\LoginEventArgs.cs" />
     <Compile Include="Managers\LoginManager.cs" />
     <Compile Include="Managers\ScheduleManager.cs" />
     <Compile Include="Managers\NotificationManager.cs" />
     <Compile Include="Managers\P2PManager.cs" />
     <Compile Include="Managers\RequestManager.cs" />
     <Compile Include="Managers\SearchManager.cs" />
+    <Compile Include="Managers\UIManager.cs" />
     <Compile Include="Misc\BLMRegistry.cs" />
     <Compile Include="Managers\RosterManager.cs" />
     <Compile Include="OSUtils.cs" />
@@ -227,6 +242,11 @@
     <Compile Include="UI\WPF\Dashboard.xaml.cs">
       <DependentUpon>Dashboard.xaml</DependentUpon>
     </Compile>
+    <None Include="Resources\Entypo.ttf" />
+    <Page Include="Resources\Icons.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
     <Page Include="UI\WPF\AvatarImageWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
@@ -255,9 +275,9 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Page Include="UI\WPF\Roster\AddPersonControl.xaml">
-      <SubType>Designer</SubType>
+    <Page Include="UI\WPF\LoginControl.xaml">
       <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
     </Page>
     <Page Include="UI\WPF\Roster\RosterElement.xaml">
       <Generator>MSBuild:Compile</Generator>
@@ -316,6 +336,12 @@
     <Compile Include="UI\WPF\Engage\RatingControl.xaml.cs">
       <DependentUpon>RatingControl.xaml</DependentUpon>
     </Compile>
+    <Compile Include="UI\WPF\LoginControl.xaml.cs">
+      <DependentUpon>LoginControl.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="UI\WPF\Roster\ActiveRosterList.cs" />
+    <Compile Include="UI\WPF\Roster\SearchRosterList.cs" />
+    <Compile Include="UI\WPF\Roster\RosterList.cs" />
     <Compile Include="UI\WPF\SignUpWindow.xaml.cs">
       <DependentUpon>SignUpWindow.xaml</DependentUpon>
     </Compile>
@@ -332,10 +358,7 @@
     <Compile Include="UI\WPF\LoginWindow.xaml.cs">
       <DependentUpon>LoginWindow.xaml</DependentUpon>
     </Compile>
-    <Compile Include="UI\WPF\Roster\AddPersonControl.xaml.cs">
-      <DependentUpon>AddPersonControl.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="UI\WPF\Roster\RosterList.cs" />
+    <Compile Include="UI\WPF\Roster\MainRosterList.cs" />
     <Compile Include="UI\WPF\Utils\StarRatingConverter.cs" />
     <Compile Include="UI\WPF\Search\SearchResultControl.xaml.cs">
       <DependentUpon>SearchResultControl.xaml</DependentUpon>
@@ -347,9 +370,6 @@
     <Compile Include="UI\WPF\Utils\ObservableListMirror.cs" />
     <Compile Include="UI\WPF\Roster\RosterElement.xaml.cs">
       <DependentUpon>RosterElement.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="UI\WPF\TestWindow.xaml.cs">
-      <DependentUpon>TestWindow.xaml</DependentUpon>
     </Compile>
     <Compile Include="Utils.cs" />
     <Compile Include="BlitsMeClientAppContext.cs" />
@@ -383,7 +403,7 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Page Include="UI\WPF\TestWindow.xaml">
+    <Page Include="UI\WPF\Style\Theme.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
@@ -535,6 +555,7 @@
     <Resource Include="Icons\icon-main.ico" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="Resources\Entypo-license.txt" />
     <Resource Include="UI\WPF\Images\Blitsmewording200.png" />
     <EmbeddedResource Include="..\BlitsMeCommon\bin\$(Configuration)\BlitsMe.Common.dll" />
     <EmbeddedResource Include="..\BlitsMeCloudClient\bin\$(Configuration)\BlitsMe.Cloud.dll" />
@@ -545,6 +566,8 @@
     <EmbeddedResource Include="..\WebSocketLib\bin\$(Configuration)\Bauglir.Ex.dll" />
     <EmbeddedResource Include="$(ProgramFiles)\Microsoft SDKs\Expression\Blend\.NETFramework\v4.0\Libraries\Microsoft.Expression.Drawing.dll" />
     <EmbeddedResource Include="$(ProgramFiles)\Microsoft SDKs\Expression\Blend\.NETFramework\v4.0\Libraries\Microsoft.Expression.Effects.dll" />
+    <EmbeddedResource Include="..\packages\MahApps.Metro.0.10.1.1\lib\net40\MahApps.Metro.dll" />
+    <EmbeddedResource Include="..\packages\MahApps.Metro.0.10.1.1\lib\net40\System.Windows.Interactivity.dll" />
     <RootContent Include="env\Release\bmss.exe">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </RootContent>

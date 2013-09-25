@@ -1,36 +1,39 @@
-﻿<Window
+﻿<mahappsControls:MetroWindow
 	xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
 	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-	xmlns:Anno="http://schemas.microsoft.com/expression/blend/extensions/annotations/2008" xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" mc:Ignorable="Anno"
+	xmlns:Anno="http://schemas.microsoft.com/expression/blend/extensions/annotations/2008" 
+	xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" mc:Ignorable="Anno"
+	xmlns:mahappsControls="clr-namespace:MahApps.Metro.Controls;assembly=MahApps.Metro"
 	x:Class="BlitsMe.Agent.UI.WPF.SignUpWindow"
 	x:Name="Window"
-	Title="Enter the BlitsMe World" Height="365.834" Width="314" WindowStartupLocation="CenterOwner">
+	Title="Join BlitsMe" Height="410" Width="280" WindowStartupLocation="CenterOwner" ResizeMode="NoResize" >
+	<Window.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="pack://application:,,,/MahApps.Metro;component/Styles/Colours.xaml" />
+                <ResourceDictionary Source="pack://application:,,,/MahApps.Metro;component/Styles/Fonts.xaml" />
+                <ResourceDictionary Source="pack://application:,,,/MahApps.Metro;component/Styles/Controls.xaml" />
+                <ResourceDictionary Source="pack://application:,,,/MahApps.Metro;component/Styles/Accents/BaseLight.xaml" />
+                <ResourceDictionary Source="Style/Theme.xaml" />
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+    </Window.Resources>
 
-	<Grid x:Name="LayoutRoot" Margin="27.666,18.5,22.333,0" HorizontalAlignment="Center" VerticalAlignment="Top" Height="305.047">
-		<Image HorizontalAlignment="Center" Height="53" Margin="8,8,0,0" Source="/UI\WPF\Images\Blitsmewording200.png" Stretch="Fill" VerticalAlignment="Top" Width="200"/>
-		<TextBlock Margin="60,61,60,0" TextWrapping="Wrap" Text="Fill in your details" VerticalAlignment="Top" TextAlignment="Center"/>
-		<TextBlock x:Name="ErrorText" Margin="10,83.04,10,0" TextWrapping="Wrap" Text="Error" VerticalAlignment="Top" TextAlignment="Center" Foreground="Red" Height="15.96" Visibility="Hidden"/>
-		<TextBlock x:Name="StatusText" Margin="10,86.96,10,0" TextWrapping="Wrap" Text="Success" VerticalAlignment="Top" TextAlignment="Center" Foreground="#FF244488" Visibility="Hidden" Background="Black"/>
-		<Grid Margin="0,99,0.001,0" HorizontalAlignment="Center" Width="256" VerticalAlignment="Top" Height="206.047">
-			<Label Content="Name" x:Name="NameLabel" HorizontalAlignment="Left" Margin="10,8.371,0,0" VerticalAlignment="Top" Width="68.123"/>
-			<TextBox HorizontalAlignment="Left" Margin="83.123,10.371,0,0" TextWrapping="Wrap" VerticalAlignment="Top" x:Name="Firstname" GotFocus="Firstname_GotFocus" LostFocus="Firstname_LostFocus" Width="75" Text="First" />
-			<TextBox HorizontalAlignment="Left" Margin="163.123,10.371,0,0" TextWrapping="Wrap" VerticalAlignment="Top" x:Name="Lastname" GotFocus="Lastname_GotFocus" LostFocus="Lastname_LostFocus" Width="82.877" Text="Last" />
-
-			<Label Content="Username" x:Name="UsernameLabel" HorizontalAlignment="Left" Margin="10,35.331,0,0" VerticalAlignment="Top" Width="68.123"/>
-			<TextBox HorizontalAlignment="Left" Margin="83.123,37.331,0,0" TextWrapping="Wrap" VerticalAlignment="Top" x:Name="Username" KeyDown="username_KeyDown" Width="162.877" />
-
-			<Label Content="Password" HorizontalAlignment="Left" Margin="10,62.291,0,0" VerticalAlignment="Top" x:Name="PasswordLabel" Width="68.123" />
-			<PasswordBox HorizontalAlignment="Left" Margin="83.123,64.291,0,0" VerticalAlignment="Top" Width="162.877" x:Name="Password" KeyDown="password_KeyDown" FontFamily="Segoe UI" />
-
-			<Label Content="Location" HorizontalAlignment="Left" Margin="10,89.251,0,0" VerticalAlignment="Top" x:Name="LocationLabel" Width="68.123" />
-			<TextBox Text="City, Country" HorizontalAlignment="Left" Margin="83.123,91.253,0,0" VerticalAlignment="Top" Width="162.877" Height="23.2" x:Name="Location" GotFocus="location_GotFocus" LostFocus="location_LostFocus" />
-
-			<Label Content="Email" HorizontalAlignment="Left" Margin="10,117.451,0,0" VerticalAlignment="Top" x:Name="EmailLabel" Width="68.123" />
-			<TextBox HorizontalAlignment="Left" Margin="83.123,119.451,0,0" VerticalAlignment="Top" Width="162.877" x:Name="Email" />
-
-			<CheckBox x:Name="Supporter" Content="I offer IT support" HorizontalAlignment="Center" Margin="0,146.411,0,0" VerticalAlignment="Top"/>
-
-			<Button Content="Sign Up" Margin="75,167.371,75,0" VerticalAlignment="Top" x:Name="Signin" Click="signin_click" />
-		</Grid>
+	<Grid x:Name="LayoutRoot" Margin="0" HorizontalAlignment="Center" VerticalAlignment="Top">
+		<StackPanel>
+		<Image HorizontalAlignment="Center" Height="53" Margin="0,10,0,0" Source="/UI\WPF\Images\Blitsmewording200.png" Stretch="Fill" VerticalAlignment="Top" Width="200"/>
+		<TextBlock Margin="0,10,0,0" TextWrapping="Wrap" Text="Fill in your details" VerticalAlignment="Top" TextAlignment="Center" HorizontalAlignment="Center"/>
+		<TextBlock x:Name="ErrorText" Margin="0,10,0,0" TextWrapping="Wrap" Text="Error" VerticalAlignment="Top" TextAlignment="Center" Foreground="Red" Visibility="Hidden"/>
+		<StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,10,0,0">
+            <TextBox mahappsControls:TextboxHelper.Watermark="Firstname" HorizontalAlignment="Left" Margin="0,0,2,0" TextWrapping="Wrap" VerticalAlignment="Top" x:Name="Firstname" Width="80" />
+            <TextBox mahappsControls:TextboxHelper.Watermark="Lastname" HorizontalAlignment="Left" Margin="2,0,0,0" TextWrapping="Wrap" VerticalAlignment="Top" x:Name="Lastname" Width="80" Text="" />
+		</StackPanel>
+		<TextBox mahappsControls:TextboxHelper.Watermark="Username" HorizontalAlignment="Center" Margin="0,10,0,0" TextWrapping="Wrap" VerticalAlignment="Top" x:Name="Username" Width="164" />
+		<PasswordBox mahappsControls:TextboxHelper.Watermark="Password" HorizontalAlignment="Center" Margin="0,10,0,0" VerticalAlignment="Top" Width="164" x:Name="Password" FontFamily="Segoe UI" />
+		<TextBox mahappsControls:TextboxHelper.Watermark="City, Country"  Text="" HorizontalAlignment="Center" Margin="0,10,0,0" VerticalAlignment="Top" Width="164" x:Name="Location" />
+		<TextBox mahappsControls:TextboxHelper.Watermark="Email Address" HorizontalAlignment="Center" Margin="0,10,0,0" VerticalAlignment="Top" Width="164" x:Name="Email" />
+		<CheckBox x:Name="Supporter" Content="I offer IT support" HorizontalAlignment="Center" Margin="0,10,0,0" VerticalAlignment="Top"/>
+		<Button Content="Sign Up" Margin="0,10,0,0" VerticalAlignment="Top" x:Name="Signin" Click="signin_click" />
+		</StackPanel>
 	</Grid>
-</Window>
+</mahappsControls:MetroWindow>

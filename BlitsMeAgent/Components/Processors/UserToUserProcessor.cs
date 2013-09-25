@@ -7,7 +7,7 @@ namespace BlitsMe.Agent.Components.Processors
 {
     internal abstract class UserToUserProcessor : Processor
     {
-        private static readonly ILog Logger = LogManager.GetLogger(typeof (PresenceChangeProcessor));
+        private static readonly ILog Logger = LogManager.GetLogger(typeof(PresenceChangeProcessor));
 
         protected readonly BlitsMeClientAppContext _appContext;
 
@@ -18,7 +18,7 @@ namespace BlitsMe.Agent.Components.Processors
 
         public Response process(Request req)
         {
-            var request = (UserToUserRequest) req;
+            var request = (UserToUserRequest)req;
             Engagement engagement = _appContext.EngagementManager.GetNewEngagement(request.username);
             String requestTypeName = request.GetType().ToString();
             Type responseType = Type.GetType(requestTypeName.Substring(0, requestTypeName.Length - 2) + "Rs");
@@ -33,7 +33,7 @@ namespace BlitsMe.Agent.Components.Processors
                 }
                 catch (Exception e)
                 {
-                    Logger.Error("Failed to instantiate a response object for " + request.GetType() + " : " + e.Message,e);
+                    Logger.Error("Failed to instantiate a response object for " + request.GetType() + " : " + e.Message, e);
                     return new ErrorRs() { error = "INTERNAL_SERVER_ERROR", errorMessage = "Failed to determine response type" };
                 }
             }
@@ -41,14 +41,25 @@ namespace BlitsMe.Agent.Components.Processors
             {
                 try
                 {
-                    engagement.SecondParty.ShortCode = request.shortCode;
+                    // Set the interaction and shortCode
+                    engagement.SecondParty.ActiveShortCode = request.shortCode;
+                    if (engagement.Interactions.CurrentInteraction == null)
+                    {
+                        engagement.Interactions.StartInteraction(request.interactionId);
+
+                    }
+                    else if (request.interactionId != null)
+                    {
+                        engagement.Interactions.CurrentOrNewInteraction.Id = request.interactionId;
+                    }
                     response = ProcessWithEngagement(engagement, request);
-                    response.shortCode = engagement.SecondParty.ShortCode;
-                    response.username = engagement.SecondParty.Username;
+                    response.shortCode = _appContext.CurrentUserManager.ActiveShortCode;
+                    response.username = _appContext.CurrentUserManager.CurrentUser.Username;
+                    response.interactionId = engagement.Interactions.CurrentInteraction.Id;
                 }
                 catch (Exception e)
                 {
-                    Logger.Error("Failed to process the user to user request : " + e.Message,e);
+                    Logger.Error("Failed to process the user to user request : " + e.Message, e);
                     response = (UserToUserResponse)responseType.GetConstructor(Type.EmptyTypes).Invoke(new object[] { });
                     response.error = "INTERNAL_SERVER_ERROR";
                     response.errorMessage = "Failed to process user to user request";
@@ -56,7 +67,7 @@ namespace BlitsMe.Agent.Components.Processors
             }
             return response;
         }
-             
+
         internal abstract UserToUserResponse ProcessWithEngagement(Engagement engagement, UserToUserRequest request);
     }
 }

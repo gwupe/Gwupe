@@ -29,7 +29,7 @@ namespace BlitsMe.Agent.Components.Processors
             }
             catch (Exception e)
             {
-                Logger.Error("Failed to process presence change : " + e.Message);
+                Logger.Error("Failed to process presence change : " + e.Message,e);
                 response.error = "UNKNOWN_ERROR";
                 response.errorMessage = "Failed to process presence change";
             }

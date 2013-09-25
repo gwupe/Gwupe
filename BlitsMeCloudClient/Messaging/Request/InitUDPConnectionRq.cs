@@ -7,7 +7,7 @@ using System.Runtime.Serialization;
 namespace BlitsMe.Cloud.Messaging.Request
 {
     [DataContract]
-    public class InitUDPConnectionRq : BlitsMe.Cloud.Messaging.API.Request
+    public class InitUDPConnectionRq : API.Request
     {
         public override String type
         {
@@ -24,7 +24,12 @@ namespace BlitsMe.Cloud.Messaging.Request
         public String side { get; set; }
         [DataMember]
         public String encryptionKey { get; set; }
-        public bool isClient { get { return side.Equals("CLIENT"); } }
-        public bool isServer { get { return side.Equals("SERVER"); } }
+        [DataMember]
+        public String shortCode { get; set; }
+        [DataMember]
+        public String username { get; set; }
+    
+        public bool IsClient { get { return side.Equals("CLIENT"); } }
+        public bool IsServer { get { return side.Equals("SERVER"); } }
     }
 }

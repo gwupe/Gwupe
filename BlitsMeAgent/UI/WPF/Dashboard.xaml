@@ -1,10 +1,11 @@
-﻿<Window
+﻿<mahappsControls:MetroWindow
 	xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
 	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
 	xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
 	xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
 	mc:Ignorable="d"
 	x:Class="BlitsMe.Agent.UI.WPF.Dashboard"
+	xmlns:mahappsControls="clr-namespace:MahApps.Metro.Controls;assembly=MahApps.Metro"
 	x:Name="Main"
 	Title="{Binding Title, FallbackValue=BlitsMe}"
 	WindowStartupLocation="CenterScreen" 
@@ -13,71 +14,157 @@
     <Window.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
-            	<ResourceDictionary Source="Style/RosterStyle.xaml" />
-            	<ResourceDictionary Source="Style/Style.xaml"/>
-            	<ResourceDictionary Source="Style/EngagementStyle.xaml" />
-            	<ResourceDictionary Source="Style/NotificationStyle.xaml" />
+                <ResourceDictionary Source="Style/RosterStyle.xaml" />
+                <ResourceDictionary Source="Style/Style.xaml"/>
+                <ResourceDictionary Source="Style/EngagementStyle.xaml" />
+                <ResourceDictionary Source="Style/NotificationStyle.xaml" />
+                <ResourceDictionary Source="pack://application:,,,/MahApps.Metro;component/Styles/Colours.xaml" />
+                <ResourceDictionary Source="pack://application:,,,/MahApps.Metro;component/Styles/Fonts.xaml" />
+                <ResourceDictionary Source="pack://application:,,,/MahApps.Metro;component/Styles/Controls.xaml" />
+                <ResourceDictionary Source="pack://application:,,,/MahApps.Metro;component/Styles/Accents/BaseLight.xaml" />
+                <ResourceDictionary Source="Style/Theme.xaml" />
             </ResourceDictionary.MergedDictionaries>
+            <Style x:Key="ListBoxItemControlStyle" TargetType="ListBoxItem">
+                <EventSetter Event="Selected" Handler="ContactSelected" HandledEventsToo="True"/>
+                <Setter Property="SnapsToDevicePixels" Value="true"/>
+                <Setter Property="OverridesDefaultStyle" Value="true"/>
+                <Setter Property="Template">
+                    <Setter.Value>
+                        <ControlTemplate TargetType="{x:Type ListBoxItem}">
+                            <ContentPresenter x:Name="AttendancePresenter">
+                            </ContentPresenter>
+                            <ControlTemplate.Triggers>
+                                <DataTrigger Binding="{Binding IsCurrentlyEngaged}" Value="True">
+                                    <Setter TargetName="AttendancePresenter" Property="ContentTemplate" Value="{StaticResource ContactActive}" />
+                                </DataTrigger>
+                                <DataTrigger Binding="{Binding IsUnread}" Value="True">
+                                    <Setter TargetName="AttendancePresenter" Property="ContentTemplate" Value="{StaticResource ContactUnread}" />
+                                </DataTrigger>
+                            </ControlTemplate.Triggers>
+                        </ControlTemplate>
+                    </Setter.Value>
+                </Setter>
+            </Style>
         </ResourceDictionary>
+
     </Window.Resources>
 
     <Grid x:Name="LayoutRoot" Style="{StaticResource MainLayout}" >
-		<Grid Name="DisableScreen" Panel.ZIndex="-1" Background="White" Opacity="0.6"/>
+        <ContentControl Panel.ZIndex="-2" x:Name="ModalPrompt"/>
+        <!--
+
+
+		-->
         <Grid HorizontalAlignment="Left" Width="190">
-        	<DockPanel LastChildFill="True" Margin="0">
-        		<StackPanel Margin="5" Orientation="Horizontal" Height="32" HorizontalAlignment="Center" DockPanel.Dock="Top">
-        			<StackPanel.Resources>
-        				<Style TargetType="{x:Type Button}">
-        					<Setter Property="Margin" Value="0,0,2,0"/>
-        				</Style>
-        			</StackPanel.Resources>
-        			<Button x:Name="UserInfo" ToolTip="My Details" Background="White" BorderThickness="0" Click="UserInfo_Click">
-        				<Image Source="Images/User.png" Margin="1"/>
-        			</Button>
-        			<Button ToolTip="Settings" Click="Settings" Background="White" BorderThickness="0">
-        				<Image Source="Images/1375404724_tune.png" Margin="1"/>
-        			</Button>
-        			<Button ToolTip="Logout" Click="Logout" Background="White" BorderThickness="0">
-        				<Image Source="Images/Logoff.png" Margin="1"/>
-        			</Button>
-        			<Button ToolTip="Quit" Click="ExitApplication" Background="White" BorderThickness="0">
-        				<Image Source="Images/exit.png" Margin="1"/>
-        			</Button>
-        		</StackPanel>
-        		<StackPanel DockPanel.Dock="Top" Orientation="Horizontal" Margin="0,0,0,5">
-					<Image Margin="5,0,0,0" Source="Images/1375406488_Cute Ball - Search.png" Height="24" />
-        			<TextBox x:Name="SearchBox" Margin="3,0,5,0" TextWrapping="Wrap" Text="Search..." VerticalAlignment="Top" FontFamily="Calibri" FontSize="16" TextChanged="Search_TextChanged" GotFocus="SearchBox_GotFocus" LostFocus="SearchBox_LostFocus" Background="#FFA4B6E4" Foreground="#FF706C6C" HorizontalAlignment="Center" Width="151.333" Height="24"/>
-        		</StackPanel>
-        		<ItemsControl x:Name="Alerts" DockPanel.Dock="Bottom" Margin="5,0,5,5">
-        			<ItemsControl.ItemsPanel>
-        				<ItemsPanelTemplate>
-        					<StackPanel VerticalAlignment="Bottom" d:LayoutOverrides="VerticalAlignment" >
-							</StackPanel>
-        				</ItemsPanelTemplate>
-        			</ItemsControl.ItemsPanel>
-        		</ItemsControl>
-        		<!-- This is the Roster section -->
-        		<ListBox x:Name="Team" ItemsSource="{Binding}" ScrollViewer.CanContentScroll="False"
-        			FontFamily="Corbel" Margin="5,0" DockPanel.Dock="Bottom" ScrollViewer.HorizontalScrollBarVisibility="Disabled">
-        			<ListBox.Resources>
-        				<Style TargetType="{x:Type ListBoxItem}">
-        					<EventSetter Event="ListBoxItem.Selected" Handler="TeamMemberSelected" HandledEventsToo="True"/>
-        					<!--<Setter Property="ContextMenu">
-        						<Setter.Value>
-        							<ContextMenu>
-        								<MenuItem Header="Remove" />
-        							</ContextMenu>
-        						</Setter.Value>
-        					</Setter>-->
-        				</Style>
-        			</ListBox.Resources>
-        			<ListBox.Style>
-        				<StaticResource ResourceKey="TeamList"/>
-        			</ListBox.Style>
-        		</ListBox>
-        	</DockPanel>
+            <DockPanel LastChildFill="True" Margin="0">
+                <StackPanel Margin="5" Orientation="Horizontal" Height="32" HorizontalAlignment="Center" DockPanel.Dock="Top">
+                    <StackPanel.Resources>
+                        <Style TargetType="{x:Type Button}">
+                            <Setter Property="Margin" Value="0,0,2,0"/>
+                        </Style>
+                    </StackPanel.Resources>
+                    <Button x:Name="UserInfo" ToolTip="My Details" Background="White" BorderThickness="0" Click="UserInfo_Click">
+                        <Image Source="Images/User.png" Margin="1"/>
+                    </Button>
+                    <Button ToolTip="Settings" Click="Settings" Background="White" BorderThickness="0">
+                        <Image Source="Images/1375404724_tune.png" Margin="1"/>
+                    </Button>
+                    <Button ToolTip="Logout" Click="Logout" Background="White" BorderThickness="0">
+                        <Image Source="Images/Logoff.png" Margin="1"/>
+                    </Button>
+                    <Button ToolTip="Quit" Click="ExitApplication" Background="White" BorderThickness="0">
+                        <Image Source="Images/exit.png" Margin="1"/>
+                    </Button>
+                </StackPanel>
+                <StackPanel DockPanel.Dock="Top" Orientation="Horizontal" Margin="0,0,0,5">
+                    <Image Margin="5,0,0,0" Source="Images/1375406488_Cute Ball - Search.png" Height="24" />
+                    <TextBox x:Name="SearchBox" mahappsControls:TextboxHelper.Watermark="Search..." Margin="3,0,5,0" TextWrapping="Wrap" VerticalAlignment="Top" FontFamily="Calibri" FontSize="16" TextChanged="Search_TextChanged" GotFocus="SearchBox_GotFocus" Background="#FFA4B6E4" HorizontalAlignment="Center" Width="151.333" Height="24" LostFocus="SearchBox_LostFocus"/>
+                </StackPanel>
+                <ItemsControl x:Name="Alerts" DockPanel.Dock="Bottom" Margin="5,0,5,5">
+                    <ItemsControl.ItemsPanel>
+                        <ItemsPanelTemplate>
+                            <StackPanel VerticalAlignment="Bottom" d:LayoutOverrides="VerticalAlignment" >
+                            </StackPanel>
+                        </ItemsPanelTemplate>
+                    </ItemsControl.ItemsPanel>
+                </ItemsControl>
+                <Grid x:Name="SearchContactsView" DockPanel.Dock="Top" MaxHeight="300" Visibility="{Binding SearchContactsVisibility, FallbackValue=Collapsed}">
+                    <Border BorderThickness="5,5,5,0">
+                        <Border.BorderBrush>
+                            <LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
+                                <GradientStop Color="White" Offset="1"/>
+                                <GradientStop Color="{DynamicResource AccentDarkColor}"/>
+                            </LinearGradientBrush>
+                        </Border.BorderBrush>
+                    </Border>
+                    <!-- This is the Active Roster Items -->
+                    <DockPanel Margin="5">
+                        <TextBlock DockPanel.Dock="Top" HorizontalAlignment="Center" Background="White" Margin="0">
+                            <TextBlock.Foreground>
+                                <SolidColorBrush Color="{DynamicResource AccentDarkColor}"/>
+                            </TextBlock.Foreground>Local Search Results</TextBlock>
+                        <ListBox x:Name="SearchContacts" ItemsSource="{Binding}" ScrollViewer.CanContentScroll="False"
+        			FontFamily="Corbel" Margin="-3,0,-1,0" DockPanel.Dock="Bottom" ScrollViewer.HorizontalScrollBarVisibility="Disabled">
+                            <ListBox.Resources>
+                                <Style TargetType="{x:Type ListBoxItem}">
+                                    <EventSetter Event="ListBoxItem.Selected" Handler="SearchContactSelected" HandledEventsToo="True"/>
+                                </Style>
+                            </ListBox.Resources>
+                            <ListBox.Style>
+                                <StaticResource ResourceKey="TeamList"/>
+                            </ListBox.Style>
+                        </ListBox>
+                    </DockPanel>
+                </Grid>
+                <Grid x:Name="CurrentlyActiveContactsWindowlet" DockPanel.Dock="Top" MaxHeight="300" Visibility="Collapsed">
+                    <Border BorderThickness="5,5,5,0">
+                        <Border.BorderBrush>
+                            <LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
+                                <GradientStop Color="White" Offset="1"/>
+                                <GradientStop Color="{DynamicResource AccentDarkColor}"/>
+                            </LinearGradientBrush>
+                        </Border.BorderBrush>
+                    </Border>
+                    <!-- This is the Active Roster Items -->
+                    <DockPanel Margin="5">
+                        <TextBlock DockPanel.Dock="Top" HorizontalAlignment="Center" Background="White" Margin="0">
+                            <TextBlock.Foreground>
+                                <SolidColorBrush Color="{DynamicResource AccentDarkColor}"/>
+                            </TextBlock.Foreground>Active Conversations</TextBlock>
+                        <ListBox x:Name="CurrentlyActiveContacts" DockPanel.Dock="Bottom" ItemsSource="{Binding}" ScrollViewer.CanContentScroll="False"
+        					FontFamily="Corbel" Margin="0,0,0,0" ScrollViewer.HorizontalScrollBarVisibility="Disabled"
+							ItemTemplate="{StaticResource Contact}" Style="{StaticResource TeamList}"
+                                 ItemContainerStyle="{StaticResource ListBoxItemControlStyle}">
+                        </ListBox>
+                    </DockPanel>
+                </Grid>
+                <Grid x:Name="AllContactsView" DockPanel.Dock="Bottom" >
+                    <Border BorderThickness="5,5,5,0">
+                        <Border.BorderBrush>
+                            <LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
+                                <GradientStop Color="White" Offset="1"/>
+                                <GradientStop Color="{DynamicResource AccentDarkColor}"/>
+                            </LinearGradientBrush>
+                        </Border.BorderBrush>
+                    </Border>
+                    <DockPanel Margin="5">
+                        <!-- This is the Roster section -->
+                        <TextBlock DockPanel.Dock="Top" HorizontalAlignment="Center" Margin="0,0,0,0" TextAlignment="Center">
+                            <TextBlock.Foreground>
+                                <SolidColorBrush Color="{DynamicResource AccentDarkColor}"/>
+                            </TextBlock.Foreground>
+							Contacts
+                        </TextBlock>
+                        <ListBox x:Name="AllContacts" DockPanel.Dock="Bottom" ItemsSource="{Binding}" ScrollViewer.CanContentScroll="False"
+        					FontFamily="Corbel" Margin="0,0,0,0" ScrollViewer.HorizontalScrollBarVisibility="Disabled"
+							ItemTemplate="{StaticResource Contact}" Style="{StaticResource TeamList}"
+                            ItemContainerStyle="{StaticResource ListBoxItemControlStyle}">
+                        </ListBox>
+                    </DockPanel>
+                </Grid>
+            </DockPanel>
         </Grid>
-        <Grid Margin="190,5,5,5">
+        <Grid Margin="195,5,5,5">
             <DockPanel LastChildFill="True">
                 <ItemsControl x:Name="Notifications" DockPanel.Dock="Top" Margin="0">
                     <ItemsControl.ItemsPanel>
@@ -87,8 +174,8 @@
                     </ItemsControl.ItemsPanel>
                 </ItemsControl>
                 <!-- Now this is the desktop area -->
-                <ContentControl x:Name="ActiveContent" BorderThickness="1" Background="#FFC8C8C8" BorderBrush="Black" DockPanel.Dock="Bottom" />
+                <ContentControl x:Name="ActiveContent" DockPanel.Dock="Bottom" />
             </DockPanel>
         </Grid>
     </Grid>
-</Window>
+</mahappsControls:MetroWindow>

@@ -37,7 +37,7 @@
                     <Label Content="Email" HorizontalAlignment="Left" Margin="10,117.451,0,0" VerticalAlignment="Top" Name="EmailLabel" Width="68.123" />
                     <TextBox Text="{Binding Email}" HorizontalAlignment="Left" Margin="83.123,119.451,0,0" VerticalAlignment="Top" Width="172.877" Name="Email" />
 
-                    <CheckBox x:Name="Supporter" Content="I offer IT support" HorizontalAlignment="Center" Margin="0,146.411,0,0" VerticalAlignment="Top"/>
+                    <CheckBox x:Name="Supporter" Content="I offer IT support" IsChecked="{Binding Supporter}" HorizontalAlignment="Center" Margin="0,146.411,0,0" VerticalAlignment="Top"/>
                     <CheckBox x:Name="PasswordChange" Content="" HorizontalAlignment="Left" Margin="239,68.291,0,0" VerticalAlignment="Top" Click="PasswordChange_Click"/>
 
                 </Grid>

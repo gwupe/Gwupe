@@ -18,26 +18,26 @@ namespace BlitsMe.Agent.Managers
     class ScheduleManager
     {
         private static readonly ILog Logger = LogManager.GetLogger(typeof(ScheduleManager));
-        private readonly BlitsMeClientAppContext _appContext;
         private readonly Timer _schedulerTimer;
         private const int Interval = 1000;
-        private List<IScheduledTask> _tasks;
+        private readonly List<IScheduledTask> _tasks;
+        internal bool IsClosed { get; private set; }
 
-        public ScheduleManager(BlitsMeClientAppContext appContext)
+        public ScheduleManager()
         {
-            _appContext = appContext;
             _schedulerTimer = new Timer(Interval);
             _tasks = new List<IScheduledTask>();
         }
 
         public void AddTask(IScheduledTask task)
         {
-            lock(_tasks)
+            lock (_tasks)
             {
-                if(_tasks.Contains(task))
+                if (_tasks.Contains(task))
                 {
                     Logger.Error("Cannot add task " + task + ", it is already there");
-                } else
+                }
+                else
                 {
                     _tasks.Add(task);
                 }
@@ -52,16 +52,17 @@ namespace BlitsMe.Agent.Managers
 
         private void RunTasks(object sender, ElapsedEventArgs elapsedEventArgs)
         {
-            lock(_tasks)
+            lock (_tasks)
             {
                 foreach (var scheduledTask in _tasks)
                 {
                     // make sure its not running and make sure it is due to run
-                    if((scheduledTask.LastExecuteTime.Ticks <= scheduledTask.LastCompleteTime.Ticks) 
+                    if ((scheduledTask.LastExecuteTime.Ticks <= scheduledTask.LastCompleteTime.Ticks)
                         && (scheduledTask.LastExecuteTime.Ticks + (TimeSpan.FromSeconds(scheduledTask.PeriodSeconds).Ticks) < DateTime.Now.Ticks))
                     {
                         scheduledTask.LastExecuteTime = DateTime.Now;
-                        ThreadPool.QueueUserWorkItem(state => {
+                        ThreadPool.QueueUserWorkItem(state =>
+                        {
                             try
                             {
                                 //Logger.Debug("Running " + scheduledTask.Name);
@@ -77,7 +78,7 @@ namespace BlitsMe.Agent.Managers
                                 scheduledTask.LastCompleteTime = DateTime.Now;
                             }
                         });
-                        
+
                     }
                 }
             }
@@ -85,11 +86,17 @@ namespace BlitsMe.Agent.Managers
 
         public void Close()
         {
-            if(_schedulerTimer != null && _schedulerTimer.Enabled)
+            if (!IsClosed)
             {
-                _schedulerTimer.Stop();
+                Logger.Debug("Closing ScheduleManager");
+                IsClosed = true;
+                if (_schedulerTimer != null && _schedulerTimer.Enabled)
+                {
+                    _schedulerTimer.Stop();
+                }
             }
         }
+
     }
 
 }

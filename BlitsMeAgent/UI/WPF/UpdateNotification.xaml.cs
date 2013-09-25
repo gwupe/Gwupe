@@ -19,11 +19,11 @@ namespace BlitsMe.Agent.UI.WPF
         internal Thread UiThread;
         internal Boolean IsClosed = false;
 
-        public UpdateNotification(BlitsMeClientAppContext appContext)
+        public UpdateNotification()
         {
             this.InitializeComponent();
             UiThread = Thread.CurrentThread;
-            _appContext = appContext;
+            _appContext = BlitsMeClientAppContext.CurrentAppContext;
             DataContext = this;
         }
 
@@ -32,7 +32,7 @@ namespace BlitsMe.Agent.UI.WPF
             this.Close();
             if (_appContext.LoginManager.IsLoggedIn)
             {
-                _appContext.UIDashBoard.Show();
+                _appContext.UIManager.Show();
             }
         }
 
@@ -52,8 +52,12 @@ namespace BlitsMe.Agent.UI.WPF
 
         public new void Close()
         {
-            IsClosed = true;
-            Dispatcher.InvokeShutdown();
+            if (!IsClosed)
+            {
+                Logger.Debug("Closing Update Notification");
+                IsClosed = true;
+                Dispatcher.InvokeShutdown();
+            }
         }
 
     }

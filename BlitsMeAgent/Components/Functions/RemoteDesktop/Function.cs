@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Diagnostics;
 using System.Threading;
-using BlitsMe.Agent.Components.Chat;
 using BlitsMe.Agent.Components.Functions.API;
+using BlitsMe.Agent.Components.Functions.Chat;
 using BlitsMe.Agent.Components.Functions.RemoteDesktop.Notification;
 using BlitsMe.Cloud.Messaging.Request;
 using BlitsMe.Cloud.Messaging.Response;
@@ -13,10 +13,10 @@ using System.Runtime.InteropServices;
 
 namespace BlitsMe.Agent.Components.Functions.RemoteDesktop
 {
-    internal delegate void RDPSessionRequestResponseEvent(object sender, RDPSessionRequestResponseArgs args);
-    internal delegate void RDPIncomingRequestEvent(object sender, RDPIncomingRequestArgs args);
+    //internal delegate void RDPSessionRequestResponseEvent(object sender, RdpSessionRequestResponse args);
+    //internal delegate void RDPIncomingRequestEvent(object sender, RdpIncomingRequest args);
 
-    class Function : IFunction
+    class Function : FunctionImpl
     {
         [DllImportAttribute("User32.dll")]
         static extern bool SetForegroundWindow(IntPtr hWnd);
@@ -27,9 +27,12 @@ namespace BlitsMe.Agent.Components.Functions.RemoteDesktop
 
         private readonly BlitsMeClientAppContext _appContext;
         private readonly Engagement _engagement;
+        public override String Name { get { return "RemoteDesktop"; }}
 
         private static readonly ILog Logger = LogManager.GetLogger(typeof(FileSend.Function));
         private Process _bmssHandle = null;
+
+        private Chat.Function Chat { get { return _engagement.Functions["Chat"] as Chat.Function; } }
 
         internal Function(BlitsMeClientAppContext appContext, Engagement engagement)
         {
@@ -38,25 +41,27 @@ namespace BlitsMe.Agent.Components.Functions.RemoteDesktop
         }
 
         // event handler to get an acceptance of RDP Session
-        internal event RDPSessionRequestResponseEvent RDPSessionRequestResponse;
-        internal event RDPIncomingRequestEvent RDPIncomingRequestEvent;
+        //internal event RDPSessionRequestResponseEvent RDPSessionRequestResponse;
+        //internal event RDPIncomingRequestEvent RDPIncomingRequestEvent;
 
         internal event EventHandler RDPConnectionAccepted { add { Server.ConnectionAccepted += value; } remove { Server.ConnectionAccepted -= value; } }
         internal event EventHandler RDPConnectionClosed { add { Server.ConnectionClosed += value; } remove { Server.ConnectionClosed -= value; } }
+        /*
+                internal void OnRDPIncomingRequestEvent(RdpIncomingRequest args)
+                {
+                    RDPIncomingRequestEvent handler = RDPIncomingRequestEvent;
+                    if (handler != null) handler(this, args);
+                }
 
-        internal void OnRDPIncomingRequestEvent(RDPIncomingRequestArgs args)
-        {
-            RDPIncomingRequestEvent handler = RDPIncomingRequestEvent;
-            if (handler != null) handler(this, args);
-        }
+                internal void OnRDPSessionRequestResponse(RdpSessionRequestResponse args)
+                {
+                    RDPSessionRequestResponseEvent handler = RDPSessionRequestResponse;
+                    if (handler != null) handler(this, args);
+                }
+                */
 
-        internal void OnRDPSessionRequestResponse(RDPSessionRequestResponseArgs args)
-        {
-            RDPSessionRequestResponseEvent handler = RDPSessionRequestResponse;
-            if (handler != null) handler(this, args);
-        }
-
-        internal void ProcessIncomingRDPRequest(String shortCode)
+        // Method is called by RequestManager when the second party is requesting and remote desktop session with us
+        internal void ProcessIncomingRemoteDesktopRequest(String shortCode)
         {
             bool notificationExists = false;
             // Loop through existing notifications to see if we already have a remote desktop request
@@ -64,7 +69,7 @@ namespace BlitsMe.Agent.Components.Functions.RemoteDesktop
             // and RDPNotification type
             foreach (Components.Notification.Notification n in _appContext.NotificationManager.Notifications)
             {
-                if (n.AssociatedUsername == _engagement.SecondParty.Username && n is RDPNotification)
+                if (n.AssociatedUsername == _engagement.SecondParty.Person.Username && n is RDPNotification)
                 {
                     // if the notification exists set flag.
                     notificationExists = true;
@@ -82,30 +87,31 @@ namespace BlitsMe.Agent.Components.Functions.RemoteDesktop
                     // we are not currently in a remote session
                     IsActive = true;
                     // Set the shortcode, to make sure we connect to the right caller.
-                    _engagement.SecondParty.ShortCode = shortCode;
+                    _engagement.SecondParty.ActiveShortCode = shortCode;
                     RDPNotification rdpNotification = new RDPNotification()
                         {
-                            Message = _engagement.SecondParty.Name + " would like to access your desktop.",
-                            AssociatedUsername = _engagement.SecondParty.Username,
+                            Message = _engagement.SecondParty.Person.Name + " would like to access your desktop.",
+                            AssociatedUsername = _engagement.SecondParty.Person.Username,
                             DeleteTimeout = 300
                         };
                     rdpNotification.AnsweredTrue += delegate { ProcessAnswer(true); };
                     rdpNotification.AnsweredFalse += delegate { ProcessAnswer(false); };
                     _appContext.NotificationManager.AddNotification(rdpNotification);
-                    _engagement.Chat.LogSystemMessage(_engagement.SecondParty.Firstname +
+                    Chat.LogSystemMessage(_engagement.SecondParty.Person.Firstname +
                                                       " requested control of your desktop.");
-                    OnRDPIncomingRequestEvent(new RDPIncomingRequestArgs(_engagement));
+                    //OnRDPIncomingRequestEvent(new RdpIncomingRequest(_engagement));
+                    OnNewActivity(new RemoteDesktopActivity(_engagement, RemoteDesktopActivity.REMOTE_DESKTOP_REQUEST) { To = "_SELF", From = _engagement.SecondParty.Person.Username });
                 }
             }
         }
 
-        // Called when the users accepts or denies
+        // Called when the local user accepts or denies the remote desktop request
         private void ProcessAnswer(bool accept)
         {
             if (accept)
             {
-                _engagement.Chat.LogSystemMessage("You accepted the desktop assistance request from " +
-                                                  _engagement.SecondParty.Firstname);
+                Chat.LogSystemMessage("You accepted the desktop assistance request from " +
+                                                  _engagement.SecondParty.Person.Firstname);
                 try
                 {
                     if (_appContext.BlitsMeServiceProxy.VNCStartService())
@@ -125,18 +131,21 @@ namespace BlitsMe.Agent.Components.Functions.RemoteDesktop
             }
             else
             {
-                _engagement.Chat.LogSystemMessage("You denied the desktop assistance request from " + _engagement.SecondParty.Firstname);
+                Chat.LogSystemMessage("You denied the desktop assistance request from " + _engagement.SecondParty.Person.Firstname);
                 SendRDPRequestResponse(false, delegate(RDPRequestResponseRq rq, RDPRequestResponseRs rs, Exception arg3) { IsActive = false; });
             }
+            OnNewActivity(new RemoteDesktopActivity(_engagement, RemoteDesktopActivity.REMOTE_DESKTOP_RESPONSE) { To = _engagement.SecondParty.Person.Username, From = "_SELF", Answer = accept });
         }
 
+        // generic method to send a response to the remote desktop request
         private void SendRDPRequestResponse(bool answer, Action<RDPRequestResponseRq, RDPRequestResponseRs, Exception> handler)
         {
             RDPRequestResponseRq request = new RDPRequestResponseRq()
                 {
                     accepted = answer,
-                    shortCode = _engagement.SecondParty.ShortCode,
-                    username = _engagement.SecondParty.Username
+                    shortCode = _engagement.SecondParty.ActiveShortCode,
+                    username = _engagement.SecondParty.Person.Username,
+                    interactionId = _engagement.Interactions.CurrentOrNewInteraction.Id,
                 };
             try
             {
@@ -145,7 +154,7 @@ namespace BlitsMe.Agent.Components.Functions.RemoteDesktop
             }
             catch (Exception e)
             {
-                Logger.Error("Failed to send a RDP request (answer=" + answer + ") to " + _engagement.SecondParty.Username, e);
+                Logger.Error("Failed to send a RDP request (answer=" + answer + ") to " + _engagement.SecondParty.Person.Username, e);
             }
         }
 
@@ -179,9 +188,11 @@ namespace BlitsMe.Agent.Components.Functions.RemoteDesktop
             }
         }
 
+        // something connected to our server
         private void ServerOnConnectionAccepted(object sender, EventArgs eventArgs)
         {
             Logger.Info("The remote party has connected to the RDP server");
+            OnNewActivity(new RemoteDesktopActivity(_engagement, RemoteDesktopActivity.REMOTE_DESKTOP_CONNECT) { From = _engagement.SecondParty.Person.Username, To = "_SELF" });
         }
 
         // Client disconnected or we kicked him off muhahaha!
@@ -189,7 +200,8 @@ namespace BlitsMe.Agent.Components.Functions.RemoteDesktop
         {
             IsActive = false;
             Logger.Info("Server connection closed, notifying end of service.");
-            _engagement.Chat.LogServiceCompleteMessage("You were just helped by " + _engagement.SecondParty.Name + ", please rate their service below.");
+            Chat.LogServiceCompleteMessage("You were just helped by " + _engagement.SecondParty.Person.Name + ", please rate their service below.");
+            OnNewActivity(new RemoteDesktopActivity(_engagement, RemoteDesktopActivity.REMOTE_DESKTOP_DISCONNECT) { From = _engagement.SecondParty.Person.Username, To = "_SELF" });
         }
 
         // Called When we send a rdp request
@@ -210,16 +222,16 @@ namespace BlitsMe.Agent.Components.Functions.RemoteDesktop
             }
             // if we get this far then _bmssHandle is not valid so null it to be sure.
             _bmssHandle = null;
-            RDPRequestRq request = new RDPRequestRq() { shortCode = _engagement.SecondParty.ShortCode, username = _engagement.SecondParty.Username };
+            RDPRequestRq request = new RDPRequestRq() { shortCode = _engagement.SecondParty.ActiveShortCode, username = _engagement.SecondParty.Person.Username, interactionId = _engagement.Interactions.CurrentOrNewInteraction.Id };
             try
             {
-                ChatElement chatElement = _engagement.Chat.LogSystemMessage("You sent " + _engagement.SecondParty.Firstname + " a request to control their desktop.");
+                ChatElement chatElement = Chat.LogSystemMessage("You sent " + _engagement.SecondParty.Person.Firstname + " a request to control their desktop.");
                 _appContext.ConnectionManager.Connection.RequestAsync<RDPRequestRq, RDPRequestRs>(request, (req, res, ex) => ProcessRequestRDPSessionResponse(req, res, ex, chatElement));
             }
             catch (Exception ex)
             {
                 Logger.Error("Error during request for RDP Session : " + ex.Message, ex);
-                _engagement.Chat.LogSystemMessage("An error occured trying to send " + _engagement.SecondParty.Firstname + " a request to control their desktop.");
+                Chat.LogSystemMessage("An error occured trying to send " + _engagement.SecondParty.Person.Firstname + " a request to control their desktop.");
             }
         }
 
@@ -236,27 +248,30 @@ namespace BlitsMe.Agent.Components.Functions.RemoteDesktop
             {
                 IsActive = true;
                 chatElement.DeliveryState = ChatDeliveryState.Delivered;
+                OnNewActivity(new RemoteDesktopActivity(_engagement, RemoteDesktopActivity.REMOTE_DESKTOP_REQUEST) { From = "_SELF", To = _engagement.SecondParty.Person.Username });
             }
         }
 
+        // this is called by the request manager when we receive a answer our remote desktop request (yes or no)
         internal void ProcessRemoteDesktopRequestResponse(RDPRequestResponseRq request)
         {
+            OnNewActivity(new RemoteDesktopActivity(_engagement, RemoteDesktopActivity.REMOTE_DESKTOP_RESPONSE) { To = "_SELF", From = _engagement.SecondParty.Person.Username, Answer = request.accepted });
             if (request.accepted)
             {
                 IsActive = true;
-                _engagement.Chat.LogSystemMessage(_engagement.SecondParty.Firstname + " accepted your remote assistance request, please wait while we establish a connection...");
+                Chat.LogSystemMessage(_engagement.SecondParty.Person.Firstname + " accepted your remote assistance request, please wait while we establish a connection...");
                 // Wait for a tunnel
-                lock(_engagement.TunnelWaitLock)
+                lock (_engagement.TunnelWaitLock)
                 {
-                    Logger.Debug("Testing is tunnel to " + _engagement.SecondParty.Username + " is active");
+                    Logger.Debug("Testing is tunnel to " + _engagement.SecondParty.Person.Username + " is active");
                     while (!_engagement.IsTunnelActive)
                     {
-                        Logger.Debug("Tunnel to " + _engagement.SecondParty.Username + " is not active, waiting");
+                        Logger.Debug("Tunnel to " + _engagement.SecondParty.Person.Username + " is not active, waiting");
                         if (!Monitor.Wait(_engagement.TunnelWaitLock, 30000))
                         {
-                            _engagement.Chat.LogErrorMessage("Failed to create a connection to " +
-                                                             _engagement.SecondParty.Firstname);
-                            Logger.Error("Failed to create a tunnel between " + _appContext.CurrentUserManager.CurrentUser.Name + "(me) and " + _engagement.SecondParty.Username + " : timed out waiting for tunnel");
+                            Chat.LogErrorMessage("Failed to create a connection to " +
+                                                             _engagement.SecondParty.Person.Firstname);
+                            Logger.Error("Failed to create a tunnel between " + _appContext.CurrentUserManager.CurrentUser.Name + "(me) and " + _engagement.SecondParty.Person.Username + " : timed out waiting for tunnel");
                             IsActive = false;
                             return;
                         }
@@ -267,7 +282,7 @@ namespace BlitsMe.Agent.Components.Functions.RemoteDesktop
                     int port = Client.Start();
                     String viewerExe = System.IO.Path.GetDirectoryName(Environment.GetCommandLineArgs()[0]) +
                                        "\\bmss.exe";
-                    var parameters = "-username=\"" + _engagement.SecondParty.Name + "\" -scale=auto 127.0.0.1::" + port;
+                    var parameters = "-username=\"" + _engagement.SecondParty.Person.Name + "\" -scale=auto 127.0.0.1::" + port;
                     Logger.Debug("Running " + viewerExe + " " + parameters);
                     _bmssHandle = Process.Start(viewerExe, parameters);
 
@@ -275,62 +290,54 @@ namespace BlitsMe.Agent.Components.Functions.RemoteDesktop
                 catch (Exception e)
                 {
                     IsActive = false;
-                    Logger.Error("Failed to start RDP client to " + _engagement.SecondParty.Username + " : " + e.Message, e);
+                    Logger.Error("Failed to start RDP client to " + _engagement.SecondParty.Person.Username + " : " + e.Message, e);
                     throw e;
                 }
             }
             else
             {
                 IsActive = false;
-                _engagement.Chat.LogSystemMessage(_engagement.SecondParty.Firstname + " did not accept your remote assistance request.");
+                Chat.LogSystemMessage(_engagement.SecondParty.Person.Firstname + " did not accept your remote assistance request.");
             }
         }
 
         private void ClientOnConnectionAccepted(object sender, EventArgs eventArgs)
         {
-            _engagement.Chat.LogSystemMessage("You connected to " + _engagement.SecondParty.Firstname + "'s desktop.");
-            Logger.Info("RDP client has connected to the proxy to " + _engagement.SecondParty.Username + ".");
+            Chat.LogSystemMessage("You connected to " + _engagement.SecondParty.Person.Firstname + "'s desktop.");
+            Logger.Info("RDP client has connected to the proxy to " + _engagement.SecondParty.Person.Username + ".");
+            OnNewActivity(new RemoteDesktopActivity(_engagement, RemoteDesktopActivity.REMOTE_DESKTOP_CONNECT) { From = "_SELF", To = _engagement.SecondParty.Person.Username });
         }
 
         private void ClientOnConnectionClosed(object sender, EventArgs eventArgs)
         {
-            _engagement.Chat.LogSystemMessage("You disconnected from " + _engagement.SecondParty.Firstname + "'s desktop.");
-            Logger.Info("RDP client has disconnected from the proxy to " + _engagement.SecondParty.Username + ".");
+            Chat.LogSystemMessage("You disconnected from " + _engagement.SecondParty.Person.Firstname + "'s desktop.");
+            Logger.Info("RDP client has disconnected from the proxy to " + _engagement.SecondParty.Person.Username + ".");
             IsActive = false;
+            OnNewActivity(new RemoteDesktopActivity(_engagement, RemoteDesktopActivity.REMOTE_DESKTOP_DISCONNECT) { From = "_SELF", To = _engagement.SecondParty.Person.Username });
         }
 
-        private bool _isActive;
-        public bool IsActive
+
+        public override void Close()
         {
-            get { return _isActive; }
-            private set
-            {
-                if (_isActive != value)
-                {
-                    Logger.Debug("RDPFunction is now " + (value ? "Active" : "Inactive"));
-                    _isActive = value;
-                    if (value)
-                        OnActivate(EventArgs.Empty);
-                    else
-                        OnDeactivate(EventArgs.Empty);
-                }
-            }
+            if (_client != null)
+                _client.Close();
+            if (_server != null)
+                _server.Close();
         }
+    }
 
-        public event EventHandler Activate;
+    internal class RemoteDesktopActivity : EngagementActivity
+    {
+        internal const String REMOTE_DESKTOP_REQUEST = "REMOTE_DESKTOP_REQUEST";
+        internal const String REMOTE_DESKTOP_RESPONSE = "REMOTE_DESKTOP_REQUEST";
+        internal const String REMOTE_DESKTOP_CONNECT = "REMOTE_DESKTOP_REQUEST";
+        internal const String REMOTE_DESKTOP_DISCONNECT = "REMOTE_DESKTOP_REQUEST";
+        internal bool Answer;
 
-        public void OnActivate(EventArgs e)
+        internal RemoteDesktopActivity(Engagement engagement, String activity)
+            : base(engagement, "REMOTE_DESKTOP", activity)
         {
-            EventHandler handler = Activate;
-            if (handler != null) handler(this, e);
         }
 
-        public event EventHandler Deactivate;
-
-        public void OnDeactivate(EventArgs e)
-        {
-            EventHandler handler = Deactivate;
-            if (handler != null) handler(this, e);
-        }
     }
 }

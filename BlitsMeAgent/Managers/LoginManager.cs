@@ -1,151 +1,184 @@
 ﻿using System;
 using System.Threading;
-using System.Windows;
-using System.Windows.Threading;
 using BlitsMe.Agent.Components;
 using BlitsMe.Agent.Misc;
-using BlitsMe.Agent.UI.WPF;
 using BlitsMe.Cloud.Exceptions;
 using BlitsMe.Cloud.Messaging.Request;
 using BlitsMe.Cloud.Messaging.Response;
+using BlitsMe.Common.Security;
 using log4net;
 
 namespace BlitsMe.Agent.Managers
 {
-    public delegate void LoginEvent(object sender, LoginEventArgs e);
+    internal delegate void LoginEvent(object sender, LoginEventArgs e);
 
     public class LoginManager
     {
         private static readonly ILog Logger = LogManager.GetLogger(typeof(LoginManager));
         private Thread _loginManagerThread;
-        private readonly AutoResetEvent _loginUiReadyEvent = new AutoResetEvent(false);
-        private Thread _loginUiThread;
+        internal bool IsClosed { get; private set; }
         private readonly BLMRegistry _reg = new BLMRegistry();
         private readonly AutoResetEvent _signinEvent = new AutoResetEvent(false);
         private readonly BlitsMeClientAppContext _appContext;
         public bool IsLoggedIn = false;
         public bool IsLoggingIn = false;
-        public AutoResetEvent LoginRequired = new AutoResetEvent(false);
 
         public Object LoginOccurredLock { get; private set; }
         public Object LogoutOccurredLock { get; private set; }
+        public LoginDetails LoginDetails = new LoginDetails();
 
-        public event LoginEvent LoggedIn;
-        public event LoginEvent LoggedOut;
+        private Object LoginReadyLock = new Object();
+        private Object ConnectionReadyLock = new Object();
 
-        private void OnLoggedOut(LoginEventArgs e)
+        /// <summary>
+        /// The even which drives if we are connected, ready to login
+        /// </summary>
+        private readonly AutoResetEvent _connectionReady;
+
+        /// <summary>
+        /// The event which drives are we ready to login yet
+        /// </summary>
+        private readonly AutoResetEvent _loginDetailsReady = new AutoResetEvent(false);
+
+        /// <summary>
+        /// Fired when a logout attempt occurs
+        /// </summary>
+        internal event LoginEvent LoggingOut;
+
+        /// <summary>
+        /// Fired when a login attempt occurs
+        /// </summary>
+        internal event LoginEvent LoggingIn;
+
+        /// <summary>
+        /// Fired when a login occurs
+        /// </summary>
+        internal event LoginEvent LoggedIn;
+
+        /// <summary>
+        /// Fired when a logout occurs
+        /// </summary>
+        internal event LoginEvent LoggedOut;
+
+        /// <summary>
+        /// Fired when a login fails
+        /// </summary>
+        internal event EventHandler<DataSubmitErrorArgs> LoginFailed;
+
+        #region Event Invocators
+
+        private void OnLoginFailed(String fieldName, String errorCode)
         {
+            if (_appContext.IsShuttingDown) return;
+            var error = new DataSubmitError() {FieldName = fieldName, ErrorCode = errorCode};
+            DataSubmitErrorArgs e = new DataSubmitErrorArgs() { SubmitErrors = { error } };
+            EventHandler<DataSubmitErrorArgs> handler = LoginFailed;
+            if (handler != null) handler(this, e);
+        }
+
+        private void OnLoggingOut()
+        {
+            if (_appContext.IsShuttingDown) return;
+            LoginEventArgs e = new LoginEventArgs { LoginState = LoginState.LoggingOut };
+            LoginEvent handler = LoggingOut;
+            if (handler != null) handler(this, e);
+        }
+
+        private void OnLoggingIn()
+        {
+            if (_appContext.IsShuttingDown) return;
+            LoginEventArgs e = new LoginEventArgs { LoginState = LoginState.LoggingIn };
+            LoginEvent handler = LoggingIn;
+            if (handler != null) handler(this, e);
+        }
+
+        private void OnLoggedOut()
+        {
+            if (_appContext.IsShuttingDown) return;
+            LoginEventArgs e = new LoginEventArgs { LoginState = LoginState.LoggedOut };
             LoginEvent handler = LoggedOut;
             if (handler != null) handler(this, e);
         }
 
-        private void OnLoggedIn(LoginEventArgs e)
+        private void OnLoggedIn()
         {
+            if (_appContext.IsShuttingDown) return;
+            LoginEventArgs e = new LoginEventArgs { LoginState = LoginState.LoggedIn };
             LoginEvent handler = LoggedIn;
             if (handler != null) handler(this, e);
         }
 
-        private LoginWindow _loginWindow;
+        #endregion
 
-        public LoginManager(BlitsMeClientAppContext appContext)
+        public LoginManager()
         {
-            this._appContext = appContext;
+            this._appContext = BlitsMeClientAppContext.CurrentAppContext;
             LoginOccurredLock = new Object();
             LogoutOccurredLock = new Object();
-            LoginDetails = new LoginDetails(_reg.Username, _reg.PasswordHash);
-            // Event Handlers
+            if (!String.IsNullOrEmpty(_reg.Username))
+            {
+                LoginDetails.Username = _reg.Username;
+                if (!String.IsNullOrEmpty(_reg.PasswordHash))
+                {
+                    LoginDetails.PasswordHash = _reg.PasswordHash;
+                    // now we can initiate a login
+                    _loginDetailsReady.Set();
+                }
+            }
+            _connectionReady = new AutoResetEvent(false);
+            // Link into the connect and disconnect event handlers
             _appContext.ConnectionManager.Connect += Connected;
             _appContext.ConnectionManager.Disconnect += Disconnected;
         }
 
         public void Start()
         {
-            // UI Thread
-            _loginUiThread = new Thread(RunLoginUi) { Name = "_loginUiThread", IsBackground = true };
-            _loginUiThread.SetApartmentState(ApartmentState.STA);
-            _loginUiThread.Start();
-            // Wait for the Login UI to be initialised
-            _loginUiReadyEvent.WaitOne();
-            // Manager thread
             _loginManagerThread = new Thread(Run) { IsBackground = true, Name = "_loginManagerThread" };
             _loginManagerThread.Start();
         }
 
-        public LoginDetails LoginDetails { get; set; }
-
-        private void RunLoginUi()
-        {
-            _loginWindow = new LoginWindow(_appContext, LoginDetails, _signinEvent);
-            _loginUiReadyEvent.Set();
-            if (!_appContext.Options.Contains(BlitsMeOption.Minimize))
-            {
-                _loginWindow.Show();
-            }
-            Dispatcher.Run();
-        }
-
         public void Close()
         {
-            if (IsLoggedIn)
-                Logout(true);
-            _loginWindow.Dispatcher.InvokeShutdown();
-            _loginUiThread.Abort();
-            _loginManagerThread.Abort();
+            if (!IsClosed)
+            {
+                IsClosed = true;
+                if (_loginManagerThread != null && _loginManagerThread.IsAlive)
+                    _loginManagerThread.Abort();
+                if (IsLoggedIn)
+                {
+                    Logout();
+                }
+            }
         }
+
 
         private void Connected(Object sender, EventArgs e)
         {
+            if (_appContext.IsShuttingDown) return;
 #if DEBUG
             Logger.Debug("Connected, marking login as required");
 #endif
-            LoginRequired.Set();
+            lock(ConnectionReadyLock) Monitor.PulseAll(ConnectionReadyLock);
         }
 
         private void Disconnected(Object sender, EventArgs e)
         {
+            if (_appContext.IsShuttingDown) return;
 #if DEBUG
             Logger.Debug("disconnected, flagging logout occurred");
 #endif
             Logout(false);
+            lock (ConnectionReadyLock) Monitor.PulseAll(ConnectionReadyLock);
         }
 
-        public void Logout(bool userInitiated)
+        public void Logout(bool clearPassword = true)
         {
-            if (!_appContext.IsShuttingDown)
-            {
-                _appContext.EngagementManager.Reset();
-                _appContext.CurrentUserManager.Reset();
-                _appContext.NotificationManager.Reset();
-                _appContext.RosterManager.Reset();
-                _appContext.P2PManager.Reset();
-                _appContext.SearchManager.Reset();
-                if (_appContext.UIDashBoard != null)
-                { _appContext.UIDashBoard.Reset(); }
-            }
-            if (userInitiated)
-            {
-                if (_loginWindow.Dispatcher.CheckAccess())
-                {
-                    _loginWindow.Username.Text = LoginDetails.username;
-                    _loginWindow.Password.Password = "";
-                }
-                else
-                {
-                    _loginWindow.Dispatcher.Invoke(new Action(() =>
-                    {
-                        _loginWindow.Username.Text = LoginDetails.username;
-                        _loginWindow.Password.Password = "";
-                    }));
-                }
-                LoginDetails.username = "";
-                LoginDetails.passwordHash = "";
-            }
             if (IsLoggedIn)
             {
+                OnLoggingOut();
                 if (_appContext.ConnectionManager.Connection.isEstablished())
                 {
                     LogoutRq request = new LogoutRq();
-                    //_appContext.ConnectionManager.Connection.RequestAsync<LogoutRq,LogoutRs>(request, delegate {  });
                     try
                     {
                         _appContext.ConnectionManager.Connection.Request<LogoutRq, LogoutRs>(request);
@@ -161,85 +194,63 @@ namespace BlitsMe.Agent.Managers
                 {
                     Monitor.PulseAll(LogoutOccurredLock);
                 }
-                OnLoggedOut(new LoginEventArgs() { Logout = true });
-                if (_appContext.ConnectionManager.Connection.isEstablished())
-                {
-                    LoginRequired.Set();
-                }
+                OnLoggedOut();
+                if(clearPassword)
+                    LoginDetails.PasswordHash = "";
+                lock (LoginReadyLock) Monitor.PulseAll(LoginReadyLock);
             }
         }
 
         public void Run()
         {
-            // Lets collect the information on startup if we have to.
-            if (LoginDetails.username == null || LoginDetails.username.Equals("") || LoginDetails.passwordHash == null ||
-                LoginDetails.passwordHash.Equals(""))
-            {
-                // get the username from the UI
-                ShowLoginWindow();
-                _loginWindow.SignalPleaseLogin();
-                _signinEvent.WaitOne();
-#if DEBUG
-                Logger.Debug("Login window signalled login");
-#endif
-                _loginWindow.SignalLoggingIn();
-            }
-            LoginDetails.profile = _reg.Profile;
+            // Setup the connection marking information
+            LoginDetails.Profile = _reg.Profile;
             try
             {
-                LoginDetails.workstation = _appContext.BlitsMeService.HardwareFingerprint();
+                LoginDetails.Workstation = _appContext.BlitsMeService.HardwareFingerprint();
             }
             catch (Exception e)
             {
                 Logger.Error("Failed to get the hardware id : " + e.Message);
             }
+            if (!LoginDetails.Ready)
+                OnLoginFailed(null,"INCOMPLETE");
+            // Main logging in thread
             while (true)
             {
-                // Lets wait for the login required event
-                LoginRequired.WaitOne();
-#if DEBUG
-                Logger.Debug("Connection signalled login required");
-#endif
-                while (!IsLoggedIn && _appContext.ConnectionManager.Connection.isEstablished())
-                {
-                    if (LoginDetails.username == null || LoginDetails.username.Equals("") ||
-                        LoginDetails.passwordHash == null || LoginDetails.passwordHash.Equals(""))
+                // Wait for the login details to become ready
+                lock (LoginReadyLock)
+                    while (!LoginDetails.Ready || IsLoggedIn)
                     {
-                        // get the username from the UI ( show the login window )
-                        ShowLoginWindow();
-                        _loginWindow.SignalPleaseLogin();
-                        _signinEvent.WaitOne();
-#if DEBUG
-                        Logger.Debug("Login window signalled login");
-#endif
-                        // hide the login window
-                        _loginWindow.SignalLoggingIn();
+                        Monitor.Wait(LoginReadyLock);
                     }
+                try
+                {
+                    IsLoggingIn = true;
+                    OnLoggingIn();
+                    Logger.Debug("Login details ready, waiting for connection");
+                    // Wait for the connection to become ready
+                    lock (ConnectionReadyLock) while (!_appContext.ConnectionManager.Connection.isEstablished()) Monitor.Wait(ConnectionReadyLock);
+                    Logger.Debug("Connection ready, attempting login");
+
                     try
                     {
-                        Login();
-                        if (_loginWindow.Visibility == Visibility.Visible)
-                        {
-                            HideLoginWindow();
-                            _appContext.UIDashBoard.Show();
-                        }
+                        // Attempt a login
+                        ProcessLogin();
                     }
                     catch (LoginException e)
                     {
-                        _loginWindow.SignalPleaseLogin();
                         Logger.Warn("Login has failed : " + e.Message);
                         // Login failed with authfailure, we reset the password so it will be prompted for again, otherwise we just try login again
                         if (e.authFailure)
                         {
-                            LoginDetails.passwordHash = "";
-                            if (_loginWindow.Dispatcher.CheckAccess())
-                                _loginWindow.LoginFailed();
-                            else
-                                _loginWindow.Dispatcher.Invoke(new Action(() => _loginWindow.LoginFailed()));
+                            LoginDetails.PasswordHash = "";
+                            OnLoginFailed("PasswordHash", "INCORRECT");
                         }
                         else
                         {
-                            // Failed for another reason, lets retry after 10 seconds
+                            // Failed for another reason, lets retry after 10 seconds (loop test will check login details and connection readiness
+                            OnLoginFailed(null,e.failure);
                             Thread.Sleep(10000);
                         }
                     }
@@ -247,80 +258,66 @@ namespace BlitsMe.Agent.Managers
                     {
                         // Do nothing here, just try keep connecting
                         Logger.Warn("Login has failed : " + e.Message, e);
+                        OnLoginFailed(null,"UNKNOWN_ERROR");
                         Thread.Sleep(10000);
                     }
+
+                }
+                finally
+                {
+                    IsLoggingIn = false;
                 }
             }
         }
 
-        internal void HideLoginWindow()
+        internal void Login(String username, String password)
         {
-            if (_loginWindow.Dispatcher.CheckAccess())
-                _loginWindow.Hide();
-            else
-                _loginWindow.Dispatcher.Invoke(new Action(() => _loginWindow.Hide()));
+            LoginDetails.Username = username;
+            LoginDetails.PasswordHash = Util.getSingleton().hashPassword(password);
+            lock (LoginReadyLock) Monitor.PulseAll(LoginReadyLock);
         }
 
-        internal void ShowLoginWindow()
+        private void ProcessLogin()
         {
-            if (_loginWindow.Dispatcher.CheckAccess())
+            var loginRq = new LoginRq
+                {
+                    username = LoginDetails.Username,
+                    passwordDigest = LoginDetails.PasswordHash,
+                    profile = LoginDetails.Profile,
+                    workstation = LoginDetails.Workstation,
+                    version = _appContext.Version(2)
+                };
+            LoginRs loginRs = null;
+            try
             {
-                _appContext.UIDashBoard.Hide();
-                _loginWindow.Show();
-                _loginWindow.Focus();
-                if (_appContext.UpdateNotification != null && !_appContext.UpdateNotification.IsClosed)
-                {
-                    _appContext.UpdateNotification.Show();
-                }
+                loginRs = _appContext.ConnectionManager.Connection.Request<LoginRq, LoginRs>(loginRq);
+                _appContext.RosterManager.RetrieveRoster();
+                _appContext.CurrentUserManager.SetUser(loginRs.userElement, loginRs.shortCode);
             }
-            else
-                _loginWindow.Dispatcher.Invoke(new Action(ShowLoginWindow));
-        }
-
-
-        private void Login()
-        {
-            if (_appContext.ConnectionManager.Connection.isEstablished())
+            catch (MessageException<LoginRs> e)
             {
-                var loginRq = new LoginRq
-                    {
-                        username = LoginDetails.username,
-                        passwordDigest = LoginDetails.passwordHash,
-                        profile = LoginDetails.profile,
-                        workstation = LoginDetails.workstation,
-                        version = _appContext.Version(2)
-                    };
-                LoginRs loginRs = null;
-                try
+                if (!e.Response.loggedIn)
                 {
-                    loginRs = _appContext.ConnectionManager.Connection.Request<LoginRq, LoginRs>(loginRq);
-                    _appContext.RosterManager.RetrieveRoster();
-                    _appContext.CurrentUserManager.SetUser(loginRs.userElement);
+                    throw new LoginException("Failed to login, server responded with : " + e.Response.errorMessage,
+                                             e.Response.error);
                 }
-                catch (MessageException<LoginRs> e)
-                {
-                    if (!e.Response.loggedIn)
-                    {
-                        throw new LoginException("Failed to login, server responded with : " + e.Response.errorMessage,
-                                                 e.Response.error);
-                    }
-                    throw;
-                }
-                // Exception not thrown, login success, save details
-                _reg.Username = LoginDetails.username;
-                _reg.PasswordHash = LoginDetails.passwordHash;
-                _reg.Profile = LoginDetails.profile = loginRs.profileId;
-                LoginDetails.shortCode = loginRs.shortCode;
-                IsLoggedIn = true;
-                // Notify all threads waiting for login
-                lock (LoginOccurredLock)
-                {
-                    Monitor.PulseAll(LoginOccurredLock);
-                }
-                OnLoggedIn(new LoginEventArgs() { Login = true });
-                Logger.Info("Login success : " + LoginDetails.username + "@" + LoginDetails.profile + "-" +
-                            LoginDetails.workstation);
+                throw;
             }
+
+            // Exception not thrown, login success, save details
+            _reg.Username = LoginDetails.Username;
+            _reg.PasswordHash = LoginDetails.PasswordHash;
+            _reg.Profile = LoginDetails.Profile = loginRs.profileId;
+            IsLoggedIn = true;
+            // Notify all threads waiting for login
+            lock (LoginOccurredLock)
+            {
+                Monitor.PulseAll(LoginOccurredLock);
+            }
+            OnLoggedIn();
+            Logger.Info("Login success : " + _appContext.CurrentUserManager.CurrentUser.Username + "!" + _appContext.CurrentUserManager.ActiveShortCode + "@" + LoginDetails.Profile + "-" +
+                        LoginDetails.Workstation);
+
         }
 
     }

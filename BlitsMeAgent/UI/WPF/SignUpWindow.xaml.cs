@@ -9,13 +9,14 @@ using BlitsMe.Cloud.Exceptions;
 using BlitsMe.Cloud.Messaging.Request;
 using BlitsMe.Cloud.Messaging.Response;
 using log4net;
+using MahApps.Metro.Controls;
 
 namespace BlitsMe.Agent.UI.WPF
 {
     /// <summary>
     /// Interaction logic for SignUpWindow.xaml
     /// </summary>
-    public partial class SignUpWindow : Window
+    public partial class SignUpWindow : MetroWindow
     {
         private static readonly ILog Logger = LogManager.GetLogger(typeof(SignUpWindow));
         private readonly BlitsMeClientAppContext _appContext;
@@ -26,7 +27,7 @@ namespace BlitsMe.Agent.UI.WPF
         {
             _appContext = appContext;
             this.InitializeComponent();
-            _validator = new InputValidator(StatusText,ErrorText);
+            _validator = new InputValidator(null,ErrorText);
 
             // Insert code required on object creation below this point.
         }
@@ -44,16 +45,16 @@ namespace BlitsMe.Agent.UI.WPF
             ResetStatus();
 
             bool dataOK = true;
-            dataOK = _validator.ValidateFieldMatches(Username, Username.Text, UsernameLabel,
+            dataOK = _validator.ValidateFieldMatches(Username, Username.Text, null,
                                                     "Username can only use normal characters", "", ".*[^a-zA-Z0-9_\\-\\.].*") && dataOK;
-            dataOK = _validator.ValidateFieldMatches(Username, Username.Text, UsernameLabel,
+            dataOK = _validator.ValidateFieldMatches(Username, Username.Text, null,
                                                     "Username cannot contain spaces", "", ".* .*") && dataOK;
-            dataOK = _validator.ValidateFieldNonEmpty(Email, Email.Text, EmailLabel, "Please enter your email address") && _validator.ValidateEmail(Email, EmailLabel) && dataOK;
-            dataOK = _validator.ValidateFieldNonEmpty(Location, Location.Text, LocationLabel, "Please enter your location", "City, Country") && dataOK;
-            dataOK = _validator.ValidateFieldNonEmpty(Password, Password.Password, PasswordLabel, "Please enter your password") && dataOK;
-            dataOK = _validator.ValidateFieldNonEmpty(Username, Username.Text, UsernameLabel, "Please enter your preferred username") && dataOK;
-            dataOK = _validator.ValidateFieldNonEmpty(Lastname, Lastname.Text, NameLabel, "Please enter your last name", "Last") && dataOK;
-            dataOK = _validator.ValidateFieldNonEmpty(Firstname, Firstname.Text, NameLabel, "Please enter your first name", "First") && dataOK;
+            dataOK = _validator.ValidateFieldNonEmpty(Email, Email.Text, null, "Please enter your email address") && _validator.ValidateEmail(Email, null) && dataOK;
+            dataOK = _validator.ValidateFieldNonEmpty(Location, Location.Text, null, "Please enter your location", "City, Country") && dataOK;
+            dataOK = _validator.ValidateFieldNonEmpty(Password, Password.Password, null, "Please enter your password") && dataOK;
+            dataOK = _validator.ValidateFieldNonEmpty(Username, Username.Text, null, "Please enter your preferred username") && dataOK;
+            dataOK = _validator.ValidateFieldNonEmpty(Lastname, Lastname.Text, null, "Please enter your last name", "Last") && dataOK;
+            dataOK = _validator.ValidateFieldNonEmpty(Firstname, Firstname.Text, null, "Please enter your first name", "First") && dataOK;
 
 
             if (dataOK)
@@ -68,7 +69,6 @@ namespace BlitsMe.Agent.UI.WPF
                         if (!confirmPasswordWindow.ConfirmPassword.Password.Equals(Password.Password))
                         {
                             Password.Background = new SolidColorBrush(Colors.MistyRose);
-                            PasswordLabel.Foreground = new SolidColorBrush(Colors.Red);
                             _validator.setError("Passwords don't match");
                             return;
                         }
@@ -100,21 +100,18 @@ namespace BlitsMe.Agent.UI.WPF
                             if (ex.Response.signupErrors.Contains(SignupRs.SignupErrorEmailAddressInUse))
                             {
                                 Email.Background = new SolidColorBrush(Colors.MistyRose);
-                                EmailLabel.Foreground = new SolidColorBrush(Colors.Red);
                                 _validator.setError("Email address in use");
                                 foundError = true;
                             }
                             if (ex.Response.signupErrors.Contains(SignupRs.SignupErrorUserExists))
                             {
                                 Username.Background = new SolidColorBrush(Colors.MistyRose);
-                                UsernameLabel.Foreground = new SolidColorBrush(Colors.Red);
                                 _validator.setError("Username already in use");
                                 foundError = true;
                             }
                             if (ex.Response.signupErrors.Contains(SignupRs.SignupErrorPasswordComplexity))
                             {
                                 Password.Background = new SolidColorBrush(Colors.MistyRose);
-                                PasswordLabel.Foreground = new SolidColorBrush(Colors.Red);
                                 _validator.setError("Password is insecure");
                                 foundError = true;
                             }
@@ -142,90 +139,7 @@ namespace BlitsMe.Agent.UI.WPF
 
         private void ResetStatus()
         {
-            _validator.ResetStatus(new Control[] {Email,Username,Password,Location,Firstname,Lastname}, new[] {EmailLabel,UsernameLabel,PasswordLabel,LocationLabel,NameLabel,null} );
-        }
-/*
-        private bool ValidateEmail()
-        {
-            bool dataOK = true;
-            if (!Regex.IsMatch(Email.Text.Trim(),
-                               @"^(?("")(""[^""]+?""@)|(([0-9a-z]((\.(?!\.))|[-!#\$%&'\*\+/=\?\^`\{\}\|~\w])*)(?<=[0-9a-z])@))" +
-                               @"(?(\[)(\[(\d{1,3}\.){3}\d{1,3}\])|(([0-9a-z][-\w]*[0-9a-z]*\.)+[a-z0-9]{2,17}))$",
-                               RegexOptions.IgnoreCase))
-            {
-                setError("Please enter a valid email address");
-                Email.Background = new SolidColorBrush(Colors.MistyRose);
-                EmailLabel.Foreground = new SolidColorBrush(Colors.Red);
-                dataOK = false;
-            }
-            ;
-            return dataOK;
-        }
-
-        private bool ValidateFieldNonEmpty(Control textBox, string text, Label textLabel, string errorText, string defaultValue = "")
-        {
-            if (text.Equals(defaultValue) || String.IsNullOrWhiteSpace(text))
-            {
-                textBox.Background = new SolidColorBrush(Colors.MistyRose);
-                textLabel.Foreground = new SolidColorBrush(Colors.Red);
-                setError(errorText);
-                return false;
-            }
-            return true;
-        }
-
-        private void setError(string errorText)
-        {
-            ErrorText.Text = errorText;
-            ErrorText.Visibility = Visibility.Visible;
-        }
-*/
-        private void location_GotFocus(object sender, RoutedEventArgs e)
-        {
-            if (Location.Text.Equals("City, Country"))
-            {
-                Location.Text = "";
-            }
-        }
-
-        private void location_LostFocus(object sender, RoutedEventArgs e)
-        {
-            if (String.IsNullOrWhiteSpace(Location.Text))
-            {
-                Location.Text = "City, Country";
-            }
-        }
-
-        private void Firstname_GotFocus(object sender, RoutedEventArgs e)
-        {
-            if (Firstname.Text.Equals("First"))
-            {
-                Firstname.Text = "";
-            }
-        }
-
-        private void Firstname_LostFocus(object sender, RoutedEventArgs e)
-        {
-            if (String.IsNullOrWhiteSpace(Firstname.Text))
-            {
-                Firstname.Text = "First";
-            }
-        }
-
-        private void Lastname_GotFocus(object sender, RoutedEventArgs e)
-        {
-            if (Lastname.Text.Equals("Last"))
-            {
-                Lastname.Text = "";
-            }
-        }
-
-        private void Lastname_LostFocus(object sender, RoutedEventArgs e)
-        {
-            if (String.IsNullOrWhiteSpace(Lastname.Text))
-            {
-                Lastname.Text = "Last";
-            }
+            _validator.ResetStatus(new Control[] {Email,Username,Password,Location,Firstname,Lastname}, new Label[] {null,null,null,null,null,null} );
         }
     }
 }

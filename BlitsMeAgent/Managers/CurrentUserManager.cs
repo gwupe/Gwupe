@@ -19,6 +19,7 @@ namespace BlitsMe.Agent.Managers
         private readonly BlitsMeClientAppContext _appContext;
         private Person _currentUser;
         private Presence _currentUserPresence;
+        public String ActiveShortCode;
         public event EventHandler CurrentUserChanged;
 
         public Person CurrentUser
@@ -31,15 +32,16 @@ namespace BlitsMe.Agent.Managers
             get { return _currentUserPresence; }
         }
 
-        internal CurrentUserManager(BlitsMeClientAppContext appContext)
+        internal CurrentUserManager()
         {
-            _appContext = appContext;
+            _appContext = BlitsMeClientAppContext.CurrentAppContext;
             _appContext.IdleChanged += OnIdleChanged;
         }
 
-        internal void SetUser(UserElement userElement)
+        internal void SetUser(UserElement userElement, String shortCode)
         {
             _currentUser = new Person(userElement);
+            ActiveShortCode = shortCode;
             if(CurrentUserPresence == null)
             {
                 _currentUserPresence = new Presence();
@@ -74,7 +76,7 @@ namespace BlitsMe.Agent.Managers
                                 priority = _currentUserPresence.Priority,
                                 status = _currentUserPresence.Status
                             },
-                        shortCode = _currentUser.ShortCode,
+                        shortCode = ActiveShortCode,
                         user = _currentUser.Username
                     };
                 try
@@ -104,7 +106,7 @@ namespace BlitsMe.Agent.Managers
         {
             CurrentUserRq request = new CurrentUserRq();
             CurrentUserRs response = _appContext.ConnectionManager.Connection.Request<CurrentUserRq, CurrentUserRs>(request);
-            SetUser(response.userElement);
+            SetUser(response.userElement, response.shortCode);
         }
 
         internal void SaveCurrentUser(String elevateTokenId, String securityString, String password = null)
@@ -119,7 +121,8 @@ namespace BlitsMe.Agent.Managers
                             email = CurrentUser.Email,
                             user = CurrentUser.Username,
                             location = CurrentUser.Location,
-                            avatarData = CurrentUser.GetAvatarData()
+                            avatarData = CurrentUser.GetAvatarData(),
+                            supporter = CurrentUser.Supporter,
                         },
                         tokenId = elevateTokenId,
                         securityKey = securityString,
@@ -127,7 +130,7 @@ namespace BlitsMe.Agent.Managers
             if (password != null) request.password = password;
             UpdateUserRs response =
                 _appContext.ConnectionManager.Connection.Request<UpdateUserRq, UpdateUserRs>(request);
-            SetUser(response.userElement);
+            SetUser(response.userElement, ActiveShortCode);
         }
 
         public void OnCurrentUserChanged(EventArgs e)

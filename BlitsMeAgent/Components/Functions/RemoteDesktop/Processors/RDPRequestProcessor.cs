@@ -23,7 +23,7 @@ namespace BlitsMe.Agent.Components.Functions.RemoteDesktop.Processors
             RDPRequestRs response = new RDPRequestRs();
             try
             {
-                ((Function)engagement.GetFunction("RemoteDesktop")).ProcessIncomingRDPRequest(request.shortCode);
+                ((Function)engagement.GetFunction("RemoteDesktop")).ProcessIncomingRemoteDesktopRequest(request.shortCode);
             } catch (Exception e)
             {
                 Logger.Error("Failed to process incoming RDP request : " + e.Message,e);

@@ -31,7 +31,8 @@ namespace BlitsMe.Agent.UI.WPF.Utils
             {
                 setError("Please enter a valid email address");
                 email.Background = new SolidColorBrush(Colors.MistyRose);
-                emailLabel.Foreground = new SolidColorBrush(Colors.Red);
+                if(emailLabel != null)
+                    emailLabel.Foreground = new SolidColorBrush(Colors.Red);
                 dataOK = false;
             }
             ;
@@ -43,7 +44,8 @@ namespace BlitsMe.Agent.UI.WPF.Utils
             if (text.Equals(defaultValue) || String.IsNullOrWhiteSpace(text))
             {
                 control.Background = new SolidColorBrush(Colors.MistyRose);
-                textLabel.Foreground = new SolidColorBrush(Colors.Red);
+                if(textLabel != null)
+                    textLabel.Foreground = new SolidColorBrush(Colors.Red);
                 setError(errorText);
                 control.Focus();
                 Keyboard.Focus(control);
@@ -87,10 +89,10 @@ namespace BlitsMe.Agent.UI.WPF.Utils
             {
                 setError(errorString);
                 textBox.Background = new SolidColorBrush(Colors.MistyRose);
-                label.Foreground = new SolidColorBrush(Colors.Red);
+                if (label != null)
+                    label.Foreground = new SolidColorBrush(Colors.Red);
                 dataOK = false;
             }
-            ;
             return dataOK;
         }
     }

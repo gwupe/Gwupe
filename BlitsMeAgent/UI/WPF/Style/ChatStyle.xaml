@@ -4,13 +4,18 @@
 	xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
 	xmlns:ed="http://schemas.microsoft.com/expression/2010/drawing"
 	xmlns:Utils="clr-namespace:BlitsMe.Agent.UI.WPF.Utils" 
-	xmlns:chat="clr-namespace:BlitsMe.Agent.Components.Chat" 
+	xmlns:chat="clr-namespace:BlitsMe.Agent.Components.Functions.Chat" 
 	xmlns:engage="clr-namespace:BlitsMe.Agent.UI.WPF.Engage" 
 	>
 
     <!-- Resource dictionary entries should be defined here. -->
     <ResourceDictionary.MergedDictionaries>
         <ResourceDictionary Source="./Style.xaml" />
+        <ResourceDictionary Source="pack://application:,,,/MahApps.Metro;component/Styles/Colours.xaml" />
+        <ResourceDictionary Source="pack://application:,,,/MahApps.Metro;component/Styles/Fonts.xaml" />
+        <ResourceDictionary Source="pack://application:,,,/MahApps.Metro;component/Styles/Controls.xaml" />
+        <ResourceDictionary Source="pack://application:,,,/MahApps.Metro;component/Styles/Accents/BaseLight.xaml" />
+        <ResourceDictionary Source="Theme.xaml" />
     </ResourceDictionary.MergedDictionaries>
     <DataTemplate x:Key="FailedImage">
         <Image Source="/BlitsMe.Agent;component/UI/WPF/Images/1364864637_alert.png" Width="20" Margin="0,0,0,0" HorizontalAlignment="Left"></Image>
@@ -294,7 +299,7 @@
             </StackPanel>
         </StackPanel>
     </DataTemplate>
-	    <DataTemplate x:Key="ChatSystemError">
+    <DataTemplate x:Key="ChatSystemError">
         <StackPanel>
             <RichTextBox Style="{StaticResource ChatBubbleSystem}" Background="#FFFF5555" Foreground="White">
                 <FlowDocument>
@@ -358,8 +363,8 @@
                             </RichTextBox>
                             <Grid Width="Auto"  >
                                 <TextBlock Style="{StaticResource ServiceCompleteText}" Margin="6.75,4,0,0" VerticalAlignment="Top"><Run Text="Knowledge"/></TextBlock>
-								<engage:RatingControl Name="KnowledgeRating" Margin="83,6,0,0" HorizontalAlignment="Left" Width="75" Height="15" VerticalAlignment="Top" />
-								<!--
+                                <engage:RatingControl Name="KnowledgeRating" Margin="83,6,0,0" HorizontalAlignment="Left" Width="75" Height="15" VerticalAlignment="Top" />
+                                <!--
                                 <Grid Margin="90,4,0,0" Height="18" HorizontalAlignment="Left" VerticalAlignment="Top">
                                     <ed:RegularPolygon Name="Knowledge1" Style="{StaticResource ScorecardStarEmpty}" Margin="0,0,0,0" />
                                     <ed:RegularPolygon Name="Knowledge2" Style="{StaticResource ScorecardStarEmpty}" Margin="15,0,0,0" />
@@ -369,8 +374,8 @@
                                 </Grid>
 								-->
                                 <TextBlock Style="{StaticResource ServiceCompleteText}" VerticalAlignment="Top" HorizontalAlignment="Left" Margin="6.75,23,0,0"><Run Text="Service"/></TextBlock>
-								<engage:RatingControl Name="ServiceRating" Margin="83,25,0,0" HorizontalAlignment="Left" Width="75" Height="15" VerticalAlignment="Top" />
-								<!--
+                                <engage:RatingControl Name="ServiceRating" Margin="83,25,0,0" HorizontalAlignment="Left" Width="75" Height="15" VerticalAlignment="Top" />
+                                <!--
                                 <Grid Margin="90,23,0,0" Height="18" HorizontalAlignment="Left" VerticalAlignment="Top">
                                     <ed:RegularPolygon Style="{StaticResource ScorecardStarEmpty}" Margin="0,0,0,0" />
                                     <ed:RegularPolygon Style="{StaticResource ScorecardStarEmpty}" Margin="15,0,0,0" />
@@ -379,7 +384,7 @@
                                     <ed:RegularPolygon Style="{StaticResource ScorecardStarEmpty}" Margin="60,0,0,0" />
                                 </Grid>
 								-->
-								<!--
+                                <!--
                                 <Image Source="/BlitsMe.Agent;component/UI/WPF/Images/facebook-like.png" Width="59" HorizontalAlignment="Left" Margin="176,8.333,0,0" VerticalAlignment="Top"/>
                                 <Image Source="/BlitsMe.Agent;component/UI/WPF/Images/tweet.png" Width="61" HorizontalAlignment="Left" Margin="240,12.083,0,0" VerticalAlignment="Top" Height="Auto"/>
 								-->

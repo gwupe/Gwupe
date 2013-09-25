@@ -5,6 +5,7 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
+using BlitsMe.Agent.Managers;
 using BlitsMe.Agent.UI.WPF.API;
 using BlitsMe.Agent.UI.WPF.Utils;
 using BlitsMe.Cloud.Exceptions;
@@ -64,8 +65,8 @@ namespace BlitsMe.Agent.UI.WPF
                 {
                     if (PasswordChange != null && (bool)PasswordChange.IsChecked)
                     {
-                        ConfirmPasswordWindow confirmPasswordWindow = new ConfirmPasswordWindow { Owner = _appContext.UIDashBoard };
-                        confirmPasswordWindow.ShowDialog();
+                        ConfirmPasswordWindow confirmPasswordWindow = new ConfirmPasswordWindow();
+                        _appContext.UIManager.ShowDialog(confirmPasswordWindow);
                         if (!confirmPasswordWindow.Cancelled)
                         {
                             // OK, password will be changed
@@ -86,7 +87,7 @@ namespace BlitsMe.Agent.UI.WPF
                     {
                         String tokenId;
                         String securityKey;
-                        if (_appContext.Elevate(_appContext.UIDashBoard, out tokenId, out securityKey))
+                        if (_appContext.Elevate(_appContext.UIManager.CurrentWindow, out tokenId, out securityKey))
                         {
 
                             try
@@ -163,8 +164,8 @@ namespace BlitsMe.Agent.UI.WPF
 
         private void AvatarImage_Click(object sender, RoutedEventArgs e)
         {
-            var avatarWindow = new AvatarImageWindow(_appContext) { Owner = _appContext.UIDashBoard, ProfileImage = ImageStreamReader.CreateBitmapImage(_appContext.CurrentUserManager.CurrentUser.Avatar) };
-            avatarWindow.ShowDialog();
+            var avatarWindow = new AvatarImageWindow(_appContext) { ProfileImage = ImageStreamReader.CreateBitmapImage(_appContext.CurrentUserManager.CurrentUser.Avatar) };
+            _appContext.UIManager.ShowDialog(avatarWindow);
         }
 
         public void SetAsMain(Dashboard dashboard)

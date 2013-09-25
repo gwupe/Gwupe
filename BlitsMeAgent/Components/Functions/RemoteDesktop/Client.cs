@@ -3,18 +3,22 @@ using System.Net;
 using BlitsMe.Communication.P2P.RUDP.Connector;
 using BlitsMe.Communication.P2P.RUDP.Connector.API;
 using BlitsMe.Communication.P2P.RUDP.Tunnel.API;
+using log4net;
+using log4net.Repository.Hierarchy;
 
 namespace BlitsMe.Agent.Components.Functions.RemoteDesktop
 {
     internal class Client
     {
+        private static readonly ILog Logger = LogManager.GetLogger(typeof (Client));
         private ProxyFromTcpConnector _connector;
         private readonly ITransportManager _transportManager;
+        public bool Closing { get; private set; }
+        public bool Closed { get; private set; }
 
         #region Event Handling
 
         public event EventHandler ConnectionClosed;
-        public bool Closing { get; private set; }
 
         protected virtual void OnConnectionClosed()
         {
@@ -51,10 +55,12 @@ namespace BlitsMe.Agent.Components.Functions.RemoteDesktop
         internal Client(ITransportManager transportManager)
         {
             _transportManager = transportManager;
+            Closed = true;
         }
 
         internal int Start()
         {
+            Closed = false;
             _connector = new ProxyFromTcpConnector("RDP", _transportManager);
             _connector.ConnectionAccepted += ConnectorOnConnectionAccepted;
             _connector.ConnectionClosed += ConnectorOnConnectionClosed;
@@ -65,8 +71,9 @@ namespace BlitsMe.Agent.Components.Functions.RemoteDesktop
 
         internal void Close()
         {
-            if (!Closing)
+            if (!Closing && !Closed)
             {
+                Logger.Debug("Closing RemoteDesktop Proxy to local service");
                 Closing = true;
                 if (_connector != null)
                 {
@@ -77,8 +84,10 @@ namespace BlitsMe.Agent.Components.Functions.RemoteDesktop
                 }
                 // Notify listeners that we are done
                 OnConnectionClosed();
+                Closed = true;
+                Closing = false;
+                _connector = null;
             }
-            _connector = null;
         }
 
     }

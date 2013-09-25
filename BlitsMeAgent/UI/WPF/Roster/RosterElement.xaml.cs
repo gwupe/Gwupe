@@ -1,4 +1,5 @@
-﻿using System.ComponentModel;
+﻿using System;
+using System.ComponentModel;
 using System.IO;
 using System.Windows.Controls;
 using System.Windows.Media.Imaging;
@@ -7,41 +8,74 @@ using BlitsMe.Agent.UI.WPF.Engage;
 
 namespace BlitsMe.Agent.UI.WPF.Roster
 {
-	/// <summary>
-	/// Interaction logic for RosterElement.xaml
-	/// </summary>
-	public partial class RosterElement : UserControl, INotifyPropertyChanged
-	{
-	    private bool _isActive;
-	    private Person _person;
-	    public Person Person
-	    {
-	        get { return _person; }
-            set { _person = value; OnPropertyChanged(new PropertyChangedEventArgs("Person")); }
-	    }
+    /// <summary>
+    /// Interaction logic for RosterElement.xaml
+    /// </summary>
+    public partial class RosterElement : UserControl, INotifyPropertyChanged
+    {
+        private bool _isCurrent;
+        private Attendance _attendance;
+        private bool _isUnread;
+        private bool _isConversationActive;
+
+        internal long LastActive { private set; get; }
+
+        internal Attendance Attendance
+        {
+            get { return _attendance; }
+            set { _attendance = value; OnPropertyChanged(new PropertyChangedEventArgs("Attendance")); }
+        }
 
         private string ToolTip { get; set; }
 
-	    public bool IsActive
-	    {
-	        get { return _isActive; }
-	        set { _isActive = value; OnPropertyChanged(new PropertyChangedEventArgs("IsActive")); }
-	    }
-
-	    public RosterElement(Person person)
-		{
-			InitializeComponent();
-		    Person = person;
-	        ToolTip = "Chat with " + person.Firstname;
-            IsActive = false;
+        public bool IsCurrent
+        {
+            get { return _isCurrent; }
+            set
+            {
+                if (value) IsUnread = false;
+                _isCurrent = value; OnPropertyChanged(new PropertyChangedEventArgs("IsCurrent"));
+            }
         }
 
-	    public event PropertyChangedEventHandler PropertyChanged;
+        public bool IsOffline
+        {
+            get { return Attendance == null || Attendance.Presence == null || !Attendance.Presence.IsOnline; }
+        }
 
-	    public void OnPropertyChanged(PropertyChangedEventArgs e)
-	    {
-	        PropertyChangedEventHandler handler = PropertyChanged;
-	        if (handler != null) handler(this, e);
-	    }
-	}
+        public bool IsConversationActive
+        {
+            get { return _isConversationActive; }
+            set
+            {
+                if (value)
+                {
+                    LastActive = Environment.TickCount;
+                }
+                _isConversationActive = value; OnPropertyChanged(new PropertyChangedEventArgs("IsConversationActive"));
+            }
+        }
+
+        public bool IsUnread
+        {
+            get { return _isUnread; }
+            set { _isUnread = value; OnPropertyChanged(new PropertyChangedEventArgs("IsUnread")); }
+        }
+
+        internal RosterElement(Attendance attendance)
+        {
+            InitializeComponent();
+            Attendance = attendance;
+            ToolTip = "Chat with " + attendance.Person.Firstname;
+            IsCurrent = false;
+        }
+
+        public event PropertyChangedEventHandler PropertyChanged;
+
+        public void OnPropertyChanged(PropertyChangedEventArgs e)
+        {
+            PropertyChangedEventHandler handler = PropertyChanged;
+            if (handler != null) handler(this, e);
+        }
+    }
 }

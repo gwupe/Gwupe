@@ -136,6 +136,7 @@ namespace BlitsMe.Communication.P2P.RUDP.Tunnel
             _tunnels.Add(tunnel.Id, new TunnelContainer() { Priority = priority, Tunnel = tunnel });
             if (_tunnels.Count == 1)
             {
+                Logger.Debug("TransportManager has become active.");
                 IsActive = true;
                 OnActive(EventArgs.Empty);
             }
@@ -143,11 +144,14 @@ namespace BlitsMe.Communication.P2P.RUDP.Tunnel
 
         private void TunnelOnDisconnected(object sender, EventArgs args)
         {
-            if (_tunnels.ContainsKey(((IUDPTunnel)sender).Id))
+            var tunnel = (IUDPTunnel)sender;
+            if (_tunnels.ContainsKey(tunnel.Id))
             {
-                _tunnels.Remove(((IUDPTunnel) sender).Id);
+                Logger.Info("Tunnel " + tunnel.Id + " has closed, removing it from transport.");
+                _tunnels.Remove(tunnel.Id);
                 if (_tunnels.Count == 0)
                 {
+                    Logger.Debug("All tunnels have disconnected, transport manager is inactive.");
                     IsActive = false;
                     OnInactive(EventArgs.Empty);
                 }
@@ -199,6 +203,15 @@ namespace BlitsMe.Communication.P2P.RUDP.Tunnel
             _tunnels.Clear();
         }
 
+        public void CloseTunnel(IUDPTunnel outgoingTunnel)
+        {
+            if (_tunnels.ContainsKey(outgoingTunnel.Id))
+            {
+                Logger.Debug("Removing tunnel " + outgoingTunnel.Id + " from transportManager");
+                _tunnels[outgoingTunnel.Id].Tunnel.Close();
+                _tunnels.Remove(outgoingTunnel.Id);
+            }
+        }
     }
 
     internal class TunnelContainer : IComparable<TunnelContainer>

@@ -4,13 +4,12 @@ using System.Collections.ObjectModel;
 using System.Linq;
 using System.Text;
 using BlitsMe.Agent.Components;
-using BlitsMe.Agent.Components.Chat;
 using BlitsMe.Agent.Components.Person;
 using log4net;
 
 namespace BlitsMe.Agent.Managers
 {
-    internal delegate void EngagementActivityEvent(object sender, EngagementActivityArgs args);
+    internal delegate void EngagementActivityEvent(object sender, EngagementActivity args);
 
     class EngagementManager
     {
@@ -18,13 +17,14 @@ namespace BlitsMe.Agent.Managers
         private readonly BlitsMeClientAppContext _appContext;
         private readonly Dictionary<String, Engagement> _engagementLookup = new Dictionary<string, Engagement>();
         private readonly object _engagementLookupLock = new object();
+        internal bool IsClosed { get; private set; }
         public ObservableCollection<Engagement> Engagements { get; private set; }
 
         internal event EngagementActivityEvent NewActivity;
 
-        public EngagementManager(BlitsMeClientAppContext appContext)
+        public EngagementManager()
         {
-            this._appContext = appContext;
+            _appContext = BlitsMeClientAppContext.CurrentAppContext;
             Engagements = new ObservableCollection<Engagement>();
         }
 
@@ -48,26 +48,24 @@ namespace BlitsMe.Agent.Managers
                     return _engagementLookup[username.ToLower()];
                 }
 
-                Person servicePerson = _appContext.RosterManager.GetServicePerson(username.ToLower());
-                if (servicePerson == null)
+                Attendance servicePersonAttendance = _appContext.RosterManager.GetServicePersonAttendance(username.ToLower());
+                if (servicePersonAttendance == null)
                 {
                     throw new Exception("Unable to find service person [" + username + "]");
                 }
-                var newEngagement = new Engagement(_appContext, servicePerson);
-                newEngagement.Chat.NewMessage += OnChatEvent;
+                var newEngagement = new Engagement(_appContext, servicePersonAttendance);
+                newEngagement.Functions.Values.ToList().ForEach(value => value.NewActivity += (sender, args) => OnActivity(args));
                 Engagements.Add(newEngagement);
                 _engagementLookup[username.ToLower()] = newEngagement;
+                servicePersonAttendance.Engagement = newEngagement;
                 return _engagementLookup[username.ToLower()];
             }
         }
 
-        private void OnChatEvent(object sender, ChatEventArgs args)
+        public void OnActivity(EngagementActivity args)
         {
-            OnActivity(args);
-        }
-
-        public void OnActivity(EngagementActivityArgs args)
-        {
+            args.Engagement.ActivityOccured(args);
+            if (_appContext.IsShuttingDown) return;
             EngagementActivityEvent handler = NewActivity;
             if (handler != null) handler(this, args);
         }
@@ -75,6 +73,11 @@ namespace BlitsMe.Agent.Managers
         public void Reset()
         {
             Logger.Debug("Resetting Engagement Manager, clearing engagements");
+            _reset();
+        }
+
+        private void _reset()
+        {
             foreach (Engagement engagement in Engagements)
             {
                 engagement.Close();
@@ -85,7 +88,13 @@ namespace BlitsMe.Agent.Managers
 
         public void Close()
         {
-            Reset();
+            if (!IsClosed)
+            {
+                IsClosed = true;
+                Logger.Debug("Closing Engagement Manager");
+                _reset();
+            }
         }
+
     }
 }

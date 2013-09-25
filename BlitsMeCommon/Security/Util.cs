@@ -30,7 +30,14 @@ namespace BlitsMe.Common.Security
             char ch;
             for (int i = 0; i < size; i++)
             {
-                ch = Convert.ToChar(Convert.ToInt32(Math.Floor(26 * random.NextDouble() + 65)));
+                double nextDouble = random.NextDouble();
+                // choose the next char A a or 0
+                if (nextDouble < 0.33)
+                    ch = Convert.ToChar(Convert.ToInt32(Math.Floor(26 * nextDouble + 65)));
+                else if (nextDouble < 0.66)
+                    ch = Convert.ToChar(Convert.ToInt32(Math.Floor(10 * nextDouble + 48)));
+                else
+                    ch = Convert.ToChar(Convert.ToInt32(Math.Floor(26 * nextDouble + 97)));
                 builder.Append(ch);
             }
 
@@ -55,7 +62,7 @@ namespace BlitsMe.Common.Security
         {
             // step 1, calculate MD5 hash from input
             MD5 md5 = System.Security.Cryptography.MD5.Create();
-            byte[] hash = md5.ComputeHash(data,offset,count);
+            byte[] hash = md5.ComputeHash(data, offset, count);
 
             // step 2, convert byte array to hex string
             StringBuilder sb = new StringBuilder();

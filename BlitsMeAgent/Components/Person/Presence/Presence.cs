@@ -10,6 +10,7 @@ namespace BlitsMe.Agent.Components.Person.Presence
         private PresenceType _type;
         private int _priority;
         private string _resource;
+        private string _shortCode;
         private string _status;
 
         public PresenceMode Mode
@@ -22,6 +23,12 @@ namespace BlitsMe.Agent.Components.Person.Presence
         {
             get { return _type; }
             set { _type = value; OnPropertyChanged("Type"); }
+        }
+
+        public String ShortCode
+        {
+            get { return _shortCode; }
+            set { _shortCode = value; OnPropertyChanged("ShortCode"); }
         }
 
         public int Priority
@@ -53,8 +60,9 @@ namespace BlitsMe.Agent.Components.Person.Presence
         }
 
 
-        public Presence(String resource, PresenceElement presenceElement)
+        public Presence(String resource, PresenceElement presenceElement, String shortCode)
         {
+            ShortCode = shortCode;
             this.Mode = ParsePresenceMode(presenceElement.mode);
             this.Type = ParsePresenceType(presenceElement.type);
             this.Status = presenceElement.status;

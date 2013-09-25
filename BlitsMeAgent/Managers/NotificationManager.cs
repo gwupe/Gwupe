@@ -11,16 +11,15 @@ namespace BlitsMe.Agent.Managers
     class NotificationManager
     {
         private static readonly ILog Logger = LogManager.GetLogger(typeof(NotificationManager));
-        private readonly BlitsMeClientAppContext _appContext;
         public ObservableCollection<Notification> Notifications;
         public ObservableCollection<Alert> Alerts;
-        private readonly System.Timers.Timer _removerTimer;
+        private readonly Timer _removerTimer;
+        internal bool IsClosed { get; private set; }
 
-        internal NotificationManager(BlitsMeClientAppContext appContext)
+        internal NotificationManager()
         {
-            this._appContext = appContext;
             Notifications = new ObservableCollection<Notification>();
-            _removerTimer = new System.Timers.Timer { Interval = 1000 };
+            _removerTimer = new Timer { Interval = 1000 };
             _removerTimer.Elapsed += RemoveAfterTimeoutRunner;
             _removerTimer.Start();
             Alerts = new ObservableCollection<Alert>();
@@ -90,9 +89,15 @@ namespace BlitsMe.Agent.Managers
 
         internal void Close()
         {
-            if (_removerTimer != null)
+            if (!IsClosed)
             {
-                _removerTimer.Close();
+                Logger.Debug("Closing NotificationManager");
+                IsClosed = true;
+                _reset();
+                if (_removerTimer != null)
+                {
+                    _removerTimer.Close();
+                }
             }
         }
 
@@ -122,6 +127,11 @@ namespace BlitsMe.Agent.Managers
         public void Reset()
         {
             Logger.Debug("Resetting Notification Manager, clearing notifications, alerts and timers");
+            _reset();
+        }
+
+        private void _reset()
+        {
             Notifications.Clear();
             Alerts.Clear();
             _removerTimer.Stop();

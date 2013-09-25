@@ -74,12 +74,7 @@ namespace BlitsMe.Agent.Components.Person
             set { _joined = value; OnPropertyChanged("Joined"); }
         }
 
-        private readonly MultiPresence _presence;
-        internal IPresence Presence
-        {
-            get { return _presence; }
-        }
-
+        
         public IList<String> Groups { get; set; }
         private string _subscriptionStatus;
         public String SubscriptionStatus
@@ -102,35 +97,26 @@ namespace BlitsMe.Agent.Components.Person
             set { _avatar = value; OnPropertyChanged("Avatar"); }
         }
 
-        private string _shortCode;
-        public String ShortCode
+
+
+        private bool _supporter;
+        public bool Supporter
         {
-            get { return _shortCode; }
-            set
-            {
-                if ((_shortCode != value) && (_shortCode == null || !_shortCode.Equals(value)))
-                {
-                    _shortCode = value;
-                    OnPropertyChanged("ShortCode");
-                }
-            }
+            get { return _supporter; }
+            set { _supporter = value; OnPropertyChanged("Supporter"); }
         }
 
 
-        public Person()
-        {
-            this._presence = new MultiPresence();
-        }
 
         public Person(RosterElement rosterElement) : this(rosterElement.userElement)
         {
             // Set backing field directly, no listeners yet
             this.Groups = rosterElement.groups;
-            this._shortCode = rosterElement.shortCode;
+            //this._activeShortCode = rosterElement.shortCode;
             //_presence.AddPresence(new Presence.Presence("default",rosterElement.presence));
         }
 
-        public Person(UserElement userElement) : this()
+        public Person(UserElement userElement)
         {
             this._name = userElement.name;
             this._username = userElement.user.Split(new char[] {'@'})[0];
@@ -140,6 +126,7 @@ namespace BlitsMe.Agent.Components.Person
             this._joined = userElement.joined;
             this._subscriptionStatus = userElement.subscriptionStatus;
             this._subscriptionType = userElement.subscriptionType;
+            this._supporter = userElement.supporter;
             _firstname = userElement.firstname;
             _lastname = userElement.lastname;
             _description = userElement.description;
@@ -156,11 +143,7 @@ namespace BlitsMe.Agent.Components.Person
             
         }
 
-        internal void SetPresence(IPresence presence)
-        {
-            _presence.AddPresence(presence);
-            OnPropertyChanged("Presence");
-        }
+        internal Person() {}
 
         public void SetAvatarData(string avatarData)
         {

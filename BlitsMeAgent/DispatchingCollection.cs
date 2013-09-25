@@ -29,7 +29,7 @@ namespace BlitsMe.Agent
         /// Gets the collection that is being wrapped by this collection.
         /// </summary>
 
-        protected TCollection UnderlyingCollection
+        public TCollection UnderlyingCollection
         {
             get
             {

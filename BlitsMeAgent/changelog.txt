@@ -1,3 +1,7 @@
 ﻿Ratings Implementation Release
 Enabled Ratings UI on completion of RDP session
+Added basic unauthenticated proxy support (for system proxy, not explicit)
+Fixed Saving of I am a Supporter
+Added Activate Conversations Tab
+
 

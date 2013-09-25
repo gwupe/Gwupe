@@ -21,6 +21,12 @@ using log4net;
 
 namespace BlitsMe.Agent.UI.WPF.Engage
 {
+    public enum EngagementVisibleContent
+    {
+        Chat,
+        Scorecard
+    };
+
     /// <summary>
     /// Interaction logic for EngagementWindow.xaml
     /// </summary>
@@ -34,6 +40,7 @@ namespace BlitsMe.Agent.UI.WPF.Engage
         private readonly CollectionViewSource _notificationView;
         private readonly EngagementWindowDataContext _ewDataContext;
         private Alert _thisAlert;
+        internal EngagementVisibleContent EngagementVisibleContent;
 
         internal EngagementWindow(BlitsMeClientAppContext appContext, DispatchingCollection<ObservableCollection<Notification>, Notification> notificationList, Engagement engagement)
         {
@@ -86,7 +93,7 @@ namespace BlitsMe.Agent.UI.WPF.Engage
         private void EngagementOnRDPConnectionAccepted(object sender, EventArgs eventArgs)
         {
 
-            _thisAlert = new Alert() { Message = Engagement.SecondParty.Firstname + " is Connected" };
+            _thisAlert = new Alert() { Message = Engagement.SecondParty.Person.Firstname + " is Connected" };
             _appContext.NotificationManager.AddAlert(_thisAlert);
             if (Dispatcher.CheckAccess())
             {
@@ -167,18 +174,19 @@ namespace BlitsMe.Agent.UI.WPF.Engage
 
         private void ScorecardButtonClick(object sender, RoutedEventArgs e)
         {
-            if(_contactInfoWindow == null)
+            if (_contactInfoWindow == null)
             {
                 _contactInfoWindow = new ContactInfoWindow();
                 _contactInfoWindow.DataContext = Engagement.SecondParty;
             }
             EngagementContent.Content = _contactInfoWindow;
+            EngagementVisibleContent = EngagementVisibleContent.Scorecard;
         }
 
         private void SendFileButtonClick(object sender, RoutedEventArgs e)
         {
             var fileDialog = new OpenFileDialog();
-            Nullable<bool> result = fileDialog.ShowDialog(_appContext.UIDashBoard);
+            Nullable<bool> result = fileDialog.ShowDialog(_appContext.UIManager.CurrentWindow);
             if (result == true)
             {
                 string filename = fileDialog.FileName;
@@ -189,7 +197,7 @@ namespace BlitsMe.Agent.UI.WPF.Engage
         private void RemoteAssistanceButtonClick(object sender, RoutedEventArgs e)
         {
             // Request is asynchronous, we request and RDP session and then wait, acceptance on the users side will send a request to us
-            
+
             try
             {
                 ((Components.Functions.RemoteDesktop.Function)Engagement.GetFunction("RemoteDesktop")).RequestRDPSession();
@@ -208,18 +216,16 @@ namespace BlitsMe.Agent.UI.WPF.Engage
 
         internal void ShowChat()
         {
-            if (_chatWindow == null)
-            {
-                _chatWindow = new ChatWindow(_appContext, this);
-                _chatWindow.Notifications.ItemsSource = _notificationView.View;
-            }
+            _chatWindow = _chatWindow ?? new ChatWindow(_appContext, this) {Notifications = {ItemsSource = _notificationView.View}};
             EngagementContent.Content = _chatWindow;
+            Engagement.IsUnread = false;
+            EngagementVisibleContent = EngagementVisibleContent.Chat;
         }
 
         private void NotificationFilter(object sender, FilterEventArgs eventArgs)
         {
             Notification notification = eventArgs.Item as Notification;
-            if (notification != null && notification.AssociatedUsername != null && notification.AssociatedUsername.Equals(Engagement.SecondParty.Username))
+            if (notification != null && notification.AssociatedUsername != null && notification.AssociatedUsername.Equals(Engagement.SecondParty.Person.Username))
             {
                 eventArgs.Accepted = true;
             }
@@ -244,8 +250,7 @@ namespace BlitsMe.Agent.UI.WPF.Engage
 
         private void KickOffButton_Click(object sender, System.Windows.RoutedEventArgs e)
         {
-        	Thread thread = new Thread(((Components.Functions.RemoteDesktop.Function)Engagement.GetFunction("RemoteDesktop")).Server.Close)
-        	    {IsBackground = true};
+            Thread thread = new Thread(((Components.Functions.RemoteDesktop.Function)Engagement.GetFunction("RemoteDesktop")).Server.Close) { IsBackground = true };
             thread.Start();
         }
 
@@ -254,7 +259,7 @@ namespace BlitsMe.Agent.UI.WPF.Engage
     internal class EngagementWindowDataContext
     {
         private readonly BlitsMeClientAppContext _appContext;
-        public Person SecondParty { get; private set; }
+        public Attendance SecondParty { get; private set; }
         private static readonly ILog Logger = LogManager.GetLogger(typeof(EngagementWindowDataContext));
 
         public Engagement Engagement { get; private set; }

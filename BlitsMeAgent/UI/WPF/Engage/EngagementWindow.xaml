@@ -12,10 +12,15 @@
     <UserControl.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
-                <ResourceDictionary Source="/BlitsMe.Agent;component/UI/WPF/Style/EngagementStyle.xaml"/>
-                <ResourceDictionary Source="/BlitsMe.Agent;component/UI/WPF/Style/Style.xaml"/>
-                <ResourceDictionary Source="/BlitsMe.Agent;component/UI/WPF/Style/NotificationStyle.xaml"/>
+                <ResourceDictionary Source="../Style/EngagementStyle.xaml"/>
+                <ResourceDictionary Source="../Style/Style.xaml"/>
+                <ResourceDictionary Source="../Style/NotificationStyle.xaml"/>
 				<ResourceDictionary Source="../Style/RosterStyle.xaml" />
+			    <ResourceDictionary Source="pack://application:,,,/MahApps.Metro;component/Styles/Colours.xaml" />
+				<ResourceDictionary Source="pack://application:,,,/MahApps.Metro;component/Styles/Fonts.xaml" />
+				<ResourceDictionary Source="pack://application:,,,/MahApps.Metro;component/Styles/Controls.xaml" />
+				<ResourceDictionary Source="pack://application:,,,/MahApps.Metro;component/Styles/Accents/BaseLight.xaml" />
+				<ResourceDictionary Source="../Style/Theme.xaml" />
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>
     </UserControl.Resources>
@@ -39,34 +44,41 @@
                 <Button VerticalAlignment="Top" HorizontalAlignment="Left" Height="50" Width="50" Click="ChatButtonClick"  ToolTip="Chat"  DockPanel.Dock="Right" Background="White">
                     <Image Source="..\Images\1337420206_Char.png" Height="40" Width="40"/>
                 </Button>
-                <Button VerticalAlignment="Top" HorizontalAlignment="Left" Width="50" Height="50" Margin="0"  Click="ScorecardButtonClick" ToolTip="Profile" DockPanel.Dock="Right" Background="White">
+                <Button VerticalAlignment="Top" HorizontalAlignment="Left" Width="50" Height="50" Margin="0"  Click="ScorecardButtonClick" ToolTip="Profile" DockPanel.Dock="Left" Background="White">
                     <Rectangle x:Name="ImageContainer"
       Width="40" Height="40" StrokeThickness="0" HorizontalAlignment="Right" Margin="0" VerticalAlignment="Bottom">
-            <Rectangle.Fill>
-                <ImageBrush
-          Stretch="Uniform" ImageSource="{Binding Path=SecondParty.Avatar, Converter={StaticResource imageStreamReader}}"
-          PresentationOptions:Freeze="True" />
-            </Rectangle.Fill>
-        </Rectangle>
+						<Rectangle.Fill>
+							<ImageBrush
+					  Stretch="Uniform" ImageSource="{Binding Path=SecondParty.Person.Avatar, Converter={StaticResource imageStreamReader}}"
+					  PresentationOptions:Freeze="True" />
+						</Rectangle.Fill>
+					</Rectangle>
                 </Button>
-				<Grid Margin="0" DockPanel.Dock="Left">
-                    <StackPanel Margin="0,0,0,0">
-                        <TextBlock Style="{StaticResource TeamMemberNameText}" Text="{Binding Path=SecondParty.Name, FallbackValue=FirstName LastName}" />
-                        <ContentControl Content="{Binding SecondParty.Rating}" >
-                  <ContentControl.Style>
-                        <Style TargetType="{x:Type ContentControl}">
-						<Setter Property="ContentTemplate" Value="{StaticResource Rating}" />
-                            <Style.Triggers>
-                                <DataTrigger Binding="{Binding SecondParty.Rating}" Value="0">
-                                    <Setter Property="ContentTemplate" Value="{StaticResource Unrated}" />
-                                </DataTrigger>
-                            </Style.Triggers>
-                        </Style>
-                    </ContentControl.Style>
-                </ContentControl>
-                        <TextBlock Style="{StaticResource TeamMemberLocationText}" Text="{Binding Path=SecondParty.Location, FallbackValue=Planet Earth}" />
-                    </StackPanel>
-                </Grid>
+				<Grid>
+					<StackPanel VerticalAlignment="Top">
+					<Grid Margin="5,0,0,0" DockPanel.Dock="Left" VerticalAlignment="Top">
+						<StackPanel Margin="0,0,0,0" Orientation="Horizontal">
+							<TextBlock Style="{StaticResource TeamMemberNameText}" Text="{Binding Path=SecondParty.Person.Name, FallbackValue=FirstName LastName}" HorizontalAlignment="Left" Margin="0,0,0,0" />
+							<ContentControl Content="{Binding SecondParty.Person.Rating}" Margin="5,0,0,0" >
+							  <ContentControl.Style>
+									<Style TargetType="{x:Type ContentControl}">
+									<Setter Property="ContentTemplate" Value="{StaticResource Rating}" />
+										<Style.Triggers>
+											<DataTrigger Binding="{Binding SecondParty.Person.Rating}" Value="0">
+												<Setter Property="ContentTemplate" Value="{StaticResource Unrated}" />
+											</DataTrigger>
+										</Style.Triggers>
+									</Style>
+								</ContentControl.Style>
+							</ContentControl>
+						</StackPanel>
+					</Grid>
+						<StackPanel Orientation="Horizontal" HorizontalAlignment="Left" Margin="0,0,0,0">
+							<Button><StackPanel Orientation="Horizontal"><Image Source="..\Images\1337420206_Char.png" Height="20" Width="20"/><TextBlock>Yeah</TextBlock></StackPanel></Button>
+							<Button>Hi</Button>
+						</StackPanel>
+					</StackPanel>
+				</Grid>
             </DockPanel>
         </Grid>
         <Grid HorizontalAlignment="Right" Width="9" Height="58" VerticalAlignment="Top">

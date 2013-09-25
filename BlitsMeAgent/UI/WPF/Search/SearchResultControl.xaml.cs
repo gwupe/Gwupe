@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Windows.Controls;
 using System.Windows.Input;
-using BlitsMe.Agent.Components.Chat;
 using BlitsMe.Agent.Components.Person;
 using BlitsMe.Agent.Components.Search;
 using log4net;

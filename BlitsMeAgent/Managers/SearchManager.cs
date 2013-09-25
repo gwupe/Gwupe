@@ -16,13 +16,14 @@ namespace BlitsMe.Agent.Managers
     internal class SearchManager
     {
         private static readonly ILog Logger = LogManager.GetLogger(typeof (SearchManager));
-        private BlitsMeClientAppContext _appContext;
+        private readonly BlitsMeClientAppContext _appContext;
         internal ObservableCollection<SearchResult> SearchResults;
-        private Object _listWriteLock = new object();
+        private readonly Object _listWriteLock = new object();
+        internal bool IsClosed { get; private set; }
 
-        public SearchManager(BlitsMeClientAppContext appContext)
+        public SearchManager()
         {
-            _appContext = appContext;
+            _appContext = BlitsMeClientAppContext.CurrentAppContext;
             SearchResults = new ObservableCollection<SearchResult>();
         }
 
@@ -99,7 +100,11 @@ namespace BlitsMe.Agent.Managers
 
         internal void Close()
         {
-
+            if (!IsClosed)
+            {
+                Logger.Debug("Closing SearchManager");
+                IsClosed = true;
+            }
         }
 
         internal void Reset()

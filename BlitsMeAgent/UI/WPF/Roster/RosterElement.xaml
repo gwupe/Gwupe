@@ -16,16 +16,22 @@
         </ResourceDictionary>
     </UserControl.Resources>
 
-		<ContentControl Content="{Binding Person}" ToolTip="{Binding Path=ToolTip}" >
+		<ContentControl Content="{Binding Person}" ToolTip="{Binding Path=ToolTip}">
                   <ContentControl.Style>
                         <Style TargetType="{x:Type ContentControl}">
-						<Setter Property="ContentTemplate" Value="{StaticResource TeamMemberInActive}" />
+						<Setter Property="ContentTemplate" Value="{StaticResource TeamMemberOffline}" />
                             <Style.Triggers>
-                                <DataTrigger Binding="{Binding IsActive}" Value="True">
+                                <DataTrigger Binding="{Binding IsCurrent}" Value="True">
                                     <Setter Property="ContentTemplate" Value="{StaticResource TeamMemberActive}" />
                                 </DataTrigger>
-                                <DataTrigger Binding="{Binding IsActive}" Value="False">
+                                <DataTrigger Binding="{Binding IsCurrent}" Value="False">
                                     <Setter Property="ContentTemplate" Value="{StaticResource TeamMemberInActive}" />
+                                </DataTrigger>
+                                <DataTrigger Binding="{Binding IsUnread}" Value="True">
+                                    <Setter Property="ContentTemplate" Value="{StaticResource TeamMemberUnread}" />
+                                </DataTrigger>
+                                <DataTrigger Binding="{Binding IsOffline}" Value="True">
+                                    <Setter Property="ContentTemplate" Value="{StaticResource TeamMemberOffline}" />
                                 </DataTrigger>
                             </Style.Triggers>
                         </Style>

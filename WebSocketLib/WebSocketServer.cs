@@ -1086,7 +1086,18 @@ namespace Bauglir.Ex
                 // try connect directly
                 try
                 {
-                    fClient = new TcpClient(aHost, int.Parse(aPort));
+                    fClient = new TcpClient();
+                    IAsyncResult result = fClient.BeginConnect(aHost, int.Parse(aPort), null, null);
+                    bool success = result.AsyncWaitHandle.WaitOne(30000);
+                    if (!success || !fClient.Connected)
+                    {
+                        fClient.Close();
+                        throw new SocketException();
+                    }
+                    else
+                    {
+                        Logger.Debug("Connected directly to " + aHost + ":" + aPort);
+                    }
                 }
                 catch (SocketException e)
                 {
@@ -1208,7 +1219,8 @@ namespace Bauglir.Ex
                                 return true;
                             }
                         }
-                    } else
+                    }
+                    else
                     {
                         Logger.Error("Failed to upgrade connection, server did not return correct headers [" + fHeaders.ToHeaders() + "]");
                         throw new Exception("Failed to upgrade connection");
@@ -1217,7 +1229,7 @@ namespace Bauglir.Ex
             }
             catch (Exception e)
             {
-                Logger.Error("Failed to connect to server",e);
+                Logger.Error("Failed to connect to server", e);
                 throw e;
             }
             try { fClient.Close(); }

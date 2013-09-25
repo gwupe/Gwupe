@@ -28,7 +28,7 @@ namespace BlitsMe.Agent.Components.Processors
                 notification.AnsweredTrue += delegate { ProcessAnswer(true, request.username); };
                 notification.AnsweredFalse += delegate { ProcessAnswer(false, request.username); };
                 _appContext.NotificationManager.AddNotification(notification);
-                _appContext.UIDashBoard.Show();
+                _appContext.UIManager.Show();
             }
             return response;
         }

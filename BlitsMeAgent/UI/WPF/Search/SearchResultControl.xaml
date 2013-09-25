@@ -12,19 +12,24 @@
                 <ResourceDictionary Source="../Style/RosterStyle.xaml" />
                 <ResourceDictionary Source="../Style/Style.xaml"/>
                 <ResourceDictionary Source="../Style/SearchStyle.xaml"/>
+                <ResourceDictionary Source="pack://application:,,,/MahApps.Metro;component/Styles/Colours.xaml" />
+                <ResourceDictionary Source="pack://application:,,,/MahApps.Metro;component/Styles/Fonts.xaml" />
+                <ResourceDictionary Source="pack://application:,,,/MahApps.Metro;component/Styles/Controls.xaml" />
+                <ResourceDictionary Source="pack://application:,,,/MahApps.Metro;component/Styles/Accents/BaseLight.xaml" />
+                <ResourceDictionary Source="../Style/Theme.xaml" />
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>
     </UserControl.Resources>
-    <ListBoxItem Padding="0,3,0,0">
-        <Border Style="{StaticResource TeamMemberBorder}">
-			<Grid>
-                <Image Source="{Binding Path=Person.Avatar, Converter={StaticResource imageStreamReader}}" Height="50" HorizontalAlignment="Left" Width="50" Margin="0,0,5,0" DataContext="{Binding}" />
-                <StackPanel Margin="53,0,0,0" Width="150" HorizontalAlignment="Left" VerticalAlignment="Center">
-                    <TextBlock Style="{StaticResource TeamMemberNameText}" Text="{Binding Path=Person.Name, FallbackValue=FirstName LastName}" Width="150" TextAlignment="Center" />
-				<ContentControl Content="{Binding Person.Rating}" >
-                  <ContentControl.Style>
+    <Grid Style="{StaticResource SearchBase}">
+        <Grid Style="{StaticResource SearchInner}">
+            <ContentPresenter ContentTemplate="{StaticResource PersonIcon}" Content="{Binding Person}" />
+            <!-- <Image Source="{Binding Path=Person.Avatar, Converter={StaticResource imageStreamReader}}" Height="50" HorizontalAlignment="Left" Width="50" Margin="0,0,5,0" DataContext="{Binding}" /> -->
+            <StackPanel Margin="53,0,0,0" Width="150" HorizontalAlignment="Left" VerticalAlignment="Center">
+                <TextBlock Style="{StaticResource TeamMemberNameText}" Text="{Binding Path=Person.Name, FallbackValue=FirstName LastName}" Width="150" TextAlignment="Center" />
+                <ContentControl Content="{Binding Person.Rating}" >
+                    <ContentControl.Style>
                         <Style TargetType="{x:Type ContentControl}">
-						<Setter Property="ContentTemplate" Value="{StaticResource Rating}" />
+                            <Setter Property="ContentTemplate" Value="{StaticResource Rating}" />
                             <Style.Triggers>
                                 <DataTrigger Binding="{Binding Person.Rating}" Value="0">
                                     <Setter Property="ContentTemplate" Value="{StaticResource Unrated}" />
@@ -33,14 +38,13 @@
                         </Style>
                     </ContentControl.Style>
                 </ContentControl>
-                    <TextBlock Style="{StaticResource TeamMemberLocationText}" Text="{Binding Path=Person.Location, FallbackValue=Planet Earth}" Width="150" TextAlignment="Center" />
-                </StackPanel>
-                <TextBlock Style="{DynamicResource ProspectDescription}" Text="{Binding Path=Person.Description, FallbackValue=Description of my skills.}" Margin="206,0,103,0" HorizontalAlignment="Stretch" />
-				<StackPanel HorizontalAlignment="Right" Width="100" VerticalAlignment="Center">
-					<Button x:Name="AddPersonButton" Content="{Binding AddText, FallbackValue=Add}" IsEnabled="{Binding CanAdd, FallbackValue=true}" Margin="2" />
-					<!-- <Button x:Name="ChatPersonButton" Content="Chat" Margin="2" Click="ChatPersonButton_Click" /> -->
-				</StackPanel>
-			</Grid>
-        </Border>
-    </ListBoxItem>
+                <TextBlock Style="{StaticResource TeamMemberLocationText}" Text="{Binding Path=Person.Location, FallbackValue=Planet Earth}" Width="150" TextAlignment="Center" />
+            </StackPanel>
+            <TextBlock Style="{DynamicResource ProspectDescription}" Text="{Binding Path=Person.Description, FallbackValue=Description of my skills.}" Margin="206,0,103,0" HorizontalAlignment="Stretch" />
+            <StackPanel HorizontalAlignment="Right" Width="100" VerticalAlignment="Center">
+                <Button x:Name="AddPersonButton" Content="{Binding AddText, FallbackValue=Add}" IsEnabled="{Binding CanAdd, FallbackValue=true}" Margin="2" />
+                <!-- <Button x:Name="ChatPersonButton" Content="Chat" Margin="2" Click="ChatPersonButton_Click" /> -->
+            </StackPanel>
+        </Grid>
+    </Grid>
 </UserControl>

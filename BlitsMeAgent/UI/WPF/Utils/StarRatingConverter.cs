@@ -15,7 +15,6 @@ namespace BlitsMe.Agent.UI.WPF.Utils
             {
                 int rating = (int) value;
                 var widthOfCover = MaxCoverLength - (rating*MaxCoverLength/100);
-                Logger.Debug("Width of cover is now " + widthOfCover);
                 return widthOfCover;
             }
             return 0;

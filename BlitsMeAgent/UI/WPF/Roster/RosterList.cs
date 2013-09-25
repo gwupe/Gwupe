@@ -1,10 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using System.ComponentModel;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
+using System.Windows;
+using System.Windows.Controls;
 using System.Windows.Data;
+using System.Windows.Media.Animation;
 using System.Windows.Threading;
 using BlitsMe.Agent.Components.Person;
 using BlitsMe.Agent.UI.WPF.Utils;
@@ -12,50 +17,65 @@ using log4net;
 
 namespace BlitsMe.Agent.UI.WPF.Roster
 {
-    class RosterList : ObservableListMirror<Person, RosterElement>
+    abstract class RosterList
     {
+        private readonly DispatchingCollection<ObservableCollection<Attendance>, Attendance> _rosterCollection;
+        private readonly ListBox _listBox;
         private static readonly ILog Logger = LogManager.GetLogger(typeof(RosterList));
-        private readonly BlitsMeClientAppContext _appContext;
         // This collection is for manipulating the roster for display (sort etc)
-        public CollectionViewSource RosterViewSource { get; private set; }
+        internal CollectionViewSource ContactsView { get; private set; }
 
-        public RosterList(BlitsMeClientAppContext appContext, Dispatcher dispatcher) : base(dispatcher)
+        protected RosterList(DispatchingCollection<ObservableCollection<Attendance>, Attendance> rosterCollection, ListBox listBox)
         {
-            this._appContext = appContext;
+            _rosterCollection = rosterCollection;
+            _listBox = listBox;
             // Setup the view on this list, so offline people are offline, sorting is correct etc.
-            RosterViewSource = new CollectionViewSource {Source = List};
-            RosterViewSource.Filter += RosterFilter;
-            RosterViewSource.SortDescriptions.Add(new SortDescription("Person.Rating", ListSortDirection.Descending));
+            ContactsView = new CollectionViewSource { Source = rosterCollection };
+            ContactsView.Filter += FilterEventHandler;
+            rosterCollection.UnderlyingCollection.CollectionChanged += ContactCollectionChanged;
         }
 
-        protected override RosterElement CreateNew(Person sourceObject)
+        private void ContactCollectionChanged(object sender, NotifyCollectionChangedEventArgs eventArgs)
         {
-            sourceObject.PropertyChanged += RosterItemChanged;
-            return new RosterElement(sourceObject);
-        }
-
-        private void RosterItemChanged(object sender, PropertyChangedEventArgs eventArgs)
-        {
-            if(Dispatcher.CheckAccess())
+            switch (eventArgs.Action)
             {
-                RosterViewSource.View.Refresh();
-            } else
-            {
-                Dispatcher.Invoke(new Action(() => RosterViewSource.View.Refresh()));
+                case NotifyCollectionChangedAction.Add:
+                    {
+                        if (eventArgs.NewItems != null)
+                        {
+                            foreach (Attendance newItem in eventArgs.NewItems)
+                            {
+                                newItem.PropertyChanged += OnAttendancePropertyChange;
+                                    
+                            }
+                        }
+                    }
+                    break;
             }
         }
 
-        private void RosterFilter(object sender, FilterEventArgs eventArgs)
+        internal void MarkRoster(Attendance attendance, bool markActive = false)
         {
-            RosterElement rosterElement = eventArgs.Item as RosterElement;
-            if (rosterElement != null && rosterElement.Person != null && rosterElement.Person.Presence != null && rosterElement.Person.Presence.IsOnline)
+            var element = _listBox.ItemContainerGenerator.ContainerFromItem(attendance) as ListBoxItem;
+            if (element != null && element.IsSelected == false)
             {
-                eventArgs.Accepted = true;
-            }
-            else
-            {
-                eventArgs.Accepted = false;
+                element.IsSelected = true;
             }
         }
+
+        private void OnAttendancePropertyChange(object sender, PropertyChangedEventArgs propertyChangedEventArgs)
+        {
+            if (!_rosterCollection.Dispatcher.CheckAccess())
+            {
+                _rosterCollection.Dispatcher.Invoke(new Action(() => OnAttendancePropertyChange(sender, propertyChangedEventArgs)));
+                return;
+            }
+            if (propertyChangedEventArgs.PropertyName.Equals("Presence"))
+                ContactsView.View.Refresh();
+        }
+
+        //protected abstract void RosterItemChanged(object sender, PropertyChangedEventArgs eventArgs);
+        protected abstract void FilterEventHandler(object sender, FilterEventArgs eventArgs);
+
     }
 }

@@ -25,7 +25,7 @@ namespace BlitsMe.Agent.Components.Functions.FileSend.Processors
             }
             catch (Exception e)
             {
-                Logger.Error("Failed to process incoming File Send request : " + e.Message);
+                Logger.Error("Failed to process incoming File Send request : " + e.Message,e);
                 response.error = "UNKNOWN_ERROR";
                 response.errorMessage = "Failed to process incoming File Send request";
             }

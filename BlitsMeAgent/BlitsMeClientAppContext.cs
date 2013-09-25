@@ -24,7 +24,6 @@ using log4net;
 using log4net.Config;
 using log4net.Core;
 using log4net.Repository.Hierarchy;
-using Dashboard = BlitsMe.Agent.UI.WPF.Dashboard;
 
 namespace BlitsMe.Agent
 {
@@ -39,7 +38,7 @@ namespace BlitsMe.Agent
         private static readonly ILog Logger = LogManager.GetLogger(typeof(BlitsMeClientAppContext));
         internal readonly BlitsMeServiceProxy BlitsMeServiceProxy;
         private readonly SystemTray _systray;
-        public Dashboard UIDashBoard;
+        //public Dashboard UIDashBoard;
         public P2PManager P2PManager;
         private RequestManager _requestManager;
         internal CurrentUserManager CurrentUserManager { get; private set; }
@@ -49,17 +48,17 @@ namespace BlitsMe.Agent
         internal EngagementManager EngagementManager { get; private set; }
         internal NotificationManager NotificationManager { get; private set; }
         internal SearchManager SearchManager { get; private set; }
-        internal Thread DashboardUiThread;
-        internal UpdateNotification UpdateNotification;
+        internal UIManager UIManager { get; private set; }
+        //internal Thread DashboardUiThread;
         internal bool IsShuttingDown { get; private set; }
         internal readonly BLMRegistry Reg = new BLMRegistry();
         internal readonly String StartupVersion;
         internal readonly ScheduleManager ScheduleManager;
         private IdleState _idleState;
-        private readonly AutoResetEvent _dashboardReady;
         internal ObservableCollection<String> ChangeLog = new ObservableCollection<string>();
-        internal String ChangeDescription;
-        internal BlitsMeClientAppContext CurrentBlitsMeAppContext;
+        internal string ChangeDescription { get; set; }
+
+        internal static BlitsMeClientAppContext CurrentAppContext;
 
         /// <summary>
         /// This class should be created and passed into Application.Run( ... )
@@ -67,7 +66,7 @@ namespace BlitsMe.Agent
         /// <param name="options"> </param>
         public BlitsMeClientAppContext(List<BlitsMeOption> options)
         {
-            CurrentBlitsMeAppContext = this;
+            CurrentAppContext = this;
             Options = options;
             XmlConfigurator.Configure(Assembly.GetExecutingAssembly().GetManifestResourceStream("BlitsMe.Agent.log4net.xml"));
             StartupVersion = Regex.Replace(FileVersionInfo.GetVersionInfo(Assembly.GetExecutingAssembly().Location).FileVersion, "\\.[0-9]+$", "");
@@ -78,30 +77,38 @@ namespace BlitsMe.Agent
                 Logger.Debug("Embedded Resource : " + manifestResourceName);
             }
 #endif
-            _dashboardReady = new AutoResetEvent(false);
             BlitsMeServiceProxy = new BlitsMeServiceProxy();
-            ConnectionManager = new ConnectionManager(this);
-            LoginManager = new LoginManager(this);
+            ConnectionManager = new ConnectionManager();
+            LoginManager = new LoginManager();
             P2PManager = new P2PManager();
-            RosterManager = new RosterManager(this);
-            EngagementManager = new EngagementManager(this);
-            NotificationManager = new NotificationManager(this);
-            SearchManager = new SearchManager(this);
-            CurrentUserManager = new CurrentUserManager(this);
-            _systray = new SystemTray(this);
-            ConnectionManager.Start();
-            _requestManager = new RequestManager(this);
-            ScheduleManager = new ScheduleManager(this);
+            RosterManager = new RosterManager();
+            EngagementManager = new EngagementManager();
+            NotificationManager = new NotificationManager();
+            SearchManager = new SearchManager();
+            CurrentUserManager = new CurrentUserManager();
+            _systray = new SystemTray();
+            UIManager = new UIManager();
+            _requestManager = new RequestManager();
+            ScheduleManager = new ScheduleManager();
             ScheduleManager.AddTask(new CheckUpgradeTask(this) { PeriodSeconds = 120 });
             ScheduleManager.AddTask(new CheckServiceTask(this) { PeriodSeconds = 120 });
             ScheduleManager.AddTask(new DetectIdleTask(this));
+            SetupChangeLog();
+            // Start all the Active Managers
+            UIManager.Start();
             ScheduleManager.Start();
-            // Annoying how long it takes to show the window, so load it here
-            SetupAndRunDashboard();
-            EngagementManager.NewActivity += UIDashBoard.EngagementManagerOnNewActivity;
+            ConnectionManager.Start();
             LoginManager.Start();
+            _systray.Start();
+            // Set correct last version
+            Reg.LastVersion = StartupVersion;
+        }
+
+        private void SetupChangeLog()
+        {
             if (!StartupVersion.Equals(Reg.LastVersion))
             {
+                Logger.Debug("BlitsMe has been upgraded, reading and displaying changelog");
                 try
                 {
                     using (
@@ -120,27 +127,14 @@ namespace BlitsMe.Agent
                             }
                         }
                     }
-                    SetupAndRunUpdateNotificationWindow();
                 }
                 catch (Exception e)
                 {
                     Logger.Error("Failed to read changelog file : " + e.Message);
                 }
             }
-            Reg.LastVersion = StartupVersion;
         }
 
-        private void SetupAndRunUpdateNotificationWindow()
-        {
-            Thread thread = new Thread(() =>
-                {
-                    UpdateNotification = new UpdateNotification(this);
-                    UpdateNotification.Show();
-                    Dispatcher.Run();
-                }) { Name = "updateNotificationThread" };
-            thread.SetApartmentState(ApartmentState.STA);
-            thread.Start();
-        }
 
         internal bool Debug
         {
@@ -181,25 +175,15 @@ namespace BlitsMe.Agent
 
         public void OnIconClickLaunchDashboard(object sender, EventArgs e)
         {
-            if (ConnectionManager.Connection.isEstablished())
-            {
-                if (LoginManager.IsLoggedIn)
-                {
-                    UIDashBoard.Show();
-                }
-                else
-                {
-                    LoginManager.ShowLoginWindow();
-                }
-            }
+            UIManager.Show();
         }
-
+        /*
         private void RunDashboard()
         {
             UIDashBoard = new Dashboard(this);
             _dashboardReady.Set();
             Dispatcher.Run();
-        }
+        }*/
 
         public bool Elevate(Window parentWindow, out String tokenId, out String securityKey)
         {
@@ -227,6 +211,7 @@ namespace BlitsMe.Agent
             return true;
         }
 
+        /*
         internal void SetupAndRunDashboard()
         {
             if (DashboardUiThread == null)
@@ -236,7 +221,7 @@ namespace BlitsMe.Agent
                 DashboardUiThread.Start();
                 _dashboardReady.WaitOne();
             }
-        }
+        }*/
 
         // Handle messages from the dashboard window
         public IntPtr WndProc(IntPtr hwnd, int msg, IntPtr wParam, IntPtr lParam, ref bool handled)
@@ -250,14 +235,7 @@ namespace BlitsMe.Agent
                 )
             {
                 Logger.Debug("Received show message to my handle " + hwnd);
-                if (LoginManager.IsLoggedIn)
-                {
-                    UIDashBoard.Show();
-                }
-                else
-                {
-                    LoginManager.ShowLoginWindow();
-                }
+                UIManager.Show();
                 handled = true;
             }
             else if (msg == OsUtils.WM_SHUTDOWNBM &&
@@ -298,34 +276,36 @@ namespace BlitsMe.Agent
         {
             this.IsShuttingDown = true;
             // before we exit, lets cleanup
+            // Stop scheduled things from happening
             if (ScheduleManager != null)
                 ScheduleManager.Close();
-            if (EngagementManager != null)
-                EngagementManager.Close();
-            if (NotificationManager != null)
-                NotificationManager.Close();
-            if (RosterManager != null)
-                RosterManager.Close();
-            if(UpdateNotification != null)
-            {
-                UpdateNotification.Close();
-            }
-            if (DashboardUiThread != null)
-            {
-                UIDashBoard.Dispatcher.InvokeShutdown();
-                DashboardUiThread.Abort();
-                DashboardUiThread = null;
-            }
-            if (SearchManager != null)
-                SearchManager.Close();
-            if (BlitsMeServiceProxy != null)
-                BlitsMeServiceProxy.close();
+            // Logout and prevent trying to log back in
             if (LoginManager != null)
                 LoginManager.Close();
+            // Close up the engagements
+            if (EngagementManager != null)
+                EngagementManager.Close();
+            // No more notifications
+            if (NotificationManager != null)
+                NotificationManager.Close();
+            // Clear and close contact list
+            if (RosterManager != null)
+                RosterManager.Close();
+            // No more searching
+            if (SearchManager != null)
+                SearchManager.Close();
+            // Don't need service contact anymore
+            if (BlitsMeServiceProxy != null)
+                BlitsMeServiceProxy.close();
+            // Connection can close
             if (ConnectionManager != null)
                 ConnectionManager.Close();
+            // Stop showing stuff
+            if (UIManager != null)
+                UIManager.Close();
+            // Remove SystemTray
             if (_systray != null)
-                _systray.close();
+                _systray.Close();
             // Done
             Logger.Info("BlitsMe.Agent has shut down");
             base.ExitThreadCore();

@@ -14,6 +14,7 @@ namespace BlitsMe.Agent.Managers
         private readonly BlitsMeClientAppContext _appContext;
         private readonly CloudConnection _connection;
         private readonly BLMRegistry _reg = new BLMRegistry();
+        internal bool IsClosed { get; private set; }
         public event ConnectionEvent Disconnect
         {
             add { _connection.Disconnect += value; }
@@ -34,10 +35,10 @@ namespace BlitsMe.Agent.Managers
             }
         }
 
-        public ConnectionManager(BlitsMeClientAppContext appContext)
+        public ConnectionManager()
         {
-            this._appContext = appContext;
-            _connection = new CloudConnection();//,GetServers());
+            _appContext = BlitsMeClientAppContext.CurrentAppContext;
+            _connection = new CloudConnection();
             SaveServers(_connection.Servers);
         }
 
@@ -86,9 +87,14 @@ namespace BlitsMe.Agent.Managers
 
         public void Close()
         {
-            if (_connection != null)
+            if (!IsClosed)
             {
-                _connection.Close();
+                Logger.Debug("Closing ConnectionManager");
+                IsClosed = true;
+                if (_connection != null)
+                {
+                    _connection.Close();
+                }
             }
         }
 

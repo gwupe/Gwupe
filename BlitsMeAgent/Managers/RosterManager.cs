@@ -2,6 +2,8 @@
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.ComponentModel;
+using System.Runtime.Serialization;
 using System.Threading;
 using BlitsMe.Agent.Components.Person;
 using BlitsMe.Agent.Components.Person.Presence;
@@ -17,42 +19,42 @@ namespace BlitsMe.Agent.Managers
     {
         private const int PauseOnRosterFail = 10000;
         private static readonly ILog Logger = LogManager.GetLogger(typeof(RosterManager));
-        //private readonly Thread _rosterManagerThread;
         private readonly BlitsMeClientAppContext _appContext;
         private readonly RosterRq _rosterRequest = new RosterRq();
         private bool _haveRoster;
         private readonly ConcurrentQueue<PresenceChangeRq> _queuedPresenceChanges;
+        private Attendance _currentlyEngaged;
 
-        public event EventHandler RosterRefreshed;
-        public event EventHandler EntriesUpdated;
-        public event EventHandler EntriesDeleted;
+        internal ObservableCollection<Attendance> ServicePersonAttendanceList { get; private set; }
+        private Dictionary<String, Attendance> ServicePersonAttendanceLookup { get; set; }
+        internal bool IsClosed { get; private set; }
+        internal Attendance CurrentlyEngaged { get { return _currentlyEngaged; } }
 
-        public ObservableCollection<Person> ServicePersonList { get; private set; }
-        private Dictionary<String, Person> ServicePersonLookup { get; set; }
-
-        public RosterManager(BlitsMeClientAppContext appContext)
+        public RosterManager()
         {
-            this._appContext = appContext;
-            ServicePersonList = new ObservableCollection<Person>();
-            ServicePersonLookup = new Dictionary<String, Person>();
+            _appContext = BlitsMeClientAppContext.CurrentAppContext;
+            ServicePersonAttendanceList = new ObservableCollection<Attendance>();
+            ServicePersonAttendanceLookup = new Dictionary<String, Attendance>();
             _queuedPresenceChanges = new ConcurrentQueue<PresenceChangeRq>();
-            // Manager thread
-            // This is now on demand by the Login Manager
-            //_rosterManagerThread = new Thread(Run) { IsBackground = true, Name = "_rosterManagerThread" };
-            //_rosterManagerThread.Start();
+            _appContext.LoginManager.LoggedOut += (sender, args) => Reset();
         }
 
         public void Close()
         {
-            //if (_rosterManagerThread != null)
-            //    _rosterManagerThread.Abort();
+            if (!IsClosed)
+            {
+                Logger.Debug("Closing RosterManager");
+                _reset();
+                IsClosed = true;
+            }
         }
 
-        public Person GetServicePerson(String username)
+
+        internal Attendance GetServicePersonAttendance(String username)
         {
-            if (ServicePersonLookup.ContainsKey(username))
+            if (ServicePersonAttendanceLookup.ContainsKey(username))
             {
-                return ServicePersonLookup[username];
+                return ServicePersonAttendanceLookup[username];
             }
             return null;
         }
@@ -61,7 +63,7 @@ namespace BlitsMe.Agent.Managers
         {
             if (_haveRoster)
             {
-                ChangePresence(request.user, request.shortCode, new Presence(request.resource, request.presence));
+                ChangePresence(request.user, new Presence(request.resource, request.presence, request.shortCode));
             }
             else
             {
@@ -69,69 +71,29 @@ namespace BlitsMe.Agent.Managers
             }
         }
 
-        private void ChangePresence(String user, String shortCode, Presence presence)
+        private void ChangePresence(String user, Presence presence)
         {
-            if (!ServicePersonLookup.ContainsKey(user))
+            Logger.Debug("Change Presence Request for " + user);
+            if (!ServicePersonAttendanceLookup.ContainsKey(user))
             {
                 if (PresenceType.unavailable.Equals(presence.Type))
                     return;
                 // if we are getting presence alerts (excl unavail), we need to create this user
                 AddUsernameToList(user, presence);
             }
-            Person servicePerson = _appContext.RosterManager.GetServicePerson(user);
-            if (servicePerson != null)
+            Attendance servicePersonAttendance = _appContext.RosterManager.GetServicePersonAttendance(user);
+            if (servicePersonAttendance != null)
             {
-                servicePerson.SetPresence(presence);
-                Logger.Debug("Incoming presence change for " + user + " [" + presence + "], resource = " + presence.Resource + ", priority " + presence.Priority);
+                servicePersonAttendance.SetPresence(presence);
+                Logger.Debug("Incoming presence change for " + user + " [" + presence + "], resource = " + presence.Resource + ", shortCode = " + presence.ShortCode + ", priority " + presence.Priority);
                 Logger.Info("Presence change, now " + user +
-                            (servicePerson.Presence.IsOnline ?
-                                " is available " + "[" + servicePerson.Presence + "], resource " + servicePerson.Presence.Resource + ", priority " + servicePerson.Presence.Priority :
-                                " is no longer available " + "[" + servicePerson.Presence + "]")
+                            (servicePersonAttendance.Presence.IsOnline ?
+                                " is available " + "[" + servicePersonAttendance.Presence + "], resource " + servicePersonAttendance.Presence.Resource + ", shortCode = " + servicePersonAttendance.Presence.ShortCode + ", priority " + servicePersonAttendance.Presence.Priority :
+                                " is no longer available " + "[" + servicePersonAttendance.Presence + "]")
                                 );
-                if (shortCode != null)
-                {
-                    servicePerson.ShortCode = shortCode;
-                }
             }
 
         }
-
-/*
-        private void Run()
-        {
-            while (true)
-            {
-
-                lock (_appContext.LoginManager.LoginOccurredLock)
-                {
-                    if (!_appContext.ConnectionManager.IsOnline())
-                    {
-                        Monitor.Wait(_appContext.LoginManager.LoginOccurredLock);
-                    }
-                }
-                lock (_appContext.LoginManager.LogoutOccurredLock)
-                {
-                    // Lets get the Roster
-#if DEBUG
-                    Logger.Debug("Retrieving the Roster");
-#endif
-                    try
-                    {
-                        RetrieveRoster();
-                        if (_appContext.ConnectionManager.IsOnline())
-                        {
-                            Monitor.Wait(_appContext.LoginManager.LogoutOccurredLock);
-                        }
-                    }
-                    catch (Exception e)
-                    {
-                        Logger.Error("Failed to get the roster, trying again : " + e.Message, e);
-                    }
-
-                }
-            }
-        }
-*/
 
         internal void RetrieveRoster()
         {
@@ -172,7 +134,7 @@ namespace BlitsMe.Agent.Managers
                             PresenceChangeRq request;
                             if (_queuedPresenceChanges.TryDequeue(out request))
                             {
-                                ChangePresence(request.user, request.shortCode, new Presence(request.resource, request.presence));
+                                ChangePresence(request.user, new Presence(request.resource, request.presence, request.shortCode));
                             }
                             else
                             {
@@ -202,19 +164,25 @@ namespace BlitsMe.Agent.Managers
 
         internal void Reset()
         {
-            ServicePersonList.Clear();
-            ServicePersonLookup.Clear();
+            Logger.Debug("Resetting Roster");
+            _reset();
+        }
+
+        private void _reset()
+        {
+            ServicePersonAttendanceList.Clear();
+            ServicePersonAttendanceLookup.Clear();
         }
 
         private void ResponseHandler(VCardRq vCardRq, VCardRs vCardRs, Exception e)
         {
             if (e == null)
             {
-                if (!String.IsNullOrWhiteSpace(vCardRs.userElement.avatarData) && ServicePersonLookup.ContainsKey(vCardRq.username))
+                if (!String.IsNullOrWhiteSpace(vCardRs.userElement.avatarData) && ServicePersonAttendanceLookup.ContainsKey(vCardRq.username))
                 {
                     try
                     {
-                        ServicePersonLookup[vCardRq.username].SetAvatarData(vCardRs.userElement.avatarData);
+                        ServicePersonAttendanceLookup[vCardRq.username].Person.SetAvatarData(vCardRs.userElement.avatarData);
                     }
                     catch (Exception e1)
                     {
@@ -244,20 +212,42 @@ namespace BlitsMe.Agent.Managers
 
         private void AddUserElementToList(UserElement userElement, Presence presence = null)
         {
-            Person person = new Person(userElement);
+            Attendance attendance = new Attendance(userElement);
+            attendance.PropertyChanged += MarkUnmarkCurrentlyEngaged;
             if (presence != null)
             {
-                person.SetPresence(presence);
+                attendance.SetPresence(presence);
             }
-            ServicePersonList.Add(person);
-            ServicePersonLookup[person.Username] = person;
+            ServicePersonAttendanceList.Add(attendance);
+            ServicePersonAttendanceLookup[attendance.Person.Username] = attendance;
+        }
+
+        private void MarkUnmarkCurrentlyEngaged(object sender, PropertyChangedEventArgs propertyChangedEventArgs)
+        {
+            if (propertyChangedEventArgs.PropertyName.Equals("IsCurrentlyEngaged"))
+            {
+                var newCurrent = sender as Attendance;
+                if (newCurrent != null && newCurrent.IsCurrentlyEngaged)
+                {
+                    if (_currentlyEngaged != newCurrent)
+                    {
+                        if (_currentlyEngaged != null)
+                        {
+                            Logger.Debug(_currentlyEngaged + " is no longer currently engaged");
+                            _currentlyEngaged.IsCurrentlyEngaged = false;
+                        }
+                        _currentlyEngaged = newCurrent;
+                        Logger.Debug(_currentlyEngaged + " is now engaged");
+                    }
+                }
+            }
         }
 
         public void AddPerson(Person person)
         {
             // Lets add this person to the roster
-            Logger.Debug("Attempting to add " + person + " to " + _appContext.LoginManager.LoginDetails.username + "'s Team");
-            if (ServicePersonLookup.ContainsKey(person.Username))
+            Logger.Debug("Attempting to add " + person + " to " + _appContext.CurrentUserManager.CurrentUser.Username + "'s Team");
+            if (ServicePersonAttendanceLookup.ContainsKey(person.Username))
             {
                 Logger.Error("Will not add " + person.Username + " to list, he/she already exists");
             }

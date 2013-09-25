@@ -3,11 +3,14 @@ using System.Net;
 using BlitsMe.Communication.P2P.RUDP.Connector;
 using BlitsMe.Communication.P2P.RUDP.Connector.API;
 using BlitsMe.Communication.P2P.RUDP.Tunnel.API;
+using log4net;
+using log4net.Repository.Hierarchy;
 
 namespace BlitsMe.Agent.Components.Functions.RemoteDesktop
 {
     internal class Server
     {
+        private static readonly ILog Logger = LogManager.GetLogger(typeof (Server));
         private ProxyTcpTransportListener _vncListener;
         private readonly ITransportManager _transportManager;
         internal bool Closing { get; private set; }
@@ -51,6 +54,7 @@ namespace BlitsMe.Agent.Components.Functions.RemoteDesktop
         internal Server(ITransportManager manager)
         {
             _transportManager = manager;
+            Closed = true;
         }
 
         public bool Listening
@@ -79,6 +83,7 @@ namespace BlitsMe.Agent.Components.Functions.RemoteDesktop
         {
             if (!Closing && !Closed)
             {
+                Logger.Debug("Closing RemoteDesktop ServerProxy");
                 Closing = true;
                 if (_vncListener != null)
                 {

@@ -10,25 +10,40 @@
 	<UserControl.Resources>
 		<ResourceDictionary>
 			<ResourceDictionary.MergedDictionaries>
-				<ResourceDictionary Source="/BlitsMe.Agent;component/UI/WPF/Style/SearchStyle.xaml"/>
+				<ResourceDictionary Source="../Style/SearchStyle.xaml"/>
+				<ResourceDictionary Source="../Style/RosterStyle.xaml"/>
+				<ResourceDictionary Source="pack://application:,,,/MahApps.Metro;component/Styles/Colours.xaml" />
+				<ResourceDictionary Source="pack://application:,,,/MahApps.Metro;component/Styles/Fonts.xaml" />
+				<ResourceDictionary Source="pack://application:,,,/MahApps.Metro;component/Styles/Controls.xaml" />
+				<ResourceDictionary Source="pack://application:,,,/MahApps.Metro;component/Styles/Accents/BaseLight.xaml" />
+				<ResourceDictionary Source="../Style/Theme.xaml" />
 			</ResourceDictionary.MergedDictionaries>
 		</ResourceDictionary>
 	</UserControl.Resources>
 
-	<Grid x:Name="LayoutRoot">
-		<ListBox ItemsSource="{Binding}" x:Name="SearchResults" HorizontalContentAlignment="Stretch" Background="{x:Null}" ScrollViewer.HorizontalScrollBarVisibility="Disabled" BorderThickness="0" ScrollViewer.CanContentScroll="False">
-			
+	<Grid x:Name="LayoutRoot" Background="White">
+		<Border BorderThickness="5,5,5,0">
+                        <Border.BorderBrush>
+                            <LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
+                                <GradientStop Color="White" Offset="1"/>
+                                <GradientStop Color="{DynamicResource AccentDarkColor}"/>
+                            </LinearGradientBrush>
+                        </Border.BorderBrush>
+						<DockPanel Margin="5">
+                        <!-- This is the Roster section -->
+                        <TextBlock DockPanel.Dock="Top" HorizontalAlignment="Center" Margin="0,0,0,0" TextAlignment="Center">
+                            <TextBlock.Foreground>
+                                <SolidColorBrush Color="{DynamicResource AccentDarkColor}"/>
+                            </TextBlock.Foreground>Search Results</TextBlock>
+		<ListBox ItemsSource="{Binding}" x:Name="SearchResults" 
+			HorizontalContentAlignment="Stretch" Background="{x:Null}" 
+			ScrollViewer.HorizontalScrollBarVisibility="Disabled" Margin="-3,0,-1,0" 
+			BorderThickness="0" ScrollViewer.CanContentScroll="False" DockPanel.Dock="Bottom">
+	                            <ListBox.Style>
+                                <StaticResource ResourceKey="TeamList"/>
+                            </ListBox.Style>
 		</ListBox>
-		<!--
-		<ScrollViewer VerticalScrollBarVisibility="Auto" x:Name="SearchResultScroller">
-			<ItemsControl x:Name="SearchResults" ItemsSource="{Binding}" HorizontalContentAlignment="Stretch">
-		        <ItemsControl.ItemsPanel>
-                    <ItemsPanelTemplate>
-                        <StackPanel Margin="4,4,4,0" />
-                    </ItemsPanelTemplate>
-                </ItemsControl.ItemsPanel>
-            </ItemsControl>
-        </ScrollViewer>
-		-->
+		</DockPanel>
+                    </Border>
 	</Grid>
 </UserControl>

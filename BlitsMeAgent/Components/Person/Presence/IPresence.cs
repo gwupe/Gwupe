@@ -15,6 +15,7 @@ namespace BlitsMe.Agent.Components.Person.Presence
         PresenceType Type { get; }
         int Priority { get; }
         String Resource { get; }
+        String ShortCode { get; }
 
         Boolean IsOnline { get; }
         Boolean IsPresent { get; }

@@ -4,11 +4,14 @@ using System.Linq;
 using System.Text;
 using System.Windows.Forms;
 using System.Drawing;
+using log4net;
+using log4net.Repository.Hierarchy;
 
 namespace BlitsMe.Agent.UI
 {
     public class SystemTray
     {
+        private static readonly ILog Logger = LogManager.GetLogger(typeof (SystemTray));
         private readonly BlitsMeClientAppContext _appContext;
         private static readonly Icon IconConnected = Properties.Resources.icon_main;
         private bool pulseUp = true;
@@ -31,9 +34,9 @@ namespace BlitsMe.Agent.UI
         public NotifyIcon notifyIcon { get; set; }
         private Timer linkDownIconBlinker;
 
-        public SystemTray(BlitsMeClientAppContext appContext)
+        public SystemTray()
         {
-            this._appContext = appContext;
+            this._appContext = BlitsMeClientAppContext.CurrentAppContext;
             components = new System.ComponentModel.Container();
             notifyIcon = new NotifyIcon(components)
             {
@@ -46,15 +49,19 @@ namespace BlitsMe.Agent.UI
                 // Of course we want it visible
                 Visible = true
             };
+            // Set the event handlers
+            notifyIcon.ContextMenuStrip.Opening += ContextMenuStrip_Opening;
+            notifyIcon.Click += launchDashboardLeftClick;
+            notifyIcon.DoubleClick += _appContext.OnIconClickLaunchDashboard;
+            //notifyIcon.MouseUp += notifyIcon_MouseUp;
+        }
+
+        public void Start()
+        {
             linkDownIconBlinker = new Timer();
             linkDownIconBlinker.Tick += offlineSearch;
             linkDownIconBlinker.Interval = 100;
             linkDownIconBlinker.Start();
-            // Set the event handlers
-            notifyIcon.ContextMenuStrip.Opening += ContextMenuStrip_Opening;
-            notifyIcon.Click += launchDashboardLeftClick;
-            notifyIcon.DoubleClick += appContext.OnIconClickLaunchDashboard;
-            //notifyIcon.MouseUp += notifyIcon_MouseUp;
         }
 
         public void launchDashboardLeftClick(object sender, EventArgs e)
@@ -127,9 +134,16 @@ namespace BlitsMe.Agent.UI
             notifyIcon.ContextMenuStrip.Items.Add(Utils.generateItem("&Exit", exitItem_Click));
         }
 
-        public void close()
+        public void Close()
         {
-            notifyIcon.Visible = false; // should remove lingering tray icon
+            if (!IsClosed)
+            {
+                Logger.Debug("Closing System Tray");
+                IsClosed = true;
+                notifyIcon.Visible = false; // should remove lingering tray icon
+            }
         }
+
+        internal bool IsClosed { get; private set; }
     }
 }

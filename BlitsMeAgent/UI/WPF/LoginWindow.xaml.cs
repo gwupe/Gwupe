@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Security.AccessControl;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
@@ -10,13 +11,14 @@ using BlitsMe.Agent.Components;
 using BlitsMe.Agent.UI.WPF.Utils;
 using BlitsMe.Common.Security;
 using log4net;
+using MahApps.Metro.Controls;
 
 namespace BlitsMe.Agent.UI.WPF
 {
     /// <summary>
     /// Interaction logic for Login.xaml
     /// </summary>
-    public partial class LoginWindow : Window
+    public partial class LoginWindow : MetroWindow
     {
         private static readonly ILog Logger = LogManager.GetLogger(typeof(LoginWindow));
         private readonly BlitsMeClientAppContext _appContext;
@@ -31,7 +33,7 @@ namespace BlitsMe.Agent.UI.WPF
             _loginDetails = details;
             if (_loginDetails != null)
             {
-                Username.Text = _loginDetails.username;
+                Username.Text = _loginDetails.Username;
             }
             this.SigninEvent = signinEvent;
             _validator = new InputValidator(null, null);
@@ -61,7 +63,7 @@ namespace BlitsMe.Agent.UI.WPF
         public void LoginFailed()
         {
             Password.Password = "";
-            _validator.ValidateFieldNonEmpty(Password, Password.Password, PasswordLabel, "");
+            _validator.ValidateFieldNonEmpty(Password, Password.Password, null, "");
         }
 
         private void signin_click(object sender, RoutedEventArgs e)
@@ -73,12 +75,12 @@ namespace BlitsMe.Agent.UI.WPF
         {
             bool dataOK = true;
             ResetStatus();
-            dataOK = _validator.ValidateFieldNonEmpty(Password, Password.Password, PasswordLabel, "") && dataOK;
-            dataOK = _validator.ValidateFieldNonEmpty(Username, Username.Text, UsernameLabel, "") && dataOK;
+            dataOK = _validator.ValidateFieldNonEmpty(Password, Password.Password, null, "") && dataOK;
+            dataOK = _validator.ValidateFieldNonEmpty(Username, Username.Text, null, "") && dataOK;
             if (dataOK)
             {
-                _loginDetails.username = Username.Text;
-                _loginDetails.passwordHash = Util.getSingleton().hashPassword(Password.Password);
+                _loginDetails.Username = Username.Text;
+                _loginDetails.PasswordHash = Util.getSingleton().hashPassword(Password.Password);
                 Logger.Debug("Got username and password, notifying app");
                 SigninEvent.Set();
             }
@@ -86,7 +88,7 @@ namespace BlitsMe.Agent.UI.WPF
 
         private void ResetStatus()
         {
-            _validator.ResetStatus(new Control[] { Username, Password }, new[] { UsernameLabel, PasswordLabel });
+            _validator.ResetStatus(new Control[] { Username, Password }, new Label[] { null, null });
         }
 
         private void WindowStateChanged(object sender, EventArgs e)

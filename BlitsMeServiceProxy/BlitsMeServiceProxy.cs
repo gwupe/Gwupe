@@ -12,17 +12,19 @@ namespace BlitsMe.ServiceProxy
 #else
         public const String BuildMarker = "";
 #endif
-        private NetNamedPipeBinding binding = new NetNamedPipeBinding();
+        private readonly NetNamedPipeBinding _binding = new NetNamedPipeBinding();
         private EndpointAddress endpoint = new EndpointAddress("net.pipe://localhost/BlitsMeService" + BuildMarker);
-        private ChannelFactory<IBlitsMeService> channelFactory;
+        private readonly ChannelFactory<IBlitsMeService> _channelFactory;
+        internal bool IsClosed { get; private set; }
+
         public BlitsMeServiceProxy()
         {
-            channelFactory = new ChannelFactory<IBlitsMeService>(binding, endpoint);
+            _channelFactory = new ChannelFactory<IBlitsMeService>(_binding, endpoint);
         }
 
         public List<string> getServers()
         {
-            IBlitsMeService channel = channelFactory.CreateChannel();
+            IBlitsMeService channel = _channelFactory.CreateChannel();
             List<String> returnValue = channel.getServers();
             ((IClientChannel)channel).Close();
             return returnValue;
@@ -30,14 +32,14 @@ namespace BlitsMe.ServiceProxy
 
         public void saveServers(List<string> servers)
         {
-            IBlitsMeService channel = channelFactory.CreateChannel();
+            IBlitsMeService channel = _channelFactory.CreateChannel();
             channel.saveServers(servers);
             ((IClientChannel)channel).Close();
         }
 
         public bool VNCStartService()
         {
-            IBlitsMeService channel = channelFactory.CreateChannel();
+            IBlitsMeService channel = _channelFactory.CreateChannel();
             bool rv = channel.VNCStartService();
             ((IClientChannel)channel).Close();
 
@@ -46,14 +48,14 @@ namespace BlitsMe.ServiceProxy
 
         public void Ping()
         {
-            IBlitsMeService channel = channelFactory.CreateChannel();
+            IBlitsMeService channel = _channelFactory.CreateChannel();
             channel.Ping();
             ((IClientChannel)channel).Close();
         }
 
         public string HardwareFingerprint()
         {
-            IBlitsMeService channel = channelFactory.CreateChannel();
+            IBlitsMeService channel = _channelFactory.CreateChannel();
             String rv = channel.HardwareFingerprint();
             ((IClientChannel)channel).Close();
 
@@ -67,10 +69,20 @@ namespace BlitsMe.ServiceProxy
 
         public void close()
         {
-            if (channelFactory != null)
+            if (!IsClosed)
             {
-                try { channelFactory.Close(); }
-                catch (Exception e) { }
+                IsClosed = true;
+                if (_channelFactory != null)
+                {
+                    try
+                    {
+                        _channelFactory.Close();
+                    }
+                    catch (Exception e)
+                    {
+                        Console.WriteLine("Failed to close service proxy channel factory : " + e.Message);
+                    }
+                }
             }
         }
     }

@@ -16,5 +16,8 @@ namespace BlitsMe.Cloud.Messaging.API
 
         [DataMember]
         public String username { get; set; }
+
+        [DataMember]
+        public String interactionId { get; set; }
     }
 }

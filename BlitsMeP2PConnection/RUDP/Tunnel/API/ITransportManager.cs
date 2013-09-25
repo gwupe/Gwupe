@@ -34,5 +34,8 @@ namespace BlitsMe.Communication.P2P.RUDP.Tunnel.API
 
         // Close
         void Close();
+
+        // Close a Tunnel
+        void CloseTunnel(IUDPTunnel tunnel);
     }
 }

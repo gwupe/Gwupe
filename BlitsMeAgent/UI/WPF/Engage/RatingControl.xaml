@@ -10,30 +10,30 @@
     <UserControl.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
-                <ResourceDictionary Source="/BlitsMe.Agent;component/UI/WPF/Style/Style.xaml"/>
-                <ResourceDictionary Source="/BlitsMe.Agent;component/UI/WPF/Style/RatingStyle.xaml"/>
+            	<ResourceDictionary Source="/BlitsMe.Agent;component/UI/WPF/Style/Style.xaml"/>
+            	<ResourceDictionary Source="/BlitsMe.Agent;component/UI/WPF/Style/RatingStyle.xaml"/>
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>
     </UserControl.Resources>
-    <Grid x:Name="LayoutRoot">
-        <Grid Margin="0,0,0,0" Height="15" HorizontalAlignment="Center" Width="75">
-            <ed:RegularPolygon Style="{StaticResource StarFull}" Margin="1,0,0,0" />
-            <ed:RegularPolygon Style="{StaticResource StarFull}" Margin="16,0,0,0" />
-            <ed:RegularPolygon Style="{StaticResource StarFull}" Margin="31,0,0,0" />
-            <ed:RegularPolygon Style="{StaticResource StarFull}" Margin="46,0,0,0" />
-            <ed:RegularPolygon Style="{StaticResource StarFull}" Margin="61,0,0,0" />
-            <!-- <Rectangle Style="{StaticResource StarCover}" Width="{Binding Path=Rating, FallbackValue=25, Converter={StaticResource starRatingConverter}}" /> -->
-            <Rectangle Name="RatingCover" Style="{StaticResource StarCover}" Width="75" />
-            <ed:RegularPolygon Style="{StaticResource StarEmpty}" Margin="1,0,0,0" />
-            <ed:RegularPolygon Style="{StaticResource StarEmpty}" Margin="16,0,0,0" />
-            <ed:RegularPolygon Style="{StaticResource StarEmpty}" Margin="31,0,0,0" />
-            <ed:RegularPolygon Style="{StaticResource StarEmpty}" Margin="46,0,0,0" />
-            <ed:RegularPolygon Style="{StaticResource StarEmpty}" Margin="61,0,0,0" />
-			<Button Name="Star1" Margin="0,0,0,0"  Template="{StaticResource StarSelectorNew}" Style="{StaticResource StarSelector}" MouseEnter="StarMouseEnter" MouseLeave="StarMouseLeave" Click="StarClick" />
-			<Button Name="Star2" Margin="15,0,0,0" Template="{StaticResource StarSelectorNew}" Style="{StaticResource StarSelector}" MouseEnter="StarMouseEnter" MouseLeave="StarMouseLeave" Click="StarClick" />
-			<Button Name="Star3" Margin="30,0,0,0" Template="{StaticResource StarSelectorNew}" Style="{StaticResource StarSelector}" MouseEnter="StarMouseEnter" MouseLeave="StarMouseLeave" Click="StarClick" />
-			<Button Name="Star4" Margin="45,0,0,0" Template="{StaticResource StarSelectorNew}" Style="{StaticResource StarSelector}" MouseEnter="StarMouseEnter" MouseLeave="StarMouseLeave" Click="StarClick" />
-			<Button Name="Star5" Margin="60,0,0,0" Template="{StaticResource StarSelectorNew}" Style="{StaticResource StarSelector}" MouseEnter="StarMouseEnter" MouseLeave="StarMouseLeave" Click="StarClick" />
+	<Grid x:Name="LayoutRoot">
+		<Grid Margin="0,0,0,0" Height="15" HorizontalAlignment="Center" Width="75">
+			<ed:RegularPolygon Style="{StaticResource StarFull}" Margin="1,0,0,0" />
+			<ed:RegularPolygon Style="{StaticResource StarFull}" Margin="16,0,0,0" />
+			<ed:RegularPolygon Style="{StaticResource StarFull}" Margin="31,0,0,0" />
+			<ed:RegularPolygon Style="{StaticResource StarFull}" Margin="46,0,0,0" />
+			<ed:RegularPolygon Style="{StaticResource StarFull}" Margin="61,0,0,0" />
+			<!-- <Rectangle Style="{StaticResource StarCover}" Width="{Binding Path=Rating, FallbackValue=25, Converter={StaticResource starRatingConverter}}" /> -->
+			<Rectangle x:Name="RatingCover" Style="{StaticResource StarCover}" Width="75" />
+			<ed:RegularPolygon Style="{StaticResource StarEmpty}" Margin="1,0,0,0" />
+			<ed:RegularPolygon Style="{StaticResource StarEmpty}" Margin="16,0,0,0" />
+			<ed:RegularPolygon Style="{StaticResource StarEmpty}" Margin="31,0,0,0" />
+			<ed:RegularPolygon Style="{StaticResource StarEmpty}" Margin="46,0,0,0" />
+			<ed:RegularPolygon Style="{StaticResource StarEmpty}" Margin="61,0,0,0" />
+			<Button x:Name="Star1" Margin="0,0,0,0"  Template="{StaticResource StarSelectorNew}" Style="{StaticResource StarSelector}" MouseEnter="StarMouseEnter" MouseLeave="StarMouseLeave" Click="StarClick" />
+			<Button x:Name="Star2" Margin="15,0,0,0" Template="{StaticResource StarSelectorNew}" Style="{StaticResource StarSelector}" MouseEnter="StarMouseEnter" MouseLeave="StarMouseLeave" Click="StarClick" />
+			<Button x:Name="Star3" Margin="30,0,0,0" Template="{StaticResource StarSelectorNew}" Style="{StaticResource StarSelector}" MouseEnter="StarMouseEnter" MouseLeave="StarMouseLeave" Click="StarClick" />
+			<Button x:Name="Star4" Margin="45,0,0,0" Template="{StaticResource StarSelectorNew}" Style="{StaticResource StarSelector}" MouseEnter="StarMouseEnter" MouseLeave="StarMouseLeave" Click="StarClick" />
+			<Button x:Name="Star5" Margin="60,0,0,0" Template="{StaticResource StarSelectorNew}" Style="{StaticResource StarSelector}" MouseEnter="StarMouseEnter" MouseLeave="StarMouseLeave" Click="StarClick" />
 		</Grid>
-    </Grid>
+	</Grid>
 </UserControl>

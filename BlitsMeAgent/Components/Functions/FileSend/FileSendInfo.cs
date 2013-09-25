@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Deployment.Internal;
 using System.Linq;
 using System.Text;
 
@@ -15,5 +16,9 @@ namespace BlitsMe.Agent.Components.Functions.FileSend
         internal String FilePath;
         internal FileSendDirection Direction;
         internal FileSendState State = FileSendState.Initialised;
+        internal Components.Notification.Notification Notification;
+        internal FileSendListener FileReceiver;
+        internal FileSendClient FileSender;
+
     }
 }
