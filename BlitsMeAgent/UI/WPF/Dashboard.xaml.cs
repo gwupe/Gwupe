@@ -41,7 +41,7 @@ namespace BlitsMe.Agent.UI.WPF
         // Observable mirror for Persons as RosterElements
         private RosterList AllRosterList;
         private CollectionViewSource _notificationView;
-        //private Timer activateEngagementChecker;
+        private Timer activateEngagementChecker;
         // Dispatching collection for notifications (to be used by everything)
         internal DispatchingCollection<ObservableCollection<Notification>, Notification> NotificationList { get; set; }
         internal DispatchingCollection<ObservableCollection<Alert>, Alert> AlertList { get; set; }
@@ -67,9 +67,9 @@ namespace BlitsMe.Agent.UI.WPF
             _appContext.CurrentUserManager.CurrentUserChanged += delegate { SetupCurrentUserListener(); };
             SetupEngagementWindows();
             appContext.LoginManager.LoggedOut += LoginManagerOnLoggedOut;
-            //activateEngagementChecker = new Timer(30000);
-            //activateEngagementChecker.Elapsed += CheckActiveEngagements;
-            //activateEngagementChecker.Start();
+            activateEngagementChecker = new Timer(30000);
+            activateEngagementChecker.Elapsed += CheckActiveEngagements;
+            activateEngagementChecker.Start();
             Logger.Info("Dashboard setup completed");
         }
 
@@ -330,11 +330,9 @@ namespace BlitsMe.Agent.UI.WPF
             CurrentlyActiveContacts.DataContext = ActiveRosterList.ContactsView;
             ActiveRosterList.ContactsView.View.CollectionChanged += ActiveRosterChanged;
 
-            /*            SearchRosterList = new SearchRosterList(Dispatcher, new SortDescription("Attendance.Name", ListSortDirection.Descending), SearchBox);
-                        //SearchRosterList.SetList(_appContext.RosterManager.ServicePersonAttendanceList, "Username");
-                        SearchContacts.LostFocus += Contacts_LostFocus;
-                        SearchContacts.DataContext = SearchRosterList.ContactsView;
-            */
+            SearchRosterList = new SearchRosterList(dispatchingCollection, SearchContacts, SearchBox);
+            SearchContacts.LostFocus += Contacts_LostFocus;
+            SearchContacts.DataContext = SearchRosterList.ContactsView;
         }
 
         /// <summary>
@@ -357,28 +355,6 @@ namespace BlitsMe.Agent.UI.WPF
             AllContacts.SelectedItem = null;
             CurrentlyActiveContacts.SelectedItem = null;
             SearchContacts.SelectedItem = null;
-        }
-
-        /// <summary>
-        /// When choosing a search contact, we show the engagement, set the conversation active
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        private void SearchContactSelected(object sender, RoutedEventArgs e)
-        {
-            ListBoxItem item = e.Source as ListBoxItem;
-            /*
-            if (item != null)
-            {
-                RosterElement rosterElement = item.Content as RosterElement;
-                RosterElement element = ActiveRosterList.GetElement(rosterElement.Attendance.Person.Username);
-                if (element != null)
-                {
-                    element.IsConversationActive = true;
-                }
-                //ShowEngagement(rosterElement.Attendance);
-            }
-             */
         }
 
         /// <summary>
@@ -455,7 +431,6 @@ namespace BlitsMe.Agent.UI.WPF
             }
         }
 
-        /*
         /// <summary>
         /// Called on a timer to check which roster elements are no longer active.
         /// </summary>
@@ -463,32 +438,16 @@ namespace BlitsMe.Agent.UI.WPF
         /// <param name="elapsedEventArgs"></param>
         private void CheckActiveEngagements(object sender, ElapsedEventArgs elapsedEventArgs)
         {
-            bool refresh = false;
-            ActiveRosterList.ContactsView.View.Cast<Attendance>().ToList().ForEach(attendance =>
+            if (!Dispatcher.CheckAccess())
+                Dispatcher.Invoke(new Action(() => CheckActiveEngagements(sender, elapsedEventArgs)));
+            else
             {
-                if
-            });
-            foreach(var attendance in from attendance in ActiveRosterList.ContactsView.)
-            foreach (var rosterElement in from rosterElement in ActiveRosterList.ToList() where !rosterElement.IsUnread where rosterElement.IsConversationActive where Environment.TickCount - rosterElement.LastActive > ActivityTimeout select rosterElement)
-            {
-                RosterElement element = AllRosterList.GetElement(rosterElement.Attendance.Person.Username);
-                if (element.IsConversationActive || rosterElement.IsConversationActive)
+                if (ActiveRosterList.ContactsView.View.Cast<Attendance>().ToList().Any(attendance => !attendance.IsActive))
                 {
-                    rosterElement.IsConversationActive = false;
-                    element.IsConversationActive = false;
-                    refresh = true;
+                    RefreshRosters();
                 }
             }
-            if (refresh)
-            {
-                Dispatcher.Invoke(new Action(() =>
-                {
-                    ActiveRosterList.ContactsView.View.Refresh();
-                    AllRosterList.ContactsView.View.Refresh();
-                }));
-            }
-
-        }*/
+        }
 
         /// <summary>
         /// Called if there is new activity on an engagement, so we can prompt the user
@@ -499,19 +458,19 @@ namespace BlitsMe.Agent.UI.WPF
         {
             if (_appContext.IsShuttingDown)
                 return;
-            if (!Dispatcher.CheckAccess())
-                Dispatcher.Invoke(new Action(() => EngagementManagerOnNewActivity(sender, args)));
-            else
-            {
-                Show();
-                RefreshRosters();
-            }
+            Show();
+            RefreshRosters();
         }
 
         private void RefreshRosters()
         {
-            ActiveRosterList.ContactsView.View.Refresh();
-            AllRosterList.ContactsView.View.Refresh();
+            if (!Dispatcher.CheckAccess())
+                Dispatcher.Invoke(new Action(RefreshRosters));
+            else
+            {
+                ActiveRosterList.ContactsView.View.Refresh();
+                AllRosterList.ContactsView.View.Refresh();
+            }
         }
 
         private void ShowEngagement(Attendance attendance)
@@ -523,16 +482,6 @@ namespace BlitsMe.Agent.UI.WPF
                 ActiveContent.Content = egw;
                 egw.SetAsMain(this);
                 egw.ShowChat();
-                try
-                {
-                    //MarkRoster(AllRosterList, attendance);
-                    //MarkRoster(ActiveRosterList, attendance);
-                    //DashboardData.ActiveContactsVisibility = 0;
-                }
-                catch (Exception e)
-                {
-                    Logger.Error("Failed to select the roster item for " + attendance.Person.Username);
-                }
             }
             else
             {
@@ -544,7 +493,7 @@ namespace BlitsMe.Agent.UI.WPF
 
         #region Search Handling
 
-        private void Search_TextChanged(object sender, System.Windows.Controls.TextChangedEventArgs e)
+        private void Search_TextChanged(object sender, TextChangedEventArgs e)
         {
             // This gets called on init (where appContext is null), but we don't want to search that anyway
             if (_appContext != null)
@@ -667,10 +616,8 @@ namespace BlitsMe.Agent.UI.WPF
             if (Dispatcher.CheckAccess())
             {
                 Dispatcher.InvokeShutdown();
-                /*
                 if (activateEngagementChecker != null)
                     activateEngagementChecker.Stop();
-                 * */
                 base.Close();
             }
             else

@@ -8,12 +8,14 @@ namespace BlitsMe.Agent.Components
 {
     internal class Interactions
     {
+        private readonly Engagement _engagement;
         private Dictionary<String, Interaction> _interactionLookup;
-        private List<Interaction> _interactions;
+        private readonly List<Interaction> _interactions;
         private object interactionLock = new Object();
 
-        internal Interactions()
+        internal Interactions(Engagement engagement)
         {
+            _engagement = engagement;
             _interactions = new List<Interaction>();
             _interactionLookup = new Dictionary<string, Interaction>();
         }
@@ -45,7 +47,7 @@ namespace BlitsMe.Agent.Components
         {
             lock (interactionLock)
             {
-                _interactions.Insert(0, new Interaction(id));
+                _interactions.Insert(0, new Interaction(_engagement,id));
                 _interactionLookup.Add(_interactions[0].Id, _interactions[0]);
                 return _interactions[0];
             }

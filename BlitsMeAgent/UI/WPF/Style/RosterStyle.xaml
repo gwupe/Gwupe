@@ -163,7 +163,7 @@
     </Style>
 
     <Style x:Key="TeamMemberOfflineBase" TargetType="Grid" BasedOn="{StaticResource TeamMemberInActiveBase}">
-        <Setter Property="Opacity" Value="0.5" />
+        <Setter Property="Opacity" Value="0.7" />
     </Style>
 
     <Style x:Key="TeamMemberUnreadBase" TargetType="Grid" BasedOn="{StaticResource TeamMemberInActiveBase}">
@@ -273,7 +273,7 @@
             <Grid Style="{DynamicResource TeamMemberInner}">
                 <ContentPresenter ContentTemplate="{StaticResource PersonIcon}" />
                 <StackPanel Margin="53,0,0,0">
-                    <TextBlock Style="{StaticResource TeamMemberNameText}" Text="{Binding Path=Person.Name, FallbackValue=FirstName LastName}" />
+                    <TextBlock Style="{StaticResource TeamMemberNameTextInActive}" Text="{Binding Path=Person.Name, FallbackValue=FirstName LastName}" />
                     <ContentControl Content="{Binding Person.Rating}" >
                         <ContentControl.Style>
                             <Style TargetType="{x:Type ContentControl}">
@@ -286,7 +286,7 @@
                             </Style>
                         </ContentControl.Style>
                     </ContentControl>
-                    <TextBlock Style="{StaticResource TeamMemberLocationText}" Text="{Binding Path=Person.Location, FallbackValue=Planet Earth}" />
+                    <TextBlock Style="{StaticResource TeamMemberLocationTextInActive}" Text="{Binding Path=Person.Location, FallbackValue=Planet Earth}" />
                 </StackPanel>
             </Grid>
         </Grid>

@@ -38,14 +38,6 @@ namespace BlitsMe.Agent.Components
             }
         }
 
-#if DEBUG
-        // 2 minutes timeout
-        private const double TimeoutToTunnelClose = 120000;
-#else
-        // 30 minutes timeout
-        private const double TimeoutToTunnelClose = 1800000;
-#endif
-        private readonly Timer _countdownToDeactivation;
         public object TunnelWaitLock = new object();
 
 
@@ -54,7 +46,7 @@ namespace BlitsMe.Agent.Components
         public Engagement(BlitsMeClientAppContext appContext, Attendance personAttendance)
         {
             this._appContext = appContext;
-            Interactions = new Interactions();
+            Interactions = new Interactions(this);
             // This is to pickup logouts/connection disconnections
             _appContext.LoginManager.LoggedOut += LogoutOccurred;
             SecondParty = personAttendance;
@@ -74,6 +66,46 @@ namespace BlitsMe.Agent.Components
                 function.Deactivate += (sender, args) => SuggestCountdownToDeactivation();
             });
         }
+
+
+        public String SecondPartyUsername { get { return SecondParty == null ? null : SecondParty.Person.Username; } }
+
+        // This is to made sure the tunnel updates if the shortcode change (in other words we start talking with a different resource)
+        private void SecondPartyPropertyChanged(object sender, PropertyChangedEventArgs e)
+        {
+            if (e.PropertyName.Equals("ActiveShortCode"))
+            {
+                DisconnectTunnels();
+                SetupOutgoingTunnel();
+            }
+        }
+
+        // this is so people can listen to us
+        public event PropertyChangedEventHandler PropertyChanged;
+
+        void LogoutOccurred(object sender, LoginEventArgs e)
+        {
+            // Disconnect Tunnels
+            DisconnectTunnels();
+        }
+
+        public void OnPropertyChanged(String property)
+        {
+            if (_appContext.IsShuttingDown) return;
+            PropertyChangedEventHandler handler = PropertyChanged;
+            if (handler != null) handler(this, new PropertyChangedEventArgs(property));
+        }
+
+        #region State Management
+
+#if DEBUG
+        // 2 minutes timeout
+        private const double TimeoutToTunnelClose = 120000;
+#else
+        // 30 minutes timeout
+        private const double TimeoutToTunnelClose = 1800000;
+#endif
+        private readonly Timer _countdownToDeactivation;
 
         internal Interactions Interactions;
 
@@ -121,40 +153,10 @@ namespace BlitsMe.Agent.Components
             if (handler != null) handler(this, e);
         }
 
+
         internal bool IsChildrenActive
         {
             get { return Functions.Values.Any(function => function.IsActive); }
-        }
-
-        public String SecondPartyUsername { get { return SecondParty == null ? null : SecondParty.Person.Username; } }
-
-        // This is to made sure the tunnel updates if the shortcode change (in other words we start talking with a different resource)
-        private void SecondPartyPropertyChanged(object sender, PropertyChangedEventArgs e)
-        {
-            if (e.PropertyName.Equals("ActiveShortCode"))
-            {
-                DisconnectTunnels();
-                SetupOutgoingTunnel();
-            }
-        }
-
-        // The thread used for creating the endPointManager
-        private Thread _p2PConnectionCreatorThread;
-
-        // this is so people can listen to us
-        public event PropertyChangedEventHandler PropertyChanged;
-
-        void LogoutOccurred(object sender, LoginEventArgs e)
-        {
-            // Disconnect Tunnels
-            DisconnectTunnels();
-        }
-
-        public void OnPropertyChanged(String property)
-        {
-            if (_appContext.IsShuttingDown) return;
-            PropertyChangedEventHandler handler = PropertyChanged;
-            if (handler != null) handler(this, new PropertyChangedEventArgs(property));
         }
 
         private void SuggestCountdownToDeactivation()
@@ -167,6 +169,23 @@ namespace BlitsMe.Agent.Components
             }
         }
 
+        private bool _active;
+        private bool _closing;
+        private bool _isUnread;
+
+        public bool IsUnread
+        {
+            get { return _isUnread; }
+            set
+            {
+                if (_isUnread != value)
+                {
+                    _isUnread = value;
+                    Logger.Debug(SecondParty.Person.Username + " is now " + (_isUnread ? "unread" : "read"));
+                    OnPropertyChanged("IsUnread");
+                }
+            }
+        }
 
         private void CompleteDeactivation()
         {
@@ -181,21 +200,12 @@ namespace BlitsMe.Agent.Components
             }
         }
 
-        public bool HasFunction(String function)
-        {
-            return Functions.ContainsKey(function);
-        }
-
-        public IFunction GetFunction(String function)
-        {
-            if (HasFunction(function))
-            {
-                return Functions[function];
-            }
-            throw new Exception("Function " + function + " not supported.");
-        }
+        #endregion
 
         #region Tunneling Functionality
+
+        // The thread used for creating the endPointManager
+        private Thread _p2PConnectionCreatorThread;
 
         // The transportManager itself
         private readonly ITransportManager _transportManager;
@@ -236,10 +246,6 @@ namespace BlitsMe.Agent.Components
 
 
         private IUDPTunnel _incomingTunnel;
-        private bool _active;
-        private bool _closing;
-        private bool _isUnread;
-
 
         internal IUDPTunnel IncomingTunnel
         {
@@ -257,18 +263,6 @@ namespace BlitsMe.Agent.Components
         {
             get { return TransportManager.IsActive; }
         }
-
-        public bool IsUnread
-        {
-            get { return _isUnread; }
-            set
-            {
-                _isUnread = value;
-                OnPropertyChanged("IsUnread");
-                Logger.Debug("IsUnread is now " + value);
-            }
-        }
-
 
         private void IncomingTunnelOnConnected(object sender, EventArgs args)
         {
@@ -385,6 +379,21 @@ namespace BlitsMe.Agent.Components
         }
 
         #endregion
+
+
+        public bool HasFunction(String function)
+        {
+            return Functions.ContainsKey(function);
+        }
+
+        public IFunction GetFunction(String function)
+        {
+            if (HasFunction(function))
+            {
+                return Functions[function];
+            }
+            throw new Exception("Function " + function + " not supported.");
+        }
 
         public void Close()
         {

@@ -23,12 +23,11 @@ namespace BlitsMe.Agent.Managers
         private readonly RosterRq _rosterRequest = new RosterRq();
         private bool _haveRoster;
         private readonly ConcurrentQueue<PresenceChangeRq> _queuedPresenceChanges;
-        private Attendance _currentlyEngaged;
 
         internal ObservableCollection<Attendance> ServicePersonAttendanceList { get; private set; }
         private Dictionary<String, Attendance> ServicePersonAttendanceLookup { get; set; }
         internal bool IsClosed { get; private set; }
-        internal Attendance CurrentlyEngaged { get { return _currentlyEngaged; } }
+        internal Attendance CurrentlyEngaged { get; private set; }
 
         public RosterManager()
         {
@@ -229,15 +228,13 @@ namespace BlitsMe.Agent.Managers
                 var newCurrent = sender as Attendance;
                 if (newCurrent != null && newCurrent.IsCurrentlyEngaged)
                 {
-                    if (_currentlyEngaged != newCurrent)
+                    if (CurrentlyEngaged != newCurrent)
                     {
-                        if (_currentlyEngaged != null)
+                        if (CurrentlyEngaged != null)
                         {
-                            Logger.Debug(_currentlyEngaged + " is no longer currently engaged");
-                            _currentlyEngaged.IsCurrentlyEngaged = false;
+                            CurrentlyEngaged.IsCurrentlyEngaged = false;
                         }
-                        _currentlyEngaged = newCurrent;
-                        Logger.Debug(_currentlyEngaged + " is now engaged");
+                        CurrentlyEngaged = newCurrent;
                     }
                 }
             }

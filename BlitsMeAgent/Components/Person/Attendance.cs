@@ -3,18 +3,23 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
 using System.Text;
+using BlitsMe.Agent.Components.Activity;
 using BlitsMe.Agent.Components.Functions.Chat;
 using BlitsMe.Agent.Components.Person.Presence;
 using BlitsMe.Cloud.Messaging.Elements;
+using log4net;
+using log4net.Repository.Hierarchy;
 
 namespace BlitsMe.Agent.Components.Person
 {
     internal class Attendance : INotifyPropertyChanged
     {
+        private static readonly ILog Logger = LogManager.GetLogger(typeof (Attendance));
+
         public Person Person { get; set; }
 
         private readonly MultiPresence _presence;
-        internal IPresence Presence
+        public IPresence Presence
         {
             get { return _presence; }
         }
@@ -70,7 +75,7 @@ namespace BlitsMe.Agent.Components.Person
         private void EngagementOnPropertyChanged(object sender, PropertyChangedEventArgs propertyChangedEventArgs)
         {
             if (propertyChangedEventArgs.PropertyName.Equals("IsUnread"))
-                OnPropertyChanged(propertyChangedEventArgs.PropertyName);
+                OnPropertyChanged("IsUnread");
             else if (propertyChangedEventArgs.PropertyName.Equals("Active"))
                 OnPropertyChanged("IsActive");
         }
@@ -84,14 +89,27 @@ namespace BlitsMe.Agent.Components.Person
         {
             get
             {
-                return (_engagement != null && Engagement.Active);
+                return (_engagement != null && Engagement.Interactions.CurrentInteraction != null);
             }
         }
 
         public bool IsCurrentlyEngaged
         {
             get { return _isCurrentlyEngaged; }
-            set { _isCurrentlyEngaged = value; OnPropertyChanged("IsCurrentlyEngaged"); }
+            set
+            {
+                if (_isCurrentlyEngaged != value)
+                {
+                    _isCurrentlyEngaged = value;
+                    if (_isCurrentlyEngaged && IsUnread)
+                    {
+                        Engagement.ActivityOccured(new InteractionActivity(Engagement,InteractionActivity.READ));
+                        Engagement.IsUnread = false;
+                    }
+                    Logger.Debug(Person.Username + " is currently " + (_isCurrentlyEngaged ? "engaged" : "unengaged"));
+                    OnPropertyChanged("IsCurrentlyEngaged");
+                }
+            }
         }
 
         internal void SetPresence(IPresence presence)

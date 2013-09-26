@@ -19,15 +19,15 @@ namespace BlitsMe.Agent.UI.WPF.Roster
 {
     abstract class RosterList
     {
-        private readonly DispatchingCollection<ObservableCollection<Attendance>, Attendance> _rosterCollection;
-        private readonly ListBox _listBox;
+        protected readonly DispatchingCollection<ObservableCollection<Attendance>, Attendance> RosterCollection;
+        protected readonly ListBox _listBox;
         private static readonly ILog Logger = LogManager.GetLogger(typeof(RosterList));
         // This collection is for manipulating the roster for display (sort etc)
         internal CollectionViewSource ContactsView { get; private set; }
 
         protected RosterList(DispatchingCollection<ObservableCollection<Attendance>, Attendance> rosterCollection, ListBox listBox)
         {
-            _rosterCollection = rosterCollection;
+            RosterCollection = rosterCollection;
             _listBox = listBox;
             // Setup the view on this list, so offline people are offline, sorting is correct etc.
             ContactsView = new CollectionViewSource { Source = rosterCollection };
@@ -63,15 +63,33 @@ namespace BlitsMe.Agent.UI.WPF.Roster
             }
         }
 
-        private void OnAttendancePropertyChange(object sender, PropertyChangedEventArgs propertyChangedEventArgs)
+        protected virtual void OnAttendancePropertyChange(object sender, PropertyChangedEventArgs propertyChangedEventArgs)
         {
-            if (!_rosterCollection.Dispatcher.CheckAccess())
+            var attendance = sender as Attendance;
+            if (attendance != null)
             {
-                _rosterCollection.Dispatcher.Invoke(new Action(() => OnAttendancePropertyChange(sender, propertyChangedEventArgs)));
-                return;
+                Logger.Debug("Roster has changed, " + attendance.Person.Username + "'s " + propertyChangedEventArgs.PropertyName + " has changed.");
+                if (propertyChangedEventArgs.PropertyName.Equals("Presence"))
+                {
+                    if (!attendance.Presence.IsOnline)
+                    {
+                        RefreshRoster();
+                    }
+                }
             }
-            if (propertyChangedEventArgs.PropertyName.Equals("Presence"))
+        }
+
+
+        protected void RefreshRoster()
+        {
+            if (!RosterCollection.Dispatcher.CheckAccess())
+            {
+                RosterCollection.Dispatcher.Invoke(new Action(RefreshRoster));
+            }
+            else
+            {
                 ContactsView.View.Refresh();
+            }
         }
 
         //protected abstract void RosterItemChanged(object sender, PropertyChangedEventArgs eventArgs);

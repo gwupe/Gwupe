@@ -241,4 +241,5 @@ namespace BlitsMe.Agent.Components.Functions.Chat
         {
         }
     }
+
 }

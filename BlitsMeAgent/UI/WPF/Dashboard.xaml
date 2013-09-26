@@ -40,6 +40,14 @@
                                 <DataTrigger Binding="{Binding IsUnread}" Value="True">
                                     <Setter TargetName="AttendancePresenter" Property="ContentTemplate" Value="{StaticResource ContactUnread}" />
                                 </DataTrigger>
+                                <DataTrigger Binding="{Binding Presence.IsOnline}" Value="False">
+                                    <!-- <Setter TargetName="AttendancePresenter" Property="ContentTemplate" Value="{StaticResource ContactOffline}" /> -->
+                                    <Setter Property="Opacity" Value="0.7" />
+                                </DataTrigger>
+                                <DataTrigger Binding="{Binding Presence.IsOnline}" Value="True">
+                                    <!-- <Setter TargetName="AttendancePresenter" Property="ContentTemplate" Value="{StaticResource ContactOffline}" /> -->
+                                    <Setter Property="Opacity" Value="1.0" />
+                                </DataTrigger>
                             </ControlTemplate.Triggers>
                         </ControlTemplate>
                     </Setter.Value>
@@ -51,10 +59,6 @@
 
     <Grid x:Name="LayoutRoot" Style="{StaticResource MainLayout}" >
         <ContentControl Panel.ZIndex="-2" x:Name="ModalPrompt"/>
-        <!--
-
-
-		-->
         <Grid HorizontalAlignment="Left" Width="190">
             <DockPanel LastChildFill="True" Margin="0">
                 <StackPanel Margin="5" Orientation="Horizontal" Height="32" HorizontalAlignment="Center" DockPanel.Dock="Top">
@@ -97,23 +101,16 @@
                             </LinearGradientBrush>
                         </Border.BorderBrush>
                     </Border>
-                    <!-- This is the Active Roster Items -->
+                    <!-- This is the Search Roster Items -->
                     <DockPanel Margin="5">
                         <TextBlock DockPanel.Dock="Top" HorizontalAlignment="Center" Background="White" Margin="0">
                             <TextBlock.Foreground>
                                 <SolidColorBrush Color="{DynamicResource AccentDarkColor}"/>
                             </TextBlock.Foreground>Local Search Results</TextBlock>
-                        <ListBox x:Name="SearchContacts" ItemsSource="{Binding}" ScrollViewer.CanContentScroll="False"
-        			FontFamily="Corbel" Margin="-3,0,-1,0" DockPanel.Dock="Bottom" ScrollViewer.HorizontalScrollBarVisibility="Disabled">
-                            <ListBox.Resources>
-                                <Style TargetType="{x:Type ListBoxItem}">
-                                    <EventSetter Event="ListBoxItem.Selected" Handler="SearchContactSelected" HandledEventsToo="True"/>
-                                </Style>
-                            </ListBox.Resources>
-                            <ListBox.Style>
-                                <StaticResource ResourceKey="TeamList"/>
-                            </ListBox.Style>
-                        </ListBox>
+                        <ListBox x:Name="SearchContacts" DockPanel.Dock="Bottom" ItemsSource="{Binding}" ScrollViewer.CanContentScroll="False"
+        					FontFamily="Corbel" Margin="0,0,0,0" ScrollViewer.HorizontalScrollBarVisibility="Disabled"
+							ItemTemplate="{StaticResource Contact}" Style="{StaticResource TeamList}"
+                            ItemContainerStyle="{StaticResource ListBoxItemControlStyle}" />
                     </DockPanel>
                 </Grid>
                 <Grid x:Name="CurrentlyActiveContactsWindowlet" DockPanel.Dock="Top" MaxHeight="300" Visibility="Collapsed">

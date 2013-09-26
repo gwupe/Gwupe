@@ -7,6 +7,7 @@ namespace BlitsMe.Agent.Components
 {
     internal class Interaction
     {
+        private readonly Engagement _engagement;
         private static readonly ILog Logger = LogManager.GetLogger(typeof(Interaction));
         private bool _expired;
 
@@ -25,8 +26,9 @@ namespace BlitsMe.Agent.Components
         private string _id;
         private const double InteractionTimeout = 1; // 4 hour interaction timeout
 
-        internal Interaction(String id = null)
+        internal Interaction(Engagement engagement, String id = null)
         {
+            _engagement = engagement;
             _id = String.IsNullOrEmpty(id) ? Util.getSingleton().generateString(6) : id;
             Logger.Debug("Starting Interaction " + _id);
             LastActivity = DateTime.Now;
@@ -39,11 +41,15 @@ namespace BlitsMe.Agent.Components
             {
                 if (!_expired)
                 {
-                    var diff = DateTime.Now - LastActivity;
-                    if (diff.TotalMinutes > InteractionTimeout)
+                    // Only expires if there is nothing unread, otherwise interaction stays open
+                    if (!_engagement.IsUnread)
                     {
-                        Expire();
-                        return true;
+                        var diff = DateTime.Now - LastActivity;
+                        if (diff.TotalMinutes > InteractionTimeout)
+                        {
+                            Expire();
+                            return true;
+                        }
                     }
                     return false;
                 }
@@ -53,6 +59,7 @@ namespace BlitsMe.Agent.Components
 
         internal void Expire()
         {
+            Logger.Debug("Interaction " + _id + " with " + _engagement.SecondParty.Person.Username + " expired");
             _expired = true;
         }
 
