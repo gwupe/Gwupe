@@ -106,7 +106,7 @@ namespace BlitsMe.Agent.Components.Person
                         Engagement.ActivityOccured(new InteractionActivity(Engagement,InteractionActivity.READ));
                         Engagement.IsUnread = false;
                     }
-                    Logger.Debug(Person.Username + " is currently " + (_isCurrentlyEngaged ? "engaged" : "unengaged"));
+                    //Logger.Debug(Person.Username + " is currently " + (_isCurrentlyEngaged ? "engaged" : "unengaged"));
                     OnPropertyChanged("IsCurrentlyEngaged");
                 }
             }

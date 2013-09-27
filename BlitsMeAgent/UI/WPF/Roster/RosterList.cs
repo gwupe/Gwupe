@@ -68,7 +68,6 @@ namespace BlitsMe.Agent.UI.WPF.Roster
             var attendance = sender as Attendance;
             if (attendance != null)
             {
-                Logger.Debug("Roster has changed, " + attendance.Person.Username + "'s " + propertyChangedEventArgs.PropertyName + " has changed.");
                 if (propertyChangedEventArgs.PropertyName.Equals("Presence"))
                 {
                     if (!attendance.Presence.IsOnline)

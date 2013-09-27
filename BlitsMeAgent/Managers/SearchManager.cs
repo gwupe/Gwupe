@@ -25,6 +25,7 @@ namespace BlitsMe.Agent.Managers
         {
             _appContext = BlitsMeClientAppContext.CurrentAppContext;
             SearchResults = new ObservableCollection<SearchResult>();
+            _appContext.LoginManager.LoggedOut += (sender, args) => Reset();
         }
 
         internal void Search(String search)

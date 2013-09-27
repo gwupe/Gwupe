@@ -36,6 +36,7 @@ namespace BlitsMe.Agent.Managers
         {
             _appContext = BlitsMeClientAppContext.CurrentAppContext;
             _appContext.IdleChanged += OnIdleChanged;
+            _appContext.LoginManager.LoggedOut += (sender, args) => Reset();
         }
 
         internal void SetUser(UserElement userElement, String shortCode)

@@ -181,7 +181,7 @@ namespace BlitsMe.Agent.Components
                 if (_isUnread != value)
                 {
                     _isUnread = value;
-                    Logger.Debug(SecondParty.Person.Username + " is now " + (_isUnread ? "unread" : "read"));
+                    //Logger.Debug(SecondParty.Person.Username + " is now " + (_isUnread ? "unread" : "read"));
                     OnPropertyChanged("IsUnread");
                 }
             }
@@ -405,7 +405,7 @@ namespace BlitsMe.Agent.Components
 
         public void SetRating(string sessionId, string ratingName, int rating)
         {
-            throw new NotImplementedException();
+            //throw new NotImplementedException();
         }
 
         public void ActivityOccured(EngagementActivity args)

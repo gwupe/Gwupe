@@ -468,6 +468,7 @@ namespace BlitsMe.Agent.UI.WPF
                 Dispatcher.Invoke(new Action(RefreshRosters));
             else
             {
+                Logger.Debug("Refreshing Rosters");
                 ActiveRosterList.ContactsView.View.Refresh();
                 AllRosterList.ContactsView.View.Refresh();
             }
@@ -578,6 +579,7 @@ namespace BlitsMe.Agent.UI.WPF
 
         #endregion
 
+        #region UI Mechanics
 
         /// <summary>
         /// Event called when we are logged out
@@ -652,6 +654,7 @@ namespace BlitsMe.Agent.UI.WPF
             source.AddHook(_appContext.WndProc);
         }
 
+        #endregion
 
         /// <summary>
         /// Called when the settings button is pushed.

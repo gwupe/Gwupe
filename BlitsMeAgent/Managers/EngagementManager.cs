@@ -26,6 +26,7 @@ namespace BlitsMe.Agent.Managers
         {
             _appContext = BlitsMeClientAppContext.CurrentAppContext;
             Engagements = new ObservableCollection<Engagement>();
+            _appContext.LoginManager.LoggedOut += (sender, args) => Reset();
         }
 
         // Gets an engagement, null if not there

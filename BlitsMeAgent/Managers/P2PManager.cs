@@ -17,6 +17,7 @@ namespace BlitsMe.Agent.Managers
         public P2PManager()
         {
             _pendingTunnels = new Dictionary<string, IUDPTunnel>();
+            BlitsMeClientAppContext.CurrentAppContext.LoginManager.LoggedOut += (sender, args) => Reset();
         }
 
         public PeerInfo SetupTunnel(String uniqueId, IPEndPoint facilitatorEndPoint, String encryptionKey)

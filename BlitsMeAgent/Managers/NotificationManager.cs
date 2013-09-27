@@ -23,6 +23,7 @@ namespace BlitsMe.Agent.Managers
             _removerTimer.Elapsed += RemoveAfterTimeoutRunner;
             _removerTimer.Start();
             Alerts = new ObservableCollection<Alert>();
+            BlitsMeClientAppContext.CurrentAppContext.LoginManager.LoggedOut += (sender, args) => Reset();
         }
 
         internal void DeleteNotification(Notification notification)
