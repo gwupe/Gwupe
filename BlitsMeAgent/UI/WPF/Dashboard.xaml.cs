@@ -8,6 +8,7 @@ using System.Timers;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
+using System.Windows.Forms;
 using System.Windows.Interop;
 using BlitsMe.Agent.Components;
 using BlitsMe.Agent.Components.Alert;
@@ -18,6 +19,7 @@ using BlitsMe.Agent.UI.WPF.Engage;
 using BlitsMe.Agent.UI.WPF.Roster;
 using BlitsMe.Agent.UI.WPF.Search;
 using log4net;
+using Panel = System.Windows.Controls.Panel;
 using Timer = System.Timers.Timer;
 
 namespace BlitsMe.Agent.UI.WPF
@@ -57,13 +59,13 @@ namespace BlitsMe.Agent.UI.WPF
         public Dashboard(BlitsMeClientAppContext appContext)
         {
             this.InitializeComponent();
-            InitializingScreen = true;
             this._appContext = appContext;
             SetupNotificationHandler();
             SetupRoster();
             // Setup the various data contexts and sources
             DashboardData = new DashboardDataContext(this);
             DataContext = DashboardData;
+            Initialize();
             _appContext.CurrentUserManager.CurrentUserChanged += delegate { SetupCurrentUserListener(); };
             SetupEngagementWindows();
             appContext.LoginManager.LoggedOut += LoginManagerOnLoggedOut;
@@ -75,64 +77,44 @@ namespace BlitsMe.Agent.UI.WPF
 
         #region Overlay Screen Management
 
-        internal bool InitializingScreen
+        internal void Initialize()
         {
-            set
-            {
-                if (Dispatcher.CheckAccess())
-                {
-                    if (value)
-                    {
-                        ModalPrompt.ContentTemplate = FindResource("InitializingWindow") as DataTemplate;
-                        ModalPrompt.Visibility = Visibility.Visible;
-                        Panel.SetZIndex(ModalPrompt, 2);
-                    }
-                    else
-                    {
-                        ModalPrompt.Visibility = Visibility.Hidden;
-                        Panel.SetZIndex(ModalPrompt, -2);
-                    }
-                }
-                else
-                    Dispatcher.Invoke(new Action(() => LoggingInScreen = value));
-            }
+            DashboardData.DashboardState = DashboardState.Initializing;
         }
 
-        internal bool LoggingInScreen
+        internal void Login(bool passwordError = false)
         {
-            set
+            if (passwordError)
             {
-                if (Dispatcher.CheckAccess())
-                {
-                    if (value)
-                    {
-                        ModalPrompt.ContentTemplate = FindResource("LoggingInWindow") as DataTemplate;
-                        ModalPrompt.Visibility = Visibility.Visible;
-                        Panel.SetZIndex(ModalPrompt, 2);
-                    }
-                    else
-                    {
-                        ModalPrompt.Visibility = Visibility.Hidden;
-                        Panel.SetZIndex(ModalPrompt, -2);
-                    }
-                }
-                else
-                    Dispatcher.Invoke(new Action(() => LoggingInScreen = value));
+                var control = FindResource("LoginScreen") as LoginControl;
+                if (control != null)
+                    control.LoginFailed();
             }
+            DashboardData.DashboardState = DashboardState.Login;
         }
 
-        internal void ShowLoginScreen(bool passwordError = false)
+        internal void LoggingIn()
         {
-            if (Dispatcher.CheckAccess())
+            DashboardData.DashboardState = DashboardState.LoggingIn;
+        }
+
+        internal void LoggedIn()
+        {
+            DashboardData.DashboardState = DashboardState.LoggedIn;
+        }
+
+        public void SigningUp()
+        {
+            DashboardData.DashboardState = DashboardState.SigningUp;
+        }
+
+        internal void PromptSignup(DataSubmitErrorArgs dataSubmitErrorArgs = null)
+        {
+            if (dataSubmitErrorArgs != null)
             {
-                ModalPrompt.ContentTemplate = null;
-                ModalPrompt.Content = loginControl ?? (loginControl = new LoginControl());
-                if (passwordError) loginControl.LoginFailed();
-                ModalPrompt.Visibility = Visibility.Visible;
-                Panel.SetZIndex(ModalPrompt, 2);
+                DashboardData.SignUpScreen.SetErrors(dataSubmitErrorArgs);
             }
-            else
-                Dispatcher.Invoke(new Action(() => ShowLoginScreen(passwordError)));
+            DashboardData.DashboardState = DashboardState.Signup;
         }
 
         #endregion
@@ -665,15 +647,44 @@ namespace BlitsMe.Agent.UI.WPF
         {
             // TODO: Add event handler implementation here.
         }
-
     }
+
+    public enum DashboardState
+    {
+        LoggingIn,
+        Initializing,
+        LoggedIn,
+        Login,
+        SigningUp,
+        Signup
+    };
 
     internal class DashboardDataContext : INotifyPropertyChanged
     {
+    
         private static readonly ILog Logger = LogManager.GetLogger(typeof(DashboardDataContext));
 
         private readonly Dashboard _dashboard;
         private string _customTitle;
+        private DashboardState _dashboardState;
+        private LoginControl _loginScreen;
+        private SignUpControl _signUpScreen;
+
+        public LoginControl LoginScreen
+        {
+            get { return _loginScreen ?? (_loginScreen = new LoginControl()); }
+        }
+
+        public SignUpControl SignUpScreen
+        {
+            get { return _signUpScreen ?? (_signUpScreen = new SignUpControl()); }
+        }
+
+        public DashboardState DashboardState
+        {
+            get { return _dashboardState; }
+            set { _dashboardState = value; OnPropertyChanged("DashboardState"); }
+        }
 
         public DashboardDataContext(Dashboard dashboard)
         {

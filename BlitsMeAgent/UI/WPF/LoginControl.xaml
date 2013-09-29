@@ -8,32 +8,32 @@
 	x:Class="BlitsMe.Agent.UI.WPF.LoginControl"
 	x:Name="UserControl"
 	d:DesignWidth="640" d:DesignHeight="480">
-	<UserControl.Resources>
-		<ResourceDictionary>
+    <UserControl.Resources>
+        <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
-            	<ResourceDictionary Source="Style/Style.xaml"/>
-				<ResourceDictionary Source="pack://application:,,,/MahApps.Metro;component/Styles/Colours.xaml" />
-				<ResourceDictionary Source="pack://application:,,,/MahApps.Metro;component/Styles/Fonts.xaml" />
-				<ResourceDictionary Source="pack://application:,,,/MahApps.Metro;component/Styles/Controls.xaml" />
-				<ResourceDictionary Source="pack://application:,,,/MahApps.Metro;component/Styles/Accents/BaseLight.xaml" />
-				<ResourceDictionary Source="Style/Theme.xaml" />
+                <ResourceDictionary Source="Style/Style.xaml"/>
+                <ResourceDictionary Source="pack://application:,,,/MahApps.Metro;component/Styles/Colours.xaml" />
+                <ResourceDictionary Source="pack://application:,,,/MahApps.Metro;component/Styles/Fonts.xaml" />
+                <ResourceDictionary Source="pack://application:,,,/MahApps.Metro;component/Styles/Controls.xaml" />
+                <ResourceDictionary Source="pack://application:,,,/MahApps.Metro;component/Styles/Accents/BaseLight.xaml" />
+                <ResourceDictionary Source="Style/Theme.xaml" />
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>
-	</UserControl.Resources>
-	<Grid x:Name="LayoutRoot">
-		            <Grid Background="White" Opacity="0.6" />
-            <Grid Name="LoginPanel" HorizontalAlignment="Center" VerticalAlignment="Center" Width="300" Height="200">
-                <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center">
-                    <TextBlock Style="{StaticResource NoticeText}">Please Log In</TextBlock>
-                    <TextBox mahappsControls:TextboxHelper.Watermark="Username" HorizontalAlignment="Center" Margin="0,10,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="150" Height="25.96" Name="Username" KeyDown="username_KeyDown" />
-                    <PasswordBox mahappsControls:TextboxHelper.Watermark="Password" HorizontalAlignment="Center" Margin="0,10,0,0" VerticalAlignment="Top" Width="150" Height="25.96" Name="Password" KeyDown="password_KeyDown" />
-                    <Button Content="Sign In" Margin="0,10,0,0" Width="150" VerticalAlignment="Top" Name="signin" Click="signin_click" />
-                    <TextBlock HorizontalAlignment="Center" Margin="0,10,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Height="37.92" Width="85.61">
+    </UserControl.Resources>
+    <Grid x:Name="LayoutRoot">
+        <Grid Background="White" Opacity="0.6" />
+        <Grid Name="LoginPanel" HorizontalAlignment="Center" VerticalAlignment="Center" Width="300" Height="200">
+            <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center">
+                <TextBlock Style="{StaticResource NoticeText}">Please Log In</TextBlock>
+                <TextBox mahappsControls:TextboxHelper.Watermark="Username" HorizontalAlignment="Center" Margin="0,10,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="150" Height="25.96" Name="Username" KeyDown="username_KeyDown" />
+                <PasswordBox mahappsControls:TextboxHelper.Watermark="Password" HorizontalAlignment="Center" Margin="0,10,0,0" VerticalAlignment="Top" Width="150" Height="25.96" Name="Password" KeyDown="password_KeyDown" />
+                <Button Content="Sign In" Margin="0,10,0,0" Width="150" VerticalAlignment="Top" Name="signin" Click="signin_click" />
+                <TextBlock HorizontalAlignment="Center" Margin="0,10,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Height="37.92" Width="85.61">
 					<Hyperlink Name="NewUser" RequestNavigate="NewUserCreate" NavigateUri="" >
 						I am a new user
 					</Hyperlink><LineBreak/>
-                    </TextBlock>
-                </StackPanel>
-            </Grid>
-		</Grid>
+                </TextBlock>
+            </StackPanel>
+        </Grid>
+    </Grid>
 </UserControl>

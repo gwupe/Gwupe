@@ -1,4 +1,5 @@
-﻿using System.Windows.Controls;
+﻿using System;
+using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Navigation;
 using BlitsMe.Agent.UI.WPF.Utils;
@@ -30,8 +31,13 @@ namespace BlitsMe.Agent.UI.WPF
 
         public void LoginFailed()
         {
-            Password.Password = "";
-            _validator.ValidateFieldNonEmpty(Password, Password.Password, null, "");
+            if (!Dispatcher.CheckAccess())
+                Dispatcher.Invoke(new Action(LoginFailed));
+            else
+            {
+                Password.Password = "";
+                _validator.ValidateFieldNonEmpty(Password, Password.Password, null, "");
+            }
         }
 
         private void password_KeyDown(object sender, KeyEventArgs e)
@@ -67,6 +73,7 @@ namespace BlitsMe.Agent.UI.WPF
 
 	    public void NewUserCreate(object sender, RequestNavigateEventArgs e)
 	    {
+	        BlitsMeClientAppContext.CurrentAppContext.UIManager.PromptSignup();
 	    }
 	}
 }

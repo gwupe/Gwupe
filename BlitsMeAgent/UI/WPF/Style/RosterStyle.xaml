@@ -188,7 +188,7 @@
 
     <DataTemplate x:Key="PersonIcon">
         <Rectangle x:Name="ImageContainer" Width="50" Height="50" StrokeThickness="0" VerticalAlignment="center" HorizontalAlignment="Left" Margin="0">
-            <Rectangle.Fill>
+           <Rectangle.Fill>
                 <ImageBrush Stretch="Uniform" ImageSource="{Binding Path=Person.Avatar, Converter={StaticResource imageStreamReader}}" />
             </Rectangle.Fill>
         </Rectangle>

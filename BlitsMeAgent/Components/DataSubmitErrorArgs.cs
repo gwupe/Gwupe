@@ -22,10 +22,10 @@ namespace BlitsMe.Agent.Components
             return mystring + " }";
         }
 
-        public bool HasError(string incomplete)
+        public bool HasError(string errorCode)
         {
-            if (String.IsNullOrEmpty(incomplete)) return false;
-            return SubmitErrors.Any(dataSubmitError => incomplete.Equals(dataSubmitError.ErrorCode));
+            if (String.IsNullOrEmpty(errorCode)) return false;
+            return SubmitErrors.Any(dataSubmitError => errorCode.Equals(dataSubmitError.ErrorCode));
         }
 
     }

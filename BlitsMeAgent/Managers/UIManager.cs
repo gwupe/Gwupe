@@ -1,4 +1,5 @@
-﻿using System.Threading;
+﻿using System;
+using System.Threading;
 using System.Windows;
 using System.Windows.Threading;
 using BlitsMe.Agent.Components;
@@ -25,6 +26,8 @@ namespace BlitsMe.Agent.Managers
             BlitsMeClientAppContext.CurrentAppContext.LoginManager.LoggedOut += LoginManagerOnLoggedOut;
             BlitsMeClientAppContext.CurrentAppContext.LoginManager.LoggingIn += LoginManagerOnLoggingIn;
             BlitsMeClientAppContext.CurrentAppContext.LoginManager.LoginFailed += LoginManagerOnLoginFailed;
+            BlitsMeClientAppContext.CurrentAppContext.LoginManager.SigningUp += LoginManagerOnSigningUp;
+            BlitsMeClientAppContext.CurrentAppContext.LoginManager.SignupFailed += LoginManagerOnSignupFailed; 
         }
 
         internal void Start()
@@ -89,6 +92,11 @@ namespace BlitsMe.Agent.Managers
 
         #region events
 
+        public void PromptSignup(DataSubmitErrorArgs dataSubmitErrorArgs = null)
+        {
+            dashBoard.PromptSignup(dataSubmitErrorArgs);
+        }
+
         private void LoginManagerOnLoginFailed(object sender, DataSubmitErrorArgs dataSubmitErrorArgs)
         {
             if (BlitsMeClientAppContext.CurrentAppContext.IsShuttingDown) return;
@@ -96,12 +104,12 @@ namespace BlitsMe.Agent.Managers
             if (dataSubmitErrorArgs.HasErrorField("PasswordHash"))
             {
                 Logger.Debug("Password was incorrect, showing login screen");
-                dashBoard.ShowLoginScreen(true);
+                dashBoard.Login(true);
             }
             else if (dataSubmitErrorArgs.HasError("INCOMPLETE"))
             {
                 Logger.Debug("Data is incomplete, showing login screen");
-                dashBoard.ShowLoginScreen();
+                dashBoard.Login();
             }
         }
 
@@ -109,26 +117,33 @@ namespace BlitsMe.Agent.Managers
         {
             if (BlitsMeClientAppContext.CurrentAppContext.IsShuttingDown) return;
             if (loginEventArgs.LoginState == LoginState.LoggingIn)
-            {
-                Logger.Debug("Showing logging in screen");
-                dashBoard.LoggingInScreen = true;
-            }
+                dashBoard.LoggingIn();
         }
 
         private void LoginManagerOnLoggedOut(object sender, LoginEventArgs loginEventArgs)
         {
             if (BlitsMeClientAppContext.CurrentAppContext.IsShuttingDown) return;
             if (loginEventArgs.LoginState == LoginState.LoggedOut)
-                dashBoard.ShowLoginScreen();
+                dashBoard.Login();
         }
 
         private void LoginManagerOnLoggedIn(object sender, LoginEventArgs loginEventArgs)
         {
             if (BlitsMeClientAppContext.CurrentAppContext.IsShuttingDown) return;
             if (loginEventArgs.LoginState == LoginState.LoggedIn)
-            {
-                dashBoard.LoggingInScreen = false;
-            }
+                dashBoard.LoggedIn();
+        }
+
+        private void LoginManagerOnSigningUp(object sender, EventArgs eventArgs)
+        {
+            if (BlitsMeClientAppContext.CurrentAppContext.IsShuttingDown) return;
+            dashBoard.SigningUp();
+        }
+
+        private void LoginManagerOnSignupFailed(object sender, DataSubmitErrorArgs dataSubmitErrorArgs)
+        {
+            if (BlitsMeClientAppContext.CurrentAppContext.IsShuttingDown) return;
+            dashBoard.PromptSignup(dataSubmitErrorArgs);
         }
 
         #endregion

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Threading;
 using BlitsMe.Agent.Components;
+using BlitsMe.Agent.Exceptions;
 using BlitsMe.Agent.Misc;
 using BlitsMe.Cloud.Exceptions;
 using BlitsMe.Cloud.Messaging.Request;
@@ -65,7 +66,30 @@ namespace BlitsMe.Agent.Managers
         /// </summary>
         internal event EventHandler<DataSubmitErrorArgs> LoginFailed;
 
+        /// <summary>
+        /// Fired when a signup fails
+        /// </summary>
+        internal event EventHandler<DataSubmitErrorArgs> SignupFailed;
+
+        /// <summary>
+        /// Fired when a signup attempt occurs.
+        /// </summary>
+        internal event EventHandler SigningUp;
+
         #region Event Invocators
+
+        private void OnSignupFailed(DataSubmitErrorArgs e)
+        {
+            if (_appContext.IsShuttingDown) return;
+            EventHandler<DataSubmitErrorArgs> handler = SignupFailed;
+            if (handler != null) handler(this, e);
+        }
+
+        private void OnSigningUp()
+        {
+            EventHandler handler = SigningUp;
+            if (handler != null) handler(this, EventArgs.Empty);
+        }
 
         private void OnLoginFailed(String fieldName, String errorCode)
         {
@@ -242,7 +266,7 @@ namespace BlitsMe.Agent.Managers
                     {
                         Logger.Warn("Login has failed : " + e.Message);
                         // Login failed with authfailure, we reset the password so it will be prompted for again, otherwise we just try login again
-                        if (e.authFailure)
+                        if (e.AuthFailure)
                         {
                             LoginDetails.PasswordHash = "";
                             OnLoginFailed("PasswordHash", "INCORRECT");
@@ -250,7 +274,7 @@ namespace BlitsMe.Agent.Managers
                         else
                         {
                             // Failed for another reason, lets retry after 10 seconds (loop test will check login details and connection readiness
-                            OnLoginFailed(null,e.failure);
+                            OnLoginFailed(null,e.Failure);
                             Thread.Sleep(10000);
                         }
                     }
@@ -320,5 +344,68 @@ namespace BlitsMe.Agent.Managers
 
         }
 
+        public void Signup(String firstname, String lastname, String username, String password, String email, String location, bool supporter)
+        {
+            var request = new SignupRq
+            {
+                firstname = firstname.Trim(),
+                lastname = lastname.Trim(),
+                username = username.Trim(),
+                password = password,
+                email = email.Trim(),
+                location = location.Trim(),
+                supporter = supporter
+            };
+                OnSigningUp();
+                _appContext.ConnectionManager.Connection.RequestAsync<SignupRq, SignupRs>(request, ProcessSignupResponse);
+        }
+
+        private void ProcessSignupResponse(SignupRq signupRq, SignupRs signupRs, Exception ex)
+        {
+            if(ex == null) {
+                Login(signupRq.username,signupRq.password);
+            }
+            else
+            {
+                var errors = new DataSubmitErrorArgs();
+                var messageException = ex as MessageException<SignupRs>;
+                if (messageException != null)
+                {
+                    Logger.Warn("Failed to signup : " + ex.Message);
+                    if (messageException.Response.signupErrors != null)
+                    {
+                        if (messageException.Response.signupErrors.Contains(SignupRs.SignupErrorEmailAddressInUse))
+                        {
+                            errors.SubmitErrors.Add(new DataSubmitError()
+                            {
+                                FieldName = "email",
+                                ErrorCode = SignupRs.SignupErrorEmailAddressInUse
+                            });
+                        }
+                        if (messageException.Response.signupErrors.Contains(SignupRs.SignupErrorUserExists))
+                        {
+                            errors.SubmitErrors.Add(new DataSubmitError()
+                            {
+                                FieldName = "username",
+                                ErrorCode = SignupRs.SignupErrorUserExists
+                            });
+                        }
+                        if (messageException.Response.signupErrors.Contains(SignupRs.SignupErrorPasswordComplexity))
+                        {
+                            errors.SubmitErrors.Add(new DataSubmitError()
+                            {
+                                FieldName = "password",
+                                ErrorCode = SignupRs.SignupErrorPasswordComplexity
+                            });
+                        }
+                    }
+                }
+                else
+                {
+                    Logger.Warn("Failed to signup : " + ex.Message);
+                }
+                OnSignupFailed(errors);
+            }
+        }
     }
 }

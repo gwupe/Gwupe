@@ -6,11 +6,12 @@
 	mc:Ignorable="d"
 	x:Class="BlitsMe.Agent.UI.WPF.Dashboard"
 	xmlns:mahappsControls="clr-namespace:MahApps.Metro.Controls;assembly=MahApps.Metro"
+    xmlns:bm="clr-namespace:BlitsMe.Agent.UI.WPF"
 	x:Name="Main"
 	Title="{Binding Title, FallbackValue=BlitsMe}"
 	WindowStartupLocation="CenterScreen" 
 	Closing="HideIfClosing" StateChanged="WindowStateChanged" Width="800" Height="600" MinWidth="640" MinHeight="480"
-	>
+    >
     <Window.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
@@ -41,11 +42,9 @@
                                     <Setter TargetName="AttendancePresenter" Property="ContentTemplate" Value="{StaticResource ContactUnread}" />
                                 </DataTrigger>
                                 <DataTrigger Binding="{Binding Presence.IsOnline}" Value="False">
-                                    <!-- <Setter TargetName="AttendancePresenter" Property="ContentTemplate" Value="{StaticResource ContactOffline}" /> -->
                                     <Setter Property="Opacity" Value="0.7" />
                                 </DataTrigger>
                                 <DataTrigger Binding="{Binding Presence.IsOnline}" Value="True">
-                                    <!-- <Setter TargetName="AttendancePresenter" Property="ContentTemplate" Value="{StaticResource ContactOffline}" /> -->
                                     <Setter Property="Opacity" Value="1.0" />
                                 </DataTrigger>
                             </ControlTemplate.Triggers>
@@ -58,7 +57,41 @@
     </Window.Resources>
 
     <Grid x:Name="LayoutRoot" Style="{StaticResource MainLayout}" >
-        <ContentControl Panel.ZIndex="-2" x:Name="ModalPrompt"/>
+        <ContentControl Panel.ZIndex="2" x:Name="ModalPrompt" >
+            <ContentControl.Style>
+                <Style TargetType="ContentControl">
+                    <Setter Property="ContentTemplate" Value="{x:Null}"/>
+                    <Style.Triggers>
+                        <DataTrigger Binding="{Binding DashboardState}" Value="{x:Static bm:DashboardState.SigningUp}">
+                            <Setter Property="ContentTemplate" Value="{StaticResource SigningUpWindow}" />
+                            <Setter Property="Panel.ZIndex" Value="2" />
+                        </DataTrigger>
+                        <DataTrigger Binding="{Binding DashboardState}" Value="{x:Static bm:DashboardState.LoggingIn}">
+                            <Setter Property="ContentTemplate" Value="{StaticResource LoggingInWindow}" />
+                            <Setter Property="Panel.ZIndex" Value="2" />
+                        </DataTrigger>
+                        <DataTrigger Binding="{Binding DashboardState}" Value="{x:Static bm:DashboardState.Initializing}">
+                            <Setter Property="ContentTemplate" Value="{StaticResource InitializingWindow}" />
+                            <Setter Property="Panel.ZIndex" Value="2" />
+                        </DataTrigger>
+                        <DataTrigger Binding="{Binding DashboardState}" Value="{x:Static bm:DashboardState.LoggedIn}">
+                            <Setter Property="ContentTemplate" Value="{x:Null}" />
+                            <Setter Property="Panel.ZIndex" Value="-2" />
+                        </DataTrigger>
+                        <DataTrigger Binding="{Binding DashboardState}" Value="{x:Static bm:DashboardState.Login}">
+                            <Setter Property="ContentTemplate" Value="{x:Null}" />
+                            <Setter Property="Content" Value="{Binding LoginScreen}" />
+                            <Setter Property="Panel.ZIndex" Value="2" />
+                        </DataTrigger>
+                        <DataTrigger Binding="{Binding DashboardState}" Value="{x:Static bm:DashboardState.Signup}">
+                            <Setter Property="ContentTemplate" Value="{x:Null}" />
+                            <Setter Property="Content" Value="{Binding SignUpScreen}" />
+                            <Setter Property="Panel.ZIndex" Value="2" />
+                        </DataTrigger>
+                    </Style.Triggers>
+                </Style>
+            </ContentControl.Style>
+        </ContentControl>
         <Grid HorizontalAlignment="Left" Width="190">
             <DockPanel LastChildFill="True" Margin="0">
                 <StackPanel Margin="5" Orientation="Horizontal" Height="32" HorizontalAlignment="Center" DockPanel.Dock="Top">

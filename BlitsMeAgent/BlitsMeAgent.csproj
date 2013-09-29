@@ -213,6 +213,7 @@
     <Compile Include="Components\Functions\RemoteDesktop\Client.cs" />
     <Compile Include="Components\Functions\RemoteDesktop\Server.cs" />
     <Compile Include="DispatchingCollection.cs" />
+    <Compile Include="Exceptions\SignUpException.cs" />
     <Compile Include="FlashWindowHelper.cs" />
     <Compile Include="Managers\ConnectionManager.cs" />
     <Compile Include="Managers\CurrentUserManager.cs" />
@@ -292,7 +293,7 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Page Include="UI\WPF\SignUpWindow.xaml">
+    <Page Include="UI\WPF\SignUpControl.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
@@ -343,8 +344,8 @@
     <Compile Include="UI\WPF\Roster\ActiveRosterList.cs" />
     <Compile Include="UI\WPF\Roster\SearchRosterList.cs" />
     <Compile Include="UI\WPF\Roster\RosterList.cs" />
-    <Compile Include="UI\WPF\SignUpWindow.xaml.cs">
-      <DependentUpon>SignUpWindow.xaml</DependentUpon>
+    <Compile Include="UI\WPF\SignUpControl.xaml.cs">
+      <DependentUpon>SignUpControl.xaml</DependentUpon>
     </Compile>
     <Compile Include="UI\WPF\UpdateNotification.xaml.cs">
       <DependentUpon>UpdateNotification.xaml</DependentUpon>
@@ -356,9 +357,6 @@
     <Compile Include="UI\WPF\Utils\InputValidator.cs" />
     <Compile Include="UI\WPF\Utils\RectConverter.cs" />
     <Compile Include="UI\WPF\Utils\RelativeMessageTimeConverter.cs" />
-    <Compile Include="UI\WPF\LoginWindow.xaml.cs">
-      <DependentUpon>LoginWindow.xaml</DependentUpon>
-    </Compile>
     <Compile Include="UI\WPF\Roster\MainRosterList.cs" />
     <Compile Include="UI\WPF\Utils\StarRatingConverter.cs" />
     <Compile Include="UI\WPF\Search\SearchResultControl.xaml.cs">
@@ -396,10 +394,6 @@
       <DependentUpon>Settings.settings</DependentUpon>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
     </Compile>
-    <Page Include="UI\WPF\LoginWindow.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-    </Page>
     <Page Include="UI\WPF\Style\ChatStyle.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>

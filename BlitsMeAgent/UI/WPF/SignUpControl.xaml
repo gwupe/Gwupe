@@ -1,0 +1,42 @@
+﻿<UserControl
+	xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+	xmlns:Anno="http://schemas.microsoft.com/expression/blend/extensions/annotations/2008" 
+	xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" mc:Ignorable="Anno"
+	xmlns:mahappsControls="clr-namespace:MahApps.Metro.Controls;assembly=MahApps.Metro"
+	x:Class="BlitsMe.Agent.UI.WPF.SignUpControl"
+	x:Name="Window">
+    <UserControl.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="pack://application:,,,/MahApps.Metro;component/Styles/Colours.xaml" />
+                <ResourceDictionary Source="pack://application:,,,/MahApps.Metro;component/Styles/Fonts.xaml" />
+                <ResourceDictionary Source="pack://application:,,,/MahApps.Metro;component/Styles/Controls.xaml" />
+                <ResourceDictionary Source="pack://application:,,,/MahApps.Metro;component/Styles/Accents/BaseLight.xaml" />
+                <ResourceDictionary Source="Style/Theme.xaml" />
+                <ResourceDictionary Source="Style/Style.xaml" />
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+    </UserControl.Resources>
+
+    <Grid x:Name="LayoutRoot">
+        <Grid Background="White" Opacity="0.6" />
+        <Grid HorizontalAlignment="Center" VerticalAlignment="Center" Width="250" Height="350">
+            <StackPanel>
+                <TextBlock Style="{StaticResource NoticeText}">Sign Up</TextBlock>
+                <TextBlock x:Name="ErrorText" Margin="0,10,0,0" TextWrapping="Wrap" Text="Error" VerticalAlignment="Top" TextAlignment="Center" Foreground="Red" Visibility="Hidden"/>
+                <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,10,0,0">
+                    <TextBox mahappsControls:TextboxHelper.Watermark="Firstname" HorizontalAlignment="Left" Margin="0,0,2,0" TextWrapping="Wrap" VerticalAlignment="Top" x:Name="Firstname" Width="80" />
+                    <TextBox mahappsControls:TextboxHelper.Watermark="Lastname" HorizontalAlignment="Left" Margin="2,0,0,0" TextWrapping="Wrap" VerticalAlignment="Top" x:Name="Lastname" Width="80" Text="" />
+                </StackPanel>
+                <TextBox mahappsControls:TextboxHelper.Watermark="Username" HorizontalAlignment="Center" Margin="0,10,0,0" TextWrapping="Wrap" VerticalAlignment="Top" x:Name="Username" Width="164" />
+                <PasswordBox mahappsControls:TextboxHelper.Watermark="Password" HorizontalAlignment="Center" Margin="0,10,0,0" VerticalAlignment="Top" Width="164" x:Name="Password" FontFamily="Segoe UI" />
+                <TextBox mahappsControls:TextboxHelper.Watermark="City, Country"  Text="" HorizontalAlignment="Center" Margin="0,10,0,0" VerticalAlignment="Top" Width="164" x:Name="Location" />
+                <TextBox mahappsControls:TextboxHelper.Watermark="Email Address" HorizontalAlignment="Center" Margin="0,10,0,0" VerticalAlignment="Top" Width="164" x:Name="Email" />
+                <CheckBox x:Name="Supporter" Content="I offer IT support" HorizontalAlignment="Center" Margin="0,10,0,0" VerticalAlignment="Top"/>
+                <Button Content="Sign Up" Margin="0,10,0,0" VerticalAlignment="Top" x:Name="Signin" Click="signin_click" HorizontalAlignment="Center" Width="164" />
+            </StackPanel>
+        </Grid>
+    </Grid>
+</UserControl>

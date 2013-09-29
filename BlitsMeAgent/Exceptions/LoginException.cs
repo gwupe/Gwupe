@@ -1,14 +1,11 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 
-namespace BlitsMe.Cloud.Exceptions
+namespace BlitsMe.Agent.Exceptions
 {
     public class LoginException : Exception
     {
-        public bool authFailure;
-        public string failure;
+        public bool AuthFailure;
+        public string Failure;
 
         public const String INCORRECT_PASSWORD = "INCORRECT_PASSWORD";
         public LoginException(String message)
@@ -18,8 +15,8 @@ namespace BlitsMe.Cloud.Exceptions
         public LoginException(String message, string failure)
             : base(message)
         {
-            this.authFailure = failure.Equals(INCORRECT_PASSWORD) ? true : false;
-            this.failure = failure;
+            this.AuthFailure = failure.Equals(INCORRECT_PASSWORD) ? true : false;
+            this.Failure = failure;
         }
     }
 }
