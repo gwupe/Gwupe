@@ -6,7 +6,6 @@
 	xmlns:mahappsControls="clr-namespace:MahApps.Metro.Controls;assembly=MahApps.Metro"
 	mc:Ignorable="d"
 	x:Class="BlitsMe.Agent.UI.WPF.LoginControl"
-	x:Name="UserControl"
 	d:DesignWidth="640" d:DesignHeight="480">
     <UserControl.Resources>
         <ResourceDictionary>
