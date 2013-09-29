@@ -11,5 +11,6 @@ namespace BlitsMe.Service
         public const String Root = @"SOFTWARE\BlitsMe" + BMService.BuildMarker;
         public const String ServerIPsKey = "serverIPs";
         public const String VersionKey = "Version";
+        public const String AutoUpgradeKey = "AutoUpgrade";
     }
 }

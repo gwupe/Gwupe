@@ -36,7 +36,14 @@ namespace BlitsMe.Agent.Managers
             uiThread.SetApartmentState(ApartmentState.STA);
             uiThread.Start();
             uiReady.WaitOne();
-            Show();
+            if (BlitsMeClientAppContext.CurrentAppContext.Options.Contains(BlitsMeOption.Minimize))
+            {
+                dashBoard.InitWindowHandle();
+            }
+            else
+            {
+                Show();
+            }
             if (!BlitsMeClientAppContext.CurrentAppContext.StartupVersion.Equals(BlitsMeClientAppContext.CurrentAppContext.Reg.LastVersion))
                 SetupAndRunUpdateNotificationWindow();
         }
@@ -71,6 +78,10 @@ namespace BlitsMe.Agent.Managers
             dashBoard.Show();
         }
 
+        internal void Hide()
+        {
+            dashBoard.Hide();
+        }
         internal void ShowDialog(Window dialogWindow)
         {
             dialogWindow.Owner = CurrentWindow;

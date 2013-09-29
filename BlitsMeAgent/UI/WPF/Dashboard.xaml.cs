@@ -261,18 +261,33 @@ namespace BlitsMe.Agent.UI.WPF
             }
         }
 
+        internal void InitWindowHandle()
+        {
+            if (!Dispatcher.CheckAccess())
+                Dispatcher.Invoke(new Action(InitWindowHandle));
+            else
+            {
+                ShowInTaskbar = false;
+                WindowState = WindowState.Minimized;
+                base.Show();
+                base.Hide();
+                ShowInTaskbar = true;
+            }
+        }
+
         internal new void Show()
         {
             if (Dispatcher.CheckAccess())
             {
                 base.Show();
+                if (WindowState.Minimized == WindowState)
+                {
+
+                    WindowState = WindowState.Maximized;
+                    WindowState = WindowState.Normal;
+                }
                 Activate();
                 Focus();
-                if (_appContext.UIManager.UpdateNotification != null && !_appContext.UIManager.UpdateNotification.IsClosed)
-                {
-                    _appContext.UIManager.UpdateNotification.Show();
-                }
-
             }
             else
             {
@@ -661,7 +676,7 @@ namespace BlitsMe.Agent.UI.WPF
 
     internal class DashboardDataContext : INotifyPropertyChanged
     {
-    
+
         private static readonly ILog Logger = LogManager.GetLogger(typeof(DashboardDataContext));
 
         private readonly Dashboard _dashboard;

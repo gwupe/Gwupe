@@ -75,49 +75,49 @@ namespace BlitsMe.Service
 
         private void CheckForNewVersion()
         {
-            if (!_checkingUpdate)
+            if (_checkingUpdate) return;
+            _checkingUpdate = true;
+            if (_webClient == null)
             {
-                _checkingUpdate = true;
-                if (_webClient == null)
-                {
-                    _webClient = new WebClient();
-                    try
-                    {
-                        var stream =
-                            Assembly.GetExecutingAssembly().GetManifestResourceStream("BlitsMe.Service.cacert.pem");
-                        Byte[] certificateData = new Byte[stream.Length];
-                        stream.Read(certificateData, 0, certificateData.Length);
-                        _cacert = new X509Certificate2(certificateData);
-                        Logger.Info("Will use certificate from CA " + _cacert.GetNameInfo(X509NameType.SimpleName, true));
-                    }
-                    catch (Exception e)
-                    {
-                        Logger.Error("Failed to get the certificate : " + e.Message, e);
-                    }
-                }
-
-                ServicePointManager.ServerCertificateValidationCallback += ValidateServerWithCA;
+                _webClient = new WebClient();
                 try
                 {
-                    Version assemblyVersion = new Version(_version);
-                    var downloadUrl = GetUpdateUrl(assemblyVersion);
-                    Logger.Debug("Checking for new version from " + downloadUrl);
-                    String versionInfomation =
-                        _webClient.DownloadString(downloadUrl);
-                    if (Regex.Match(versionInfomation, "^[0-9]+\\.[0-9]+\\.[0-9]+:BlitsMeSetupFull" + BuildMarker + ".*").Success)
+                    var stream =
+                        Assembly.GetExecutingAssembly().GetManifestResourceStream("BlitsMe.Service.cacert.pem");
+                    Byte[] certificateData = new Byte[stream.Length];
+                    stream.Read(certificateData, 0, certificateData.Length);
+                    _cacert = new X509Certificate2(certificateData);
+                    Logger.Info("Will use certificate from CA " + _cacert.GetNameInfo(X509NameType.SimpleName, true));
+                }
+                catch (Exception e)
+                {
+                    Logger.Error("Failed to get the certificate : " + e.Message, e);
+                }
+            }
+
+            ServicePointManager.ServerCertificateValidationCallback += ValidateServerWithCA;
+            try
+            {
+                Version assemblyVersion = new Version(_version);
+                var downloadUrl = GetUpdateUrl(assemblyVersion);
+                Logger.Debug("Checking for new version from " + downloadUrl);
+                String versionInfomation =
+                    _webClient.DownloadString(downloadUrl);
+                if (Regex.Match(versionInfomation, "^[0-9]+\\.[0-9]+\\.[0-9]+:BlitsMeSetupFull" + BuildMarker + ".*").Success)
+                {
+                    String[] versionParts = versionInfomation.Split('\n')[0].Split(':');
+                    Version updateVersion = new Version(versionParts[0]);
+                    if (assemblyVersion.CompareTo(updateVersion) < 0)
                     {
-                        String[] versionParts = versionInfomation.Split('\n')[0].Split(':');
-                        Version updateVersion = new Version(versionParts[0]);
-                        if (assemblyVersion.CompareTo(updateVersion) < 0)
+                        Logger.Debug((IsPreRelease() ? "" : "PreRelease ") + "Upgrade Available : " + assemblyVersion + " => " + updateVersion);
+                        if (IsAutoUpgrade())
                         {
-                            Logger.Debug("Upgrade Available : " + assemblyVersion + " => " + updateVersion);
                             try
                             {
-
                                 Logger.Info("Downloading update " + versionParts[1]);
                                 String fileLocation = Path.GetTempPath() + versionParts[1];
                                 _webClient.DownloadFile(GetDownloadUrl(versionParts[1]),
-                                                        fileLocation);
+                                    fileLocation);
                                 Logger.Info("Downloaded update " + versionParts[1]);
                                 String logfile = Path.GetTempPath() + "BlitsMeInstall" + BuildMarker + ".log";
                                 Logger.Info("Executing " + fileLocation + ", log file is " + logfile);
@@ -127,7 +127,8 @@ namespace BlitsMe.Service
                                 }
                                 else
                                 {
-                                    Process.Start(fileLocation, " /silent /passive /install /quiet /norestart /log " + logfile);
+                                    Process.Start(fileLocation,
+                                        " /silent /passive /install /quiet /norestart /log " + logfile);
                                 }
                             }
                             catch (Exception e)
@@ -137,27 +138,31 @@ namespace BlitsMe.Service
                         }
                         else
                         {
-                            Logger.Debug("No update available, current version " + assemblyVersion +
-                                         ", available version " +
-                                         updateVersion + ", checking again in " + (UpdateCheckInterval / 60) + " minutes.");
+                            Logger.Warn("AutoUpgrade is disabled, will not attempt to upgrade");
                         }
                     }
                     else
                     {
-                        Logger.Error("Failed to check for updates, the update request return invalid information : " +
-                                     versionInfomation);
+                        Logger.Debug("No update available, current version " + assemblyVersion +
+                                     ", available version " +
+                                     updateVersion + ", checking again in " + (UpdateCheckInterval / 60) + " minutes.");
                     }
                 }
-                catch (Exception e)
+                else
                 {
-                    Logger.Warn("Failed to check for update : " + e.Message, e);
+                    Logger.Error("Failed to check for updates, the update request return invalid information : " +
+                                 versionInfomation);
                 }
-                finally
-                {
-                    Logger.Debug("Upgrade check complete.");
-                    ServicePointManager.ServerCertificateValidationCallback -= ValidateServerWithCA;
-                    _checkingUpdate = false;
-                }
+            }
+            catch (Exception e)
+            {
+                Logger.Warn("Failed to check for update : " + e.Message, e);
+            }
+            finally
+            {
+                Logger.Debug("Upgrade check complete.");
+                ServicePointManager.ServerCertificateValidationCallback -= ValidateServerWithCA;
+                _checkingUpdate = false;
             }
         }
 
@@ -168,10 +173,10 @@ namespace BlitsMe.Service
 
         private string GetUpdateUrl(Version assemblyVersion)
         {
-            
+
             return "https://" + UpdateServer + "/updates/update.php" +
-                "?ver=" + assemblyVersion + 
-                "&hwid=" + HardwareFingerprint() + 
+                "?ver=" + assemblyVersion +
+                "&hwid=" + HardwareFingerprint() +
                 "&upver=2.0" +
                 (IsPreRelease() ? "&prerelease=true" : "");
         }
@@ -183,17 +188,40 @@ namespace BlitsMe.Service
                 RegistryKey bmKey =
                     RegistryKey.OpenBaseKey(RegistryHive.LocalMachine, RegistryView.Registry32).OpenSubKey(
                         BLMRegistry.Root);
-                String preRelease = (String) bmKey.GetValue(BLMRegistry.PreReleaseKey);
+                String preRelease = (String)bmKey.GetValue(BLMRegistry.PreReleaseKey);
                 if (preRelease != null)
                 {
                     return true;
                 }
-            } catch(Exception e)
+            }
+            catch (Exception e)
             {
                 Logger.Debug("Threw exception trying to get preReleaseKey from Registry : " + e.Message);
                 return false;
             }
             return false;
+        }
+
+        private bool IsAutoUpgrade()
+        {
+            // This defaults to yes, only if the key is found and its value is no does an auto upgrade not run
+            try
+            {
+                RegistryKey bmKey =
+                    RegistryKey.OpenBaseKey(RegistryHive.LocalMachine, RegistryView.Registry32).OpenSubKey(
+                        BLMRegistry.Root);
+                String autoUpgrade = (String)bmKey.GetValue(BLMRegistry.AutoUpgradeKey);
+                Logger.Debug("AutoUpgrade is " + autoUpgrade);
+                if (autoUpgrade != null && autoUpgrade.Equals("no"))
+                {
+                    return false;
+                }
+            }
+            catch (Exception e)
+            {
+                Logger.Debug("Threw exception trying to get preReleaseKey from Registry : " + e.Message);
+            }
+            return true;
         }
 
         private bool ValidateServerWithCA(object sender, X509Certificate certificate, X509Chain chain, SslPolicyErrors sslPolicyErrors)
