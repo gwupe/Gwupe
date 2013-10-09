@@ -1,10 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Runtime.Serialization;
 using BlitsMe.Cloud.Messaging.API;
-using BlitsMe.Cloud.Messaging.Elements;
 
 namespace BlitsMe.Cloud.Messaging.Request
 {

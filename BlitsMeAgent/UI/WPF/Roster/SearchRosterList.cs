@@ -20,7 +20,7 @@ namespace BlitsMe.Agent.UI.WPF.Roster
             : base(source, listBox)
         {
             _searchTextBox = searchTextBox;
-            ContactsView.SortDescriptions.Add(new SortDescription("Attendance.Name", ListSortDirection.Ascending));
+            ContactsView.SortDescriptions.Add(new SortDescription("Person.Name", ListSortDirection.Ascending));
         }
 
         protected override void FilterEventHandler(object sender, FilterEventArgs filterEventArgs)

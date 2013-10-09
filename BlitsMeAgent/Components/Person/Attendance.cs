@@ -1,14 +1,9 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.ComponentModel;
-using System.Linq;
-using System.Text;
 using BlitsMe.Agent.Components.Activity;
-using BlitsMe.Agent.Components.Functions.Chat;
 using BlitsMe.Agent.Components.Person.Presence;
 using BlitsMe.Cloud.Messaging.Elements;
 using log4net;
-using log4net.Repository.Hierarchy;
 
 namespace BlitsMe.Agent.Components.Person
 {

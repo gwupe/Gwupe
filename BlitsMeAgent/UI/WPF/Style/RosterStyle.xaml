@@ -198,7 +198,7 @@
 
     <DataTemplate x:Key="Contact">
         <Grid Style="{StaticResource TeamMemberInActiveBase}">
-            <Grid Style="{DynamicResource TeamMemberInner}">
+            <Grid Style="{StaticResource TeamMemberInner}">
                 <ContentPresenter ContentTemplate="{StaticResource PersonIcon}" />
                 <StackPanel Margin="53,0,0,0">
                     <TextBlock Style="{StaticResource TeamMemberNameTextInActive}" Text="{Binding Path=Person.Name, FallbackValue=FirstName LastName}" />
@@ -222,7 +222,7 @@
 
     <DataTemplate x:Key="ContactActive">
         <Grid Style="{StaticResource TeamMemberActiveBase}">
-            <Grid Style="{DynamicResource TeamMemberInner}">
+            <Grid Style="{StaticResource TeamMemberInner}">
                 <ContentPresenter ContentTemplate="{StaticResource PersonIcon}" />
                 <StackPanel Margin="53,0,0,0">
                     <TextBlock Style="{StaticResource TeamMemberNameText}" Text="{Binding Path=Person.Name, FallbackValue=FirstName LastName}" />
@@ -246,7 +246,7 @@
 
     <DataTemplate x:Key="ContactUnread">
         <Grid Style="{StaticResource TeamMemberUnreadBase}">
-            <Grid Style="{DynamicResource TeamMemberInner}">
+            <Grid Style="{StaticResource TeamMemberInner}">
                 <ContentPresenter ContentTemplate="{StaticResource PersonIcon}" />
                 <StackPanel Margin="53,0,0,0">
                     <TextBlock Style="{StaticResource TeamMemberNameTextInActive}" Text="{Binding Path=Person.Name, FallbackValue=FirstName LastName}" />
@@ -270,7 +270,7 @@
 
     <DataTemplate x:Key="ContactOffline">
         <Grid Style="{StaticResource TeamMemberOfflineBase}">
-            <Grid Style="{DynamicResource TeamMemberInner}">
+            <Grid Style="{StaticResource TeamMemberInner}">
                 <ContentPresenter ContentTemplate="{StaticResource PersonIcon}" />
                 <StackPanel Margin="53,0,0,0">
                     <TextBlock Style="{StaticResource TeamMemberNameTextInActive}" Text="{Binding Path=Person.Name, FallbackValue=FirstName LastName}" />

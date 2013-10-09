@@ -32,9 +32,9 @@ namespace BlitsMe.Agent.Managers
         // Gets an engagement, null if not there
         public Engagement GetEngagement(String username)
         {
-            if(_engagementLookup.ContainsKey(username))
+            if(_engagementLookup.ContainsKey(username.ToLower()))
             {
-                return _engagementLookup[username];
+                return _engagementLookup[username.ToLower()];
             }
             return null;
         }

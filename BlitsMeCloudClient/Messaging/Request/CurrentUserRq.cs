@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-
-namespace BlitsMe.Cloud.Messaging.Request
+﻿namespace BlitsMe.Cloud.Messaging.Request
 {
     public class CurrentUserRq : API.Request
     {

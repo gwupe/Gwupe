@@ -87,6 +87,7 @@
     <Compile Include="Messaging\Elements\RosterElement.cs" />
     <Compile Include="Messaging\Elements\UserElement.cs" />
     <Compile Include="Messaging\Request\ChatMessageRq.cs" />
+    <Compile Include="Messaging\Request\RateRq.cs" />
     <Compile Include="Messaging\Request\CurrentUserRq.cs" />
     <Compile Include="Messaging\Request\ElevateTokenRq.cs" />
     <Compile Include="Messaging\Request\FileSendRequestResponseRq.cs" />
@@ -108,6 +109,7 @@
     <Compile Include="Messaging\Request\VCardRq.cs" />
     <Compile Include="Messaging\Request\VersionRq.cs" />
     <Compile Include="Messaging\Response\ChatMessageRs.cs" />
+    <Compile Include="Messaging\Response\RateRs.cs" />
     <Compile Include="Messaging\Response\CurrentUserRs.cs" />
     <Compile Include="Messaging\Response\ElevateTokenRs.cs" />
     <Compile Include="Messaging\Response\FileSendRequestResponseRs.cs" />

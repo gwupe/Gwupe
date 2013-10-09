@@ -8,6 +8,7 @@ using BlitsMe.Agent.Components.Functions.API;
 using BlitsMe.Agent.Components.Functions.Chat;
 using BlitsMe.Agent.Components.Person;
 using BlitsMe.Agent.Managers;
+using BlitsMe.Cloud.Messaging.API;
 using BlitsMe.Cloud.Messaging.Request;
 using BlitsMe.Cloud.Messaging.Response;
 using BlitsMe.Communication.P2P.RUDP.Tunnel;
@@ -403,9 +404,30 @@ namespace BlitsMe.Agent.Components
             DisconnectTunnels();
         }
 
-        public void SetRating(string sessionId, string ratingName, int rating)
+        public void SetRating(string interactionId, string ratingName, int rating)
         {
-            //throw new NotImplementedException();
+            var request = new RateRq {username = SecondParty.Person.Username, interactionId = interactionId, ratingName = ratingName, rating = rating};
+            try
+            {
+                _appContext.ConnectionManager.Connection.RequestAsync<RateRq, RateRs>(request, ProcessRateResponse);
+            }
+            catch (Exception e)
+            {
+                Logger.Error("Failed to send rate rq " + request + " : " + e.Message,e);
+            }
+        }
+
+        private void ProcessRateResponse(RateRq request, Response response, Exception e)
+        {
+            if (e != null)
+            {
+                Logger.Error("Failed to send the rating request : " + e.Message, e);
+            }
+            else
+            {
+                Logger.Debug("Successfully rated " + SecondParty.Person.Username + " " + request.rating + " for " +
+                             request.ratingName + " for interaction " + request.interactionId);
+            }
         }
 
         public void ActivityOccured(EngagementActivity args)

@@ -24,7 +24,11 @@ namespace BlitsMe.Agent.Components
         internal Dictionary<String, Rating> Ratings;
         internal List<EngagementActivity> Activities = new List<EngagementActivity>();
         private string _id;
-        private const double InteractionTimeout = 1; // 4 hour interaction timeout
+#if DEBUG
+        private const double InteractionTimeout = 30; // 1/2 hour interaction timeout
+#else
+        private const double InteractionTimeout = 240; // 4 hour interaction timeout
+#endif
 
         internal Interaction(Engagement engagement, String id = null)
         {

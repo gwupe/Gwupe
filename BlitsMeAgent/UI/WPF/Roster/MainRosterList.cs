@@ -24,7 +24,7 @@ namespace BlitsMe.Agent.UI.WPF.Roster
         public MainRosterList(DispatchingCollection<ObservableCollection<Attendance>, Attendance> source, ListBox listBox)
             : base(source, listBox)
         {
-            ContactsView.SortDescriptions.Add(new SortDescription("Attendance.Name", ListSortDirection.Ascending));
+            ContactsView.SortDescriptions.Add(new SortDescription("Person.Name", ListSortDirection.Ascending));
         }
 
         protected override void OnAttendancePropertyChange(object sender, PropertyChangedEventArgs propertyChangedEventArgs)
