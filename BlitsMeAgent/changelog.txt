@@ -1,7 +1,3 @@
 ﻿Ratings Update
 Added Ratings feature
 Fixed XP UI Bugs (including tunneling bug when multicase usernames are in use)
-
-
-
-

@@ -44,7 +44,8 @@ namespace BlitsMe.Agent.Managers
             {
                 Show();
             }
-            if (!BlitsMeClientAppContext.CurrentAppContext.StartupVersion.Equals(BlitsMeClientAppContext.CurrentAppContext.Reg.LastVersion))
+            if (!BlitsMeClientAppContext.CurrentAppContext.StartupVersion.Equals(BlitsMeClientAppContext.CurrentAppContext.Reg.LastVersion)
+                && !String.IsNullOrWhiteSpace(BlitsMeClientAppContext.CurrentAppContext.ChangeDescription))
                 SetupAndRunUpdateNotificationWindow();
         }
 

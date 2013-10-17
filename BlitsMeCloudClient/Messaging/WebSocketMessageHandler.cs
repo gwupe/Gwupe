@@ -87,10 +87,10 @@ namespace BlitsMe.Cloud.Messaging
             ser.WriteObject(stream, message);
             String resAsString = Encoding.UTF8.GetString(stream.ToArray());
             _connection.SendText(resAsString);
-            if (!Regex.Match(resAsString, "\"type\":\"Ping").Success)
-            {
+            //if (!Regex.Match(resAsString, "\"type\":\"Ping").Success)
+            //{
                 Logger.Debug("Sent message : " + SanitiseMessage(resAsString));
-            }
+            //}
         }
 
         private Message GetMessage(MemoryStream rawData, bool finalFrame, int opCode)
@@ -113,11 +113,11 @@ namespace BlitsMe.Cloud.Messaging
                     data = rawData;
                 }
                 String messageString = Encoding.UTF8.GetString(data.ToArray());
-                if (!Regex.Match(messageString, "\"type\":\"Ping").Success)
-                {
+                //if (!Regex.Match(messageString, "\"type\":\"Ping").Success)
+                //{
                     Logger.Debug("Received message [" + data.Length + "] (" + (opCode == 0 ? "multi" : "single") + "): " +
                                  SanitiseMessage(messageString));
-                }
+                //}
             }
             else
             {

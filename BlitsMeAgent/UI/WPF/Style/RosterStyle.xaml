@@ -186,7 +186,7 @@
         <Setter Property="MaxWidth" Value="160"/>
     </Style>
 
-    <DataTemplate x:Key="PersonIcon">
+    <DataTemplate x:Key="PersonIcon" DataType="person:Attendance">
         <Rectangle x:Name="ImageContainer" Width="50" Height="50" StrokeThickness="0" VerticalAlignment="center" HorizontalAlignment="Left" Margin="0">
            <Rectangle.Fill>
                 <ImageBrush Stretch="Uniform" ImageSource="{Binding Path=Person.Avatar, Converter={StaticResource imageStreamReader}}" />
@@ -196,10 +196,10 @@
 
 
 
-    <DataTemplate x:Key="Contact">
+    <DataTemplate x:Key="Contact" DataType="person:Attendance">
         <Grid Style="{StaticResource TeamMemberInActiveBase}">
             <Grid Style="{StaticResource TeamMemberInner}">
-                <ContentPresenter ContentTemplate="{StaticResource PersonIcon}" />
+                <ContentPresenter ContentTemplate="{StaticResource PersonIcon}" Content="{Binding Path=.}" />
                 <StackPanel Margin="53,0,0,0">
                     <TextBlock Style="{StaticResource TeamMemberNameTextInActive}" Text="{Binding Path=Person.Name, FallbackValue=FirstName LastName}" />
                     <ContentControl Content="{Binding Person.Rating}" >
@@ -220,10 +220,10 @@
         </Grid>
     </DataTemplate>
 
-    <DataTemplate x:Key="ContactActive">
+    <DataTemplate x:Key="ContactActive" DataType="person:Attendance">
         <Grid Style="{StaticResource TeamMemberActiveBase}">
             <Grid Style="{StaticResource TeamMemberInner}">
-                <ContentPresenter ContentTemplate="{StaticResource PersonIcon}" />
+                <ContentPresenter ContentTemplate="{StaticResource PersonIcon}" Content="{Binding Path=.}" />
                 <StackPanel Margin="53,0,0,0">
                     <TextBlock Style="{StaticResource TeamMemberNameText}" Text="{Binding Path=Person.Name, FallbackValue=FirstName LastName}" />
                     <ContentControl Content="{Binding Person.Rating}" >
@@ -244,10 +244,10 @@
         </Grid>
     </DataTemplate>
 
-    <DataTemplate x:Key="ContactUnread">
+    <DataTemplate x:Key="ContactUnread" DataType="person:Attendance">
         <Grid Style="{StaticResource TeamMemberUnreadBase}">
             <Grid Style="{StaticResource TeamMemberInner}">
-                <ContentPresenter ContentTemplate="{StaticResource PersonIcon}" />
+                <ContentPresenter ContentTemplate="{StaticResource PersonIcon}" Content="{Binding Path=.}" />
                 <StackPanel Margin="53,0,0,0">
                     <TextBlock Style="{StaticResource TeamMemberNameTextInActive}" Text="{Binding Path=Person.Name, FallbackValue=FirstName LastName}" />
                     <ContentControl Content="{Binding Person.Rating}" >
@@ -268,10 +268,10 @@
         </Grid>
     </DataTemplate>
 
-    <DataTemplate x:Key="ContactOffline">
+    <DataTemplate x:Key="ContactOffline" DataType="person:Attendance">
         <Grid Style="{StaticResource TeamMemberOfflineBase}">
             <Grid Style="{StaticResource TeamMemberInner}">
-                <ContentPresenter ContentTemplate="{StaticResource PersonIcon}" />
+                <ContentPresenter ContentTemplate="{StaticResource PersonIcon}" Content="{Binding Path=.}" />
                 <StackPanel Margin="53,0,0,0">
                     <TextBlock Style="{StaticResource TeamMemberNameTextInActive}" Text="{Binding Path=Person.Name, FallbackValue=FirstName LastName}" />
                     <ContentControl Content="{Binding Person.Rating}" >

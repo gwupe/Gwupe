@@ -9,7 +9,7 @@ namespace BlitsMe.Agent.Components.Person
 {
     internal class Attendance : INotifyPropertyChanged
     {
-        private static readonly ILog Logger = LogManager.GetLogger(typeof (Attendance));
+        private static readonly ILog Logger = LogManager.GetLogger(typeof(Attendance));
 
         public Person Person { get; set; }
 
@@ -43,7 +43,14 @@ namespace BlitsMe.Agent.Components.Person
 
         internal String ActiveShortCode
         {
-            get { return _activeShortCode; }
+            get
+            {
+                if (_activeShortCode == null)
+                {
+                    ActiveShortCode = Presence.ShortCode;
+                }
+                return _activeShortCode;
+            }
             set
             {
                 if ((_activeShortCode != value) && (_activeShortCode == null || !_activeShortCode.Equals(value)))
@@ -98,7 +105,7 @@ namespace BlitsMe.Agent.Components.Person
                     _isCurrentlyEngaged = value;
                     if (_isCurrentlyEngaged && IsUnread)
                     {
-                        Engagement.ActivityOccured(new InteractionActivity(Engagement,InteractionActivity.READ));
+                        Engagement.ActivityOccured(new InteractionActivity(Engagement, InteractionActivity.READ));
                         Engagement.IsUnread = false;
                     }
                     //Logger.Debug(Person.Username + " is currently " + (_isCurrentlyEngaged ? "engaged" : "unengaged"));
