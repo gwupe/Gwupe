@@ -30,6 +30,10 @@
     <ApplicationVersion>1.0.0.%2a</ApplicationVersion>
     <UseApplicationTrust>false</UseApplicationTrust>
     <BootstrapperEnabled>true</BootstrapperEnabled>
+    <SccProjectName>SAK</SccProjectName>
+    <SccLocalPath>SAK</SccLocalPath>
+    <SccAuxPath>SAK</SccAuxPath>
+    <SccProvider>SAK</SccProvider>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|x86' ">
     <PlatformTarget>AnyCPU</PlatformTarget>
@@ -122,13 +126,12 @@
     </Reference>
     <Reference Include="MahApps.Metro">
       <HintPath>..\packages\MahApps.Metro.0.10.1.1\lib\net40\MahApps.Metro.dll</HintPath>
-      <Private>False</Private>
     </Reference>
     <Reference Include="Microsoft.Expression.Drawing">
-      <Private>False</Private>
+      <HintPath>..\library\Microsoft.Expression.Drawing.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.Expression.Effects">
-      <Private>False</Private>
+      <HintPath>..\library\Microsoft.Expression.Effects.dll</HintPath>
     </Reference>
     <Reference Include="PresentationCore" />
     <Reference Include="PresentationFramework" />
@@ -230,6 +233,11 @@
     <Compile Include="Managers\RosterManager.cs" />
     <Compile Include="OSUtils.cs" />
     <Compile Include="Properties\Annotations.cs" />
+    <Compile Include="Properties\Resources.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Resources.resx</DependentUpon>
+    </Compile>
     <Compile Include="UI\SystemTray.cs" />
     <Compile Include="UI\WPF\API\IDashboardContentControl.cs" />
     <Compile Include="UI\WPF\AvatarImageWindow.xaml.cs">
@@ -246,6 +254,10 @@
     </Compile>
     <None Include="Resources\Entypo.ttf" />
     <Page Include="Resources\Icons.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Skins\Skin.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
@@ -276,6 +288,18 @@
     <Page Include="UI\WPF\Engage\RatingControl.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
+    </Page>
+    <Page Include="UI\WPF\Engage\UserImage.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="UI\WPF\Engage\UserImageAddBuddy.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="UI\WPF\Engage\UserImageOthers.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="UI\WPF\LoginControl.xaml">
       <Generator>MSBuild:Compile</Generator>
@@ -338,12 +362,22 @@
     <Compile Include="UI\WPF\Engage\RatingControl.xaml.cs">
       <DependentUpon>RatingControl.xaml</DependentUpon>
     </Compile>
+    <Compile Include="UI\WPF\Engage\UserImage.xaml.cs">
+      <DependentUpon>UserImage.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="UI\WPF\Engage\UserImageAddBuddy.xaml.cs">
+      <DependentUpon>UserImageAddBuddy.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="UI\WPF\Engage\UserImageOthers.xaml.cs">
+      <DependentUpon>UserImageOthers.xaml</DependentUpon>
+    </Compile>
     <Compile Include="UI\WPF\LoginControl.xaml.cs">
       <DependentUpon>LoginControl.xaml</DependentUpon>
     </Compile>
     <Compile Include="UI\WPF\Roster\ActiveRosterList.cs" />
     <Compile Include="UI\WPF\Roster\SearchRosterList.cs" />
     <Compile Include="UI\WPF\Roster\RosterList.cs" />
+    <Compile Include="UI\WPF\Search\UserOtherImageList.cs" />
     <Compile Include="UI\WPF\SignUpControl.xaml.cs">
       <DependentUpon>SignUpControl.xaml</DependentUpon>
     </Compile>
@@ -376,14 +410,9 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
-      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
       <SubType>Designer</SubType>
+      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
     </EmbeddedResource>
-    <Compile Include="Properties\Resources.Designer.cs">
-      <AutoGen>True</AutoGen>
-      <DependentUpon>Resources.resx</DependentUpon>
-      <DesignTime>True</DesignTime>
-    </Compile>
     <None Include="packages.config" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
@@ -551,6 +580,9 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="Resources\Entypo-license.txt" />
+    <Content Include="UI\WPF\Images\Search.png" />
+    <Content Include="UI\WPF\Images\Settings.png" />
+    <Content Include="UI\WPF\Images\Time.png" />
     <Resource Include="UI\WPF\Images\Blitsmewording200.png" />
     <EmbeddedResource Include="..\BlitsMeCommon\bin\$(Configuration)\BlitsMe.Common.dll" />
     <EmbeddedResource Include="..\BlitsMeCloudClient\bin\$(Configuration)\BlitsMe.Cloud.dll" />
@@ -559,8 +591,6 @@
     <EmbeddedResource Include="..\BlitsMeServiceProxy\bin\$(Configuration)\BlitsMe.ServiceProxy.dll" />
     <EmbeddedResource Include="..\BlitsMeCommon\log4net.dll" />
     <EmbeddedResource Include="..\WebSocketLib\bin\$(Configuration)\Bauglir.Ex.dll" />
-    <EmbeddedResource Include="$(ProgramFiles)\Microsoft SDKs\Expression\Blend\.NETFramework\v4.0\Libraries\Microsoft.Expression.Drawing.dll" />
-    <EmbeddedResource Include="$(ProgramFiles)\Microsoft SDKs\Expression\Blend\.NETFramework\v4.0\Libraries\Microsoft.Expression.Effects.dll" />
     <EmbeddedResource Include="..\packages\MahApps.Metro.0.10.1.1\lib\net40\MahApps.Metro.dll" />
     <EmbeddedResource Include="..\packages\MahApps.Metro.0.10.1.1\lib\net40\System.Windows.Interactivity.dll" />
     <RootContent Include="env\Release\bmss.exe">
@@ -592,10 +622,12 @@
   </Target>
   <Target Name="AfterBuild">
   </Target>
-  -->
+  
   <Target Name="AfterBuild">
     <Copy DestinationFolder="$(OutputPath)" SourceFiles="@(RootContent)" SkipUnchangedFiles="true" />
     <Exec Command="&quot;C:\Program Files (x86)\Microsoft SDKs\Windows\v7.1A\Bin\Signtool.exe&quot; sign /d &quot;BlitsMe Agent Application&quot; /sha1 83e81a9d1d88fb8718fd1df07e89ef89b000ee64 &quot;$(TargetDir)BlitsMe.Agent.exe&quot;" />
     <Exec Command="&quot;C:\Program Files (x86)\Microsoft SDKs\Windows\v7.1A\Bin\Signtool.exe&quot; sign /d &quot;BlitsMe Support Screen&quot; /sha1 83e81a9d1d88fb8718fd1df07e89ef89b000ee64 &quot;$(TargetDir)bmss.exe&quot;" />
   </Target>
+  
+  -->
 </Project>

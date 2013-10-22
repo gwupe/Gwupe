@@ -6,7 +6,8 @@
 	xmlns:alert="clr-namespace:BlitsMe.Agent.Components.Alert"
 	xmlns:fileSendNotification="clr-namespace:BlitsMe.Agent.Components.Functions.FileSend.Notification"
 	xmlns:rdpNotification="clr-namespace:BlitsMe.Agent.Components.Functions.RemoteDesktop.Notification"
-	xmlns:utils="clr-namespace:BlitsMe.Agent.UI.WPF.Utils">
+	xmlns:utils="clr-namespace:BlitsMe.Agent.UI.WPF.Utils" 
+    xmlns:engage="clr-namespace:BlitsMe.Agent.UI.WPF.Engage">
 
     <utils:RectConverter x:Key="rectConverter" />
     <Style x:Key="NotificationActionButton" TargetType="{x:Type Button}">
@@ -50,10 +51,10 @@
     <Style x:Key="NotificationDockStyle" TargetType="{x:Type DockPanel}">
         <Setter Property="HorizontalAlignment" Value="Stretch" />
         <Setter Property="LastChildFill" Value="true" />
-        <Setter Property="Background" Value="#FF99b4d1" />
+        <Setter Property="Background" Value="#A9DA74" />
         <Setter Property="Margin" Value="1" />
     </Style>
-
+    
     <!-- Resource dictionary entries should be defined here. -->
     <DataTemplate DataType="{x:Type fileSendNotification:FileSendProgressNotification}">
         <DockPanel Style="{StaticResource NotificationDockStyle}">
@@ -76,13 +77,15 @@
         </DockPanel>
     </DataTemplate>
     <DataTemplate DataType="{x:Type rdpNotification:RDPNotification}">
-        <DockPanel Style="{StaticResource NotificationDockStyle}">
-            <StackPanel Orientation="Horizontal" Margin="0,8,8,8" HorizontalAlignment="Right" DockPanel.Dock="Right">
-                <Button Style="{DynamicResource AcceptButtonStyle}" />
-                <Button Style="{DynamicResource DenyButtonStyle}" />
-            </StackPanel>
-            <TextBlock HorizontalAlignment="Left" Margin="8,11,0,8" Text="{Binding Message, FallbackValue=Unknown Notification}" DockPanel.Dock="Left" Foreground="Black" FontWeight="Bold"/>
-        </DockPanel>
+        <Border BorderBrush="#015E15" BorderThickness="1">
+            <DockPanel Style="{StaticResource NotificationDockStyle}">
+                <StackPanel Orientation="Horizontal" Margin="0,8,8,8" HorizontalAlignment="Right" DockPanel.Dock="Right">
+                    <Button Style="{DynamicResource AcceptButtonStyle}" />
+                    <Button Style="{DynamicResource DenyButtonStyle}" />
+                </StackPanel>
+                <TextBlock HorizontalAlignment="Left" Margin="8,11,0,8" Text="{Binding Message, FallbackValue=Unknown Notification}" DockPanel.Dock="Left" Foreground="Black" FontWeight="Bold"/>
+            </DockPanel>
+        </Border>
     </DataTemplate>
     <DataTemplate DataType="{x:Type fileSendNotification:FileSendRequestNotification}">
         <DockPanel Style="{StaticResource NotificationDockStyle}">

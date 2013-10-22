@@ -80,7 +80,25 @@ namespace BlitsMe.Agent.Components.Functions.Chat
                 }
                 else if (Speaker.Equals("_SYSTEM"))
                 {
-                    return "ChatSystem";
+                    if (LastWord)
+                    {
+                        return "ChatSystem";
+                    }
+                    else
+                    {
+                        return "ChatMeGroup";
+                    }
+                }
+                else if (Speaker.Equals("_SECONDPARTYSYSTEM"))
+                {
+                    if (LastWord)
+                    {
+                        return "ChatOtherSingle";
+                    }
+                    else
+                    {
+                        return "ChatOtherGroup";
+                    }
                 }
                 else if (Speaker.Equals("_SYSTEM_ERROR"))
                 {

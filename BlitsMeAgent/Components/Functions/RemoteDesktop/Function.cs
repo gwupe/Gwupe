@@ -97,7 +97,7 @@ namespace BlitsMe.Agent.Components.Functions.RemoteDesktop
                     rdpNotification.AnsweredTrue += delegate { ProcessAnswer(true); };
                     rdpNotification.AnsweredFalse += delegate { ProcessAnswer(false); };
                     _appContext.NotificationManager.AddNotification(rdpNotification);
-                    Chat.LogSystemMessage(_engagement.SecondParty.Person.Firstname +
+                    Chat.LogSecondPartySystemMessage(_engagement.SecondParty.Person.Firstname +
                                                       " requested control of your desktop.");
                     //OnRDPIncomingRequestEvent(new RdpIncomingRequest(_engagement));
                     OnNewActivity(new RemoteDesktopActivity(_engagement, RemoteDesktopActivity.REMOTE_DESKTOP_REQUEST) { To = "_SELF", From = _engagement.SecondParty.Person.Username });
@@ -259,7 +259,7 @@ namespace BlitsMe.Agent.Components.Functions.RemoteDesktop
             if (request.accepted)
             {
                 IsActive = true;
-                Chat.LogSystemMessage(_engagement.SecondParty.Person.Firstname + " accepted your remote assistance request, please wait while we establish a connection...");
+                Chat.LogSecondPartySystemMessage(_engagement.SecondParty.Person.Firstname + " accepted your remote assistance request, please wait while we establish a connection...");
                 // Wait for a tunnel
                 lock (_engagement.TunnelWaitLock)
                 {
@@ -297,7 +297,7 @@ namespace BlitsMe.Agent.Components.Functions.RemoteDesktop
             else
             {
                 IsActive = false;
-                Chat.LogSystemMessage(_engagement.SecondParty.Person.Firstname + " did not accept your remote assistance request.");
+                Chat.LogSecondPartySystemMessage(_engagement.SecondParty.Person.Firstname + " did not accept your remote assistance request.");
             }
         }
 

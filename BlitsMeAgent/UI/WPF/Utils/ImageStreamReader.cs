@@ -3,14 +3,12 @@ using System.Globalization;
 using System.IO;
 using System.Windows.Data;
 using System.Windows.Media.Imaging;
-using log4net;
+using BlitsMe.Agent.Properties;
 
 namespace BlitsMe.Agent.UI.WPF.Utils
 {
     class ImageStreamReader : IValueConverter
     {
-        private static readonly ILog Logger = LogManager.GetLogger(typeof(ImageStreamReader));
-
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
             return CreateBitmapImage((byte[])value);
@@ -18,7 +16,8 @@ namespace BlitsMe.Agent.UI.WPF.Utils
 
         internal static BitmapImage CreateBitmapImage(byte[] value)
         {
-            BitmapImage image = new BitmapImage();
+            BitmapImage image;
+            image = new BitmapImage();
             image.BeginInit();
             if (value == null)
             {

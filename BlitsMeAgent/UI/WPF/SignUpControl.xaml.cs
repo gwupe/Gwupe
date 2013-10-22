@@ -4,6 +4,7 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
+using System.Windows.Navigation;
 using BlitsMe.Agent.Components;
 using BlitsMe.Agent.UI.WPF.Utils;
 using BlitsMe.Cloud.Exceptions;
@@ -113,6 +114,11 @@ namespace BlitsMe.Agent.UI.WPF
                     _validator.setError("Unknown Error");
                 }
             }
+        }
+            
+        public void ShowLogin(object sender, RequestNavigateEventArgs e)
+        {
+            BlitsMeClientAppContext.CurrentAppContext.UIManager.PromptLogin();
         }
     }
 }

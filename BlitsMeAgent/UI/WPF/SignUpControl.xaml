@@ -8,7 +8,7 @@
 	x:Class="BlitsMe.Agent.UI.WPF.SignUpControl"
     d:DesignWidth="640" d:DesignHeight="480">
     <UserControl.Resources>
-        <ResourceDictionary>
+        <!--<ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
                 <ResourceDictionary Source="Style/Style.xaml" />
                 <ResourceDictionary Source="pack://application:,,,/MahApps.Metro;component/Styles/Colours.xaml" />
@@ -17,26 +17,37 @@
                 <ResourceDictionary Source="pack://application:,,,/MahApps.Metro;component/Styles/Accents/BaseLight.xaml" />
                 <ResourceDictionary Source="Style/Theme.xaml" />
             </ResourceDictionary.MergedDictionaries>
-        </ResourceDictionary>
+        </ResourceDictionary>-->
     </UserControl.Resources>
 
     <Grid x:Name="LayoutRoot">
-        <Grid Background="White" Opacity="0.6" />
-        <Grid HorizontalAlignment="Center" VerticalAlignment="Center" Width="250" Height="350">
-            <StackPanel>
-                <TextBlock Style="{StaticResource NoticeText}">Sign Up</TextBlock>
-                <TextBlock x:Name="ErrorText" Margin="0,10,0,0" TextWrapping="Wrap" Text="Error" VerticalAlignment="Top" TextAlignment="Center" Foreground="Red" Visibility="Hidden"/>
-                <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,10,0,0">
-                    <TextBox mahappsControls:TextboxHelper.Watermark="Firstname" HorizontalAlignment="Left" Margin="0,0,2,0" TextWrapping="Wrap" VerticalAlignment="Top" x:Name="Firstname" Width="80" />
-                    <TextBox mahappsControls:TextboxHelper.Watermark="Lastname" HorizontalAlignment="Left" Margin="2,0,0,0" TextWrapping="Wrap" VerticalAlignment="Top" x:Name="Lastname" Width="80" Text="" />
-                </StackPanel>
-                <TextBox mahappsControls:TextboxHelper.Watermark="Username" HorizontalAlignment="Center" Margin="0,10,0,0" TextWrapping="Wrap" VerticalAlignment="Top" x:Name="Username" Width="164" />
-                <PasswordBox mahappsControls:TextboxHelper.Watermark="Password" HorizontalAlignment="Center" Margin="0,10,0,0" VerticalAlignment="Top" Width="164" x:Name="Password" FontFamily="Segoe UI" />
-                <TextBox mahappsControls:TextboxHelper.Watermark="City, Country"  Text="" HorizontalAlignment="Center" Margin="0,10,0,0" VerticalAlignment="Top" Width="164" x:Name="Location" />
-                <TextBox mahappsControls:TextboxHelper.Watermark="Email Address" HorizontalAlignment="Center" Margin="0,10,0,0" VerticalAlignment="Top" Width="164" x:Name="Email" />
-                <CheckBox x:Name="Supporter" Content="I offer IT support" HorizontalAlignment="Center" Margin="0,10,0,0" VerticalAlignment="Top"/>
-                <Button Content="Sign Up" Margin="0,10,0,0" VerticalAlignment="Top" x:Name="Signin" Click="signin_click" HorizontalAlignment="Center" Width="164" />
-            </StackPanel>
-        </Grid>
+        <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center">
+            <TextBlock Style="{DynamicResource TextblockHeaderStyle}">Create an account</TextBlock>
+            <TextBlock x:Name="ErrorText" Margin="0,10,0,0" TextWrapping="Wrap" Text="Error" 
+                       VerticalAlignment="Top" TextAlignment="Center" 
+                       Foreground="Red" Visibility="Hidden"/>
+            <TextBox mahappsControls:TextboxHelper.Watermark="Firstname" Margin="0,10,0,0" x:Name="Firstname"
+                     Background="White" Width="164" Height="23" TextWrapping="Wrap" HorizontalAlignment="Left"/>
+            <TextBox mahappsControls:TextboxHelper.Watermark="Lastname" Margin="0,10,0,0" x:Name="Lastname" 
+                     Background="White" Width="164" Height="23" TextWrapping="Wrap" HorizontalAlignment="Left"/>
+            <TextBox mahappsControls:TextboxHelper.Watermark="Username" Margin="0,10,0,0" x:Name="Username" 
+                     Background="White" Width="164" Height="23" TextWrapping="Wrap" HorizontalAlignment="Left"/>
+            <PasswordBox Margin="0,10,0,0" x:Name="Password" Width="164" Height="23" 
+                         mahappsControls:TextboxHelper.Watermark="Password" HorizontalAlignment="Left"/>
+            <TextBox mahappsControls:TextboxHelper.Watermark="City, Country"  Margin="0,10,0,0" x:Name="Location" 
+                     Background="White" Width="164" Height="23" TextWrapping="Wrap" HorizontalAlignment="Left"/>
+            <TextBox mahappsControls:TextboxHelper.Watermark="Email Address" Margin="0,10,0,0" x:Name="Email" 
+                     Background="White" Width="164" Height="23" TextWrapping="Wrap" HorizontalAlignment="Left"/>
+            <CheckBox x:Name="Supporter" Content="I offer IT support" HorizontalAlignment="Left" Margin="0,10,0,0" 
+                      VerticalAlignment="Top" Foreground="#4D86CF"/>
+            <TextBlock HorizontalAlignment="Left" Margin="0,10,0,0" TextWrapping="Wrap" VerticalAlignment="Top" 
+                       Height="37.92">
+				<Hyperlink Name="NewUser" RequestNavigate="ShowLogin" NavigateUri="" >
+					Already having an account ?
+				</Hyperlink><LineBreak/>
+            </TextBlock>
+            <Button Content="Sign Up" Margin="0,0,35,0" VerticalAlignment="Top" x:Name="Signin" Click="signin_click" 
+                    HorizontalAlignment="Right" Width="Auto" />
+        </StackPanel>
     </Grid>
 </UserControl>

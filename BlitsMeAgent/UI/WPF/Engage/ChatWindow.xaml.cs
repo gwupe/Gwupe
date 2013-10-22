@@ -5,6 +5,7 @@ using System.Windows.Input;
 using BlitsMe.Agent.Components;
 using BlitsMe.Agent.Components.Functions.Chat;
 using BlitsMe.Agent.Components.Person;
+using BlitsMe.Agent.UI.WPF.Search;
 using log4net;
 using log4net.Repository.Hierarchy;
 
@@ -30,8 +31,14 @@ namespace BlitsMe.Agent.UI.WPF.Engage
             Chat.NewActivity += ChatOnNewMessage;
             ChatPanelViewer.ScrollToBottom();
             DataContext = new ChatWindowDataContext(_appContext, this);
+
             // need to do this here, because we get weird errors if its part of the data context.
             ChatPanel.ItemsSource = new DispatchingCollection<ObservableCollection<ChatElement>, ChatElement>(Chat.Conversation.Exchange,Dispatcher);
+        }
+
+        public ChatWindow()
+        {
+            
         }
 
         #region EventHandlers

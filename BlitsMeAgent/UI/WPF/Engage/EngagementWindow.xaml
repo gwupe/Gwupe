@@ -10,7 +10,7 @@
 	x:Class="BlitsMe.Agent.UI.WPF.Engage.EngagementWindow"
 	d:DesignWidth="600" d:DesignHeight="480" >
     <UserControl.Resources>
-        <ResourceDictionary>
+        <!--<ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
                 <ResourceDictionary Source="../Style/EngagementStyle.xaml"/>
                 <ResourceDictionary Source="../Style/Style.xaml"/>
@@ -22,67 +22,50 @@
 				<ResourceDictionary Source="pack://application:,,,/MahApps.Metro;component/Styles/Accents/BaseLight.xaml" />
 				<ResourceDictionary Source="../Style/Theme.xaml" />
             </ResourceDictionary.MergedDictionaries>
-        </ResourceDictionary>
+        </ResourceDictionary>-->
     </UserControl.Resources>
-    <Grid x:Name="MainLayout" Background="#FF2B519B">
-        <Grid Height="62" VerticalAlignment="Top" Margin="0,0,29.333,0">
-            <DockPanel Margin="6,8,0,0" LastChildFill="True">
-                <DockPanel.Resources>
-                    <Style TargetType="{x:Type Button}">
-                        <Setter Property="Margin" Value="10,0,0,0"/>
-                    </Style>
-                </DockPanel.Resources>
-                <Button VerticalAlignment="Top" HorizontalAlignment="Left" Width="50" Height="50" Click="SendFileButtonClick" ToolTip="Send a File" DockPanel.Dock="Right" Background="White">
-                    <Image Source="/BlitsMe.Agent;component/UI/WPF/Images/Upload.png" Height="40" Width="40" />
+    <Grid x:Name="MainLayout" >
+        <Grid.RowDefinitions>
+            <RowDefinition Height="50"/>
+            <RowDefinition Height="20"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+        <Grid Grid.Row="0" VerticalAlignment="Center" Margin="0,20,0,0">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="10"/>
+            </Grid.ColumnDefinitions>
+            <StackPanel Grid.Column="0" Orientation="Horizontal" VerticalAlignment="Center"
+                        Margin="10,0,0,0">
+                <Button Click="SendFileButtonClick" ToolTip="Send a File" Template="{DynamicResource TransparentButtonStyle}">
+                    <Image Source="/BlitsMe.Agent;component/UI/WPF/Images/Upload.png" />
                 </Button>
-                <Button x:Name="RemoteAssistanceButton" VerticalAlignment="Top" HorizontalAlignment="Left" Width="50" Height="50" Click="RemoteAssistanceButtonClick" ToolTip="Request Desktop Access" DockPanel.Dock="Right" Background="White">
-                    <Image Source="..\Images\1337424537_System.png" Height="40" Width="40" />
+                <!--<Button x:Name="KickOffButton" ToolTip="Disconnect Supporter" Click="KickOffButton_Click"
+                        Template="{DynamicResource TransparentButtonStyle}" Margin="10,0,0,0">
+                    <Image Source="/BlitsMe.Agent;component/UI/WPF/Images/close.png"/>
+                </Button>-->
+                <Button x:Name="RemoteAssistanceButton" Click="RemoteAssistanceButtonClick" 
+                        ToolTip="Request Desktop Access" Margin="10,0,0,0"
+                        Template="{DynamicResource TransparentButtonStyle}">
+                    <Image Source="..\Images\1337424537_System.png"/>
                 </Button>
-                <Button x:Name="KickOffButton" VerticalAlignment="Top" HorizontalAlignment="Left" Width="50" Height="50" ToolTip="Disconnect Supporter" DockPanel.Dock="Right" Background="White" Visibility="Collapsed" Click="KickOffButton_Click">
-                    <Image Source="/BlitsMe.Agent;component/UI/WPF/Images/close.png" Height="40" Width="40" />
-                </Button>
-                <Button VerticalAlignment="Top" HorizontalAlignment="Left" Height="50" Width="50" Click="ChatButtonClick"  ToolTip="Chat"  DockPanel.Dock="Right" Background="White">
-                    <Image Source="..\Images\1337420206_Char.png" Height="40" Width="40"/>
-                </Button>
-                <Button VerticalAlignment="Top" HorizontalAlignment="Left" Width="50" Height="50" Margin="0"  Click="ScorecardButtonClick" ToolTip="Profile" DockPanel.Dock="Left" Background="White">
-                    <Rectangle x:Name="ImageContainer"
-      Width="40" Height="40" StrokeThickness="0" HorizontalAlignment="Right" Margin="0" VerticalAlignment="Bottom">
-						<Rectangle.Fill>
-							<ImageBrush
-					  Stretch="Uniform" ImageSource="{Binding Path=SecondParty.Person.Avatar, Converter={StaticResource imageStreamReader}}"
-					  PresentationOptions:Freeze="True" />
-						</Rectangle.Fill>
-					</Rectangle>
-                </Button>
-				<Grid>
-					<StackPanel VerticalAlignment="Top">
-					<Grid Margin="5,0,0,0" DockPanel.Dock="Left" VerticalAlignment="Top">
-						<StackPanel Margin="0,0,0,0" Orientation="Vertical">
-							<TextBlock Style="{StaticResource TeamMemberNameText}" Text="{Binding Path=SecondParty.Person.Name, FallbackValue=FirstName LastName}" HorizontalAlignment="Left" Margin="0,0,0,0" />
-							<ContentControl Content="{Binding SecondParty.Person.Rating}" Margin="5,0,0,0" HorizontalAlignment="Left">
-							  <ContentControl.Style>
-									<Style TargetType="{x:Type ContentControl}">
-									<Setter Property="ContentTemplate" Value="{StaticResource Rating}" />
-										<Style.Triggers>
-											<DataTrigger Binding="{Binding SecondParty.Person.Rating}" Value="0">
-												<Setter Property="ContentTemplate" Value="{StaticResource Unrated}" />
-											</DataTrigger>
-										</Style.Triggers>
-									</Style>
-								</ContentControl.Style>
-							</ContentControl>
-						</StackPanel>
-					</Grid>
-					</StackPanel>
-				</Grid>
-            </DockPanel>
+            </StackPanel>
+            <TextBlock Text="Active" Style="{DynamicResource TextblockHeaderActiveStyle}" Grid.Column="2"
+                       VerticalAlignment="Center"/>
         </Grid>
-        <Grid HorizontalAlignment="Right" Width="9" Height="58" VerticalAlignment="Top">
+
+        <Border MinWidth="640" Height="1" BorderThickness="1" BorderBrush="#4A7EBB" Grid.Row="1"
+                VerticalAlignment="Bottom" Margin="20,0,20,0"/>
+        
+        <Grid HorizontalAlignment="Right" Width="9" Height="58" VerticalAlignment="Top" Visibility="Collapsed">
             <Ellipse x:Name="OutgoingTunnelIndicator" Fill="DarkGray" HorizontalAlignment="Right" Stroke="Black" Width="3" Margin="0,8,3,0" Height="3" StrokeThickness="0" VerticalAlignment="Top" d:LayoutOverrides="Height"/>
             <Ellipse x:Name="IncomingTunnelIndicator" Fill="DarkGray" Stroke="Black" Margin="0,27.5,3,0" Height="3" d:LayoutOverrides="Height" StrokeThickness="0" HorizontalAlignment="Right" Width="3" VerticalAlignment="Top"/>
             <Ellipse Fill="DarkGray" HorizontalAlignment="Right" Stroke="Black" Width="3" Margin="0,45,3,0" Height="3" StrokeThickness="0" VerticalAlignment="Top" d:LayoutOverrides="Height"/>
         </Grid>
-        <Grid Margin="0,62,0,0">
+        
+        <Grid Grid.Row="2">
         	<DockPanel LastChildFill="True">
 	            <ContentControl Name="EngagementContent" Content="{Binding Path=Content}" DockPanel.Dock="Top" />
 			</DockPanel>

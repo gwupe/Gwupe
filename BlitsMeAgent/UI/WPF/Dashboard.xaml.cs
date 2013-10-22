@@ -41,7 +41,7 @@ namespace BlitsMe.Agent.UI.WPF
         // Observable mirror for engagements as engagement windows
         private EngagementWindowList _engagementWindows;
         // Observable mirror for Persons as RosterElements
-        private RosterList _allRosterList;
+        private RosterList AllRosterList;
         private CollectionViewSource _notificationView;
         private Timer activateEngagementChecker;
         // Dispatching collection for notifications (to be used by everything)
@@ -318,9 +318,9 @@ namespace BlitsMe.Agent.UI.WPF
         {
             var dispatchingCollection = new DispatchingCollection<ObservableCollection<Attendance>, Attendance>(_appContext.RosterManager.ServicePersonAttendanceList, Dispatcher);
 
-            _allRosterList = new MainRosterList(dispatchingCollection, AllContacts);
+            AllRosterList = new MainRosterList(dispatchingCollection, AllContacts);
             AllContacts.LostFocus += Contacts_LostFocus;
-            AllContacts.DataContext = _allRosterList.ContactsView;
+            AllContacts.DataContext = AllRosterList.ContactsView;
 
             ActiveRosterList = new ActiveRosterList(dispatchingCollection, CurrentlyActiveContacts);
             CurrentlyActiveContacts.LostFocus += Contacts_LostFocus;
@@ -467,7 +467,7 @@ namespace BlitsMe.Agent.UI.WPF
             {
                 Logger.Debug("Refreshing Rosters");
                 ActiveRosterList.ContactsView.View.Refresh();
-                _allRosterList.ContactsView.View.Refresh();
+                AllRosterList.ContactsView.View.Refresh();
             }
         }
 

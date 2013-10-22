@@ -10,8 +10,8 @@
 	x:Name="Main"
 	Title="{Binding Title, FallbackValue=BlitsMe}"
 	WindowStartupLocation="CenterScreen" 
-	Closing="HideIfClosing" StateChanged="WindowStateChanged" Width="800" Height="600" MinWidth="640" MinHeight="480"
-    >
+	Closing="HideIfClosing" StateChanged="WindowStateChanged" MinWidth="800" MinHeight="600">
+
     <Window.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
@@ -56,68 +56,136 @@
 
     </Window.Resources>
 
-    <Grid x:Name="LayoutRoot" Style="{StaticResource MainLayout}" >
-        <ContentControl Panel.ZIndex="2" x:Name="ModalPrompt" >
-            <ContentControl.Style>
-                <Style TargetType="ContentControl">
-                    <Setter Property="ContentTemplate" Value="{x:Null}"/>
-                    <Style.Triggers>
-                        <DataTrigger Binding="{Binding DashboardState}" Value="{x:Static bm:DashboardState.SigningUp}">
-                            <Setter Property="ContentTemplate" Value="{StaticResource SigningUpWindow}" />
-                            <Setter Property="Panel.ZIndex" Value="2" />
-                        </DataTrigger>
-                        <DataTrigger Binding="{Binding DashboardState}" Value="{x:Static bm:DashboardState.LoggingIn}">
-                            <Setter Property="ContentTemplate" Value="{StaticResource LoggingInWindow}" />
-                            <Setter Property="Panel.ZIndex" Value="2" />
-                        </DataTrigger>
-                        <DataTrigger Binding="{Binding DashboardState}" Value="{x:Static bm:DashboardState.Initializing}">
-                            <Setter Property="ContentTemplate" Value="{StaticResource InitializingWindow}" />
-                            <Setter Property="Panel.ZIndex" Value="2" />
-                        </DataTrigger>
-                        <DataTrigger Binding="{Binding DashboardState}" Value="{x:Static bm:DashboardState.LoggedIn}">
-                            <Setter Property="ContentTemplate" Value="{x:Null}" />
-                            <Setter Property="Panel.ZIndex" Value="-2" />
-                        </DataTrigger>
-                        <DataTrigger Binding="{Binding DashboardState}" Value="{x:Static bm:DashboardState.Login}">
-                            <Setter Property="ContentTemplate" Value="{x:Null}" />
-                            <Setter Property="Content" Value="{Binding LoginScreen}" />
-                            <Setter Property="Panel.ZIndex" Value="2" />
-                        </DataTrigger>
-                        <DataTrigger Binding="{Binding DashboardState}" Value="{x:Static bm:DashboardState.Signup}">
-                            <Setter Property="ContentTemplate" Value="{x:Null}" />
-                            <Setter Property="Content" Value="{Binding SignUpScreen}" />
-                            <Setter Property="Panel.ZIndex" Value="2" />
-                        </DataTrigger>
-                    </Style.Triggers>
-                </Style>
-            </ContentControl.Style>
-        </ContentControl>
-        <Grid HorizontalAlignment="Left" Width="190">
-            <DockPanel LastChildFill="True" Margin="0">
-                <StackPanel Margin="5" Orientation="Horizontal" Height="32" HorizontalAlignment="Center" DockPanel.Dock="Top">
-                    <StackPanel.Resources>
-                        <Style TargetType="{x:Type Button}">
-                            <Setter Property="Margin" Value="0,0,2,0"/>
-                        </Style>
-                    </StackPanel.Resources>
-                    <Button x:Name="UserInfo" ToolTip="My Details" Background="White" BorderThickness="0" Click="UserInfo_Click">
+    <Border BorderBrush="#4A7EBB" BorderThickness="2,2,2,2">
+        <Grid>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="200"/>
+                <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
+
+            <Grid.RowDefinitions>
+                <RowDefinition Height="*"/>
+            </Grid.RowDefinitions>
+
+            <Border Grid.Row="0" Width="2" BorderBrush="#4A7EBB" BorderThickness="2" Grid.Column="0" HorizontalAlignment="Right"/>
+
+            <ContentControl x:Name="ModalPrompt" Grid.ColumnSpan="2">
+                <ContentControl.Style>
+                    <Style TargetType="ContentControl">
+                        <Setter Property="ContentTemplate" Value="{x:Null}"/>
+                        <Style.Triggers>
+                            <DataTrigger Binding="{Binding DashboardState}" Value="{x:Static bm:DashboardState.SigningUp}">
+                                <Setter Property="ContentTemplate" Value="{StaticResource SigningUpWindow}" />
+                                <Setter Property="Panel.ZIndex" Value="2" />
+                            </DataTrigger>
+                            <DataTrigger Binding="{Binding DashboardState}" Value="{x:Static bm:DashboardState.LoggingIn}">
+                                <Setter Property="ContentTemplate" Value="{StaticResource LoggingInWindow}" />
+                                <Setter Property="Panel.ZIndex" Value="2" />
+                            </DataTrigger>
+                            <DataTrigger Binding="{Binding DashboardState}" Value="{x:Static bm:DashboardState.Initializing}">
+                                <Setter Property="ContentTemplate" Value="{StaticResource InitializingWindow}" />
+                                <Setter Property="Panel.ZIndex" Value="2" />
+                            </DataTrigger>
+                            <DataTrigger Binding="{Binding DashboardState}" Value="{x:Static bm:DashboardState.LoggedIn}">
+                                <Setter Property="ContentTemplate" Value="{x:Null}" />
+                                <Setter Property="Panel.ZIndex" Value="-2" />
+                            </DataTrigger>
+                            <DataTrigger Binding="{Binding DashboardState}" Value="{x:Static bm:DashboardState.Login}">
+                                <Setter Property="ContentTemplate" Value="{x:Null}" />
+                                <Setter Property="Content" Value="{Binding LoginScreen}" />
+                                <Setter Property="Panel.ZIndex" Value="2" />
+                                <Setter Property="Margin" Value="100,0,0,0" />
+                            </DataTrigger>
+                            <DataTrigger Binding="{Binding DashboardState}" Value="{x:Static bm:DashboardState.Signup}">
+                                <Setter Property="ContentTemplate" Value="{x:Null}" />
+                                <Setter Property="Content" Value="{Binding SignUpScreen}" />
+                                <Setter Property="Panel.ZIndex" Value="2" />
+                                <Setter Property="Margin" Value="100,0,0,0" />
+                            </DataTrigger>
+                        </Style.Triggers>
+                    </Style>
+                </ContentControl.Style>
+            </ContentControl>
+
+            <StackPanel Orientation="Vertical">
+                <StackPanel Orientation="Horizontal" Height="32" Grid.Column="0" VerticalAlignment="Top"
+                        HorizontalAlignment="Center" Margin="0,20,0,0" Width="140">
+                    <Button x:Name="UserInfo" ToolTip="My Details" Click="UserInfo_Click" 
+                        Template="{DynamicResource TransparentButtonStyle}" Margin="5,0,0,0">
                         <Image Source="Images/User.png" Margin="1"/>
                     </Button>
-                    <Button ToolTip="Settings" Click="Settings" Background="White" BorderThickness="0">
-                        <Image Source="Images/1375404724_tune.png" Margin="1"/>
-                    </Button>
-                    <Button ToolTip="Logout" Click="Logout" Background="White" BorderThickness="0">
+                    <Button ToolTip="Logout" Click="Logout" Template="{DynamicResource TransparentButtonStyle}"
+                        Margin="15,0,0,0">
                         <Image Source="Images/Logoff.png" Margin="1"/>
                     </Button>
-                    <Button ToolTip="Quit" Click="ExitApplication" Background="White" BorderThickness="0">
+                    <Button ToolTip="Exit" Click="ExitApplication" Template="{DynamicResource TransparentButtonStyle}"
+                            Margin="20,0,0,0">
                         <Image Source="Images/exit.png" Margin="1"/>
                     </Button>
                 </StackPanel>
-                <StackPanel DockPanel.Dock="Top" Orientation="Horizontal" Margin="0,0,0,5">
-                    <Image Margin="5,0,0,0" Source="Images/1375406488_Cute Ball - Search.png" Height="24" />
-                    <TextBox x:Name="SearchBox" mahappsControls:TextboxHelper.Watermark="Search..." Margin="3,0,5,0" TextWrapping="Wrap" VerticalAlignment="Top" FontFamily="Calibri" FontSize="16" TextChanged="Search_TextChanged" GotFocus="SearchBox_GotFocus" Background="#FFA4B6E4" HorizontalAlignment="Center" Width="151.333" Height="24" LostFocus="SearchBox_LostFocus"/>
-                </StackPanel>
-                <ItemsControl x:Name="Alerts" DockPanel.Dock="Bottom" Margin="5,0,5,5">
+
+                <Border BorderThickness="0,1,0,0" Width="190" BorderBrush="#4A7EBB"
+                    Grid.Column="0" Margin="0,10,0,0">
+                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Left" VerticalAlignment="Center">
+                        <Image Margin="5,0,0,0" Source="Images/1375406488_Cute Ball - Search.png" Height="13" Width="13"/>
+                        <TextBox x:Name="SearchBox" mahappsControls:TextboxHelper.Watermark="Search..." Margin="10,0,0,0"
+                    TextChanged="Search_TextChanged" 
+                     GotFocus="SearchBox_GotFocus" HorizontalAlignment="Center" 
+                     LostFocus="SearchBox_LostFocus" Background="Transparent" TextWrapping="Wrap" Width="140" 
+                                 Height="20" BorderThickness="0" BorderBrush="Transparent"/>
+                    </StackPanel>
+                </Border>
+
+                <Grid x:Name="SearchContactsView" Visibility="{Binding SearchContactsVisibility, FallbackValue=Collapsed}" 
+                      Grid.Column="0">
+                    <StackPanel Orientation="Vertical">
+                        <Border BorderThickness="0,1,0,1" Height="25" Width="190" BorderBrush="#4A7EBB">
+                            <TextBlock HorizontalAlignment="Left" TextAlignment="Center" Text="Local Search Results"
+                                   VerticalAlignment="Center" Margin="20,0,0,0"/>
+                        </Border>
+                        <ListBox x:Name="SearchContacts" DockPanel.Dock="Bottom" ItemsSource="{Binding}" ScrollViewer.CanContentScroll="False"
+        					FontFamily="Corbel" Margin="0,0,0,0" ScrollViewer.HorizontalScrollBarVisibility="Disabled"
+							ItemTemplate="{DynamicResource Contact}" Style="{DynamicResource TeamList}"
+                            ItemContainerStyle="{DynamicResource ListBoxItemControlStyle}" />
+                    </StackPanel>
+                </Grid>
+
+                <Grid x:Name="CurrentlyActiveContactsWindowlet" Visibility="Collapsed" Grid.Column="0">
+                    <StackPanel Orientation="Vertical">
+                        <Border BorderThickness="0,1,0,1" Height="25" Width="190" BorderBrush="#4A7EBB">
+                            <TextBlock HorizontalAlignment="Left" TextAlignment="Center" Text="Active Conversations"
+                                   VerticalAlignment="Center" Margin="20,0,0,0"/>
+                        </Border>
+                        <ListBox x:Name="CurrentlyActiveContacts" DockPanel.Dock="Bottom" ItemsSource="{Binding}" ScrollViewer.CanContentScroll="False"
+        					FontFamily="Corbel" Margin="0,0,0,0" ScrollViewer.HorizontalScrollBarVisibility="Disabled"
+							ItemTemplate="{DynamicResource Contact}" Style="{DynamicResource TeamList}"
+                                 ItemContainerStyle="{DynamicResource ListBoxItemControlStyle}">
+                        </ListBox>
+                    </StackPanel>
+                </Grid>
+
+                <Grid x:Name="AllContactsView" DockPanel.Dock="Bottom" Grid.Column="0">
+                    <StackPanel Orientation="Vertical">
+                        <Border BorderThickness="0,1,0,1" Height="25" Width="190" BorderBrush="#4A7EBB">
+                            <TextBlock HorizontalAlignment="Left" TextAlignment="Center" Text="Contacts"
+                                   VerticalAlignment="Center" Margin="20,0,0,0"/>
+                        </Border>
+                        <ItemsControl x:Name="Notifications" Margin="0">
+                            <ItemsControl.ItemsPanel>
+                                <ItemsPanelTemplate>
+                                    <StackPanel VerticalAlignment="Bottom" d:LayoutOverrides="VerticalAlignment" />
+                                </ItemsPanelTemplate>
+                            </ItemsControl.ItemsPanel>
+                        </ItemsControl>
+                        <ListBox x:Name="AllContacts" DockPanel.Dock="Bottom" ItemsSource="{Binding}" ScrollViewer.CanContentScroll="False"
+        					FontFamily="Corbel" Margin="0,0,0,0" ScrollViewer.HorizontalScrollBarVisibility="Disabled"
+							ItemTemplate="{DynamicResource Contact}" Style="{DynamicResource TeamList}"
+                            ItemContainerStyle="{DynamicResource ListBoxItemControlStyle}">
+                        </ListBox>
+                    </StackPanel>
+                </Grid>
+
+                <ItemsControl x:Name="Alerts" DockPanel.Dock="Bottom" Grid.Column="0" Visibility="Collapsed">
                     <ItemsControl.ItemsPanel>
                         <ItemsPanelTemplate>
                             <StackPanel VerticalAlignment="Bottom" d:LayoutOverrides="VerticalAlignment" >
@@ -125,87 +193,21 @@
                         </ItemsPanelTemplate>
                     </ItemsControl.ItemsPanel>
                 </ItemsControl>
-                <Grid x:Name="SearchContactsView" DockPanel.Dock="Top" MaxHeight="300" Visibility="{Binding SearchContactsVisibility, FallbackValue=Collapsed}">
-                    <Border BorderThickness="5,5,5,0">
-                        <Border.BorderBrush>
-                            <LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
-                                <GradientStop Color="White" Offset="1"/>
-                                <GradientStop Color="{DynamicResource AccentDarkColor}"/>
-                            </LinearGradientBrush>
-                        </Border.BorderBrush>
-                    </Border>
-                    <!-- This is the Search Roster Items -->
-                    <DockPanel Margin="5">
-                        <TextBlock DockPanel.Dock="Top" HorizontalAlignment="Center" Background="White" Margin="0">
-                            <TextBlock.Foreground>
-                                <SolidColorBrush Color="{DynamicResource AccentDarkColor}"/>
-                            </TextBlock.Foreground>Local Search Results</TextBlock>
-                        <ListBox x:Name="SearchContacts" DockPanel.Dock="Bottom" ItemsSource="{Binding}" ScrollViewer.CanContentScroll="False"
-        					FontFamily="Corbel" Margin="0,0,0,0" ScrollViewer.HorizontalScrollBarVisibility="Disabled"
-							ItemTemplate="{StaticResource Contact}" Style="{StaticResource TeamList}"
-                            ItemContainerStyle="{StaticResource ListBoxItemControlStyle}" />
-                    </DockPanel>
-                </Grid>
-                <Grid x:Name="CurrentlyActiveContactsWindowlet" DockPanel.Dock="Top" MaxHeight="300" Visibility="Collapsed">
-                    <Border BorderThickness="5,5,5,0">
-                        <Border.BorderBrush>
-                            <LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
-                                <GradientStop Color="White" Offset="1"/>
-                                <GradientStop Color="{DynamicResource AccentDarkColor}"/>
-                            </LinearGradientBrush>
-                        </Border.BorderBrush>
-                    </Border>
-                    <!-- This is the Active Roster Items -->
-                    <DockPanel Margin="5">
-                        <TextBlock DockPanel.Dock="Top" HorizontalAlignment="Center" Background="White" Margin="0">
-                            <TextBlock.Foreground>
-                                <SolidColorBrush Color="{DynamicResource AccentDarkColor}"/>
-                            </TextBlock.Foreground>Active Conversations</TextBlock>
-                        <ListBox x:Name="CurrentlyActiveContacts" DockPanel.Dock="Bottom" ItemsSource="{Binding}" ScrollViewer.CanContentScroll="False"
-        					FontFamily="Corbel" Margin="0,0,0,0" ScrollViewer.HorizontalScrollBarVisibility="Disabled"
-							ItemTemplate="{StaticResource Contact}" Style="{StaticResource TeamList}"
-                                 ItemContainerStyle="{StaticResource ListBoxItemControlStyle}">
-                        </ListBox>
-                    </DockPanel>
-                </Grid>
-                <Grid x:Name="AllContactsView" DockPanel.Dock="Bottom" >
-                    <Border BorderThickness="5,5,5,0">
-                        <Border.BorderBrush>
-                            <LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
-                                <GradientStop Color="White" Offset="1"/>
-                                <GradientStop Color="{DynamicResource AccentDarkColor}"/>
-                            </LinearGradientBrush>
-                        </Border.BorderBrush>
-                    </Border>
-                    <DockPanel Margin="5">
-                        <!-- This is the Roster section -->
-                        <TextBlock DockPanel.Dock="Top" HorizontalAlignment="Center" Margin="0,0,0,0" TextAlignment="Center">
-                            <TextBlock.Foreground>
-                                <SolidColorBrush Color="{DynamicResource AccentDarkColor}"/>
-                            </TextBlock.Foreground>
-							Contacts
-                        </TextBlock>
-                        <ListBox x:Name="AllContacts" DockPanel.Dock="Bottom" ItemsSource="{Binding}" ScrollViewer.CanContentScroll="False"
-        					FontFamily="Corbel" Margin="0,0,0,0" ScrollViewer.HorizontalScrollBarVisibility="Disabled"
-							ItemTemplate="{StaticResource Contact}" Style="{StaticResource TeamList}"
-                            ItemContainerStyle="{StaticResource ListBoxItemControlStyle}">
-                        </ListBox>
-                    </DockPanel>
-                </Grid>
-            </DockPanel>
+            </StackPanel>
+
+            <Grid Grid.Column="1" Style="{DynamicResource MainChatView}">
+                <DockPanel LastChildFill="True">
+                    <!--<ItemsControl x:Name="Notifications" DockPanel.Dock="Top" Margin="0">
+                        <ItemsControl.ItemsPanel>
+                            <ItemsPanelTemplate>
+                                <StackPanel VerticalAlignment="Bottom" d:LayoutOverrides="VerticalAlignment" />
+                            </ItemsPanelTemplate>
+                        </ItemsControl.ItemsPanel>
+                    </ItemsControl>-->
+                    <!-- Now this is the desktop area -->
+                    <ContentControl x:Name="ActiveContent" DockPanel.Dock="Bottom" />
+                </DockPanel>
+            </Grid>
         </Grid>
-        <Grid Margin="195,5,5,5">
-            <DockPanel LastChildFill="True">
-                <ItemsControl x:Name="Notifications" DockPanel.Dock="Top" Margin="0">
-                    <ItemsControl.ItemsPanel>
-                        <ItemsPanelTemplate>
-                            <StackPanel VerticalAlignment="Bottom" d:LayoutOverrides="VerticalAlignment" />
-                        </ItemsPanelTemplate>
-                    </ItemsControl.ItemsPanel>
-                </ItemsControl>
-                <!-- Now this is the desktop area -->
-                <ContentControl x:Name="ActiveContent" DockPanel.Dock="Bottom" />
-            </DockPanel>
-        </Grid>
-    </Grid>
+    </Border>
 </mahappsControls:MetroWindow>

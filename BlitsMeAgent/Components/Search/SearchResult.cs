@@ -11,8 +11,11 @@ namespace BlitsMe.Agent.Components.Search
 
         public SearchResult(ResultElement resultElement)
         {
-            _person = new Person.Person(resultElement.user);
-            _person.PropertyChanged += PersonOnPropertyChanged;
+            if (resultElement.user.name != null)
+            {
+                _person = new Person.Person(resultElement.user);
+                _person.PropertyChanged += PersonOnPropertyChanged;
+            }
         }
 
         private void PersonOnPropertyChanged(object sender, PropertyChangedEventArgs propertyChangedEventArgs)

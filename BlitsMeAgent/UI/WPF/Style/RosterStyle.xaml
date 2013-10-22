@@ -51,7 +51,7 @@
     </Style>
     <Style x:Key="TeamMemberNameText" TargetType="TextBlock">
         <Setter Property="HorizontalAlignment" Value="Center" />
-        <Setter Property="Foreground" Value="White" />
+        <Setter Property="Foreground" Value="Black" />
         <Setter Property="Margin" Value="0,0,0,0" />
         <Setter Property="Padding" Value="2" />
     </Style>
@@ -69,14 +69,14 @@
         <Setter Property="PointCount" Value="5"  />
         <Setter Property="Stretch" Value="Fill"  />
         <Setter Property="Width" Value="13"  />
-        <Setter Property="Stroke" Value="#FFFFFB88"  />
+        <Setter Property="Stroke" Value="#FF8C00"  />
         <Setter Property="Height" Value="13"/>
     </Style>
     <Style x:Key="TeamMemberStarFull" TargetType="ed:RegularPolygon" BasedOn="{StaticResource TeamMemberStarEmpty}">
-        <Setter Property="Fill" Value="#FFFFFB88" />
+        <Setter Property="Fill" Value="#FF8C00" />
     </Style>
     <Style x:Key="TeamMemberStarCover" TargetType="Rectangle">
-        <Setter Property="Fill" Value="#FF2B519B" />
+        <Setter Property="Fill" Value="Black" />
         <Setter Property="Margin" Value="0,0,0,0" />
         <Setter Property="HorizontalAlignment" Value="Right" />
     </Style>
@@ -151,22 +151,22 @@
     </DataTemplate>
     <DataTemplate x:Key="Unrated">
         <Grid Margin="0,0,0,0" Height="15" HorizontalAlignment="Center">
-            <TextBlock Foreground="#FFFFFB88">Unrated</TextBlock>
+            <TextBlock Foreground="#CA5100" FontSize="12">Unrated</TextBlock>
         </Grid>
     </DataTemplate>
 
-    <Style x:Key="TeamMemberInActiveBase" TargetType="Grid">
-        <Setter Property="Background" Value="#FF99b4d1" />
+    <Style x:Key="TeamMemberInActiveBase" TargetType="StackPanel">
+        <Setter Property="Background" Value="#DCE6F2" />
         <Setter Property="Margin" Value="0,0,0,1" />
         <Setter Property="Height" Value="65" />
         <Style.Triggers></Style.Triggers>
     </Style>
 
-    <Style x:Key="TeamMemberOfflineBase" TargetType="Grid" BasedOn="{StaticResource TeamMemberInActiveBase}">
-        <Setter Property="Opacity" Value="0.7" />
+    <Style x:Key="TeamMemberOfflineBase" TargetType="StackPanel" BasedOn="{StaticResource TeamMemberInActiveBase}">
+        <!--<Setter Property="Opacity" Value="0.7" />-->
     </Style>
 
-    <Style x:Key="TeamMemberUnreadBase" TargetType="Grid" BasedOn="{StaticResource TeamMemberInActiveBase}">
+    <Style x:Key="TeamMemberUnreadBase" TargetType="StackPanel" BasedOn="{StaticResource TeamMemberInActiveBase}">
         <Setter Property="Background" >
             <Setter.Value>
                 <RadialGradientBrush>
@@ -177,8 +177,8 @@
         </Setter>
     </Style>
 
-    <Style x:Key="TeamMemberActiveBase" TargetType="Grid" BasedOn="{StaticResource TeamMemberInActiveBase}">
-        <Setter Property="Background" Value="#FF2B519B" />
+    <Style x:Key="TeamMemberActiveBase" TargetType="StackPanel" BasedOn="{StaticResource TeamMemberInActiveBase}">
+        <Setter Property="Background" Value="#B9CDE5" />
     </Style>
 
     <Style x:Key="TeamMemberInner" TargetType="Grid">
@@ -186,8 +186,8 @@
         <Setter Property="MaxWidth" Value="160"/>
     </Style>
 
-    <DataTemplate x:Key="PersonIcon" DataType="person:Attendance">
-        <Rectangle x:Name="ImageContainer" Width="50" Height="50" StrokeThickness="0" VerticalAlignment="center" HorizontalAlignment="Left" Margin="0">
+    <DataTemplate x:Key="PersonIcon">
+        <Rectangle x:Name="ImageContainer" Width="40" Height="50" StrokeThickness="0" VerticalAlignment="center" HorizontalAlignment="Left" Margin="0">
            <Rectangle.Fill>
                 <ImageBrush Stretch="Uniform" ImageSource="{Binding Path=Person.Avatar, Converter={StaticResource imageStreamReader}}" />
             </Rectangle.Fill>
@@ -195,100 +195,150 @@
     </DataTemplate>
 
 
+    <DataTemplate x:Key="Contact">
+        <StackPanel Orientation="Horizontal" Style="{StaticResource TeamMemberInActiveBase}"
+                   Height="Auto" ToolTip="{Binding Path=Person.Name}">
+            <StackPanel Orientation="Vertical" Margin="5,3,0,0">
+                <ContentPresenter ContentTemplate="{StaticResource PersonIcon}" />
+            </StackPanel>
 
-    <DataTemplate x:Key="Contact" DataType="person:Attendance">
-        <Grid Style="{StaticResource TeamMemberInActiveBase}">
-            <Grid Style="{StaticResource TeamMemberInner}">
-                <ContentPresenter ContentTemplate="{StaticResource PersonIcon}" Content="{Binding Path=.}" />
-                <StackPanel Margin="53,0,0,0">
-                    <TextBlock Style="{StaticResource TeamMemberNameTextInActive}" Text="{Binding Path=Person.Name, FallbackValue=FirstName LastName}" />
-                    <ContentControl Content="{Binding Person.Rating}" >
-                        <ContentControl.Style>
-                            <Style TargetType="{x:Type ContentControl}">
-                                <Setter Property="ContentTemplate" Value="{StaticResource RatingActive}" />
-                                <Style.Triggers>
-                                    <DataTrigger Binding="{Binding Person.Rating}" Value="0">
-                                        <Setter Property="ContentTemplate" Value="{StaticResource Unrated}" />
-                                    </DataTrigger>
-                                </Style.Triggers>
-                            </Style>
-                        </ContentControl.Style>
-                    </ContentControl>
-                    <TextBlock Style="{StaticResource TeamMemberLocationTextInActive}" Text="{Binding Path=Person.Location, FallbackValue=Planet Earth}" />
-                </StackPanel>
+            <Grid Margin="2,0,0,0" VerticalAlignment="Center" Height="Auto" Width="130">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                </Grid.RowDefinitions>
+                <TextBlock Text="{Binding Path=Person.Name, FallbackValue=FirstName LastName}" HorizontalAlignment="Center" 
+                           Width="110" TextWrapping="Wrap" Grid.Row="0" Height="Auto"/>
+
+                <TextBlock Text="{Binding Path=Person.Location, FallbackValue=Planet Earth}" HorizontalAlignment="Center"
+                           Grid.Row="1" Width="110" Height="Auto"/>
+
+                <ContentControl Content="{Binding Person.Rating}" HorizontalAlignment="Left" Grid.Row="2" Margin="10,0,0,0">
+                    <ContentControl.Style>
+                        <Style TargetType="{x:Type ContentControl}">
+                            <Setter Property="ContentTemplate" Value="{StaticResource RatingActive}" />
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding Person.Rating}" Value="0">
+                                    <Setter Property="ContentTemplate" Value="{StaticResource Unrated}" />
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </ContentControl.Style>
+                </ContentControl>
             </Grid>
-        </Grid>
+        </StackPanel>
     </DataTemplate>
 
-    <DataTemplate x:Key="ContactActive" DataType="person:Attendance">
-        <Grid Style="{StaticResource TeamMemberActiveBase}">
-            <Grid Style="{StaticResource TeamMemberInner}">
-                <ContentPresenter ContentTemplate="{StaticResource PersonIcon}" Content="{Binding Path=.}" />
-                <StackPanel Margin="53,0,0,0">
-                    <TextBlock Style="{StaticResource TeamMemberNameText}" Text="{Binding Path=Person.Name, FallbackValue=FirstName LastName}" />
-                    <ContentControl Content="{Binding Person.Rating}" >
-                        <ContentControl.Style>
-                            <Style TargetType="{x:Type ContentControl}">
-                                <Setter Property="ContentTemplate" Value="{StaticResource Rating}" />
-                                <Style.Triggers>
-                                    <DataTrigger Binding="{Binding Person.Rating}" Value="0">
-                                        <Setter Property="ContentTemplate" Value="{StaticResource Unrated}" />
-                                    </DataTrigger>
-                                </Style.Triggers>
-                            </Style>
-                        </ContentControl.Style>
-                    </ContentControl>
-                    <TextBlock Style="{StaticResource TeamMemberLocationText}" Text="{Binding Path=Person.Location, FallbackValue=Planet Earth}" />
-                </StackPanel>
+    <DataTemplate x:Key="ContactActive">
+        <StackPanel Orientation="Horizontal" Style="{StaticResource TeamMemberActiveBase}" Height="Auto"
+                    ToolTip="{Binding Path=Person.Name}">
+            <StackPanel Orientation="Vertical" Margin="5,3,0,0">
+                <ContentPresenter ContentTemplate="{StaticResource PersonIcon}" />
+            </StackPanel>
+
+            <Grid Margin="2,0,0,0" VerticalAlignment="Center" Height="Auto" Width="100">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                </Grid.RowDefinitions>
+                <TextBlock Text="{Binding Path=Person.Name, FallbackValue=FirstName LastName}" HorizontalAlignment="Center" 
+                           Width="90" TextWrapping="Wrap" Grid.Row="0" Height="Auto" Margin="10,0,0,0"/>
+
+                <TextBlock Text="{Binding Path=Person.Location, FallbackValue=Planet Earth}" HorizontalAlignment="Center"
+                           Grid.Row="1" Width="90" Height="Auto" Margin="10,0,0,0"/>
+
+                <ContentControl Content="{Binding Person.Rating}" HorizontalAlignment="Left" Grid.Row="2" Margin="10,0,0,0">
+                    <ContentControl.Style>
+                        <Style TargetType="{x:Type ContentControl}">
+                            <Setter Property="ContentTemplate" Value="{StaticResource RatingActive}" />
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding Person.Rating}" Value="0">
+                                    <Setter Property="ContentTemplate" Value="{StaticResource Unrated}" />
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </ContentControl.Style>
+                </ContentControl>
             </Grid>
-        </Grid>
+
+            <Image Source="/BlitsMe.Agent;component/UI/WPF/Images/1337425212_02.png" Height="25" Width="25" 
+                   Margin="2,0,0,0"/>
+        </StackPanel>
     </DataTemplate>
 
-    <DataTemplate x:Key="ContactUnread" DataType="person:Attendance">
-        <Grid Style="{StaticResource TeamMemberUnreadBase}">
-            <Grid Style="{StaticResource TeamMemberInner}">
-                <ContentPresenter ContentTemplate="{StaticResource PersonIcon}" Content="{Binding Path=.}" />
-                <StackPanel Margin="53,0,0,0">
-                    <TextBlock Style="{StaticResource TeamMemberNameTextInActive}" Text="{Binding Path=Person.Name, FallbackValue=FirstName LastName}" />
-                    <ContentControl Content="{Binding Person.Rating}" >
-                        <ContentControl.Style>
-                            <Style TargetType="{x:Type ContentControl}">
-                                <Setter Property="ContentTemplate" Value="{StaticResource RatingUnread}" />
-                                <Style.Triggers>
-                                    <DataTrigger Binding="{Binding Person.Rating}" Value="0">
-                                        <Setter Property="ContentTemplate" Value="{StaticResource Unrated}" />
-                                    </DataTrigger>
-                                </Style.Triggers>
-                            </Style>
-                        </ContentControl.Style>
-                    </ContentControl>
-                    <TextBlock Style="{StaticResource TeamMemberLocationTextInActive}" Text="{Binding Path=Person.Location, FallbackValue=Planet Earth}" />
-                </StackPanel>
+    <DataTemplate x:Key="ContactUnread">
+        <StackPanel Orientation="Horizontal" Style="{StaticResource TeamMemberUnreadBase}" Height="50">
+            <StackPanel Orientation="Vertical" Margin="5,3,0,0">
+                <ContentPresenter ContentTemplate="{StaticResource PersonIcon}" />
+            </StackPanel>
+            <Grid Margin="2,0,0,0" VerticalAlignment="Center" Height="Auto" Width="110">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                </Grid.RowDefinitions>
+                <TextBlock Text="{Binding Path=Person.Name, FallbackValue=FirstName LastName}" HorizontalAlignment="Center" 
+                           Width="110" TextWrapping="Wrap" Grid.Row="0" TextAlignment="Center" Height="Auto"/>
+
+                <TextBlock Text="{Binding Path=Person.Location, FallbackValue=Planet Earth}" HorizontalAlignment="Center"
+                           Grid.Row="1" Width="110" TextAlignment="Center" Height="Auto"/>
+
+                <ContentControl Content="{Binding Person.Rating}" HorizontalAlignment="Center" Grid.Row="2"
+                                Width="110">
+                    <ContentControl.Style>
+                        <Style TargetType="{x:Type ContentControl}">
+                            <Setter Property="ContentTemplate" Value="{StaticResource RatingActive}" />
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding Person.Rating}" Value="0">
+                                    <Setter Property="ContentTemplate" Value="{StaticResource Unrated}" />
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </ContentControl.Style>
+                </ContentControl>
             </Grid>
-        </Grid>
+            <Image Source="/BlitsMe.Agent;component/UI/WPF/Images/1337425212_02.png" Height="25" Width="25" 
+                   Margin="2,0,0,0"/>
+        </StackPanel>
     </DataTemplate>
 
-    <DataTemplate x:Key="ContactOffline" DataType="person:Attendance">
-        <Grid Style="{StaticResource TeamMemberOfflineBase}">
-            <Grid Style="{StaticResource TeamMemberInner}">
-                <ContentPresenter ContentTemplate="{StaticResource PersonIcon}" Content="{Binding Path=.}" />
-                <StackPanel Margin="53,0,0,0">
-                    <TextBlock Style="{StaticResource TeamMemberNameTextInActive}" Text="{Binding Path=Person.Name, FallbackValue=FirstName LastName}" />
-                    <ContentControl Content="{Binding Person.Rating}" >
-                        <ContentControl.Style>
-                            <Style TargetType="{x:Type ContentControl}">
-                                <Setter Property="ContentTemplate" Value="{StaticResource RatingActive}" />
-                                <Style.Triggers>
-                                    <DataTrigger Binding="{Binding Person.Rating}" Value="0">
-                                        <Setter Property="ContentTemplate" Value="{StaticResource Unrated}" />
-                                    </DataTrigger>
-                                </Style.Triggers>
-                            </Style>
-                        </ContentControl.Style>
-                    </ContentControl>
-                    <TextBlock Style="{StaticResource TeamMemberLocationTextInActive}" Text="{Binding Path=Person.Location, FallbackValue=Planet Earth}" />
-                </StackPanel>
+    <DataTemplate x:Key="ContactOffline">
+        <StackPanel Orientation="Horizontal" Style="{StaticResource TeamMemberOfflineBase}" MinHeight="50">
+            <StackPanel Orientation="Vertical" Margin="5,3,0,0">
+                <ContentPresenter ContentTemplate="{StaticResource PersonIcon}" />
+            </StackPanel>
+
+            <Grid Margin="2,0,0,0" VerticalAlignment="Center" Height="45" Width="110">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                </Grid.RowDefinitions>
+                <TextBlock Text="{Binding Path=Person.Name, FallbackValue=FirstName LastName}" HorizontalAlignment="Center" 
+                           Width="110" TextWrapping="Wrap" Grid.Row="0" TextAlignment="Center" Height="Auto"/>
+
+                <TextBlock Text="{Binding Path=Person.Location, FallbackValue=Planet Earth}" HorizontalAlignment="Center"
+                           Grid.Row="1" Width="110" TextAlignment="Center" Height="Auto"/>
+
+                <ContentControl Content="{Binding Person.Rating}" HorizontalAlignment="Center" Grid.Row="2"
+                                Width="110">
+                    <ContentControl.Style>
+                        <Style TargetType="{x:Type ContentControl}">
+                            <Setter Property="ContentTemplate" Value="{StaticResource RatingActive}" />
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding Person.Rating}" Value="0">
+                                    <Setter Property="ContentTemplate" Value="{StaticResource Unrated}" />
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </ContentControl.Style>
+                </ContentControl>
             </Grid>
-        </Grid>
+
+            <Image Source="/BlitsMe.Agent;component/UI/WPF/Images/1337425212_02.png" Height="25" Width="25" 
+                   Margin="2,0,0,0"/>
+        </StackPanel>
     </DataTemplate>
 </ResourceDictionary>

@@ -74,8 +74,8 @@ namespace BlitsMe.Agent.UI.WPF.Engage
             if (Dispatcher.CheckAccess())
             {
                 MainLayout.Background = new SolidColorBrush(Color.FromArgb(255, 43, 81, 155));
-                _chatWindow.BubbleCover.Background = new SolidColorBrush(Color.FromArgb(255, 43, 81, 155));
-                KickOffButton.Visibility = Visibility.Collapsed;
+                //_chatWindow.BubbleCover.Background = new SolidColorBrush(Color.FromArgb(255, 43, 81, 155));
+                //KickOffButton.Visibility = Visibility.Collapsed;
                 RemoteAssistanceButton.Visibility = Visibility.Visible;
             }
             else
@@ -83,8 +83,8 @@ namespace BlitsMe.Agent.UI.WPF.Engage
                 Dispatcher.Invoke(new Action(() =>
                     {
                         MainLayout.Background = new SolidColorBrush(Color.FromArgb(255, 43, 81, 155));
-                        _chatWindow.BubbleCover.Background = new SolidColorBrush(Color.FromArgb(255, 43, 81, 155));
-                        KickOffButton.Visibility = Visibility.Collapsed;
+                        //_chatWindow.BubbleCover.Background = new SolidColorBrush(Color.FromArgb(255, 43, 81, 155));
+                        //KickOffButton.Visibility = Visibility.Collapsed;
                         RemoteAssistanceButton.Visibility = Visibility.Visible;
                     }));
             }
@@ -98,8 +98,8 @@ namespace BlitsMe.Agent.UI.WPF.Engage
             if (Dispatcher.CheckAccess())
             {
                 MainLayout.Background = new SolidColorBrush(Colors.Red);
-                _chatWindow.BubbleCover.Background = new SolidColorBrush(Colors.Red);
-                KickOffButton.Visibility = Visibility.Visible;
+                //_chatWindow.BubbleCover.Background = new SolidColorBrush(Colors.Red);
+               // KickOffButton.Visibility = Visibility.Visible;
                 RemoteAssistanceButton.Visibility = Visibility.Collapsed;
             }
             else
@@ -107,8 +107,8 @@ namespace BlitsMe.Agent.UI.WPF.Engage
                 Dispatcher.Invoke(new Action(() =>
                     {
                         MainLayout.Background = new SolidColorBrush(Colors.Red);
-                        _chatWindow.BubbleCover.Background = new SolidColorBrush(Colors.Red);
-                        KickOffButton.Visibility = Visibility.Visible; ;
+                        //_chatWindow.BubbleCover.Background = new SolidColorBrush(Colors.Red);
+                        //KickOffButton.Visibility = Visibility.Visible; ;
                         RemoteAssistanceButton.Visibility = Visibility.Collapsed;
 
                     }));
@@ -216,6 +216,7 @@ namespace BlitsMe.Agent.UI.WPF.Engage
 
         internal void ShowChat()
         {
+            BlitsMeClientAppContext.CurrentAppContext.UIManager.GetEngagement(Engagement);
             _chatWindow = _chatWindow ?? new ChatWindow(_appContext, this) {Notifications = {ItemsSource = _notificationView.View}};
             EngagementContent.Content = _chatWindow;
             Engagement.IsUnread = false;

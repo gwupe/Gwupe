@@ -3,14 +3,15 @@ using System.Threading;
 using System.Windows;
 using System.Windows.Threading;
 using BlitsMe.Agent.Components;
+using BlitsMe.Agent.Components.Search;
 using BlitsMe.Agent.UI.WPF;
 using log4net;
 
 namespace BlitsMe.Agent.Managers
 {
-    internal class UIManager
+    internal class UIManager : Application
     {
-        private static readonly ILog Logger = LogManager.GetLogger(typeof (UIManager));
+        private static readonly ILog Logger = LogManager.GetLogger(typeof(UIManager));
         private Thread uiManagerThread;
         private Thread uiThread;
         private AutoResetEvent uiReady;
@@ -18,6 +19,7 @@ namespace BlitsMe.Agent.Managers
         internal UpdateNotification UpdateNotification;
         internal Window CurrentWindow { get { return dashBoard; } }
         internal bool IsClosed { get; private set; }
+        private Engagement _engagement;
 
         internal UIManager()
         {
@@ -27,12 +29,12 @@ namespace BlitsMe.Agent.Managers
             BlitsMeClientAppContext.CurrentAppContext.LoginManager.LoggingIn += LoginManagerOnLoggingIn;
             BlitsMeClientAppContext.CurrentAppContext.LoginManager.LoginFailed += LoginManagerOnLoginFailed;
             BlitsMeClientAppContext.CurrentAppContext.LoginManager.SigningUp += LoginManagerOnSigningUp;
-            BlitsMeClientAppContext.CurrentAppContext.LoginManager.SignupFailed += LoginManagerOnSignupFailed; 
+            BlitsMeClientAppContext.CurrentAppContext.LoginManager.SignupFailed += LoginManagerOnSignupFailed;
         }
 
         internal void Start()
         {
-            uiThread = new Thread(RunUI) {Name = "uiThread", IsBackground = true};
+            uiThread = new Thread(RunUI) { Name = "uiThread", IsBackground = true };
             uiThread.SetApartmentState(ApartmentState.STA);
             uiThread.Start();
             uiReady.WaitOne();
@@ -42,11 +44,27 @@ namespace BlitsMe.Agent.Managers
             }
             else
             {
+                LoadBaseSkin();
                 Show();
             }
             if (!BlitsMeClientAppContext.CurrentAppContext.StartupVersion.Equals(BlitsMeClientAppContext.CurrentAppContext.Reg.LastVersion)
-                && !String.IsNullOrWhiteSpace(BlitsMeClientAppContext.CurrentAppContext.ChangeDescription))
+                 && !String.IsNullOrWhiteSpace(BlitsMeClientAppContext.CurrentAppContext.ChangeDescription))
                 SetupAndRunUpdateNotificationWindow();
+        }
+
+        public static void LoadBaseSkin()
+        {
+            try
+            {
+                Application.Current.Resources.Clear();
+                string packUri = String.Format(@"/Skins/Skin.xaml");
+                var uri = new Uri(packUri, UriKind.Relative);
+                Application.Current.Resources.MergedDictionaries.Add(Application.LoadComponent(uri) as ResourceDictionary);
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
         }
 
         private void RunUI()
@@ -73,22 +91,22 @@ namespace BlitsMe.Agent.Managers
             }
         }
 
-
         internal void Show()
         {
-            dashBoard.Show();
+            if (dashBoard != null)
+                dashBoard.Show();
         }
 
         internal void Hide()
         {
             dashBoard.Hide();
         }
+
         internal void ShowDialog(Window dialogWindow)
         {
             dialogWindow.Owner = CurrentWindow;
             dialogWindow.ShowDialog();
         }
-
 
         private void SetupAndRunUpdateNotificationWindow()
         {
@@ -107,6 +125,26 @@ namespace BlitsMe.Agent.Managers
         public void PromptSignup(DataSubmitErrorArgs dataSubmitErrorArgs = null)
         {
             dashBoard.PromptSignup(dataSubmitErrorArgs);
+        }
+
+        public BlitsMeClientAppContext GetAppcontext()
+        {
+            return BlitsMeClientAppContext.CurrentAppContext;
+        }
+
+        public void PromptLogin()
+        {
+            dashBoard.Login(false);
+        }
+
+        public void GetEngagement(Engagement engagement)
+        {
+            _engagement = engagement;
+        }
+
+        public Engagement GetSourceObject()
+        {
+            return _engagement;
         }
 
         private void LoginManagerOnLoginFailed(object sender, DataSubmitErrorArgs dataSubmitErrorArgs)

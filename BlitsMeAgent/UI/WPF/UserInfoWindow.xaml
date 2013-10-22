@@ -6,7 +6,7 @@
 	mc:Ignorable="d"
 	x:Class="BlitsMe.Agent.UI.WPF.UserInfoWindow"
 	x:Name="UserControl"
-	d:DesignWidth="640" d:DesignHeight="480">
+	d:DesignWidth="640" d:DesignHeight="460">
     <UserControl.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
@@ -19,39 +19,81 @@
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>
     </UserControl.Resources>
-    <Grid x:Name="LayoutRoot" Background="#FF2B519B">
-        <Border Style="{StaticResource PersonBorder}" Width="450" Margin="0" VerticalAlignment="Center">
-            <Grid Margin="4,0" HorizontalAlignment="Center" MinWidth="384.5" Background="White" Width="430" Height="327" VerticalAlignment="Top">
-                <Button  Margin="10,21.5,0,0" Width="150" VerticalAlignment="Top" HorizontalAlignment="Left" Height="150" Background="White"  Click="AvatarImage_Click">
-					<Image x:Name="AvatarImage" Source="{Binding Path=Avatar, Converter={StaticResource imageStreamReader}}" />
-				</Button>
-                <Grid Margin="0,10,0,0" HorizontalAlignment="Right" Width="266" VerticalAlignment="Top" Height="170.047">
-                    <Label Content="Name" x:Name="NameLabel" HorizontalAlignment="Left" Margin="10,8.371,0,0" VerticalAlignment="Top" Width="68.123"/>
-                    <TextBox Text="{Binding Firstname}" HorizontalAlignment="Left" Margin="83.123,10.371,0,0" TextWrapping="Wrap" VerticalAlignment="Top" x:Name="Firstname" Width="75" />
-                    <TextBox Text="{Binding Lastname}" HorizontalAlignment="Left" Margin="163.123,10.371,0,0" TextWrapping="Wrap" VerticalAlignment="Top" x:Name="Lastname" Width="92.877" />
+    <Grid x:Name="LayoutRoot" >
+        <Border BorderThickness="1" BorderBrush="#4A7EBB"  Width="500" Height="230" >
+            <Grid Width="500" Height="230"  Background="#FFDCE6F2"  >
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="*"/>
+                </Grid.RowDefinitions>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="110"/>
+                    <ColumnDefinition Width="5"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
 
-                    <Label Content="Username" Name="UsernameLabel" HorizontalAlignment="Left" Margin="10,35.331,0,0" VerticalAlignment="Top" Width="68.123"/>
-                    <Label HorizontalAlignment="Left" Margin="83.123,37.331,0,0" VerticalAlignment="Top" Content="{Binding Username, FallbackValue=UnknownUser}" Name="Username" Width="162.877" />
-
-                    <Label Content="Password" HorizontalAlignment="Left" Margin="10,62.291,0,0" VerticalAlignment="Top" Name="PasswordLabel" Width="68.123" />
-                    <PasswordBox HorizontalAlignment="Left" Margin="83.123,64.291,0,0" VerticalAlignment="Top" Width="150.877" Name="Password" FontFamily="Segoe UI" IsEnabled="False" />
-
+                <Button Width="100"  Height="100" Background="White"  Click="AvatarImage_Click" Grid.Column="0" Grid.Row="0"
+                        VerticalAlignment="Top" Margin="0,10,0,0">
+                    <Image x:Name="AvatarImage" Source="{Binding Path=Avatar, Converter={StaticResource imageStreamReader}}" />
+                </Button>
+                <Grid Grid.Column="2" Grid.Row="0">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="10"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="5"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="5"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="5"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="5"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="8"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="2"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="5"/>
+                    </Grid.RowDefinitions>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="5"/>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="10"/>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="20"/>
+                        <ColumnDefinition Width="15"/>
+                    </Grid.ColumnDefinitions>
+                    <Label Content="Name" x:Name="NameLabel"  Width="68.123"/>
+                    <TextBox Text="{Binding Firstname}"  TextWrapping="Wrap" Style="{DynamicResource NormalTextboxStyle}"  x:Name="Firstname"  Grid.Row="1" Grid.Column="1" />
+                    <TextBox Text="{Binding Lastname}"  TextWrapping="Wrap" Style="{DynamicResource NormalTextboxStyle}" x:Name="Lastname"  Grid.Row="1" Grid.Column="3" />
+                    <TextBox Text="{Binding Username, FallbackValue=UnknownUser}" Style="{DynamicResource NormalTextboxStyle}" Name="Username"  Grid.Row="3" Grid.Column="1"/>
+                    <Label Content="Password"  Name="PasswordLabel" Width="68.123" />
+                    <PasswordBox  Name="Password" FontFamily="Segoe UI"  IsEnabled="False" Grid.Row="3" Grid.Column="3" Style="{DynamicResource NormalPasswordBoxStyle}"/>
+                    <CheckBox x:Name="PasswordChange" Content="simbu"  Click="PasswordChange_Click" Grid.Row="3" Grid.Column="4" VerticalAlignment="Center" Margin="5,0,0,0"/>
                     <Label Content="Location" HorizontalAlignment="Left" Margin="10,89.251,0,0" VerticalAlignment="Top" Name="LocationLabel" Width="68.123" />
-                    <TextBox Text="{Binding Location}" HorizontalAlignment="Left" Margin="83.123,91.253,0,0" VerticalAlignment="Top" Width="172.877" Height="23.2" Name="Location" />
+                    <TextBox Text="{Binding Location}" Name="Location" Grid.Row="5" Grid.Column="1" Style="{DynamicResource NormalTextboxStyle}"/>
 
                     <Label Content="Email" HorizontalAlignment="Left" Margin="10,117.451,0,0" VerticalAlignment="Top" Name="EmailLabel" Width="68.123" />
-                    <TextBox Text="{Binding Email}" HorizontalAlignment="Left" Margin="83.123,119.451,0,0" VerticalAlignment="Top" Width="172.877" Name="Email" />
+                    <TextBox Text="{Binding Email}" Name="Email" Grid.Row="7" Grid.Column="1" Style="{DynamicResource NormalTextboxStyle}" />
 
-                    <CheckBox x:Name="Supporter" Content="I offer IT support" IsChecked="{Binding Supporter}" HorizontalAlignment="Center" Margin="0,146.411,0,0" VerticalAlignment="Top"/>
-                    <CheckBox x:Name="PasswordChange" Content="" HorizontalAlignment="Left" Margin="239,68.291,0,0" VerticalAlignment="Top" Click="PasswordChange_Click"/>
+                    <CheckBox x:Name="Supporter" Content="I offer IT support" IsChecked="{Binding Supporter}" Grid.Row="7" Grid.Column="3" VerticalAlignment="Center"/>
 
+                    <TextBox Name="Description"   TextWrapping="Wrap" Text="{Binding Description}" Grid.Row="9" Grid.Column="1" Grid.ColumnSpan="3" Height="50" Margin="1,0,0,0" />
+                    <Border  Grid.Row="11" Grid.Column="1" Grid.ColumnSpan="3" BorderBrush="#5574AF" BorderThickness="1" HorizontalAlignment="Right" Margin="0,0,115,0" Width="100">
+                        <Button Content="Reload Info"  Name="CancelChanges" Click="CancelChanges_Click" Style="{DynamicResource UserinfoBtnstyle}" />
+                    </Border>
+                    <Border  Grid.Row="11" Grid.Column="1" Grid.ColumnSpan="3" BorderBrush="#5574AF" BorderThickness="1" HorizontalAlignment="Right" Width="100">
+                        <Button Content="Save Changes"   x:Name="SaveChanges" Click="SaveChanges_Click"  Style="{DynamicResource UserinfoBtnstyle}"  />
+                    </Border>
+                    <TextBlock x:Name="ErrorText" Text="" VerticalAlignment="Bottom" HorizontalAlignment="Right" Foreground="Red" Height="17" TextAlignment="Justify"  Visibility="Collapsed" Grid.Row="13" Grid.Column="1" Grid.ColumnSpan="3"/>
+                    <TextBlock x:Name="StatusText" Text="" VerticalAlignment="Bottom"   Foreground="#FF2B519B" HorizontalAlignment="Right" Height="17" TextAlignment="Justify" FontWeight="Bold" Grid.Row="13" Grid.Column="1" Grid.ColumnSpan="3"
+                           Visibility="Collapsed"/>
                 </Grid>
-                <Label Content="Description of skills, attitude and approach" Margin="10,177,10,0" VerticalAlignment="Top" x:Name="DescriptionLabel" />
-                <TextBox Name="Description" HorizontalAlignment="Left" Height="66.04" TextWrapping="Wrap" Text="{Binding Description}" VerticalAlignment="Top" Width="410" Margin="10,202.96,0,0"/>
-                <TextBlock x:Name="ErrorText" Text="" Margin="10,274,10,0" VerticalAlignment="Top" Width="410" Foreground="Red" Height="17" TextAlignment="Center"/>
-                <TextBlock x:Name="StatusText" Text="" Margin="10,274,10,0" VerticalAlignment="Top" Width="410" Foreground="#FF2B519B" Height="17" TextAlignment="Center" FontWeight="Bold"/>
-                <Button Content="Reload Info" Margin="108,0,222,9.04" VerticalAlignment="Bottom" Name="CancelChanges" Click="CancelChanges_Click" />
-                <Button Content="Save Changes" Margin="213,0,117,9.04" VerticalAlignment="Bottom" x:Name="SaveChanges" Click="SaveChanges_Click" />
+                <!--<Label Content="Description of skills, attitude and approach" VerticalAlignment="Top" x:Name="DescriptionLabel" Visibility="Collapsed"/>-->
+
+                <!--<TextBlock x:Name="ErrorText" Text="" VerticalAlignment="Bottom"  Width="410" Foreground="Red" Height="17" TextAlignment="Center" Visibility="Collapsed"/>
+                <TextBlock x:Name="StatusText" Text="" VerticalAlignment="Bottom"  Width="410" Foreground="#FF2B519B" Height="17" TextAlignment="Center" FontWeight="Bold"
+                           Visibility="Collapsed"/>-->
+
+
             </Grid>
         </Border>
     </Grid>

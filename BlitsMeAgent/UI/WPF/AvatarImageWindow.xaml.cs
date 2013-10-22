@@ -39,6 +39,11 @@ namespace BlitsMe.Agent.UI.WPF
             ResetStatus();
         }
 
+        private void CloseWindow(object sender, RoutedEventArgs e)
+        {
+            this.Close();
+        }
+
         private void FileButton_Click(object sender, System.Windows.RoutedEventArgs e)
         {
             ResetStatus();

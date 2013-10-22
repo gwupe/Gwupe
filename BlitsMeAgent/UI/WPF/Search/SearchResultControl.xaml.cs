@@ -3,6 +3,7 @@ using System.Windows.Controls;
 using System.Windows.Input;
 using BlitsMe.Agent.Components.Person;
 using BlitsMe.Agent.Components.Search;
+using BlitsMe.Agent.Managers;
 using log4net;
 
 namespace BlitsMe.Agent.UI.WPF.Search
