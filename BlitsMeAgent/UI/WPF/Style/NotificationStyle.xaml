@@ -9,6 +9,7 @@
 	xmlns:utils="clr-namespace:BlitsMe.Agent.UI.WPF.Utils" 
     xmlns:engage="clr-namespace:BlitsMe.Agent.UI.WPF.Engage">
 
+    <utils:ImageStreamReader x:Key="imageStreamReader" />
     <utils:RectConverter x:Key="rectConverter" />
     <Style x:Key="NotificationActionButton" TargetType="{x:Type Button}">
         <Setter Property="Background" Value="White" />
@@ -57,6 +58,13 @@
         <Setter Property="Margin" Value="1" />
     </Style>
 
+    <Style x:Key="NotificationStackStyle" TargetType="{x:Type StackPanel}">
+        <Setter Property="HorizontalAlignment" Value="Stretch" />
+        <Setter Property="Background" Value="#A9DA74" />
+        <Setter Property="Margin" Value="1" />
+    </Style>
+
+
     <!-- Resource dictionary entries should be defined here. -->
     <DataTemplate DataType="{x:Type fileSendNotification:FileSendProgressNotification}">
         <DockPanel Style="{StaticResource NotificationDockStyle}">
@@ -70,13 +78,22 @@
         </DockPanel>
     </DataTemplate>
     <DataTemplate DataType="{x:Type notification:AddBuddyNotification}">
-        <DockPanel Style="{StaticResource NotificationDockStyle}">
-            <StackPanel Orientation="Horizontal" Margin="0,8,8,8" HorizontalAlignment="Right" DockPanel.Dock="Right">
+        <StackPanel Orientation="Horizontal" Style="{StaticResource NotificationStackStyle}">
+            <Image Stretch="Uniform" Source="{Binding Path=Person, Converter={StaticResource imageStreamReader}}" 
+                   Width="40" Height="40" Margin="5,0,0,0"/>
+            <StackPanel Orientation="Vertical" Margin="5,0,0,0">
+                <TextBlock HorizontalAlignment="Left" Text="Contact Request" Foreground="Black" FontWeight="SemiBold" 
+                           FontFamily="Segoe UI" FontSize="13"/>
+                <TextBlock HorizontalAlignment="Left" Text="{Binding Name, FallbackValue=Unknown Notification}" 
+                           Foreground="Black" FontWeight="SemiBold" FontFamily="Segoe UI" FontSize="11"/>
+                <TextBlock HorizontalAlignment="Left" Text="{Binding Location, FallbackValue=Unknown Notification}" 
+                           Foreground="Black" FontFamily="Segoe UI" FontSize="11"/>
+            </StackPanel>
+            <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Margin="5,0,0,0">
                 <Button Style="{DynamicResource AcceptButtonStyle}" />
                 <Button Style="{DynamicResource DenyButtonStyle}" />
             </StackPanel>
-            <TextBlock HorizontalAlignment="Left" Margin="8,11,0,8" Text="{Binding Message, FallbackValue=Unknown Notification}" DockPanel.Dock="Left" Foreground="Black" FontWeight="Bold"/>
-        </DockPanel>
+        </StackPanel>
     </DataTemplate>
     <DataTemplate DataType="{x:Type rdpNotification:RDPNotification}">
         <Border BorderBrush="#015E15" BorderThickness="1">
