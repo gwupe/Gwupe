@@ -164,13 +164,29 @@ namespace BlitsMe.Agent.UI.WPF
 
         private void AvatarImage_Click(object sender, RoutedEventArgs e)
         {
+
             var avatarWindow = new AvatarImageWindow(_appContext) { ProfileImage = ImageStreamReader.CreateBitmapImage(_appContext.CurrentUserManager.CurrentUser.Avatar) };
+            ApplyBlurEffect(UserControl);
             _appContext.UIManager.ShowDialog(avatarWindow);
+            ClearBlurEffect(UserControl);
+        }
+
+        private void ClearBlurEffect(UserInfoWindow UserControl)
+        {
+            UserControl.Background = new SolidColorBrush(Colors.Transparent);
+            UserControl.UserControl.Opacity = 100;
+        }
+
+        private void ApplyBlurEffect(UserInfoWindow UserControl)
+        {
+            UserControl.Background = new SolidColorBrush(Colors.Gray);
+            UserControl.UserControl.Opacity = 0.4;
         }
 
         public void SetAsMain(Dashboard dashboard)
         {
 
         }
+
     }
 }

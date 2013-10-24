@@ -33,12 +33,12 @@ namespace BlitsMe.Agent.UI.WPF.Engage
             DataContext = new ChatWindowDataContext(_appContext, this);
 
             // need to do this here, because we get weird errors if its part of the data context.
-            ChatPanel.ItemsSource = new DispatchingCollection<ObservableCollection<ChatElement>, ChatElement>(Chat.Conversation.Exchange,Dispatcher);
+            ChatPanel.ItemsSource = new DispatchingCollection<ObservableCollection<ChatElement>, ChatElement>(Chat.Conversation.Exchange, Dispatcher);
         }
 
         public ChatWindow()
         {
-            
+
         }
 
         #region EventHandlers
@@ -60,12 +60,13 @@ namespace BlitsMe.Agent.UI.WPF.Engage
                     Logger.Debug("Rolling over into new day, adjusting times in " + _engagementWindow.Engagement.SecondParty.Person.Username);
                     // This is to make sure that all the items 'friendly dates' remain correct on midnight rollover
                     ChatPanel.Items.Refresh();
-                } else  if(ChatPanel.Items.Count != Chat.Conversation.Exchange.Count)
+                }
+                else if (ChatPanel.Items.Count != Chat.Conversation.Exchange.Count)
                 {
                     Logger.Error("Chat message count doesn't match, chatwindow = " + ChatPanel.Items.Count + ", chat = " + Chat.Conversation.Exchange.Count + ", refreshing");
                 }
                 _lastMessage = DateTime.Now;
-                
+
             }
         }
 
@@ -86,9 +87,9 @@ namespace BlitsMe.Agent.UI.WPF.Engage
             this._appContext = appContext;
             this._chatWindow = chatWindow;
             Self = _appContext.CurrentUserManager.CurrentUser;
-          //  this.Exchange =
+            //  this.Exchange =
             //    new DispatchingCollection<ObservableCollection<ChatElement>, ChatElement>(
-              //      _chatWindow._chat.Conversation.Exchange, chatWindow.Dispatcher);
+            //      _chatWindow._chat.Conversation.Exchange, chatWindow.Dispatcher);
         }
 
         // Command Handler

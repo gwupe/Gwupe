@@ -157,7 +157,7 @@
         <Setter Property="Background" Value="#A9DA74" />
         <Setter Property="Margin" Value="0,0,0,0" />
     </Style>
-    
+
     <Style x:Key="ChatBubbleOther" BasedOn="{StaticResource ChatBubble}" TargetType="RichTextBox">
         <Setter Property="FontFamily" Value="Calibri" />
         <Setter Property="FontSize" Value="12pt" />
@@ -185,8 +185,8 @@
     </Style>
 
     <Style x:Key="MessageTextbox" TargetType="TextBlock">
-        <Setter Property="FontFamily" Value="Calibri" />
-        <Setter Property="FontSize" Value="12pt" />
+        <Setter Property="FontFamily" Value="Segoe UI" />
+        <Setter Property="FontSize" Value="13" />
         <Setter Property="Background" Value="Transparent" />
         <!--<Setter Property="BorderBrush" Value="Transparent" />-->
         <Setter Property="MinHeight" Value="30" />
@@ -432,22 +432,27 @@
         </Grid>
     </DataTemplate>
     <DataTemplate x:Key="ChatSystemError">
-        <StackPanel>
-            <RichTextBox Style="{DynamicResource ChatBubbleSystem}" Background="#FFFF5555" Foreground="White">
-                <FlowDocument>
-                    <Paragraph>
-                        <Run Text="{Binding Path=Message, FallbackValue=An error message from the system}"/>
-                    </Paragraph>
-                </FlowDocument>
-            </RichTextBox>
-            <StackPanel Orientation="Horizontal" Margin="0,0,40,0" HorizontalAlignment="Right">
+        <Grid Style="{DynamicResource ChatBubbleMeNew}" Background="#FFFF5555" Margin="0,5,0,0" Grid.Column="1">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
+            <TextBlock Margin="15,10,0,0" HorizontalAlignment="Left" Style="{DynamicResource MessageTextbox}"
+                    Text="{Binding Path=Message, FallbackValue=A message from the system}" TextAlignment="Left"/>
+
+            <StackPanel Orientation="Horizontal" Margin="0,10,62,0" HorizontalAlignment="Right" Grid.Column="0">
                 <TextBlock  Style="{DynamicResource MessageTimeStyle}"
-							HorizontalAlignment="Left"
-							Margin="6,4,0,0"
-							Text="{Binding SpeakTime, Converter={StaticResource relativeMessageTimeConverter}, FallbackValue=Yesterday 8:49}"
-						/>
+						HorizontalAlignment="Right"
+						Margin="0,4,0,0"
+						Text="{Binding SpeakTime, Converter={StaticResource relativeMessageTimeConverter}, FallbackValue=Yesterday 8:49}"
+					/>
             </StackPanel>
-        </StackPanel>
+
+            <Border HorizontalAlignment="Right" Margin="0,5,20,0" Height="30" Width="30" 
+                                VerticalAlignment="Top" BorderThickness="1" BorderBrush="White">
+                <!--<Image Stretch="Uniform" Source="{Binding Path=Person.Avatar, Converter={StaticResource imageStreamReader}}" Width="30" Height="30" />-->
+                <engage:UserImage />
+            </Border>
+        </Grid>
     </DataTemplate>
     <Style x:Key="MessageBorder" TargetType="Border">
         <Setter Property="CornerRadius" Value="5" />

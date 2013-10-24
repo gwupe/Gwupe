@@ -186,9 +186,17 @@
         <Setter Property="MaxWidth" Value="160"/>
     </Style>
 
+    <Style x:Key="ContactsDisplayText" TargetType="TextBlock">
+        <Setter Property="Foreground" Value="Black" />
+        <Setter Property="HorizontalAlignment" Value="Center" />
+        <Setter Property="TextWrapping" Value="Wrap" />
+        <Setter Property="Height" Value="Auto" />
+        <Setter Property="FontFamily" Value="Segoe UI" />
+    </Style>
+
     <DataTemplate x:Key="PersonIcon">
         <Rectangle x:Name="ImageContainer" Width="40" Height="50" StrokeThickness="0" VerticalAlignment="center" HorizontalAlignment="Left" Margin="0">
-           <Rectangle.Fill>
+            <Rectangle.Fill>
                 <ImageBrush Stretch="Uniform" ImageSource="{Binding Path=Person.Avatar, Converter={StaticResource imageStreamReader}}" />
             </Rectangle.Fill>
         </Rectangle>
@@ -197,7 +205,7 @@
 
     <DataTemplate x:Key="Contact">
         <StackPanel Orientation="Horizontal" Style="{StaticResource TeamMemberInActiveBase}"
-                   Height="Auto" ToolTip="{Binding Path=Person.Name}">
+                   Height="Auto" ToolTip="{Binding Path=Person.Name}" Width="180" HorizontalAlignment="Left">
             <StackPanel Orientation="Vertical" Margin="5,3,0,0">
                 <ContentPresenter ContentTemplate="{StaticResource PersonIcon}" />
             </StackPanel>
@@ -208,11 +216,10 @@
                     <RowDefinition Height="Auto"/>
                     <RowDefinition Height="Auto"/>
                 </Grid.RowDefinitions>
-                <TextBlock Text="{Binding Path=Person.Name, FallbackValue=FirstName LastName}" HorizontalAlignment="Center" 
-                           Width="110" TextWrapping="Wrap" Grid.Row="0" Height="Auto"/>
+                <TextBlock Text="{Binding Path=Person.Name, FallbackValue=FirstName LastName}" Width="110" Grid.Row="0"
+                           FontSize="13" FontWeight="ExtraBlack"/>
 
-                <TextBlock Text="{Binding Path=Person.Location, FallbackValue=Planet Earth}" HorizontalAlignment="Center"
-                           Grid.Row="1" Width="110" Height="Auto"/>
+                <TextBlock Text="{Binding Path=Person.Location, FallbackValue=Planet Earth}" Grid.Row="1" Width="110" />
 
                 <ContentControl Content="{Binding Person.Rating}" HorizontalAlignment="Left" Grid.Row="2" Margin="10,0,0,0">
                     <ContentControl.Style>
@@ -232,22 +239,21 @@
 
     <DataTemplate x:Key="ContactActive">
         <StackPanel Orientation="Horizontal" Style="{StaticResource TeamMemberActiveBase}" Height="Auto"
-                    ToolTip="{Binding Path=Person.Name}">
+                    ToolTip="{Binding Path=Person.Name}" >
             <StackPanel Orientation="Vertical" Margin="5,3,0,0">
                 <ContentPresenter ContentTemplate="{StaticResource PersonIcon}" />
             </StackPanel>
 
-            <Grid Margin="2,0,0,0" VerticalAlignment="Center" Height="Auto" Width="100">
+            <Grid Margin="2,0,0,0" VerticalAlignment="Center" Height="Auto" Width="115">
                 <Grid.RowDefinitions>
                     <RowDefinition Height="Auto"/>
                     <RowDefinition Height="Auto"/>
                     <RowDefinition Height="Auto"/>
                 </Grid.RowDefinitions>
-                <TextBlock Text="{Binding Path=Person.Name, FallbackValue=FirstName LastName}" HorizontalAlignment="Center" 
-                           Width="90" TextWrapping="Wrap" Grid.Row="0" Height="Auto" Margin="10,0,0,0"/>
+                <TextBlock Text="{Binding Path=Person.Name, FallbackValue=FirstName LastName}" Width="90" Grid.Row="0" 
+                           FontSize="13" FontWeight="ExtraBlack"/>
 
-                <TextBlock Text="{Binding Path=Person.Location, FallbackValue=Planet Earth}" HorizontalAlignment="Center"
-                           Grid.Row="1" Width="90" Height="Auto" Margin="10,0,0,0"/>
+                <TextBlock Text="{Binding Path=Person.Location, FallbackValue=Planet Earth}" Grid.Row="1" Width="90" />
 
                 <ContentControl Content="{Binding Person.Rating}" HorizontalAlignment="Left" Grid.Row="2" Margin="10,0,0,0">
                     <ContentControl.Style>
@@ -263,13 +269,14 @@
                 </ContentControl>
             </Grid>
 
-            <Image Source="/BlitsMe.Agent;component/UI/WPF/Images/1337425212_02.png" Height="25" Width="25" 
+            <Image Source="/BlitsMe.Agent;component/UI/WPF/Images/1337420206_Char.png" Height="25" Width="25" 
                    Margin="2,0,0,0"/>
         </StackPanel>
     </DataTemplate>
 
     <DataTemplate x:Key="ContactUnread">
-        <StackPanel Orientation="Horizontal" Style="{StaticResource TeamMemberUnreadBase}" Height="50">
+        <StackPanel Orientation="Horizontal" Style="{StaticResource TeamMemberUnreadBase}" Height="50"
+                    Width="180">
             <StackPanel Orientation="Vertical" Margin="5,3,0,0">
                 <ContentPresenter ContentTemplate="{StaticResource PersonIcon}" />
             </StackPanel>
@@ -279,11 +286,10 @@
                     <RowDefinition Height="Auto"/>
                     <RowDefinition Height="Auto"/>
                 </Grid.RowDefinitions>
-                <TextBlock Text="{Binding Path=Person.Name, FallbackValue=FirstName LastName}" HorizontalAlignment="Center" 
-                           Width="110" TextWrapping="Wrap" Grid.Row="0" TextAlignment="Center" Height="Auto"/>
+                <TextBlock Text="{Binding Path=Person.Name, FallbackValue=FirstName LastName}" Width="110" Grid.Row="0" 
+                           FontSize="13" FontWeight="ExtraBlack"/>
 
-                <TextBlock Text="{Binding Path=Person.Location, FallbackValue=Planet Earth}" HorizontalAlignment="Center"
-                           Grid.Row="1" Width="110" TextAlignment="Center" Height="Auto"/>
+                <TextBlock Text="{Binding Path=Person.Location, FallbackValue=Planet Earth}" Grid.Row="1" Width="110" />
 
                 <ContentControl Content="{Binding Person.Rating}" HorizontalAlignment="Center" Grid.Row="2"
                                 Width="110">
@@ -299,13 +305,14 @@
                     </ContentControl.Style>
                 </ContentControl>
             </Grid>
-            <Image Source="/BlitsMe.Agent;component/UI/WPF/Images/1337425212_02.png" Height="25" Width="25" 
+            <Image Source="/BlitsMe.Agent;component/UI/WPF/Images/1337420206_Char.png" Height="25" Width="25" 
                    Margin="2,0,0,0"/>
         </StackPanel>
     </DataTemplate>
 
     <DataTemplate x:Key="ContactOffline">
-        <StackPanel Orientation="Horizontal" Style="{StaticResource TeamMemberOfflineBase}" MinHeight="50">
+        <StackPanel Orientation="Horizontal" Style="{StaticResource TeamMemberOfflineBase}" MinHeight="50"
+                    Width="180">
             <StackPanel Orientation="Vertical" Margin="5,3,0,0">
                 <ContentPresenter ContentTemplate="{StaticResource PersonIcon}" />
             </StackPanel>
@@ -316,11 +323,10 @@
                     <RowDefinition Height="Auto"/>
                     <RowDefinition Height="Auto"/>
                 </Grid.RowDefinitions>
-                <TextBlock Text="{Binding Path=Person.Name, FallbackValue=FirstName LastName}" HorizontalAlignment="Center" 
-                           Width="110" TextWrapping="Wrap" Grid.Row="0" TextAlignment="Center" Height="Auto"/>
+                <TextBlock Text="{Binding Path=Person.Name, FallbackValue=FirstName LastName}" Width="110" Grid.Row="0" 
+                           FontSize="13" FontWeight="ExtraBlack"/>
 
-                <TextBlock Text="{Binding Path=Person.Location, FallbackValue=Planet Earth}" HorizontalAlignment="Center"
-                           Grid.Row="1" Width="110" TextAlignment="Center" Height="Auto"/>
+                <TextBlock Text="{Binding Path=Person.Location, FallbackValue=Planet Earth}" Grid.Row="1" Width="110" />
 
                 <ContentControl Content="{Binding Person.Rating}" HorizontalAlignment="Center" Grid.Row="2"
                                 Width="110">
@@ -337,7 +343,7 @@
                 </ContentControl>
             </Grid>
 
-            <Image Source="/BlitsMe.Agent;component/UI/WPF/Images/1337425212_02.png" Height="25" Width="25" 
+            <Image Source="/BlitsMe.Agent;component/UI/WPF/Images/1337420206_Char.png" Height="25" Width="25" 
                    Margin="2,0,0,0"/>
         </StackPanel>
     </DataTemplate>

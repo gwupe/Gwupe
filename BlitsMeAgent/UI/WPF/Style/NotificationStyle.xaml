@@ -28,6 +28,7 @@
     </Style>
     <Style x:Key="AcceptButtonStyle" TargetType="{x:Type Button}" BasedOn="{StaticResource NotificationActionButton}">
         <Setter Property="Width" Value="20" />
+        <Setter Property="Height" Value="20" />
         <Setter Property="Command" Value="{Binding AnswerTrueFalse}" />
         <Setter Property="CommandParameter">
             <Setter.Value>
@@ -39,6 +40,7 @@
     </Style>
     <Style x:Key="DenyButtonStyle" TargetType="{x:Type Button}" BasedOn="{StaticResource NotificationActionButton}">
         <Setter Property="Width" Value="20" />
+        <Setter Property="Height" Value="20" />
         <Setter Property="Command" Value="{Binding AnswerTrueFalse}" />
         <Setter Property="CommandParameter">
             <Setter.Value>
@@ -54,7 +56,7 @@
         <Setter Property="Background" Value="#A9DA74" />
         <Setter Property="Margin" Value="1" />
     </Style>
-    
+
     <!-- Resource dictionary entries should be defined here. -->
     <DataTemplate DataType="{x:Type fileSendNotification:FileSendProgressNotification}">
         <DockPanel Style="{StaticResource NotificationDockStyle}">
