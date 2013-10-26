@@ -53,7 +53,8 @@ namespace BlitsMe.Agent.Components.Functions.FileSend
                         username = _engagement.SecondParty.Person.Username,
                         filename = fileInfo.Filename,
                         fileSize = fileInfo.FileSize,
-                        fileSendId = fileInfo.FileSendId
+                        fileSendId = fileInfo.FileSendId,
+                        interactionId = _engagement.Interactions.CurrentOrNewInteraction.Id
                     };
                 try
                 {
@@ -155,7 +156,8 @@ namespace BlitsMe.Agent.Components.Functions.FileSend
                     shortCode = _engagement.SecondParty.ActiveShortCode,
                     username = _engagement.SecondParty.Person.Username,
                     fileSendId = fileInfo.FileSendId,
-                    accepted = false
+                    accepted = false,
+                    interactionId = _engagement.Interactions.CurrentOrNewInteraction.Id
                 };
             try
             {
@@ -189,6 +191,7 @@ namespace BlitsMe.Agent.Components.Functions.FileSend
                 {
                     shortCode = _engagement.SecondParty.ActiveShortCode,
                     username = _engagement.SecondParty.Person.Username,
+                    interactionId = _engagement.Interactions.CurrentOrNewInteraction.Id,
                     fileSendId = fileInfo.FileSendId,
                     accepted = true
                 };
