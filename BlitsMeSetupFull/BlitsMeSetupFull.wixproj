@@ -74,12 +74,12 @@
 	</Target>
 	-->
   <Target Name="SignBundleEngine">
-    <SignFile CertificateThumbprint="83e81a9d1d88fb8718fd1df07e89ef89b000ee64"
+    <SignFile Condition=" '$(Configuration)' == 'Release' " CertificateThumbprint="83e81a9d1d88fb8718fd1df07e89ef89b000ee64"
       SigningTarget="@(SignBundleEngine)"
  />
   </Target>
   <Target Name="SignBundle">
-    <SignFile CertificateThumbprint="83e81a9d1d88fb8718fd1df07e89ef89b000ee64"
+    <SignFile Condition=" '$(Configuration)' == 'Release' " CertificateThumbprint="83e81a9d1d88fb8718fd1df07e89ef89b000ee64"
       SigningTarget="@(SignBundle)"
  />
     <!-- move the filename to its final name after signing -->
