@@ -64,8 +64,8 @@ namespace BlitsMe.Agent.UI.WPF
                         int larger = height > width ? height : width;
                         BitmapImage newImage = new BitmapImage();
                         newImage.BeginInit();
-                        newImage.DecodePixelHeight = height/larger * 300;
-                        newImage.DecodePixelWidth = width/larger * 300;
+                        newImage.DecodePixelHeight = height / larger * 300;
+                        newImage.DecodePixelWidth = width / larger * 300;
                         newImage.UriSource = new Uri(filename);
                         newImage.EndInit();
                         ProfileImage = newImage;

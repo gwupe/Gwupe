@@ -1,0 +1,17 @@
+﻿<UserControl x:Class="BlitsMe.Agent.UI.WPF.Engage.UserImageOthers"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:utils="clr-namespace:BlitsMe.Agent.UI.WPF.Utils"
+            xmlns:Person="clr-namespace:BlitsMe.Agent.Components.Person">
+    <UserControl.Resources>
+        <ResourceDictionary>
+            <utils:ImageStreamReader x:Key="imageStreamReader" />
+        </ResourceDictionary>
+    </UserControl.Resources>
+    <Grid>
+        <Image Stretch="Uniform" Source="{Binding Path=Self.Avatar, Mode=TwoWay, Converter={StaticResource imageStreamReader}}"
+                        Width="30" Height="30" />
+    </Grid>
+</UserControl>

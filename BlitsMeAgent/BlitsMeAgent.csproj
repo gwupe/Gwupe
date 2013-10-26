@@ -293,16 +293,16 @@
       <SubType>Designer</SubType>
     </Page>
     <Page Include="UI\WPF\Engage\UserImage.xaml">
-      <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
     </Page>
     <Page Include="UI\WPF\Engage\UserImageAddBuddy.xaml">
-      <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
     </Page>
     <Page Include="UI\WPF\Engage\UserImageOthers.xaml">
-      <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
     </Page>
     <Page Include="UI\WPF\LoginControl.xaml">
       <Generator>MSBuild:Compile</Generator>
@@ -380,7 +380,6 @@
     <Compile Include="UI\WPF\Roster\ActiveRosterList.cs" />
     <Compile Include="UI\WPF\Roster\SearchRosterList.cs" />
     <Compile Include="UI\WPF\Roster\RosterList.cs" />
-    <Compile Include="UI\WPF\Search\UserOtherImageList.cs" />
     <Compile Include="UI\WPF\SignUpControl.xaml.cs">
       <DependentUpon>SignUpControl.xaml</DependentUpon>
     </Compile>

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Text;
 using BlitsMe.Agent.Components.Notification;
 using BlitsMe.Cloud.Messaging.API;
 using BlitsMe.Cloud.Messaging.Request;
@@ -9,7 +10,7 @@ namespace BlitsMe.Agent.Components.Processors
 {
     class SubscribeProcessor : Processor
     {
-        private static readonly ILog Logger = LogManager.GetLogger(typeof (SubscribeProcessor));
+        private static readonly ILog Logger = LogManager.GetLogger(typeof(SubscribeProcessor));
         private readonly BlitsMeClientAppContext _appContext;
 
         public SubscribeProcessor(BlitsMeClientAppContext appContext)
@@ -24,7 +25,13 @@ namespace BlitsMe.Agent.Components.Processors
             if (request.subscribe)
             {
                 AddBuddyNotification notification = new AddBuddyNotification()
-                    {Manager = _appContext.NotificationManager, Message = request.userElement.name + " would like to add you."};
+                {
+                    Manager = _appContext.NotificationManager,
+                    Person = Convert.FromBase64String(request.userElement.avatarData),
+                    Name = request.userElement.name,
+                    Location = request.userElement.location,
+                    Message = request.userElement.name + " would like to add you."
+                };
                 notification.AnsweredTrue += delegate { ProcessAnswer(true, request.username); };
                 notification.AnsweredFalse += delegate { ProcessAnswer(false, request.username); };
                 _appContext.NotificationManager.AddNotification(notification);
@@ -35,11 +42,12 @@ namespace BlitsMe.Agent.Components.Processors
 
         private void ProcessAnswer(bool answer, String username)
         {
-            if(answer)
+            if (answer)
             {
-                SubscribeRq request = new SubscribeRq {subscribe = true, username = username};
-                _appContext.ConnectionManager.Connection.RequestAsync<SubscribeRq,SubscribeRs>(request, SubscribeRequestResponseHandler);
-            } else
+                SubscribeRq request = new SubscribeRq { subscribe = true, username = username };
+                _appContext.ConnectionManager.Connection.RequestAsync<SubscribeRq, SubscribeRs>(request, SubscribeRequestResponseHandler);
+            }
+            else
             {
                 SubscribeRq request = new SubscribeRq { subscribe = false, username = username };
                 _appContext.ConnectionManager.Connection.RequestAsync<SubscribeRq, SubscribeRs>(request, SubscribeRequestResponseHandler);
@@ -48,10 +56,10 @@ namespace BlitsMe.Agent.Components.Processors
 
         private void SubscribeRequestResponseHandler(SubscribeRq request, SubscribeRs response, Exception e)
         {
-            if(e != null)
+            if (e != null)
             {
                 Logger.Error("Failed to send subscribe answer to " + request.username + " : " +
-                             e.Message,e);
+                             e.Message, e);
             }
         }
     }

@@ -16,6 +16,9 @@ namespace BlitsMe.Agent.Components.Notification
         internal String Id { get; set; }
         public readonly long NotifyTime;
         private string _message;
+        private byte[] _person;
+        private string _name;
+        private string _location;
 
         public void OnProcessDeleteCommand(EventArgs e)
         {
@@ -38,7 +41,25 @@ namespace BlitsMe.Agent.Components.Notification
         public virtual String Message
         {
             get { return _message; }
-            set { _message = value; OnPropertyChanged("Message");}
+            set { _message = value; OnPropertyChanged("Message"); }
+        }
+
+        public virtual byte[] Person
+        {
+            get { return _person; }
+            set { _person = value; OnPropertyChanged("Person"); }
+        }
+
+        public virtual string Name
+        {
+            get { return _name; }
+            set { _name = value; OnPropertyChanged("Name"); }
+        }
+
+        public virtual string Location
+        {
+            get { return _location; }
+            set { _location = value; OnPropertyChanged("Location"); }
         }
 
         public override string ToString()
