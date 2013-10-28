@@ -290,7 +290,42 @@
             </Grid.ColumnDefinitions>
             <Image Style="{DynamicResource ChatBubblePointMe}" Grid.Column="0"/>
             <StackPanel Orientation="Vertical" Margin="0,5,0,-5" Grid.Column="1">
-                <Grid Style="{DynamicResource ChatBubbleMeNew}">
+                <Border Background="#C6D9F1" CornerRadius="5" Grid.Column="1" MinHeight="40" Height="Auto" Width="Auto">
+                    <Grid Style="{DynamicResource ChatBubbleMeNew}" Background="Transparent">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+                        <TextBlock Margin="15,10,0,0" HorizontalAlignment="Left" Style="{DynamicResource MessageTextbox}"
+                       Text="{Binding Path=Message, FallbackValue=A message from us}" TextAlignment="Left"/>
+
+                        <StackPanel Orientation="Horizontal" Margin="0,10,62,0" HorizontalAlignment="Right" Grid.Column="0">
+                            <TextBlock  Style="{DynamicResource MessageTimeStyle}"
+							HorizontalAlignment="Right"
+							Margin="0,4,0,0"
+							Text="{Binding SpeakTime, Converter={StaticResource relativeMessageTimeConverter}, FallbackValue=Yesterday 8:49}"
+						/>
+                        </StackPanel>
+
+                        <Border HorizontalAlignment="Right" Margin="0,5,20,0" Height="30" Width="30" 
+                                   VerticalAlignment="Top" BorderThickness="1" BorderBrush="White">
+                            <engage:UserImage />
+                        </Border>
+                    </Grid>
+                </Border>
+                <Image Style="{DynamicResource ChatBubbleJoinMe}" />
+            </StackPanel>
+        </Grid>
+    </DataTemplate>
+    <DataTemplate x:Key="ChatMeSingle">
+        <Grid>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
+            <Image Style="{DynamicResource ChatBubblePointMe}" Grid.Column="0"/>
+            <Border Background="#C6D9F1" CornerRadius="5" Grid.Column="1" MinHeight="40" Height="Auto" Width="Auto" 
+                    Margin="0,5,0,0" >
+                <Grid Style="{DynamicResource ChatBubbleMeNew}" Background="Transparent">
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="*"/>
                     </Grid.ColumnDefinitions>
@@ -307,41 +342,11 @@
 
                     <Border HorizontalAlignment="Right" Margin="0,5,20,0" Height="30" Width="30" 
                                    VerticalAlignment="Top" BorderThickness="1" BorderBrush="White">
+                        <!--<Image Stretch="Uniform" Source="{Binding Path=Person.Avatar, Converter={StaticResource imageStreamReader}}" Width="30" Height="30" />-->
                         <engage:UserImage />
                     </Border>
                 </Grid>
-                <Image Style="{DynamicResource ChatBubbleJoinMe}" />
-            </StackPanel>
-        </Grid>
-    </DataTemplate>
-    <DataTemplate x:Key="ChatMeSingle">
-        <Grid>
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="Auto"/>
-                <ColumnDefinition Width="*"/>
-            </Grid.ColumnDefinitions>
-            <Image Style="{DynamicResource ChatBubblePointMe}" Grid.Column="0"/>
-            <Grid Style="{DynamicResource ChatBubbleMeNew}" Margin="0,5,0,0" Grid.Column="1">
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="*"/>
-                </Grid.ColumnDefinitions>
-                <TextBlock Margin="15,10,0,0" HorizontalAlignment="Left" Style="{DynamicResource MessageTextbox}"
-                       Text="{Binding Path=Message, FallbackValue=A message from us}" TextAlignment="Left"/>
-
-                <StackPanel Orientation="Horizontal" Margin="0,10,62,0" HorizontalAlignment="Right" Grid.Column="0">
-                    <TextBlock  Style="{DynamicResource MessageTimeStyle}"
-							HorizontalAlignment="Right"
-							Margin="0,4,0,0"
-							Text="{Binding SpeakTime, Converter={StaticResource relativeMessageTimeConverter}, FallbackValue=Yesterday 8:49}"
-						/>
-                </StackPanel>
-
-                <Border HorizontalAlignment="Right" Margin="0,5,20,0" Height="30" Width="30" 
-                                   VerticalAlignment="Top" BorderThickness="1" BorderBrush="White">
-                    <!--<Image Stretch="Uniform" Source="{Binding Path=Person.Avatar, Converter={StaticResource imageStreamReader}}" Width="30" Height="30" />-->
-                    <engage:UserImage />
-                </Border>
-            </Grid>
+            </Border>
         </Grid>
     </DataTemplate>
     <DataTemplate x:Key="ChatOtherGroup">
@@ -351,7 +356,40 @@
                 <ColumnDefinition Width="Auto"/>
             </Grid.ColumnDefinitions>
             <StackPanel Orientation="Vertical" Margin="0,5,0,-5" Grid.Column="0">
-                <Grid Style="{DynamicResource ChatBubbleOthersNew}">
+                <Border Background="#D7E4BD" CornerRadius="5" MinHeight="40">
+                    <Grid Style="{DynamicResource ChatBubbleOthersNew}" Background="Transparent">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+                        <Border HorizontalAlignment="Left" Margin="20,5,0,0" Height="30" Width="30" 
+                                   VerticalAlignment="Top" BorderThickness="1" BorderBrush="White">
+                            <engage:UserImageOthers/>
+                        </Border>
+                        <StackPanel Orientation="Horizontal" Margin="62,10,0,0" HorizontalAlignment="Left" Grid.Column="0">
+                            <TextBlock  Style="{DynamicResource MessageTimeStyle}"
+							HorizontalAlignment="Right"
+							Margin="0,4,0,0"
+							Text="{Binding SpeakTime, Converter={StaticResource relativeMessageTimeConverter}, FallbackValue=Yesterday 8:49}"
+						/>
+                        </StackPanel>
+                        <TextBlock Margin="0,10,15,0" HorizontalAlignment="Right" Style="{DynamicResource MessageTextbox}"
+                       Text="{Binding Path=Message, FallbackValue=A message from them}" TextAlignment="Right"/>
+                    </Grid>
+                </Border>
+                <Image Style="{DynamicResource ChatBubbleJoinOther}" Margin="23,0,0,0"/>
+            </StackPanel>
+            <Image Style="{DynamicResource ChatBubblePointOther}" Grid.Column="1"/>
+        </Grid>
+    </DataTemplate>
+    <DataTemplate x:Key="ChatOtherSingle" >
+        <Grid>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="Auto"/>
+            </Grid.ColumnDefinitions>
+            <Border Background="#D7E4BD" CornerRadius="5" Grid.Column="0" MinHeight="40" Height="Auto" Width="Auto" 
+                    Margin="0,5,0,0" >
+                <Grid Style="{DynamicResource ChatBubbleOthersNew}" Background="Transparent">
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="*"/>
                     </Grid.ColumnDefinitions>
@@ -369,35 +407,7 @@
                     <TextBlock Margin="0,10,15,0" HorizontalAlignment="Right" Style="{DynamicResource MessageTextbox}"
                        Text="{Binding Path=Message, FallbackValue=A message from them}" TextAlignment="Right"/>
                 </Grid>
-                <Image Style="{DynamicResource ChatBubbleJoinOther}" Margin="23,0,0,0"/>
-            </StackPanel>
-            <Image Style="{DynamicResource ChatBubblePointOther}" Grid.Column="1"/>
-        </Grid>
-    </DataTemplate>
-    <DataTemplate x:Key="ChatOtherSingle" >
-        <Grid>
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="*"/>
-                <ColumnDefinition Width="Auto"/>
-            </Grid.ColumnDefinitions>
-            <Grid Style="{DynamicResource ChatBubbleOthersNew}" Margin="0,5,0,0" Grid.Column="0">
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="*"/>
-                </Grid.ColumnDefinitions>
-                <Border HorizontalAlignment="Left" Margin="20,5,0,0" Height="30" Width="30" 
-                                   VerticalAlignment="Top" BorderThickness="1" BorderBrush="White">
-                    <engage:UserImageOthers/>
-                </Border>
-                <StackPanel Orientation="Horizontal" Margin="62,10,0,0" HorizontalAlignment="Left" Grid.Column="0">
-                    <TextBlock  Style="{DynamicResource MessageTimeStyle}"
-							HorizontalAlignment="Right"
-							Margin="0,4,0,0"
-							Text="{Binding SpeakTime, Converter={StaticResource relativeMessageTimeConverter}, FallbackValue=Yesterday 8:49}"
-						/>
-                </StackPanel>
-                <TextBlock Margin="0,10,15,0" HorizontalAlignment="Right" Style="{DynamicResource MessageTextbox}"
-                       Text="{Binding Path=Message, FallbackValue=A message from them}" TextAlignment="Right"/>
-            </Grid>
+            </Border>
             <Image Style="{DynamicResource ChatBubblePointOther}" Grid.Column="1"/>
         </Grid>
     </DataTemplate>
@@ -408,27 +418,29 @@
                 <ColumnDefinition Width="*"/>
             </Grid.ColumnDefinitions>
             <Image Style="{DynamicResource ChatBubblePointMe}" Grid.Column="0"/>
-            <Grid Style="{DynamicResource ChatBubbleMeNew}" Margin="0,5,0,0" Grid.Column="1">
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="*"/>
-                </Grid.ColumnDefinitions>
-                <TextBlock Margin="15,10,0,0" HorizontalAlignment="Left" Style="{DynamicResource MessageTextbox}"
+            <Border Background="#C6D9F1" CornerRadius="5" Grid.Column="1" MinHeight="40" Margin="0,5,0,0" >
+                <Grid Style="{DynamicResource ChatBubbleMeNew}" Background="Transparent">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
+                    <TextBlock Margin="15,10,0,0" HorizontalAlignment="Left" Style="{DynamicResource MessageTextbox}"
                        Text="{Binding Path=Message, FallbackValue=A message from the system}" TextAlignment="Left"/>
 
-                <StackPanel Orientation="Horizontal" Margin="0,10,62,0" HorizontalAlignment="Right" Grid.Column="0">
-                    <TextBlock  Style="{DynamicResource MessageTimeStyle}"
+                    <StackPanel Orientation="Horizontal" Margin="0,10,62,0" HorizontalAlignment="Right" Grid.Column="0">
+                        <TextBlock  Style="{DynamicResource MessageTimeStyle}"
 							HorizontalAlignment="Right"
 							Margin="0,4,0,0"
 							Text="{Binding SpeakTime, Converter={StaticResource relativeMessageTimeConverter}, FallbackValue=Yesterday 8:49}"
 						/>
-                </StackPanel>
+                    </StackPanel>
 
-                <Border HorizontalAlignment="Right" Margin="0,5,20,0" Height="30" Width="30" 
+                    <Border HorizontalAlignment="Right" Margin="0,5,20,0" Height="30" Width="30" 
                                    VerticalAlignment="Top" BorderThickness="1" BorderBrush="White">
-                    <!--<Image Stretch="Uniform" Source="{Binding Path=Person.Avatar, Converter={StaticResource imageStreamReader}}" Width="30" Height="30" />-->
-                    <engage:UserImage />
-                </Border>
-            </Grid>
+                        <!--<Image Stretch="Uniform" Source="{Binding Path=Person.Avatar, Converter={StaticResource imageStreamReader}}" Width="30" Height="30" />-->
+                        <engage:UserImage />
+                    </Border>
+                </Grid>
+            </Border>
         </Grid>
     </DataTemplate>
     <DataTemplate x:Key="ChatSystemError">

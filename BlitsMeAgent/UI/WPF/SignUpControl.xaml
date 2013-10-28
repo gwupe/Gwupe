@@ -24,29 +24,28 @@
         <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center">
             <TextBlock Style="{DynamicResource TextblockHeaderStyle}">Create an account</TextBlock>
             <TextBlock x:Name="ErrorText" Margin="0,10,0,0" TextWrapping="Wrap" Text="Error" 
-                       VerticalAlignment="Top" TextAlignment="Center" 
-                       Foreground="Red" Visibility="Hidden"/>
+                       VerticalAlignment="Top" TextAlignment="Center" Foreground="Red" Visibility="Hidden"/>
             <TextBox mahappsControls:TextboxHelper.Watermark="Firstname" Margin="0,10,0,0" x:Name="Firstname"
-                     Background="White" Width="164" Height="23" TextWrapping="Wrap" HorizontalAlignment="Left"/>
+                     Background="White" Width="164" Height="23" TextWrapping="Wrap" HorizontalAlignment="Center"/>
             <TextBox mahappsControls:TextboxHelper.Watermark="Lastname" Margin="0,10,0,0" x:Name="Lastname" 
-                     Background="White" Width="164" Height="23" TextWrapping="Wrap" HorizontalAlignment="Left"/>
+                     Background="White" Width="164" Height="23" TextWrapping="Wrap" HorizontalAlignment="Center"/>
             <TextBox mahappsControls:TextboxHelper.Watermark="Username" Margin="0,10,0,0" x:Name="Username" 
-                     Background="White" Width="164" Height="23" TextWrapping="Wrap" HorizontalAlignment="Left"/>
+                     Background="White" Width="164" Height="23" TextWrapping="Wrap" HorizontalAlignment="Center"/>
             <PasswordBox Margin="0,10,0,0" x:Name="Password" Width="164" Height="23" 
-                         mahappsControls:TextboxHelper.Watermark="Password" HorizontalAlignment="Left"/>
+                         mahappsControls:TextboxHelper.Watermark="Password" HorizontalAlignment="Center"/>
             <TextBox mahappsControls:TextboxHelper.Watermark="City, Country"  Margin="0,10,0,0" x:Name="Location" 
-                     Background="White" Width="164" Height="23" TextWrapping="Wrap" HorizontalAlignment="Left"/>
+                     Background="White" Width="164" Height="23" TextWrapping="Wrap" HorizontalAlignment="Center"/>
             <TextBox mahappsControls:TextboxHelper.Watermark="Email Address" Margin="0,10,0,0" x:Name="Email" 
-                     Background="White" Width="164" Height="23" TextWrapping="Wrap" HorizontalAlignment="Left"/>
-            <CheckBox x:Name="Supporter" Content="I offer IT support" HorizontalAlignment="Left" Margin="0,10,0,0" 
+                     Background="White" Width="164" Height="23" TextWrapping="Wrap" HorizontalAlignment="Center"/>
+            <CheckBox x:Name="Supporter" Content="I offer IT support" HorizontalAlignment="Left" Margin="20,10,0,0" 
                       VerticalAlignment="Top" Foreground="#4D86CF"/>
-            <TextBlock HorizontalAlignment="Left" Margin="0,10,0,0" TextWrapping="Wrap" VerticalAlignment="Top" 
+            <TextBlock HorizontalAlignment="Left" Margin="20,10,0,0" TextWrapping="Wrap" VerticalAlignment="Top" 
                        Height="37.92">
 				<Hyperlink Name="NewUser" RequestNavigate="ShowLogin" NavigateUri="" >
 					Already having an account ?
 				</Hyperlink><LineBreak/>
             </TextBlock>
-            <Button Content="Sign Up" Margin="0,0,35,0" VerticalAlignment="Top" x:Name="Signin" Click="signin_click" 
+            <Button Content="Sign Up" Margin="0,0,20,0" VerticalAlignment="Top" x:Name="Signin" Click="signin_click" 
                     HorizontalAlignment="Right" Width="Auto" />
         </StackPanel>
     </Grid>
