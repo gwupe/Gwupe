@@ -5,8 +5,7 @@
 	xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
 	xmlns:mahappsControls="clr-namespace:MahApps.Metro.Controls;assembly=MahApps.Metro"
 	mc:Ignorable="d"
-	x:Class="BlitsMe.Agent.UI.WPF.LoginControl"
-	d:DesignWidth="640" d:DesignHeight="480">
+	x:Class="BlitsMe.Agent.UI.WPF.LoginControl">
     <UserControl.Resources>
         <!--<ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
@@ -19,8 +18,8 @@
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>-->
     </UserControl.Resources>
-    <Grid x:Name="LayoutRoot">
-        <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center" Height="200">
+    <Grid x:Name="LayoutRoot" Background="Transparent" >
+        <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center" Height="200" Margin="100,0,0,0">
             <TextBlock Style="{DynamicResource TextblockHeaderStyle}">Let's chat</TextBlock>
             <TextBox mahappsControls:TextboxHelper.Watermark="Username" Margin="0,20,0,0"  
                      Name="Username" KeyDown="username_KeyDown" Background="White" Width="164" Height="23" TextWrapping="Wrap"/>

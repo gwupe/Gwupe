@@ -4,6 +4,7 @@ using System.Windows.Input;
 using System.Windows.Navigation;
 using BlitsMe.Agent.UI.WPF.Utils;
 using log4net;
+using System.Windows.Media;
 
 namespace BlitsMe.Agent.UI.WPF
 {
@@ -14,9 +15,12 @@ namespace BlitsMe.Agent.UI.WPF
 	{
 	    private static readonly ILog Logger = LogManager.GetLogger(typeof (LoginControl));
         private readonly InputValidator _validator;
-		public LoginControl()
+	    private Dashboard _dashboard;
+		public LoginControl(Dashboard dashboard)
 		{
 			this.InitializeComponent();
+		    _dashboard = dashboard;
+            ApplyBlurEffect(dashboard);
 		    Username.Text = BlitsMeClientAppContext.CurrentAppContext.LoginManager.LoginDetails.Username ?? "";
             _validator = new InputValidator(null, null);
 		}
@@ -56,6 +60,7 @@ namespace BlitsMe.Agent.UI.WPF
             dataOK = _validator.ValidateFieldNonEmpty(Username, Username.Text, null, "") && dataOK;
             if (dataOK)
             {
+                ClearBlurEffect(_dashboard);
                 Logger.Debug("Got username and password, submitting to login manager");
                 BlitsMeClientAppContext.CurrentAppContext.LoginManager.Login(Username.Text, Password.Password);
             }
@@ -75,5 +80,15 @@ namespace BlitsMe.Agent.UI.WPF
 	    {
 	        BlitsMeClientAppContext.CurrentAppContext.UIManager.PromptSignup();
 	    }
+
+        private void ApplyBlurEffect(Dashboard dashboard)
+        {
+            dashboard.Opacity = 0.9;
+        }
+
+        private void ClearBlurEffect(Dashboard dashboard)
+        {
+            dashboard.Opacity = 100;
+        }
 	}
 }

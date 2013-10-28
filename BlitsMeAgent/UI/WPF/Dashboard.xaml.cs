@@ -687,12 +687,15 @@ namespace BlitsMe.Agent.UI.WPF
 
         public LoginControl LoginScreen
         {
-            get { return _loginScreen ?? (_loginScreen = new LoginControl()); }
+            get
+            {
+                return _loginScreen ?? (_loginScreen = new LoginControl(_dashboard));
+            }
         }
 
         public SignUpControl SignUpScreen
         {
-            get { return _signUpScreen ?? (_signUpScreen = new SignUpControl()); }
+            get { return _signUpScreen ?? (_signUpScreen = new SignUpControl(_dashboard)); }
         }
 
         public DashboardState DashboardState

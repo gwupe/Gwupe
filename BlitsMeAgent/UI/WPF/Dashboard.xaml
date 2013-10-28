@@ -94,13 +94,11 @@
                                 <Setter Property="ContentTemplate" Value="{x:Null}" />
                                 <Setter Property="Content" Value="{Binding LoginScreen}" />
                                 <Setter Property="Panel.ZIndex" Value="2" />
-                                <Setter Property="Margin" Value="100,0,0,0" />
                             </DataTrigger>
                             <DataTrigger Binding="{Binding DashboardState}" Value="{x:Static bm:DashboardState.Signup}">
                                 <Setter Property="ContentTemplate" Value="{x:Null}" />
                                 <Setter Property="Content" Value="{Binding SignUpScreen}" />
                                 <Setter Property="Panel.ZIndex" Value="2" />
-                                <Setter Property="Margin" Value="100,0,0,0" />
                             </DataTrigger>
                         </Style.Triggers>
                     </Style>

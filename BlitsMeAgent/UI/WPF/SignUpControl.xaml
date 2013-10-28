@@ -20,8 +20,8 @@
         </ResourceDictionary>-->
     </UserControl.Resources>
 
-    <Grid x:Name="LayoutRoot">
-        <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center">
+    <Grid x:Name="LayoutRoot" Background="Transparent">
+        <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center" Margin="100,0,0,0">
             <TextBlock Style="{DynamicResource TextblockHeaderStyle}">Create an account</TextBlock>
             <TextBlock x:Name="ErrorText" Margin="0,10,0,0" TextWrapping="Wrap" Text="Error" 
                        VerticalAlignment="Top" TextAlignment="Center" Foreground="Red" Visibility="Hidden"/>

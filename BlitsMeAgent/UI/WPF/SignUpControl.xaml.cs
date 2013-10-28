@@ -24,9 +24,11 @@ namespace BlitsMe.Agent.UI.WPF
         private readonly BlitsMeClientAppContext _appContext;
         private bool isSigningUp = false;
         private readonly InputValidator _validator;
+        private Dashboard _dashboard;
 
-        public SignUpControl()
+        public SignUpControl(Dashboard dashboard)
         {
+            _dashboard = dashboard;
             _appContext = BlitsMeClientAppContext.CurrentAppContext;
             this.InitializeComponent();
             _validator = new InputValidator(null,ErrorText);
@@ -53,6 +55,7 @@ namespace BlitsMe.Agent.UI.WPF
             {
                 if (_appContext.ConnectionManager.Connection.isEstablished())
                 {
+                    ClearBlurEffect(_dashboard);
                     ConfirmPasswordWindow confirmPasswordWindow = new ConfirmPasswordWindow { Owner = _appContext.UIManager.CurrentWindow };
                     confirmPasswordWindow.ShowDialog();
                     if (!confirmPasswordWindow.Cancelled)
@@ -119,6 +122,11 @@ namespace BlitsMe.Agent.UI.WPF
         public void ShowLogin(object sender, RequestNavigateEventArgs e)
         {
             BlitsMeClientAppContext.CurrentAppContext.UIManager.PromptLogin();
+        }
+
+        private void ClearBlurEffect(Dashboard dashboard)
+        {
+            dashboard.Opacity = 100;
         }
     }
 }
