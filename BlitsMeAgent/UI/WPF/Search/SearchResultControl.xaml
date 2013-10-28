@@ -101,8 +101,10 @@
                 </StackPanel>
             </Grid>
 
-            <Button x:Name="AddPersonButton" Content="{Binding AddText, FallbackValue=Add}" 
-                    IsEnabled="{Binding CanAdd, FallbackValue=true}" Width="90" Grid.Column="7"/>
+            <Border  Grid.Column="7"   BorderBrush="#5574AF">
+                <Button x:Name="AddPersonButton" Content="{Binding AddText, FallbackValue=Add}" Style="{DynamicResource UserinfoBtnstyle}" Width="90" Height="35" FontSize="14"
+                    IsEnabled="{Binding CanAdd, FallbackValue=true}"  />
+            </Border>
         </Grid>
     </Border>
 </UserControl>

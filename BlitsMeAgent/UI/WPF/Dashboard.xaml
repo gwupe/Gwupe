@@ -106,31 +106,39 @@
             </ContentControl>
 
             <StackPanel Orientation="Vertical">
-                <StackPanel Orientation="Horizontal" Height="32" Grid.Column="0" VerticalAlignment="Top"
-                        HorizontalAlignment="Center" Margin="0,20,0,0" Width="140">
-                    <Button x:Name="UserInfo" ToolTip="My Details" Click="UserInfo_Click" 
-                        Template="{DynamicResource TransparentButtonStyle}" Margin="5,0,0,0">
-                        <Image Source="Images/User.png" Margin="1"/>
-                    </Button>
-                    <Button ToolTip="Logout" Click="Logout" Template="{DynamicResource TransparentButtonStyle}"
-                        Margin="15,0,0,0">
-                        <Image Source="Images/Logoff.png" Margin="1"/>
-                    </Button>
-                    <Button ToolTip="Exit" Click="ExitApplication" Template="{DynamicResource TransparentButtonStyle}"
-                            Margin="20,0,0,0">
-                        <Image Source="Images/exit.png" Margin="1"/>
-                    </Button>
+                <StackPanel  Margin="0,15,0,0" Width="140" Height="43" Orientation="Horizontal">
+                    <Grid Height="42" Width="140">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="10"/>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="20"/>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="20"/>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="10"/>
+                        </Grid.ColumnDefinitions>
+                        <Button x:Name="UserInfo" ToolTip="My Details" Click="UserInfo_Click" Grid.Column="1"
+                        Template="{DynamicResource TransparentButtonStyle}" >
+                            <Image Source="Images/User.png" Margin="1"/>
+                        </Button>
+                        <Button ToolTip="Logout" Click="Logout"  Grid.Column="3"  Template="{DynamicResource TransparentButtonStyle}">
+                            <Image Source="Images/Logoff.png" Margin="1" />
+                        </Button>
+                        <Button ToolTip="Exit" Click="ExitApplication" Template="{DynamicResource TransparentButtonStyle}" Grid.Column="5">
+                            <Image Source="Images/exit.png" Margin="1"/>
+                        </Button>
+                    </Grid>
                 </StackPanel>
 
                 <Border BorderThickness="0,1,0,0" Width="190" BorderBrush="#4A7EBB"
-                    Grid.Column="0" Margin="0,10,0,0">
-                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Left" VerticalAlignment="Center">
+                    Grid.Column="0" Margin="0,10,0,0" MinHeight="22">
+                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Left" VerticalAlignment="Top">
                         <Image Margin="5,0,0,0" Source="Images/1375406488_Cute Ball - Search.png" Height="13" Width="13"/>
                         <TextBox x:Name="SearchBox" mahappsControls:TextboxHelper.Watermark="Search..." Margin="10,0,0,0"
-                    TextChanged="Search_TextChanged" 
-                     GotFocus="SearchBox_GotFocus" HorizontalAlignment="Center" 
+                    TextChanged="Search_TextChanged"  VerticalContentAlignment="Top" VerticalAlignment="Top"
+                     GotFocus="SearchBox_GotFocus" HorizontalAlignment="Center"  
                      LostFocus="SearchBox_LostFocus" Background="Transparent" TextWrapping="Wrap" Width="140" 
-                                 Height="20" BorderThickness="0" BorderBrush="Transparent"/>
+                                 Height="20" BorderThickness="0" BorderBrush="Transparent" />
                     </StackPanel>
                 </Border>
 
@@ -154,6 +162,13 @@
                             <TextBlock HorizontalAlignment="Left" TextAlignment="Center" Text="Active Conversations"
                                    VerticalAlignment="Center" Margin="20,0,0,0"/>
                         </Border>
+                        <!--<ItemsControl x:Name="Notifications" Margin="0,5,0,0">
+                            <ItemsControl.ItemsPanel>
+                                <ItemsPanelTemplate>
+                                    <StackPanel VerticalAlignment="Bottom" d:LayoutOverrides="VerticalAlignment" />
+                                </ItemsPanelTemplate>
+                            </ItemsControl.ItemsPanel>
+                        </ItemsControl>-->
                         <ListBox x:Name="CurrentlyActiveContacts" DockPanel.Dock="Bottom" ItemsSource="{Binding}" ScrollViewer.CanContentScroll="False"
         					FontFamily="Corbel" Margin="0,0,0,0" ScrollViewer.HorizontalScrollBarVisibility="Disabled"
 							ItemTemplate="{DynamicResource Contact}" Style="{DynamicResource TeamList}"
@@ -168,7 +183,7 @@
                             <TextBlock HorizontalAlignment="Left" TextAlignment="Center" Text="Contacts"
                                    VerticalAlignment="Center" Margin="20,0,0,0"/>
                         </Border>
-                        <ItemsControl x:Name="Notifications" Margin="0">
+                        <ItemsControl x:Name="Notifications" >
                             <ItemsControl.ItemsPanel>
                                 <ItemsPanelTemplate>
                                     <StackPanel VerticalAlignment="Bottom" d:LayoutOverrides="VerticalAlignment" />

@@ -67,7 +67,7 @@
                     <TextBox Text="{Binding Username, FallbackValue=UnknownUser}" Style="{DynamicResource NormalTextboxStyle}" Name="Username"  Grid.Row="3" Grid.Column="1"/>
                     <Label Content="Password"  Name="PasswordLabel" Width="68.123" />
                     <PasswordBox  Name="Password" FontFamily="Segoe UI"  IsEnabled="False" Grid.Row="3" Grid.Column="3" Style="{DynamicResource NormalPasswordBoxStyle}"/>
-                    <CheckBox x:Name="PasswordChange" Content="simbu"  Click="PasswordChange_Click" Grid.Row="3" Grid.Column="4" VerticalAlignment="Center" Margin="5,0,0,0"/>
+                    <CheckBox x:Name="PasswordChange" Click="PasswordChange_Click" Grid.Row="3" Grid.Column="4" VerticalAlignment="Center" Margin="5,0,0,0"/>
                     <Label Content="Location" HorizontalAlignment="Left" Margin="10,89.251,0,0" VerticalAlignment="Top" Name="LocationLabel" Width="68.123" />
                     <TextBox Text="{Binding Location}" Name="Location" Grid.Row="5" Grid.Column="1" Style="{DynamicResource NormalTextboxStyle}"/>
 

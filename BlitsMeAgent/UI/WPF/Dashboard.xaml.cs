@@ -213,9 +213,13 @@ namespace BlitsMe.Agent.UI.WPF
                 return;
             // Multithreaded handling, make sure only dispatcher updates UI objects
             if (Dispatcher.CheckAccess())
+            {
                 _notificationView.View.Refresh();
+            }
             else
+            {
                 Dispatcher.Invoke(new Action(() => _notificationView.View.Refresh()));
+            }
         }
 
 
