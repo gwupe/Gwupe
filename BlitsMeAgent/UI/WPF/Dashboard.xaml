@@ -135,7 +135,7 @@
                     <StackPanel Orientation="Horizontal" HorizontalAlignment="Left" VerticalAlignment="Top">
                         <Image Margin="5,0,0,0" Source="Images/1375406488_Cute Ball - Search.png" Height="13" Width="13"/>
                         <TextBox x:Name="SearchBox" mahappsControls:TextboxHelper.Watermark="Search..." Margin="10,0,0,0"
-                    TextChanged="Search_TextChanged"  VerticalContentAlignment="Top" VerticalAlignment="Top"
+                    TextChanged="Search_TextChanged"  VerticalContentAlignment="Center" VerticalAlignment="Top"
                      GotFocus="SearchBox_GotFocus" HorizontalAlignment="Center"  
                      LostFocus="SearchBox_LostFocus" Background="Transparent" TextWrapping="Wrap" Width="140" 
                                  Height="20" BorderThickness="0" BorderBrush="Transparent" />
