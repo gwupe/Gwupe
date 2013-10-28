@@ -27,7 +27,7 @@ namespace BlitsMe.Agent.Components.Processors
                 AddBuddyNotification notification = new AddBuddyNotification()
                 {
                     Manager = _appContext.NotificationManager,
-                    Person = Convert.FromBase64String(request.userElement.avatarData),
+                    Person = request.userElement.hasAvatar ? Convert.FromBase64String(request.userElement.avatarData) :  null,
                     Name = request.userElement.name,
                     Location = request.userElement.location,
                     Message = request.userElement.name + " would like to add you."
