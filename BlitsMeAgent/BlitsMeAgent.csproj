@@ -126,12 +126,15 @@
     </Reference>
     <Reference Include="MahApps.Metro">
       <HintPath>..\packages\MahApps.Metro.0.10.1.1\lib\net40\MahApps.Metro.dll</HintPath>
+      <Private>False</Private>
     </Reference>
     <Reference Include="Microsoft.Expression.Drawing">
       <HintPath>..\library\Microsoft.Expression.Drawing.dll</HintPath>
+      <Private>False</Private>
     </Reference>
     <Reference Include="Microsoft.Expression.Effects">
       <HintPath>..\library\Microsoft.Expression.Effects.dll</HintPath>
+      <Private>False</Private>
     </Reference>
     <Reference Include="PresentationCore" />
     <Reference Include="PresentationFramework" />
@@ -588,10 +591,12 @@
     <EmbeddedResource Include="..\BlitsMeP2PConnection\bin\$(Configuration)\BlitsMe.Communication.P2P.dll" />
     <EmbeddedResource Include="..\BlitsMeServiceHost\bin\$(Configuration)\BlitsMe.ServiceHost.dll" />
     <EmbeddedResource Include="..\BlitsMeServiceProxy\bin\$(Configuration)\BlitsMe.ServiceProxy.dll" />
-    <EmbeddedResource Include="..\BlitsMeCommon\log4net.dll" />
+    <EmbeddedResource Include="..\library\log4net.dll" />
     <EmbeddedResource Include="..\WebSocketLib\bin\$(Configuration)\Bauglir.Ex.dll" />
     <EmbeddedResource Include="..\packages\MahApps.Metro.0.10.1.1\lib\net40\MahApps.Metro.dll" />
     <EmbeddedResource Include="..\packages\MahApps.Metro.0.10.1.1\lib\net40\System.Windows.Interactivity.dll" />
+    <EmbeddedResource Include="..\library\Microsoft.Expression.Drawing.dll" />
+    <EmbeddedResource Include="..\library\Microsoft.Expression.Effects.dll" />
     <RootContent Include="env\Release\bmss.exe">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </RootContent>
@@ -621,12 +626,10 @@
   </Target>
   <Target Name="AfterBuild">
   </Target>
-  
+  -->
   <Target Name="AfterBuild">
     <Copy DestinationFolder="$(OutputPath)" SourceFiles="@(RootContent)" SkipUnchangedFiles="true" />
-    <Exec Command="&quot;C:\Program Files (x86)\Microsoft SDKs\Windows\v7.1A\Bin\Signtool.exe&quot; sign /d &quot;BlitsMe Agent Application&quot; /sha1 83e81a9d1d88fb8718fd1df07e89ef89b000ee64 &quot;$(TargetDir)BlitsMe.Agent.exe&quot;" />
-    <Exec Command="&quot;C:\Program Files (x86)\Microsoft SDKs\Windows\v7.1A\Bin\Signtool.exe&quot; sign /d &quot;BlitsMe Support Screen&quot; /sha1 83e81a9d1d88fb8718fd1df07e89ef89b000ee64 &quot;$(TargetDir)bmss.exe&quot;" />
+    <Exec  Condition=" '$(Configuration)' == 'Release' " Command="&quot;C:\Program Files (x86)\Microsoft SDKs\Windows\v7.1A\Bin\Signtool.exe&quot; sign /d &quot;BlitsMe Agent Application&quot; /sha1 83e81a9d1d88fb8718fd1df07e89ef89b000ee64 &quot;$(TargetDir)BlitsMe.Agent.exe&quot;" />
+    <Exec  Condition=" '$(Configuration)' == 'Release' " Command="&quot;C:\Program Files (x86)\Microsoft SDKs\Windows\v7.1A\Bin\Signtool.exe&quot; sign /d &quot;BlitsMe Support Screen&quot; /sha1 83e81a9d1d88fb8718fd1df07e89ef89b000ee64 &quot;$(TargetDir)bmss.exe&quot;" />
   </Target>
-  
-  -->
 </Project>
