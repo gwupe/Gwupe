@@ -67,15 +67,25 @@
 
     <!-- Resource dictionary entries should be defined here. -->
     <DataTemplate DataType="{x:Type fileSendNotification:FileSendProgressNotification}">
-        <DockPanel Style="{StaticResource NotificationDockStyle}">
+        <!--<DockPanel Style="{StaticResource NotificationDockStyle}">
             <StackPanel Orientation="Horizontal" Margin="2,2,2,2" HorizontalAlignment="Right" DockPanel.Dock="Right">
                 <Button Style="{DynamicResource DeleteButtonStyle}" Command="{Binding CancelFileSend}" />
             </StackPanel>
-            <ProgressBar Height="20" Width="Auto" Margin="2,2,0,2" TextBlock.FontWeight="Bold" Value="{Binding Progress, FallbackValue=0}"
+            <ProgressBar Height="15" Width="Auto" Margin="2,2,0,2" TextBlock.FontWeight="Bold" Value="{Binding Progress, FallbackValue=0}"
 			Tag="{Binding Message, FallbackValue=Waiting}" 
-			Foreground="Blue"
+			Foreground="Black"
              Style="{DynamicResource MyProgressBarStyle}" />
-        </DockPanel>
+        </DockPanel>-->
+        <Grid>
+            <ProgressBar Height="17" TextBlock.FontWeight="Bold" Value="{Binding Progress, FallbackValue=0}"
+			        Tag="{Binding Message, FallbackValue=Waiting}" Foreground="Black" 
+                         Style="{DynamicResource MyProgressBarStyle}" FontFamily="Segoe UI" FontWeight="SemiBold"
+                         FontSize="11"/>
+            <Button Template="{DynamicResource TransparentButtonProgressCloseStyle}" Command="{Binding CancelFileSend}"
+                    HorizontalAlignment="Right" Margin="0,0,5,0">
+                <Image Source="../Images/close.png" Height="12" Width="12"/>
+            </Button>
+        </Grid>
     </DataTemplate>
     <DataTemplate DataType="{x:Type notification:AddBuddyNotification}">
         <StackPanel Orientation="Horizontal" Style="{StaticResource NotificationStackStyle}">
@@ -152,13 +162,13 @@
     </DataTemplate>
     <!-- for a nice progress bar -->
     <LinearGradientBrush x:Key="ProgressBarBackground" EndPoint="1,0" StartPoint="0,0">
-        <GradientStop Color="#BABABA" Offset="0"/>
-        <GradientStop Color="#C7C7C7" Offset="0.5"/>
-        <GradientStop Color="#BABABA" Offset="1"/>
+        <GradientStop Color="#CFCFCF" Offset="0"/>
+        <GradientStop Color="#CFCFCF" Offset="0.5"/>
+        <GradientStop Color="#CFCFCF" Offset="1"/>
     </LinearGradientBrush>
     <LinearGradientBrush x:Key="ProgressBarBorderBrush" EndPoint="0,1" StartPoint="0,0">
-        <GradientStop Color="#B2B2B2" Offset="0"/>
-        <GradientStop Color="#8C8C8C" Offset="1"/>
+        <GradientStop Color="#999999" Offset="0"/>
+        <GradientStop Color="#999999" Offset="1"/>
     </LinearGradientBrush>
     <LinearGradientBrush x:Key="ProgressBarGlassyHighlight" EndPoint="0,1" StartPoint="0,0">
         <GradientStop Color="#50FFFFFF" Offset="0.5385"/>
@@ -169,10 +179,7 @@
         <GradientStop Color="#00FFFFFF" Offset="0.25"/>
     </LinearGradientBrush>
     <LinearGradientBrush x:Key="ProgressBarIndicatorAnimatedFill" EndPoint="1,0" StartPoint="0,0">
-        <GradientStop Color="#00FFFFFF" Offset="0"/>
-        <GradientStop Color="#60FFFFFF" Offset="0.4"/>
-        <GradientStop Color="#60FFFFFF" Offset="0.6"/>
-        <GradientStop Color="#00FFFFFF" Offset="1"/>
+        <GradientStop Color="#A9DA74" Offset="0"/>
     </LinearGradientBrush>
     <LinearGradientBrush x:Key="ProgressBarIndicatorDarkEdgeLeft" EndPoint="1,0" StartPoint="0,0">
         <GradientStop Color="#0C000000" Offset="0"/>
@@ -185,20 +192,20 @@
         <GradientStop Color="#0C000000" Offset="1"/>
     </LinearGradientBrush>
     <RadialGradientBrush x:Key="ProgressBarIndicatorLightingEffectLeft" RadiusY="1" RadiusX="1" RelativeTransform="1,0,0,1,0.5,0.5">
-        <GradientStop Color="#60FFFFC4" Offset="0"/>
-        <GradientStop Color="#00FFFFC4" Offset="1"/>
+        <GradientStop Color="#A9DA74" Offset="0"/>
+        <GradientStop Color="#A9DA74" Offset="1"/>
     </RadialGradientBrush>
     <LinearGradientBrush x:Key="ProgressBarIndicatorLightingEffect" EndPoint="0,0" StartPoint="0,1">
-        <GradientStop Color="#60FFFFC4" Offset="0"/>
-        <GradientStop Color="#00FFFFC4" Offset="1"/>
+        <GradientStop Color="#A9DA74" Offset="0"/>
+        <GradientStop Color="#A9DA74" Offset="1"/>
     </LinearGradientBrush>
     <RadialGradientBrush x:Key="ProgressBarIndicatorLightingEffectRight" RadiusY="1" RadiusX="1" RelativeTransform="1,0,0,1,-0.5,0.5">
-        <GradientStop Color="#60FFFFC4" Offset="0"/>
-        <GradientStop Color="#00FFFFC4" Offset="1"/>
+        <GradientStop Color="#A9DA74" Offset="0"/>
+        <GradientStop Color="#A9DA74" Offset="1"/>
     </RadialGradientBrush>
     <LinearGradientBrush x:Key="ProgressBarIndicatorGlassyHighlight" EndPoint="0,1" StartPoint="0,0">
-        <GradientStop Color="#90FFFFFF" Offset="0.5385"/>
-        <GradientStop Color="#00FFFFFF" Offset="0.5385"/>
+        <GradientStop Color="#A9DA74" Offset="0.5385"/>
+        <GradientStop Color="#A9DA74" Offset="0.5385"/>
     </LinearGradientBrush>
     <Style x:Key="MyProgressBarStyle" TargetType="{x:Type ProgressBar}">
         <Setter Property="Foreground" Value="#01D328"/>
@@ -210,14 +217,13 @@
                 <ControlTemplate TargetType="{x:Type ProgressBar}">
                     <Grid x:Name="TemplateRoot" SnapsToDevicePixels="true">
                         <TextBlock Text="{TemplateBinding Tag}" Panel.ZIndex="2" Foreground="Black"
-                                        HorizontalAlignment="Center"
-                                        VerticalAlignment="Center"/>
+                                        HorizontalAlignment="Left"
+                                        VerticalAlignment="Center" Margin="15,0,0,0"/>
                         <TextBlock Text="{TemplateBinding Tag}"
-                                Panel.ZIndex="3" Foreground="White"
+                                Panel.ZIndex="3" Foreground="Black"
                                 Width="{Binding ActualWidth, ElementName=rectangle}"
-                                TextAlignment="Center"
-                                HorizontalAlignment="Stretch"
-                                VerticalAlignment="Center">
+                                HorizontalAlignment="Left"
+                                VerticalAlignment="Center" Margin="15,0,0,0">
                             <TextBlock.Clip>
                                 <RectangleGeometry>
                                     <RectangleGeometry.Rect>
@@ -278,7 +284,7 @@
                             <Setter Property="Visibility" TargetName="Indicator" Value="Collapsed"/>
                         </Trigger>
                         <Trigger Property="IsIndeterminate" Value="false">
-                            <Setter Property="Background" TargetName="Animation" Value="#80B5FFA9"/>
+                            <Setter Property="Background" TargetName="Animation" Value="#A9DA74"/>
                         </Trigger>
                     </ControlTemplate.Triggers>
                 </ControlTemplate>

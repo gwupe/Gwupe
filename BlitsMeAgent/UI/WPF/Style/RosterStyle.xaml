@@ -69,7 +69,7 @@
         <Setter Property="PointCount" Value="5"  />
         <Setter Property="Stretch" Value="Fill"  />
         <Setter Property="Width" Value="13"  />
-        <Setter Property="Stroke" Value="#FF8C00"  />
+        <Setter Property="Fill" Value="#FF8C00"  />
         <Setter Property="Height" Value="13"/>
     </Style>
     <Style x:Key="TeamMemberStarFull" TargetType="ed:RegularPolygon" BasedOn="{StaticResource TeamMemberStarEmpty}">

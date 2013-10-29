@@ -256,6 +256,40 @@
         </Button>
     </ControlTemplate>
 
+    <ControlTemplate TargetType="{x:Type Button}" x:Key="TransparentButtonProgressCloseStyle">
+        <Button BorderBrush="Transparent" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" 
+                HorizontalAlignment="Center" VerticalAlignment="Center" >
+            <Button.Content>
+                <StackPanel Orientation="Horizontal">
+                    <Border CornerRadius="3">
+                        <ContentPresenter/>
+                        <Border.Style>
+                            <Style TargetType="{x:Type Border}">
+                                <Setter Property="Background" Value="Transparent" />
+                                <Style.Triggers>
+                                    <Trigger Property="IsMouseOver" Value="True">
+                                        <Setter Property="Background" Value="Gray" />
+                                    </Trigger>
+                                </Style.Triggers>
+                            </Style>
+                        </Border.Style>
+                    </Border>
+                </StackPanel>
+            </Button.Content>
+            <Button.Style>
+                <Style TargetType="{x:Type Button}" >
+                    <Setter Property="Template">
+                        <Setter.Value>
+                            <ControlTemplate TargetType="{x:Type Button}" >
+                                <ContentPresenter />
+                            </ControlTemplate>
+                        </Setter.Value>
+                    </Setter>
+                </Style>
+            </Button.Style>
+        </Button>
+    </ControlTemplate>
+
     <Style x:Key="TeamMemberNameText" TargetType="TextBlock">
         <Setter Property="HorizontalAlignment" Value="Center" />
         <Setter Property="Foreground" Value="Black" />
@@ -296,7 +330,8 @@
             <ed:RegularPolygon Style="{StaticResource TeamMemberStarFull}" Margin="30,0,0,0" />
             <ed:RegularPolygon Style="{StaticResource TeamMemberStarFull}" Margin="45,0,0,0" />
             <ed:RegularPolygon Style="{StaticResource TeamMemberStarFull}" Margin="60,0,0,0" />
-            <Rectangle Style="{StaticResource TeamMemberStarCover}" Width="{Binding FallbackValue=25, Converter={StaticResource starRatingConverter}}" />
+            <!--<Rectangle Style="{StaticResource TeamMemberStarCover}" Width="{Binding FallbackValue=25, Converter={StaticResource starRatingConverter}}" />-->
+            <ed:RegularPolygon Style="{StaticResource TeamMemberStarCover}" Margin="60,0,0,0" />
             <ed:RegularPolygon Style="{StaticResource TeamMemberStarEmpty}" Margin="0,0,0,0" />
             <ed:RegularPolygon Style="{StaticResource TeamMemberStarEmpty}" Margin="15,0,0,0" />
             <ed:RegularPolygon Style="{StaticResource TeamMemberStarEmpty}" Margin="30,0,0,0" />
