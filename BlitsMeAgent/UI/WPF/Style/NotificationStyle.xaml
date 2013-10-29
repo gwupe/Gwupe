@@ -59,9 +59,10 @@
     </Style>
 
     <Style x:Key="NotificationStackStyle" TargetType="{x:Type StackPanel}">
-        <Setter Property="HorizontalAlignment" Value="Stretch" />
+        <Setter Property="HorizontalAlignment" Value="Left" />
         <Setter Property="Background" Value="#A9DA74" />
-        <Setter Property="Margin" Value="1" />
+        <Setter Property="Margin" Value="2,3,0,0" />
+        <Setter Property="Width" Value="180" />
     </Style>
 
 
@@ -91,17 +92,30 @@
         <StackPanel Orientation="Horizontal" Style="{StaticResource NotificationStackStyle}">
             <Image Stretch="Uniform" Source="{Binding Path=Person, Converter={StaticResource imageStreamReader}}" 
                    Width="40" Height="40" Margin="5,0,0,0"/>
-            <StackPanel Orientation="Vertical" Margin="5,0,0,0">
+            <StackPanel Orientation="Vertical" Margin="5,0,0,0" Width="85">
                 <TextBlock HorizontalAlignment="Left" Text="Contact Request" Foreground="Black" FontWeight="SemiBold" 
-                           FontFamily="Segoe UI" FontSize="13"/>
+                           FontFamily="Segoe UI" FontSize="11" Width="85" TextWrapping="Wrap"/>
                 <TextBlock HorizontalAlignment="Left" Text="{Binding Name, FallbackValue=Unknown Notification}" 
-                           Foreground="Black" FontWeight="SemiBold" FontFamily="Segoe UI" FontSize="11"/>
+                           Foreground="Black" FontWeight="SemiBold" FontFamily="Segoe UI" FontSize="10"
+                           Width="85" TextWrapping="Wrap"/>
                 <TextBlock HorizontalAlignment="Left" Text="{Binding Location, FallbackValue=Unknown Notification}" 
-                           Foreground="Black" FontFamily="Segoe UI" FontSize="11"/>
+                           Foreground="Black" FontFamily="Segoe UI" FontSize="10"
+                           Width="85" TextWrapping="Wrap"/>
             </StackPanel>
             <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Margin="5,0,0,0">
-                <Button Style="{DynamicResource AcceptButtonStyle}" />
-                <Button Style="{DynamicResource DenyButtonStyle}" />
+                <Button Template="{DynamicResource TransparentButtonProgressCloseStyle}" Command="{Binding AnswerTrueFalse}">
+                    <Button.CommandParameter>
+                        <s:Boolean>True</s:Boolean>
+                    </Button.CommandParameter>
+                    <Image Source="/BlitsMe.Agent;component/UI/WPF/Images/Check.png" Height="15" Width="15"/>
+                </Button>
+                <Button Template="{DynamicResource TransparentButtonProgressCloseStyle}" Command="{Binding AnswerTrueFalse}"
+                        Margin="5,0,0,0">
+                    <Button.CommandParameter>
+                        <s:Boolean>False</s:Boolean>
+                    </Button.CommandParameter>
+                    <Image Source="/BlitsMe.Agent;component/UI/WPF/Images/close.png" Height="15" Width="15"/>
+                </Button>
             </StackPanel>
         </StackPanel>
     </DataTemplate>
