@@ -163,13 +163,13 @@
                             <TextBlock HorizontalAlignment="Left" TextAlignment="Center" Text="Active Conversations"
                                    VerticalAlignment="Center" Margin="20,0,0,0"/>
                         </Border>
-                        <!--<ItemsControl x:Name="Notifications" Margin="0,5,0,0">
+                        <ItemsControl x:Name="Notifications" Margin="0,5,0,0">
                             <ItemsControl.ItemsPanel>
                                 <ItemsPanelTemplate>
                                     <StackPanel VerticalAlignment="Bottom" d:LayoutOverrides="VerticalAlignment" />
                                 </ItemsPanelTemplate>
                             </ItemsControl.ItemsPanel>
-                        </ItemsControl>-->
+                        </ItemsControl>
                         <ListBox x:Name="CurrentlyActiveContacts" DockPanel.Dock="Bottom" ItemsSource="{Binding}" 
                                  ScrollViewer.CanContentScroll="False" Panel.ZIndex="-2" Width="250"
         					FontFamily="Corbel" Margin="0,0,0,0" ScrollViewer.HorizontalScrollBarVisibility="Disabled"
@@ -185,13 +185,13 @@
                             <TextBlock HorizontalAlignment="Left" TextAlignment="Center" Text="Contacts"
                                    VerticalAlignment="Center" Margin="20,0,0,0"/>
                         </Border>
-                        <ItemsControl x:Name="Notifications" >
+                        <!--<ItemsControl x:Name="Notifications" >
                             <ItemsControl.ItemsPanel>
                                 <ItemsPanelTemplate>
                                     <StackPanel VerticalAlignment="Bottom" d:LayoutOverrides="VerticalAlignment" />
                                 </ItemsPanelTemplate>
                             </ItemsControl.ItemsPanel>
-                        </ItemsControl>
+                        </ItemsControl>-->
                         <ListBox x:Name="AllContacts" DockPanel.Dock="Bottom" ItemsSource="{Binding}" ScrollViewer.CanContentScroll="False"
         					FontFamily="Corbel" Margin="0,0,0,0" ScrollViewer.HorizontalScrollBarVisibility="Disabled"
 							ItemTemplate="{DynamicResource Contact}" Style="{DynamicResource TeamList}"

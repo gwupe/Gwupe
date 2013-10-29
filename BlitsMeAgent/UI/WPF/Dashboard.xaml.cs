@@ -55,6 +55,7 @@ namespace BlitsMe.Agent.UI.WPF
         internal RosterList ActiveRosterList;
         internal RosterList SearchRosterList;
         internal bool Searching;
+        private DispatchingCollection<ObservableCollection<Attendance>, Attendance> dispatchingCollection;
 
         public Dashboard(BlitsMeClientAppContext appContext)
         {
@@ -73,6 +74,7 @@ namespace BlitsMe.Agent.UI.WPF
             activateEngagementChecker.Elapsed += CheckActiveEngagements;
             activateEngagementChecker.Start();
             Logger.Info("Dashboard setup completed");
+            ((INotifyCollectionChanged)Notifications.Items).CollectionChanged += new NotifyCollectionChangedEventHandler(Window1_CollectionChanged);
         }
 
         #region Overlay Screen Management
@@ -320,7 +322,7 @@ namespace BlitsMe.Agent.UI.WPF
 
         private void SetupRoster()
         {
-            var dispatchingCollection = new DispatchingCollection<ObservableCollection<Attendance>, Attendance>(_appContext.RosterManager.ServicePersonAttendanceList, Dispatcher);
+            dispatchingCollection = new DispatchingCollection<ObservableCollection<Attendance>, Attendance>(_appContext.RosterManager.ServicePersonAttendanceList, Dispatcher);
 
             AllRosterList = new MainRosterList(dispatchingCollection, AllContacts);
             AllContacts.LostFocus += Contacts_LostFocus;
@@ -334,6 +336,16 @@ namespace BlitsMe.Agent.UI.WPF
             SearchRosterList = new SearchRosterList(dispatchingCollection, SearchContacts, SearchBox);
             SearchContacts.LostFocus += Contacts_LostFocus;
             SearchContacts.DataContext = SearchRosterList.ContactsView;
+        }
+
+        void Window1_CollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
+        {
+            if (e.NewItems != null)
+            {
+                CurrentlyActiveContactsWindowlet.Visibility = e.NewItems.Count > 0
+                                                                  ? Visibility.Visible
+                                                                  : Visibility.Collapsed;
+            }
         }
 
         /// <summary>
