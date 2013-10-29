@@ -106,8 +106,8 @@
             </ContentControl>
 
             <StackPanel Orientation="Vertical">
-                <StackPanel  Margin="0,15,0,0" Width="140" Height="43" Orientation="Horizontal">
-                    <Grid Height="42" Width="140">
+                <StackPanel  Margin="0,15,0,0" Width="160" Height="43" Orientation="Horizontal">
+                    <Grid Height="42" Width="150">
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="10"/>
                             <ColumnDefinition Width="*"/>
@@ -118,14 +118,16 @@
                             <ColumnDefinition Width="10"/>
                         </Grid.ColumnDefinitions>
                         <Button x:Name="UserInfo" ToolTip="My Details" Click="UserInfo_Click" Grid.Column="1"
-                        Template="{DynamicResource TransparentButtonStyle}" >
-                            <Image Source="Images/User.png" Margin="1"/>
+                        Template="{DynamicResource TransparentButtonProgressCloseStyle}" Height="30" Width="30">
+                            <Image Source="Images/User.png" Margin="1" HorizontalAlignment="Left" Height="25" Width="25"/>
                         </Button>
-                        <Button ToolTip="Logout" Click="Logout"  Grid.Column="3"  Template="{DynamicResource TransparentButtonStyle}">
-                            <Image Source="Images/Logoff.png" Margin="1" />
+                        <Button ToolTip="Logout" Click="Logout"  Grid.Column="3" Height="30" Width="30"
+                                Template="{DynamicResource TransparentButtonProgressCloseStyle}">
+                            <Image Source="Images/Logoff.png" Margin="1" Height="25" Width="25"/>
                         </Button>
-                        <Button ToolTip="Exit" Click="ExitApplication" Template="{DynamicResource TransparentButtonStyle}" Grid.Column="5">
-                            <Image Source="Images/exit.png" Margin="1"/>
+                        <Button ToolTip="Exit" Click="ExitApplication" Height="30" Width="30"
+                                Template="{DynamicResource TransparentButtonProgressCloseStyle}" Grid.Column="5">
+                            <Image Source="Images/exit.png" Margin="1" Height="25" Width="25"/>
                         </Button>
                     </Grid>
                 </StackPanel>
@@ -171,7 +173,7 @@
                             </ItemsControl.ItemsPanel>
                         </ItemsControl>
                         <ListBox x:Name="CurrentlyActiveContacts" DockPanel.Dock="Bottom" ItemsSource="{Binding}" 
-                                 ScrollViewer.CanContentScroll="False" Panel.ZIndex="-2" Width="250"
+                                 ScrollViewer.CanContentScroll="False" Panel.ZIndex="-2" Width="240"
         					FontFamily="Corbel" Margin="0,0,0,0" ScrollViewer.HorizontalScrollBarVisibility="Disabled"
 							ItemTemplate="{DynamicResource Contact}" Style="{DynamicResource TeamList}"
                                  ItemContainerStyle="{DynamicResource ListBoxItemControlStyle}" Background="Transparent">

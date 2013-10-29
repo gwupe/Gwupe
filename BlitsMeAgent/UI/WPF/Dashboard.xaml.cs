@@ -74,7 +74,7 @@ namespace BlitsMe.Agent.UI.WPF
             activateEngagementChecker.Elapsed += CheckActiveEngagements;
             activateEngagementChecker.Start();
             Logger.Info("Dashboard setup completed");
-            ((INotifyCollectionChanged)Notifications.Items).CollectionChanged += new NotifyCollectionChangedEventHandler(Window1_CollectionChanged);
+            ((INotifyCollectionChanged)Notifications.Items).CollectionChanged += new NotifyCollectionChangedEventHandler(Notification_CollectionChanged);
         }
 
         #region Overlay Screen Management
@@ -338,7 +338,7 @@ namespace BlitsMe.Agent.UI.WPF
             SearchContacts.DataContext = SearchRosterList.ContactsView;
         }
 
-        void Window1_CollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
+        void Notification_CollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
         {
             if (e.NewItems != null)
             {
