@@ -156,8 +156,9 @@
                     </StackPanel>
                 </Grid>
 
-                <Grid x:Name="CurrentlyActiveContactsWindowlet" Visibility="Collapsed" Grid.Column="0">
-                    <StackPanel Orientation="Vertical">
+                <Grid x:Name="CurrentlyActiveContactsWindowlet" Visibility="Collapsed" Grid.ColumnSpan="2"
+                      HorizontalAlignment="Left">
+                    <StackPanel Orientation="Vertical" >
                         <Border BorderThickness="0,1,0,1" Height="25" Width="190" BorderBrush="#4A7EBB">
                             <TextBlock HorizontalAlignment="Left" TextAlignment="Center" Text="Active Conversations"
                                    VerticalAlignment="Center" Margin="20,0,0,0"/>
@@ -169,10 +170,11 @@
                                 </ItemsPanelTemplate>
                             </ItemsControl.ItemsPanel>
                         </ItemsControl>-->
-                        <ListBox x:Name="CurrentlyActiveContacts" DockPanel.Dock="Bottom" ItemsSource="{Binding}" ScrollViewer.CanContentScroll="False"
+                        <ListBox x:Name="CurrentlyActiveContacts" DockPanel.Dock="Bottom" ItemsSource="{Binding}" 
+                                 ScrollViewer.CanContentScroll="False" Panel.ZIndex="-2" Width="250"
         					FontFamily="Corbel" Margin="0,0,0,0" ScrollViewer.HorizontalScrollBarVisibility="Disabled"
 							ItemTemplate="{DynamicResource Contact}" Style="{DynamicResource TeamList}"
-                                 ItemContainerStyle="{DynamicResource ListBoxItemControlStyle}">
+                                 ItemContainerStyle="{DynamicResource ListBoxItemControlStyle}" Background="Transparent">
                         </ListBox>
                     </StackPanel>
                 </Grid>
@@ -193,7 +195,8 @@
                         <ListBox x:Name="AllContacts" DockPanel.Dock="Bottom" ItemsSource="{Binding}" ScrollViewer.CanContentScroll="False"
         					FontFamily="Corbel" Margin="0,0,0,0" ScrollViewer.HorizontalScrollBarVisibility="Disabled"
 							ItemTemplate="{DynamicResource Contact}" Style="{DynamicResource TeamList}"
-                            ItemContainerStyle="{DynamicResource ListBoxItemControlStyle}">
+                            ItemContainerStyle="{DynamicResource ListBoxItemControlStyle}" MinHeight="10" MaxHeight="300"
+                                 ScrollViewer.VerticalScrollBarVisibility="Auto">
                         </ListBox>
                     </StackPanel>
                 </Grid>

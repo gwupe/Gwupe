@@ -239,7 +239,7 @@
 
     <DataTemplate x:Key="ContactActive">
         <StackPanel Orientation="Horizontal" Style="{StaticResource TeamMemberActiveBase}" Height="Auto"
-                    ToolTip="{Binding Path=Person.Name}" >
+                    ToolTip="{Binding Path=Person.Name}" Width="250" >
             <StackPanel Orientation="Vertical" Margin="5,3,0,0">
                 <ContentPresenter ContentTemplate="{StaticResource PersonIcon}" />
             </StackPanel>
