@@ -105,8 +105,16 @@
                 </ContentControl.Style>
             </ContentControl>
 
-            <StackPanel Orientation="Vertical">
-                <StackPanel  Margin="0,15,0,0" Width="160" Height="43" Orientation="Horizontal">
+            <Grid Grid.Column="0" >
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="*"/>
+                    <RowDefinition Height="Auto"/>
+                </Grid.RowDefinitions>
+                <StackPanel  Margin="0,15,0,0" Width="160" Height="43" Orientation="Horizontal" Grid.Row="0">
                     <Grid Height="42" Width="150">
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="10"/>
@@ -133,7 +141,7 @@
                 </StackPanel>
 
                 <Border BorderThickness="0,1,0,0" Width="190" BorderBrush="#4A7EBB"
-                    Grid.Column="0" Margin="0,10,0,0" MinHeight="22">
+                    Margin="0,10,0,0" MinHeight="22" Grid.Row="1">
                     <StackPanel Orientation="Horizontal" HorizontalAlignment="Left" VerticalAlignment="Top">
                         <Image Margin="5,0,0,0" Source="Images/1375406488_Cute Ball - Search.png" Height="13" Width="13"/>
                         <TextBox x:Name="SearchBox" mahappsControls:TextboxHelper.Watermark="Search..." Margin="10,0,0,0"
@@ -145,7 +153,7 @@
                 </Border>
 
                 <Grid x:Name="SearchContactsView" Visibility="{Binding SearchContactsVisibility, FallbackValue=Collapsed}" 
-                      Grid.Column="0">
+                      Grid.Row="2">
                     <StackPanel Orientation="Vertical">
                         <Border BorderThickness="0,1,0,1" Height="25" Width="190" BorderBrush="#4A7EBB">
                             <TextBlock HorizontalAlignment="Left" TextAlignment="Center" Text="Local Search Results"
@@ -158,7 +166,7 @@
                     </StackPanel>
                 </Grid>
 
-                <Grid x:Name="CurrentlyActiveContactsWindowlet" Visibility="Collapsed" Grid.ColumnSpan="2"
+                <Grid x:Name="CurrentlyActiveContactsWindowlet" Visibility="Collapsed" Grid.Row="3"
                       HorizontalAlignment="Left">
                     <StackPanel Orientation="Vertical" >
                         <Border BorderThickness="0,1,0,1" Height="25" Width="190" BorderBrush="#4A7EBB">
@@ -181,29 +189,32 @@
                     </StackPanel>
                 </Grid>
 
-                <Grid x:Name="AllContactsView" DockPanel.Dock="Bottom" Grid.Column="0">
-                    <StackPanel Orientation="Vertical">
-                        <Border BorderThickness="0,1,0,1" Height="25" Width="190" BorderBrush="#4A7EBB">
-                            <TextBlock HorizontalAlignment="Left" TextAlignment="Center" Text="Contacts"
+                <Grid x:Name="AllContactsView" Grid.Row="4">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="*"/>
+                    </Grid.RowDefinitions>
+                    <Border BorderThickness="0,1,0,1" Height="25" Width="190" BorderBrush="#4A7EBB" Grid.Row="0">
+                        <TextBlock HorizontalAlignment="Left" TextAlignment="Center" Text="Contacts"
                                    VerticalAlignment="Center" Margin="20,0,0,0"/>
-                        </Border>
-                        <!--<ItemsControl x:Name="Notifications" >
+                    </Border>
+                    <!--<ItemsControl x:Name="Notifications" >
                             <ItemsControl.ItemsPanel>
                                 <ItemsPanelTemplate>
                                     <StackPanel VerticalAlignment="Bottom" d:LayoutOverrides="VerticalAlignment" />
                                 </ItemsPanelTemplate>
                             </ItemsControl.ItemsPanel>
                         </ItemsControl>-->
-                        <ListBox x:Name="AllContacts" DockPanel.Dock="Bottom" ItemsSource="{Binding}" ScrollViewer.CanContentScroll="False"
+                    <ListBox x:Name="AllContacts" DockPanel.Dock="Bottom" ItemsSource="{Binding}" 
+                                 ScrollViewer.CanContentScroll="False" Grid.Row="1"
         					FontFamily="Corbel" Margin="0,0,0,0" ScrollViewer.HorizontalScrollBarVisibility="Disabled"
 							ItemTemplate="{DynamicResource Contact}" Style="{DynamicResource TeamList}" 
-                            ItemContainerStyle="{DynamicResource ListBoxItemControlStyle}" MinHeight="10" MaxHeight="300"
+                            ItemContainerStyle="{DynamicResource ListBoxItemControlStyle}"
                                  ScrollViewer.VerticalScrollBarVisibility="Auto">
-                        </ListBox>
-                    </StackPanel>
+                    </ListBox>
                 </Grid>
 
-                <ItemsControl x:Name="Alerts" DockPanel.Dock="Bottom" Grid.Column="0" Visibility="Collapsed">
+                <ItemsControl x:Name="Alerts" DockPanel.Dock="Bottom" Grid.Row="5" >
                     <ItemsControl.ItemsPanel>
                         <ItemsPanelTemplate>
                             <StackPanel VerticalAlignment="Bottom" d:LayoutOverrides="VerticalAlignment" >
@@ -211,7 +222,7 @@
                         </ItemsPanelTemplate>
                     </ItemsControl.ItemsPanel>
                 </ItemsControl>
-            </StackPanel>
+            </Grid>
 
             <Grid Grid.Column="1" Style="{DynamicResource MainChatView}">
                 <DockPanel LastChildFill="True">

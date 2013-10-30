@@ -155,8 +155,8 @@
         </DockPanel>
     </DataTemplate>
     <DataTemplate DataType="{x:Type alert:Alert}">
-        <DockPanel HorizontalAlignment="Stretch" LastChildFill="true" Background="Red" Margin="0,1,0,0">
-            <TextBlock HorizontalAlignment="Stretch" Margin="3" Text="{Binding Message, FallbackValue=Unknown Alert}" Foreground="White" FontWeight="Bold" Background="Red" TextAlignment="Center" DockPanel.Dock="Left"/>
+        <DockPanel HorizontalAlignment="Stretch" LastChildFill="true" Background="#4A7EBB" Margin="0,1,0,0">
+            <TextBlock HorizontalAlignment="Stretch" Margin="3" Text="{Binding Message, FallbackValue=Unknown Alert}" Foreground="White" FontWeight="Bold" Background="#4A7EBB" TextAlignment="Center" DockPanel.Dock="Left"/>
         </DockPanel>
     </DataTemplate>
     <!-- for a nice progress bar -->
