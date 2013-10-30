@@ -28,8 +28,6 @@
         <Setter Property="ToolTip" Value="{Binding CancelTooltip}" />
     </Style>
     <Style x:Key="AcceptButtonStyle" TargetType="{x:Type Button}" BasedOn="{StaticResource NotificationActionButton}">
-        <Setter Property="Width" Value="20" />
-        <Setter Property="Height" Value="20" />
         <Setter Property="Command" Value="{Binding AnswerTrueFalse}" />
         <Setter Property="CommandParameter">
             <Setter.Value>
@@ -40,8 +38,6 @@
         <Setter Property="ToolTip" Value="Accept" />
     </Style>
     <Style x:Key="DenyButtonStyle" TargetType="{x:Type Button}" BasedOn="{StaticResource NotificationActionButton}">
-        <Setter Property="Width" Value="20" />
-        <Setter Property="Height" Value="20" />
         <Setter Property="Command" Value="{Binding AnswerTrueFalse}" />
         <Setter Property="CommandParameter">
             <Setter.Value>
@@ -103,19 +99,8 @@
                            Width="85" TextWrapping="Wrap"/>
             </StackPanel>
             <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Margin="5,0,0,0">
-                <Button Template="{DynamicResource TransparentButtonProgressCloseStyle}" Command="{Binding AnswerTrueFalse}">
-                    <Button.CommandParameter>
-                        <s:Boolean>True</s:Boolean>
-                    </Button.CommandParameter>
-                    <Image Source="/BlitsMe.Agent;component/UI/WPF/Images/Check.png" Height="15" Width="15"/>
-                </Button>
-                <Button Template="{DynamicResource TransparentButtonProgressCloseStyle}" Command="{Binding AnswerTrueFalse}"
-                        Margin="5,0,0,0">
-                    <Button.CommandParameter>
-                        <s:Boolean>False</s:Boolean>
-                    </Button.CommandParameter>
-                    <Image Source="/BlitsMe.Agent;component/UI/WPF/Images/close.png" Height="15" Width="15"/>
-                </Button>
+                <Button Style="{DynamicResource AcceptButtonStyle}" Height="15" Width="15"/>
+                <Button Style="{DynamicResource DenyButtonStyle}" Margin="5,0,0,0" Height="15" Width="15"/>
             </StackPanel>
         </StackPanel>
     </DataTemplate>
