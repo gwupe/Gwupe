@@ -36,67 +36,71 @@
         <Grid Grid.Row="0" Grid.Column="1">
             <Grid.RowDefinitions>
                 <RowDefinition Height="*"/>
-                <RowDefinition Height="5"/>
-                <RowDefinition Height="Auto"/>
             </Grid.RowDefinitions>
             <ScrollViewer x:Name="ChatPanelViewer" VerticalScrollBarVisibility="Auto" BorderThickness="5" 
                           BorderBrush="Black" Background="White" d:LayoutOverrides="GridBox" Margin="0,10,0,0"
                           Grid.Row="0">
                 <Border BorderThickness="1" BorderBrush="#4A7EBB" MinWidth="600">
-                    <ItemsControl x:Name="ChatPanel" ItemsSource="{Binding Exchange}" MinWidth="600" Background="White"
-                                  Margin="0,5,0,5">
-                        <ItemsControl.ItemTemplate>
-                            <DataTemplate>
-                                <ContentControl Content="{Binding }">
-                                    <ContentControl.Style>
-                                        <Style TargetType="{x:Type ContentControl}">
-                                            <Setter Property="ContentTemplate" Value="{DynamicResource ChatMeSingle}" />
-                                            <Style.Triggers>
-                                                <DataTrigger Binding="{Binding ChatType}" Value="ChatOtherSingle">
-                                                    <Setter Property="ContentTemplate" Value="{DynamicResource ChatOtherSingle}" />
-                                                </DataTrigger>
-                                                <DataTrigger Binding="{Binding ChatType}" Value="ChatMeSingle">
-                                                    <Setter Property="ContentTemplate" Value="{DynamicResource ChatMeSingle}" />
-                                                </DataTrigger>
-                                                <DataTrigger Binding="{Binding ChatType}" Value="ChatMeGroup">
-                                                    <Setter Property="ContentTemplate" Value="{DynamicResource ChatMeGroup}" />
-                                                </DataTrigger>
-                                                <DataTrigger Binding="{Binding ChatType}" Value="ChatOtherGroup">
-                                                    <Setter Property="ContentTemplate" Value="{DynamicResource ChatOtherGroup}" />
-                                                </DataTrigger>
-                                                <DataTrigger Binding="{Binding ChatType}" Value="ChatSystem">
-                                                    <Setter Property="ContentTemplate" Value="{DynamicResource ChatSystem}" />
-                                                </DataTrigger>
-                                                <DataTrigger Binding="{Binding ChatType}" Value="ChatSystemError">
-                                                    <Setter Property="ContentTemplate" Value="{DynamicResource ChatSystemError}" />
-                                                </DataTrigger>
-                                                <DataTrigger Binding="{Binding ChatType}" Value="ChatServiceComplete">
-                                                    <Setter Property="ContentTemplate" Value="{DynamicResource ChatServiceComplete}" />
-                                                </DataTrigger>
-                                            </Style.Triggers>
-                                        </Style>
-                                    </ContentControl.Style>
-                                </ContentControl>
-                            </DataTemplate>
-                        </ItemsControl.ItemTemplate>
-                        <ItemsControl.ItemsPanel>
-                            <ItemsPanelTemplate>
-                                <StackPanel Margin="4,4,4,0" />
-                            </ItemsPanelTemplate>
-                        </ItemsControl.ItemsPanel>
-                    </ItemsControl>
+                    <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="*"/>
+                            <RowDefinition Height="10"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="5"/>
+                        </Grid.RowDefinitions>
+                        <ItemsControl x:Name="ChatPanel" ItemsSource="{Binding Exchange}" MinWidth="600" Background="White"
+                                  Margin="0,5,0,5" Grid.Row="0">
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate>
+                                    <ContentControl Content="{Binding }">
+                                        <ContentControl.Style>
+                                            <Style TargetType="{x:Type ContentControl}">
+                                                <Setter Property="ContentTemplate" Value="{DynamicResource ChatMeSingle}" />
+                                                <Style.Triggers>
+                                                    <DataTrigger Binding="{Binding ChatType}" Value="ChatOtherSingle">
+                                                        <Setter Property="ContentTemplate" Value="{DynamicResource ChatOtherSingle}" />
+                                                    </DataTrigger>
+                                                    <DataTrigger Binding="{Binding ChatType}" Value="ChatMeSingle">
+                                                        <Setter Property="ContentTemplate" Value="{DynamicResource ChatMeSingle}" />
+                                                    </DataTrigger>
+                                                    <DataTrigger Binding="{Binding ChatType}" Value="ChatMeGroup">
+                                                        <Setter Property="ContentTemplate" Value="{DynamicResource ChatMeGroup}" />
+                                                    </DataTrigger>
+                                                    <DataTrigger Binding="{Binding ChatType}" Value="ChatOtherGroup">
+                                                        <Setter Property="ContentTemplate" Value="{DynamicResource ChatOtherGroup}" />
+                                                    </DataTrigger>
+                                                    <DataTrigger Binding="{Binding ChatType}" Value="ChatSystem">
+                                                        <Setter Property="ContentTemplate" Value="{DynamicResource ChatSystem}" />
+                                                    </DataTrigger>
+                                                    <DataTrigger Binding="{Binding ChatType}" Value="ChatSystemError">
+                                                        <Setter Property="ContentTemplate" Value="{DynamicResource ChatSystemError}" />
+                                                    </DataTrigger>
+                                                    <DataTrigger Binding="{Binding ChatType}" Value="ChatServiceComplete">
+                                                        <Setter Property="ContentTemplate" Value="{DynamicResource ChatServiceComplete}" />
+                                                    </DataTrigger>
+                                                </Style.Triggers>
+                                            </Style>
+                                        </ContentControl.Style>
+                                    </ContentControl>
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+                            <ItemsControl.ItemsPanel>
+                                <ItemsPanelTemplate>
+                                    <StackPanel Margin="4,4,4,0" />
+                                </ItemsPanelTemplate>
+                            </ItemsControl.ItemsPanel>
+                        </ItemsControl>
+                        <ItemsControl x:Name="Notifications" Grid.Row="2">
+                            <ItemsControl.ItemsPanel>
+                                <ItemsPanelTemplate>
+                                    <StackPanel VerticalAlignment="Bottom" d:LayoutOverrides="VerticalAlignment" />
+                                </ItemsPanelTemplate>
+                            </ItemsControl.ItemsPanel>
+                        </ItemsControl>
+                    </Grid>
                 </Border>
             </ScrollViewer>
-
-            <ItemsControl x:Name="Notifications" DockPanel.Dock="Bottom" Grid.Row="2">
-                <ItemsControl.ItemsPanel>
-                    <ItemsPanelTemplate>
-                        <StackPanel VerticalAlignment="Bottom" d:LayoutOverrides="VerticalAlignment" />
-                    </ItemsPanelTemplate>
-                </ItemsControl.ItemsPanel>
-            </ItemsControl>
         </Grid>
-
 
         <Border MinWidth="640" Height="1" BorderThickness="1" BorderBrush="#4A7EBB" Grid.Row="1"
                 VerticalAlignment="Center" Grid.Column="1"/>

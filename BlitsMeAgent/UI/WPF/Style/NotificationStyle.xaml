@@ -78,10 +78,8 @@
 			        Tag="{Binding Message, FallbackValue=Waiting}" Foreground="Black" 
                          Style="{DynamicResource MyProgressBarStyle}" FontFamily="Segoe UI" FontWeight="SemiBold"
                          FontSize="11"/>
-            <Button Template="{DynamicResource TransparentButtonProgressCloseStyle}" Command="{Binding CancelFileSend}"
-                    HorizontalAlignment="Right" Margin="0,0,5,0">
-                <Image Source="../Images/close.png" Height="12" Width="12"/>
-            </Button>
+            <Button Style="{DynamicResource DenyButtonStyle}" Height="15" Width="14" Margin="0,0,5,0"
+                    VerticalAlignment="Center"/>
         </Grid>
     </DataTemplate>
     <DataTemplate DataType="{x:Type notification:AddBuddyNotification}">

@@ -39,7 +39,7 @@ namespace BlitsMe.Agent.Components.Search
 
         public bool CanAdd
         {
-            get { return "Add".Equals(AddText); }
+            get { return "ADD".Equals(AddText); }
         }
 
         public String AddText
@@ -48,13 +48,13 @@ namespace BlitsMe.Agent.Components.Search
             {
                 if ("subscribe".Equals(_person.SubscriptionStatus))
                 {
-                    return "Pending Add";
+                    return "PENDING ADD";
                 }
                 if ("both".Equals(_person.SubscriptionType))
                 {
-                    return "Added";
+                    return "ADDED";
                 }
-                return "Add";
+                return "ADD";
             }
         }
 
