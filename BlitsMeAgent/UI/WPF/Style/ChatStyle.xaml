@@ -358,21 +358,26 @@
                 <Border Background="#D7E4BD" CornerRadius="5" MinHeight="40">
                     <Grid Style="{DynamicResource ChatBubbleOthersNew}" Background="Transparent">
                         <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="15"/>
                             <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="10"/>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition Width="10"/>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition Width="10"/>
                         </Grid.ColumnDefinitions>
-                        <Border HorizontalAlignment="Left" Margin="20,5,0,0" Height="30" Width="30" 
-                                   VerticalAlignment="Top" BorderThickness="1" BorderBrush="White">
-                            <engage:UserImageOthers/>
-                        </Border>
-                        <StackPanel Orientation="Horizontal" Margin="62,10,0,0" HorizontalAlignment="Left" Grid.Column="0">
-                            <TextBlock  Style="{DynamicResource MessageTimeStyle}"
-							HorizontalAlignment="Right"
-							Margin="0,4,0,0"
+                        <TextBlock Margin="0,10,0,0" Style="{DynamicResource MessageTextbox}"
+                       Text="{Binding Path=Message, FallbackValue=A message from them}" Grid.Column="1"
+                               HorizontalAlignment="Left"/>
+
+                        <TextBlock  Style="{DynamicResource MessageTimeStyle}" Margin="0,15,0,0" Grid.Column="3"
 							Text="{Binding SpeakTime, Converter={StaticResource relativeMessageTimeConverter}, FallbackValue=Yesterday 8:49}"
 						/>
-                        </StackPanel>
-                        <TextBlock Margin="0,10,15,0" HorizontalAlignment="Right" Style="{DynamicResource MessageTextbox}"
-                       Text="{Binding Path=Message, FallbackValue=A message from them}" TextAlignment="Right"/>
+
+                        <Border Margin="0,5,0,0" Height="30" Width="30" VerticalAlignment="Top" 
+                            BorderThickness="1" BorderBrush="White" Grid.Column="5">
+                            <engage:UserImageOthers />
+                        </Border>
                     </Grid>
                 </Border>
                 <Image Style="{DynamicResource ChatBubbleJoinOther}" Margin="23,0,0,0"/>
