@@ -6,7 +6,7 @@ namespace BlitsMe.Agent.UI.WPF.Utils
 {
     public class RelativeMessageTimeConverter : IValueConverter
     {
-        private const String TodayFormat = "Today at {0:HH:mm}";
+        private const String TodayFormat = "{0:HH:mm}";
         private const String YesterdayFormat = "Yesterday at {0:HH:mm}";
         private const String DoWFormat = "{0:dddd at HH:mm}";
         private const String ThisYearFormat = "{0:MMMM d HH:mm}";

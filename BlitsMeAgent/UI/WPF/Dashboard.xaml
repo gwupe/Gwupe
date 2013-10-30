@@ -196,7 +196,7 @@
                         </ItemsControl>-->
                         <ListBox x:Name="AllContacts" DockPanel.Dock="Bottom" ItemsSource="{Binding}" ScrollViewer.CanContentScroll="False"
         					FontFamily="Corbel" Margin="0,0,0,0" ScrollViewer.HorizontalScrollBarVisibility="Disabled"
-							ItemTemplate="{DynamicResource Contact}" Style="{DynamicResource TeamList}"
+							ItemTemplate="{DynamicResource Contact}" Style="{DynamicResource TeamList}" 
                             ItemContainerStyle="{DynamicResource ListBoxItemControlStyle}" MinHeight="10" MaxHeight="300"
                                  ScrollViewer.VerticalScrollBarVisibility="Auto">
                         </ListBox>
