@@ -303,10 +303,10 @@
                             <engage:UserImage/>
                         </Border>
                         <TextBlock  Style="{DynamicResource MessageTimeStyle}"
-							HorizontalAlignment="Right" Margin="0,15,0,0" Grid.Column="2"
+							HorizontalAlignment="Right" Margin="0,15,0,0" Grid.Column="2" 
 							Text="{Binding SpeakTime, Converter={StaticResource relativeMessageTimeConverter}, FallbackValue=Yesterday 8:49}"
 						/>
-                        <TextBlock Margin="0,10,0,0" Style="{DynamicResource MessageTextbox}"
+                        <TextBlock Margin="0,5,0,5" Style="{DynamicResource MessageTextbox}" VerticalAlignment="Top"
                                 Text="{Binding Path=Message, FallbackValue=A message from us}" Grid.Column="4"
                                HorizontalAlignment="Left"/>
                     </Grid>
@@ -338,10 +338,10 @@
                         <engage:UserImage/>
                     </Border>
                     <TextBlock  Style="{DynamicResource MessageTimeStyle}"
-							HorizontalAlignment="Right" Margin="0,15,0,0" Grid.Column="2"
+							HorizontalAlignment="Right" Margin="0,15,0,0" Grid.Column="2" 
 							Text="{Binding SpeakTime, Converter={StaticResource relativeMessageTimeConverter}, FallbackValue=Yesterday 8:49}"
 						/>
-                    <TextBlock Margin="0,10,0,0" Style="{DynamicResource MessageTextbox}"
+                    <TextBlock Margin="0,5,0,5" Style="{DynamicResource MessageTextbox}" VerticalAlignment="Top"
                                 Text="{Binding Path=Message, FallbackValue=A message from us}" Grid.Column="4"
                                HorizontalAlignment="Left"/>
                 </Grid>
@@ -366,7 +366,7 @@
                             <ColumnDefinition Width="Auto"/>
                             <ColumnDefinition Width="10"/>
                         </Grid.ColumnDefinitions>
-                        <TextBlock Margin="0,10,0,0" Style="{DynamicResource MessageTextbox}"
+                        <TextBlock Margin="0,5,0,5" Style="{DynamicResource MessageTextbox}" VerticalAlignment="Top"
                        Text="{Binding Path=Message, FallbackValue=A message from them}" Grid.Column="1"
                                HorizontalAlignment="Left"/>
 
@@ -380,7 +380,7 @@
                         </Border>
                     </Grid>
                 </Border>
-                <Image Style="{DynamicResource ChatBubbleJoinOther}" Margin="23,0,0,0"/>
+                <Image Style="{DynamicResource ChatBubbleJoinOther}" HorizontalAlignment="Right" Margin="0,0,23,0"/>
             </StackPanel>
             <Image Style="{DynamicResource ChatBubblePointOther}" Grid.Column="1"/>
         </Grid>
@@ -403,7 +403,7 @@
                         <ColumnDefinition Width="Auto"/>
                         <ColumnDefinition Width="10"/>
                     </Grid.ColumnDefinitions>
-                    <TextBlock Margin="0,10,0,0" Style="{DynamicResource MessageTextbox}"
+                    <TextBlock Margin="0,5,0,5" Style="{DynamicResource MessageTextbox}" VerticalAlignment="Top"
                        Text="{Binding Path=Message, FallbackValue=A message from them}" Grid.Column="1"
                                HorizontalAlignment="Left"/>
 

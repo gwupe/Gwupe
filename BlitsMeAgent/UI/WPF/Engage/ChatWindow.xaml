@@ -6,8 +6,7 @@
 	xmlns:PresentationOptions="http://schemas.microsoft.com/winfx/2006/xaml/presentation/options"
 	mc:Ignorable="d"
 	x:Class="BlitsMe.Agent.UI.WPF.Engage.ChatWindow"
-	x:Name="UserControl"
-	d:DesignWidth="640" d:DesignHeight="480">
+	x:Name="UserControl">
     <UserControl.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
@@ -40,7 +39,7 @@
             <ScrollViewer x:Name="ChatPanelViewer" VerticalScrollBarVisibility="Auto" BorderThickness="5" 
                           BorderBrush="Black" Background="White" d:LayoutOverrides="GridBox" Margin="0,10,0,0"
                           Grid.Row="0">
-                <Border BorderThickness="1" BorderBrush="#4A7EBB" MinWidth="600">
+                <Border BorderThickness="1" BorderBrush="#4A7EBB" MinWidth="350">
                     <Grid>
                         <Grid.RowDefinitions>
                             <RowDefinition Height="*"/>
@@ -106,7 +105,7 @@
                 VerticalAlignment="Center" Grid.Column="1"/>
 
         <Border BorderThickness="1" BorderBrush="#4A7EBB" Grid.Row="2" Grid.Column="1" 
-                MinWidth="600" Margin="0,0,0,0" Background="White">
+                MinWidth="550" Margin="0,0,0,0" Background="White">
             <Grid Height="60">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="*"/>
