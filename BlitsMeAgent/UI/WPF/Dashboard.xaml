@@ -105,7 +105,7 @@
                 </ContentControl.Style>
             </ContentControl>
 
-            <Grid Grid.Column="0" >
+            <Grid Grid.Column="0">
                 <Grid.RowDefinitions>
                     <RowDefinition Height="Auto"/>
                     <RowDefinition Height="Auto"/>
@@ -206,7 +206,7 @@
                             </ItemsControl.ItemsPanel>
                         </ItemsControl>-->
                     <ListBox x:Name="AllContacts" DockPanel.Dock="Bottom" ItemsSource="{Binding}"
-                                 ScrollViewer.CanContentScroll="False" Grid.Row="1" Panel.ZIndex="-2" Width="240"
+                                 ScrollViewer.CanContentScroll="False" Grid.Row="1" Panel.ZIndex="-2" Width="202"
         					FontFamily="Corbel" Margin="0,0,0,0" ScrollViewer.HorizontalScrollBarVisibility="Disabled"
 							ItemTemplate="{DynamicResource Contact}" Style="{DynamicResource TeamList}" 
                             ItemContainerStyle="{DynamicResource ListBoxItemControlStyle}"
