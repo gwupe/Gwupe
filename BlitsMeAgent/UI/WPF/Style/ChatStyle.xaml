@@ -492,23 +492,23 @@
     </DataTemplate>
     <Style x:Key="MessageBorder" TargetType="Border">
         <Setter Property="CornerRadius" Value="5" />
-        <Setter Property="Background" Value="#FF2B519B" />
+        <Setter Property="Background" Value="#B9CDE5" />
         <Setter Property="BorderThickness" Value="0"  />
         <Setter Property="Padding" Value="5" />
         <Setter Property="Margin" Value="0" />
-        <Setter Property="Effect">
+        <!--<Setter Property="Effect">
             <Setter.Value>
                 <DropShadowEffect ShadowDepth="5" />
             </Setter.Value>
-        </Setter>
+        </Setter>-->
     </Style>
 
     <Style x:Key="ServiceCompleteRichText" TargetType="RichTextBox">
         <Setter Property="FontFamily" Value="Calibri" />
         <Setter Property="FontSize" Value="12pt" />
         <Setter Property="HorizontalAlignment" Value="Left" />
-        <Setter Property="Foreground" Value="White"/>
-        <Setter Property="Background" Value="#FF2B519B" />
+        <Setter Property="Foreground" Value="Black"/>
+        <Setter Property="Background" Value="#B9CDE5" />
         <Setter Property="Margin" Value="0,0,0,0" />
         <Setter Property="BorderThickness" Value="0" />
     </Style>
@@ -520,7 +520,7 @@
     </Style>
 
     <DataTemplate x:Key="ChatServiceComplete">
-        <StackPanel>
+        <StackPanel Margin="0,5,0,0">
             <Border Style="{DynamicResource MessageBorder}">
                 <Grid>
                     <Image Margin="0,0,0,-5.573" Source="/BlitsMe.Agent;component/UI/WPF/Images/arrow_limited_blue_bg.png" Width="42.482" Height="50" HorizontalAlignment="Left" VerticalAlignment="Top" />
