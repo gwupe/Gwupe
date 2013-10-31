@@ -70,26 +70,29 @@ namespace BlitsMe.Agent.UI.WPF.Engage
 
         private void EngagementOnRDPConnectionClosed(object sender, EventArgs eventArgs)
         {
-            _appContext.NotificationManager.DeleteAlert(_thisAlert);
-            if (Dispatcher.CheckAccess())
+            if (_thisAlert != null)
             {
-                var color = (Color)ColorConverter.ConvertFromString("#B9CDE5");
-                MainLayout.Background = new SolidColorBrush(color);
-                //MainLayout.Background = new SolidColorBrush(Color.FromArgb(255, 43, 81, 155));
-                //_chatWindow.BubbleCover.Background = new SolidColorBrush(Color.FromArgb(255, 43, 81, 155));
-                //KickOffButton.Visibility = Visibility.Collapsed;
-                RemoteAssistanceButton.Visibility = Visibility.Visible;
-            }
-            else
-            {
-                Dispatcher.Invoke(new Action(() =>
-                    {
-                        var color = (Color)ColorConverter.ConvertFromString("#B9CDE5");
-                        MainLayout.Background = new SolidColorBrush(color);
-                        //_chatWindow.BubbleCover.Background = new SolidColorBrush(Color.FromArgb(255, 43, 81, 155));
-                        //KickOffButton.Visibility = Visibility.Collapsed;
-                        RemoteAssistanceButton.Visibility = Visibility.Visible;
-                    }));
+                _appContext.NotificationManager.DeleteAlert(_thisAlert);
+                if (Dispatcher.CheckAccess())
+                {
+                    var color = (Color) ColorConverter.ConvertFromString("#B9CDE5");
+                    MainLayout.Background = new SolidColorBrush(color);
+                    //MainLayout.Background = new SolidColorBrush(Color.FromArgb(255, 43, 81, 155));
+                    //_chatWindow.BubbleCover.Background = new SolidColorBrush(Color.FromArgb(255, 43, 81, 155));
+                    //KickOffButton.Visibility = Visibility.Collapsed;
+                    RemoteAssistanceButton.Visibility = Visibility.Visible;
+                }
+                else
+                {
+                    Dispatcher.Invoke(new Action(() =>
+                                                     {
+                                                         var color = (Color) ColorConverter.ConvertFromString("#B9CDE5");
+                                                         MainLayout.Background = new SolidColorBrush(color);
+                                                         //_chatWindow.BubbleCover.Background = new SolidColorBrush(Color.FromArgb(255, 43, 81, 155));
+                                                         //KickOffButton.Visibility = Visibility.Collapsed;
+                                                         RemoteAssistanceButton.Visibility = Visibility.Visible;
+                                                     }));
+                }
             }
         }
 
