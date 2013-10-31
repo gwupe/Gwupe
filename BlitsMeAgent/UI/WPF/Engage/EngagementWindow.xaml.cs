@@ -95,7 +95,6 @@ namespace BlitsMe.Agent.UI.WPF.Engage
 
         private void EngagementOnRDPConnectionAccepted(object sender, EventArgs eventArgs)
         {
-
             _thisAlert = new Alert() { Message = Engagement.SecondParty.Person.Firstname + " is Connected" };
             _appContext.NotificationManager.AddAlert(_thisAlert);
             if (Dispatcher.CheckAccess())

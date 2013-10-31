@@ -46,10 +46,16 @@
                         Template="{DynamicResource TransparentButtonStyle}" Margin="10,0,0,0">
                     <Image Source="/BlitsMe.Agent;component/UI/WPF/Images/close.png"/>
                 </Button>-->
-                <Button x:Name="RemoteAssistanceButton" Click="RemoteAssistanceButtonClick" 
-                        ToolTip="Request Desktop Access" Margin="10,0,0,0"
+                <Button x:Name="RemoteAssistanceButton" Click="RemoteAssistanceButtonClick" ToolTip="Request Desktop Access" 
+                        Margin="10,0,0,0" 
                         Template="{DynamicResource TransparentButtonStyle}">
                     <Image Source="..\Images\1337424537_System.png"/>
+                </Button>
+
+                <Button x:Name="RemoteTerminateButton" ToolTip="Terminate Remote Assistance" 
+                        Margin="10,0,0,0" Template="{DynamicResource TransparentButtonStyle}" 
+                        Click="EngagementOnRDPConnectionClosed">
+                    <Image Source="..\Images\close.png"/>
                 </Button>
             </StackPanel>
             <TextBlock Text="Active" Style="{DynamicResource TextblockHeaderActiveStyle}" Grid.Column="2"
