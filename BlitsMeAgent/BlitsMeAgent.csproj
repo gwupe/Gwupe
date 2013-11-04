@@ -197,6 +197,7 @@
     <Compile Include="Components\LoginDetails.cs" />
     <Compile Include="Components\Notification\Notification.cs" />
     <Compile Include="Components\Notification\AddBuddyNotification.cs" />
+    <Compile Include="Components\Notification\RDPDisconnectNotification.cs" />
     <Compile Include="Components\Notification\TrueFalseNotification.cs" />
     <Compile Include="Components\Person\Attendance.cs" />
     <Compile Include="Components\Person\Person.cs" />

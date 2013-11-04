@@ -3,7 +3,9 @@ using System.Collections.ObjectModel;
 using System.Timers;
 using BlitsMe.Agent.Components;
 using BlitsMe.Agent.Components.Alert;
+using BlitsMe.Agent.Components.Functions.RemoteDesktop;
 using BlitsMe.Agent.Components.Notification;
+using BlitsMe.Agent.UI.WPF.Engage;
 using log4net;
 
 namespace BlitsMe.Agent.Managers
@@ -32,6 +34,10 @@ namespace BlitsMe.Agent.Managers
             {
                 if (Notifications.Contains(notification))
                 {
+                    if (notification.Message == "TerminateRDP")
+                    {
+                        BlitsMeClientAppContext.CurrentAppContext.UIManager.StopRemoteConnection();
+                    }
                     if (Notifications.Remove(notification))
                     {
                         Logger.Debug("Successfully removed notification [" + notification.ToString() + "]");

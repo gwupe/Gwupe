@@ -4,6 +4,8 @@ using System.Threading;
 using BlitsMe.Agent.Components.Functions.API;
 using BlitsMe.Agent.Components.Functions.Chat;
 using BlitsMe.Agent.Components.Functions.RemoteDesktop.Notification;
+using BlitsMe.Agent.Components.Notification;
+using BlitsMe.Agent.UI.WPF.Engage;
 using BlitsMe.Cloud.Messaging.Request;
 using BlitsMe.Cloud.Messaging.Response;
 using log4net;
@@ -27,6 +29,8 @@ namespace BlitsMe.Agent.Components.Functions.RemoteDesktop
 
         private readonly BlitsMeClientAppContext _appContext;
         private readonly Engagement _engagement;
+        public  EngagementWindow _EngagementWindow;
+        public Engagement _Engagement;
         public override String Name { get { return "RemoteDesktop"; }}
 
         private static readonly ILog Logger = LogManager.GetLogger(typeof(FileSend.Function));
@@ -205,12 +209,14 @@ namespace BlitsMe.Agent.Components.Functions.RemoteDesktop
         }
 
         // Called When we send a rdp request
-        internal void RequestRDPSession()
+        internal void RequestRDPSession(EngagementWindow egw, Engagement eg)
         {
             // Added: JH 2013-04-26
             // _bmssHandle stores the process information of the launched bmss process
             // if that is null - no session is in progress otherwise check that window is open and that its title contains BlitsMe
-
+            
+            _Engagement = eg;
+            BlitsMeClientAppContext.CurrentAppContext.UIManager.GetRemoteEngagement(_Engagement);
             if (_bmssHandle != null && !_bmssHandle.HasExited && IsWindow(_bmssHandle.MainWindowHandle) && _bmssHandle.MainWindowTitle.Contains("BlitsMe"))
             {
                 // First call SwitchToThisWindow to unminimize it if it is minimized
@@ -260,6 +266,14 @@ namespace BlitsMe.Agent.Components.Functions.RemoteDesktop
             {
                 IsActive = true;
                 Chat.LogSecondPartySystemMessage(_engagement.SecondParty.Person.Firstname + " accepted your remote assistance request, please wait while we establish a connection...");
+                RDPDisconnectNotification notification = new RDPDisconnectNotification()
+                {
+                    Manager = _appContext.NotificationManager,
+                    Person = _engagement.SecondParty.Person.Avatar,
+                    Message = "TerminateRDP"
+                };
+                _appContext.NotificationManager.AddNotification(notification);
+                _appContext.UIManager.Show();
                 // Wait for a tunnel
                 lock (_engagement.TunnelWaitLock)
                 {
@@ -316,13 +330,17 @@ namespace BlitsMe.Agent.Components.Functions.RemoteDesktop
             OnNewActivity(new RemoteDesktopActivity(_engagement, RemoteDesktopActivity.REMOTE_DESKTOP_DISCONNECT) { From = "_SELF", To = _engagement.SecondParty.Person.Username });
         }
 
-
         public override void Close()
         {
             if (_client != null)
                 _client.Close();
             if (_server != null)
                 _server.Close();
+        }
+
+        public EngagementWindow GetEngageWindow()
+        {
+            return _EngagementWindow;
         }
     }
 

@@ -47,6 +47,16 @@
         <Setter Property="ContentTemplate" Value="{DynamicResource DenyButtonTemplate}" />
         <Setter Property="ToolTip" Value="Deny" />
     </Style>
+    <Style x:Key="StopRDPButtonStyle" TargetType="{x:Type Button}" BasedOn="{StaticResource NotificationActionButton}">
+        <Setter Property="Command" Value="{Binding AnswerDeleteStopRDP}" />
+        <Setter Property="CommandParameter">
+            <Setter.Value>
+                <s:Boolean>False</s:Boolean>
+            </Setter.Value>
+        </Setter>
+        <Setter Property="ContentTemplate" Value="{DynamicResource DenyButtonTemplate}" />
+        <Setter Property="ToolTip" Value="Deny" />
+    </Style>
     <Style x:Key="NotificationDockStyle" TargetType="{x:Type DockPanel}">
         <Setter Property="HorizontalAlignment" Value="Stretch" />
         <Setter Property="LastChildFill" Value="true" />
@@ -98,6 +108,20 @@
             </StackPanel>
             <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Margin="5,0,0,0">
                 <Button Style="{DynamicResource AcceptButtonStyle}" Height="15" Width="15"/>
+                <Button Style="{DynamicResource DenyButtonStyle}" Margin="5,0,0,0" Height="15" Width="15"/>
+            </StackPanel>
+        </StackPanel>
+    </DataTemplate>
+    <DataTemplate DataType="{x:Type notification:RDPDisconnectNotification}">
+        <StackPanel Orientation="Horizontal" Style="{StaticResource NotificationStackStyle}">
+            <Image Stretch="Uniform" Source="{Binding Path=Person, Converter={StaticResource imageStreamReader}}" 
+                   Width="40" Height="40" Margin="5,0,0,0"/>
+            <StackPanel Orientation="Vertical" Margin="5,0,0,0" Width="85">
+                <TextBlock HorizontalAlignment="Left" Text="Terminate RDP Session" Foreground="Black" FontWeight="SemiBold" 
+                           FontFamily="Segoe UI" FontSize="11" Width="85" TextWrapping="Wrap"
+                           VerticalAlignment="Center"/>
+            </StackPanel>
+            <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Margin="5,0,0,0">
                 <Button Style="{DynamicResource DenyButtonStyle}" Margin="5,0,0,0" Height="15" Width="15"/>
             </StackPanel>
         </StackPanel>

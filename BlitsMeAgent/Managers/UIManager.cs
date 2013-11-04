@@ -20,6 +20,7 @@ namespace BlitsMe.Agent.Managers
         internal Window CurrentWindow { get { return dashBoard; } }
         internal bool IsClosed { get; private set; }
         private Engagement _engagement;
+        private Engagement _remoteEngagement;
 
         internal UIManager()
         {
@@ -142,6 +143,11 @@ namespace BlitsMe.Agent.Managers
             _engagement = engagement;
         }
 
+        public void GetRemoteEngagement(Engagement engagement)
+        {
+            _remoteEngagement = engagement;
+        }
+
         public Engagement GetSourceObject()
         {
             return _engagement;
@@ -194,6 +200,12 @@ namespace BlitsMe.Agent.Managers
         {
             if (BlitsMeClientAppContext.CurrentAppContext.IsShuttingDown) return;
             dashBoard.PromptSignup(dataSubmitErrorArgs);
+        }
+
+        public void StopRemoteConnection()
+        {
+            Thread thread = new Thread(((Components.Functions.RemoteDesktop.Function)_remoteEngagement.GetFunction("RemoteDesktop")).Server.Close) { IsBackground = true };
+            thread.Start();
         }
 
         #endregion

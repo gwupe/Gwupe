@@ -68,6 +68,11 @@ namespace BlitsMe.Agent.UI.WPF.Engage
             DataContext = _ewDataContext;
         }
 
+        public EngagementWindow()
+        {
+            
+        }
+
         private void EngagementOnRDPConnectionClosed(object sender, EventArgs eventArgs)
         {
             if (_thisAlert != null)
@@ -205,7 +210,8 @@ namespace BlitsMe.Agent.UI.WPF.Engage
 
             try
             {
-                ((Components.Functions.RemoteDesktop.Function)Engagement.GetFunction("RemoteDesktop")).RequestRDPSession();
+                ((Components.Functions.RemoteDesktop.Function)Engagement.GetFunction("RemoteDesktop")).RequestRDPSession(this, Engagement);
+
             }
             catch (Exception ex)
             {
@@ -260,6 +266,18 @@ namespace BlitsMe.Agent.UI.WPF.Engage
             thread.Start();
         }
 
+        public void StopRDPConnection()
+        {
+            
+            if (Engagement != null)
+            {
+                Thread thread =
+                    new Thread(
+                        ((Components.Functions.RemoteDesktop.Function) Engagement.GetFunction("RemoteDesktop")).Server.
+                            Close) {IsBackground = true};
+                thread.Start();
+            }
+        }
     }
 
     internal class EngagementWindowDataContext
