@@ -113,7 +113,7 @@
         </StackPanel>
     </DataTemplate>
     <DataTemplate DataType="{x:Type notification:RDPDisconnectNotification}">
-        <StackPanel Orientation="Horizontal" Style="{StaticResource NotificationStackStyle}">
+        <StackPanel Orientation="Horizontal" Style="{StaticResource NotificationStackStyle}" ToolTip="Terminate RDP Session">
             <Image Stretch="Uniform" Source="{Binding Path=Person, Converter={StaticResource imageStreamReader}}" 
                    Width="40" Height="40" Margin="5,0,0,0"/>
             <StackPanel Orientation="Vertical" Margin="5,0,0,0" Width="85">

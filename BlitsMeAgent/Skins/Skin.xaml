@@ -354,5 +354,4 @@
         <Setter Property="Padding" Value="2" />
         <Setter Property="TextWrapping" Value="Wrap" />
     </Style>
-
 </ResourceDictionary>
