@@ -79,7 +79,9 @@
                        Text="Overall Rating :" Margin="0,0,0,0" HorizontalAlignment="Right" Grid.Column="2"
                                VerticalAlignment="Center"/>
 
-                    <ContentControl Content="{Binding Person.Rating}" HorizontalAlignment="Left" Grid.Column="3">
+                    <StackPanel x:Name="RatingPanel" Grid.Column="3"/>
+
+                    <!--<ContentControl Content="{Binding Person.Rating}" HorizontalAlignment="Left" Grid.Column="3">
                         <ContentControl.Style>
                             <Style TargetType="{x:Type ContentControl}">
                                 <Setter Property="ContentTemplate" Value="{DynamicResource Rating}" />
@@ -90,7 +92,7 @@
                                 </Style.Triggers>
                             </Style>
                         </ContentControl.Style>
-                    </ContentControl>
+                    </ContentControl>-->
 
                 </Grid>
                 <StackPanel Orientation="Horizontal" MinHeight="40" Background="#C6D9F1"

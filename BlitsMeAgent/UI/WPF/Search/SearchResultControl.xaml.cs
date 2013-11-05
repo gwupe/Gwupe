@@ -4,6 +4,7 @@ using System.Windows.Input;
 using BlitsMe.Agent.Components.Person;
 using BlitsMe.Agent.Components.Search;
 using BlitsMe.Agent.Managers;
+using BlitsMe.Agent.UI.WPF.Engage;
 using log4net;
 
 namespace BlitsMe.Agent.UI.WPF.Search
@@ -22,6 +23,8 @@ namespace BlitsMe.Agent.UI.WPF.Search
             _appContext = appContext;
             SearchResult = sourceObject;
             DataContext = SearchResult;
+            GetRating getRating = new GetRating(SearchResult.Person.Rating);
+            RatingPanel.Children.Add(getRating);
             AddPersonButton.Command = new AddPerson(_appContext, SearchResult.Person);
         }
 

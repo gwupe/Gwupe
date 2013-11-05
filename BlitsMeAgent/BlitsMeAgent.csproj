@@ -293,6 +293,10 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
+    <Page Include="UI\WPF\Engage\GetRating.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="UI\WPF\Engage\RatingControl.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
@@ -367,6 +371,9 @@
       <DependentUpon>EngagementWindow.xaml</DependentUpon>
     </Compile>
     <Compile Include="UI\WPF\Engage\EngagementWindowList.cs" />
+    <Compile Include="UI\WPF\Engage\GetRating.xaml.cs">
+      <DependentUpon>GetRating.xaml</DependentUpon>
+    </Compile>
     <Compile Include="UI\WPF\Engage\RatingControl.xaml.cs">
       <DependentUpon>RatingControl.xaml</DependentUpon>
     </Compile>
