@@ -587,6 +587,7 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="Resources\Entypo-license.txt" />
+    <Content Include="UI\WPF\Images\Document.png" />
     <Content Include="UI\WPF\Images\Search.png" />
     <Content Include="UI\WPF\Images\Settings.png" />
     <Content Include="UI\WPF\Images\Time.png" />
