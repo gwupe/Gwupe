@@ -162,7 +162,7 @@
 							Text="{Binding SpeakTime, Converter={StaticResource relativeMessageTimeConverter}, FallbackValue=Yesterday 8:49}"
                                 VerticalAlignment="Center"/>
 
-                    <TextBlock Margin="20,0,0,0" Style="{DynamicResource MessageTextbox}" VerticalAlignment="Center"
+                    <TextBlock Margin="20,10,0,0" Style="{DynamicResource MessageTextbox}" VerticalAlignment="Center"
                        Text="{Binding Path=Message, FallbackValue=A message from them}" Grid.Column="2"
                                Foreground="Black" FontSize="12"/>
 

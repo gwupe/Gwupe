@@ -5,7 +5,7 @@
 	>
 	<!-- Resource dictionary entries should be defined here. -->
 	<Style x:Key="StarCover" TargetType="Rectangle">
-        <Setter Property="Fill" Value="#B9CDE5" />
+        <Setter Property="Fill" Value="#4A7EBB" />
         <Setter Property="Margin" Value="0,0,0,0" />
         <Setter Property="HorizontalAlignment" Value="Right" />
     </Style>

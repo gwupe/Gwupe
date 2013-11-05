@@ -20,6 +20,7 @@ namespace BlitsMe.Agent.UI.WPF.Engage
         public RatingControl()
         {
             this.InitializeComponent();
+            RatingCover.Width = 0;
             poly1.Style = this.FindResource("StarEmpty") as Style;
             poly2.Style = this.FindResource("StarEmpty") as Style;
             poly3.Style = this.FindResource("StarEmpty") as Style;
@@ -34,27 +35,27 @@ namespace BlitsMe.Agent.UI.WPF.Engage
             {
                 if ("Star1".Equals(star.Name))
                 {
-                    //RatingCover.Width = 60;
+                    RatingCover.Width = 60;
                     _starNo = 1;
                 }
                 else if ("Star2".Equals(star.Name))
                 {
-                    // RatingCover.Width = 45;
+                    RatingCover.Width = 45;
                     _starNo = 2;
                 }
                 else if ("Star3".Equals(star.Name))
                 {
-                    //RatingCover.Width = 30;
+                    RatingCover.Width = 30;
                     _starNo = 3;
                 }
                 else if ("Star4".Equals(star.Name))
                 {
-                    // RatingCover.Width = 15;
+                    RatingCover.Width = 15;
                     _starNo = 4;
                 }
                 else if ("Star5".Equals(star.Name))
                 {
-                    //RatingCover.Width = 0;
+                    RatingCover.Width = 0;
                     _starNo = 5;
                 }
             }
@@ -62,7 +63,7 @@ namespace BlitsMe.Agent.UI.WPF.Engage
 
         private void StarClick(object sender, RoutedEventArgs routedEventArgs)
         {
-            //_savedRating = (int)(100 - (RatingCover.Width * 100 / 75));
+            _savedRating = (int)(100 - (RatingCover.Width * 100 / 75));
             //MethodInfo methodInfo = DataContext.GetType().GetMethod("SetRating");
             //if(methodInfo != null)
             //{
@@ -117,7 +118,7 @@ namespace BlitsMe.Agent.UI.WPF.Engage
 
         private void StarMouseLeave(object sender, System.Windows.Input.MouseEventArgs e)
         {
-            //RatingCover.Width = (100 - _savedRating) * 75 / 100;
+            RatingCover.Width = 0;
         }
     }
 
