@@ -386,7 +386,7 @@
                             </ItemsControl.ItemsPanel>
                         </ItemsControl>-->
                     <ScrollViewer x:Name="ChatPanelViewer" VerticalScrollBarVisibility="Auto"
-                                  HorizontalScrollBarVisibility="Hidden" Grid.Row="1">
+                                  HorizontalScrollBarVisibility="Hidden" Grid.Row="1" Height="100">
                         <!--<ScrollViewer.Style>
                             <Style TargetType="{x:Type ScrollViewer}">
                                 <Setter Property="OverridesDefaultStyle" Value="True"/>
