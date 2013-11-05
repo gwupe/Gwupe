@@ -259,9 +259,12 @@
                                                     </DataTrigger> 
                                                     <DataTrigger Binding="{Binding ChatType}" Value="ChatNotification">
                                                         <Setter Property="ContentTemplate" Value="{DynamicResource ChatNotification}" />
-                                                    </DataTrigger>
+                                                    </DataTrigger> 
                                                     <DataTrigger Binding="{Binding ChatType}" Value="ChatNotificationGroup">
                                                         <Setter Property="ContentTemplate" Value="{DynamicResource ChatNotificationGroup}" />
+                                                    </DataTrigger>
+                                                    <DataTrigger Binding="{Binding ChatType}" Value="RDPRequestNotification">
+                                                        <Setter Property="ContentTemplate" Value="{DynamicResource RDPRequestNotification}" />
                                                     </DataTrigger>
                                                 </Style.Triggers>
                                             </Style>

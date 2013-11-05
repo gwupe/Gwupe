@@ -62,13 +62,17 @@ namespace BlitsMe.Agent.Managers
             notification.Manager = this;
             lock (Notifications)
             {
-                if (notification.Flag == "ReceiveFileRequest")
+                switch (notification.Flag)
                 {
-                    BlitsMeClientAppContext.CurrentAppContext.UIManager.ReceiveNotificationChat(notification.Message);
-                }
-                else
-                {
-                    Notifications.Add(notification);   
+                    case "ReceiveFileRequest":
+                        BlitsMeClientAppContext.CurrentAppContext.UIManager.ReceiveNotificationChat(notification.Message,notification.Flag);
+                        break;
+                    case "RDPRequest":
+                        BlitsMeClientAppContext.CurrentAppContext.UIManager.ReceiveNotificationChat(notification.Message, notification.Flag);
+                        break;
+                    case "":
+                        Notifications.Add(notification);
+                        break;
                 }
             }
             if (_removerTimer.Enabled == false)

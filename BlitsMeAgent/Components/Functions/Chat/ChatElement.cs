@@ -124,6 +124,10 @@ namespace BlitsMe.Agent.Components.Functions.Chat
                     }
                     
                 }
+                else if (Speaker.Equals("_RDP_REQUEST"))
+                {
+                    return "RDPRequestNotification";
+                }
                 else
                 {
                     if (LastWord)

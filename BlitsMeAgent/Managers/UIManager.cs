@@ -145,9 +145,18 @@ namespace BlitsMe.Agent.Managers
             _chat = chat;
         }
 
-        public void ReceiveNotificationChat(String message)
+        public void ReceiveNotificationChat(String message,string Flag)
         {
-            _chat.LogSecondPartySystemNotification(message);
+            switch (Flag)
+            {
+                case "ReceiveFileRequest":
+                    _chat.LogSecondPartySystemNotification(message);
+                    break;
+                case "RDPRequest":
+                    _chat.LogSecondPartySystemRDPRequest(message);
+                    break;
+            }
+            
         }
 
         public void GetEngagement(Engagement engagement)

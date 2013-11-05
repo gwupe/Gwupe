@@ -71,6 +71,21 @@
         <Setter Property="Width" Value="180" />
     </Style>
 
+    <Style x:Key="ChatBubbleMeNew" TargetType="Grid">
+        <Setter Property="MinHeight" Value="40" />
+        <Setter Property="Background" Value="#C6D9F1" />
+        <Setter Property="Margin" Value="0,0,0,0" />
+    </Style>
+
+    <Style x:Key="MessageTextbox" TargetType="TextBlock">
+        <Setter Property="FontFamily" Value="Segoe UI" />
+        <Setter Property="FontSize" Value="13" />
+        <Setter Property="Background" Value="Transparent" />
+        <Setter Property="MinHeight" Value="30" />
+        <Setter Property="TextWrapping" Value="Wrap" />
+    </Style>
+
+    <utils:RelativeMessageTimeConverter x:Key="relativeMessageTimeConverter" />
     <!-- Resource dictionary entries should be defined here. -->
     <DataTemplate DataType="{x:Type fileSendNotification:FileSendProgressNotification}">
         <!--<DockPanel Style="{StaticResource NotificationDockStyle}">
@@ -125,8 +140,40 @@
             </StackPanel>
         </StackPanel>
     </DataTemplate>
-    <DataTemplate DataType="{x:Type rdpNotification:RDPNotification}">
-        <Border BorderBrush="#015E15" BorderThickness="1">
+    <DataTemplate x:Key="RDPRequestNotification" DataType="{x:Type rdpNotification:RDPNotification}">
+        <Grid>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="15"/>
+            </Grid.ColumnDefinitions>
+            <!--<Image Style="{DynamicResource ChatBubblePointMe}" Grid.Column="0"/>-->
+            <Border Background="#C6D9F1" CornerRadius="5" Grid.Column="1" MinHeight="40" Height="Auto" Width="Auto" 
+                    Margin="0,5,0,0" >
+                <Grid Style="{DynamicResource ChatBubbleMeNew}" Background="Transparent">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="45"/>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="Auto"/>
+                    </Grid.ColumnDefinitions>
+
+                    <TextBlock  Style="{DynamicResource MessageTimeStyle}" Grid.Column="1"
+							Text="{Binding SpeakTime, Converter={StaticResource relativeMessageTimeConverter}, FallbackValue=Yesterday 8:49}"
+                                VerticalAlignment="Center"/>
+
+                    <TextBlock Margin="20,0,0,0" Style="{DynamicResource MessageTextbox}" VerticalAlignment="Center"
+                       Text="{Binding Path=Message, FallbackValue=A message from them}" Grid.Column="2"
+                               Foreground="Black" FontSize="12"/>
+
+                    <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Margin="5,0,10,0" Grid.Column="3">
+                        <Button Style="{DynamicResource AcceptButtonStyle}" Height="15" Width="15"/>
+                        <Button Style="{DynamicResource DenyButtonStyle}" Margin="5,0,0,0" Height="15" Width="15"/>
+                    </StackPanel>
+                </Grid>
+            </Border>
+        </Grid>
+        <!--<Border BorderBrush="#015E15" BorderThickness="1">
             <DockPanel Style="{StaticResource NotificationDockStyle}">
                 <StackPanel Orientation="Horizontal" Margin="0,8,8,8" HorizontalAlignment="Right" DockPanel.Dock="Right">
                     <Button Style="{DynamicResource AcceptButtonStyle}" />
@@ -134,7 +181,7 @@
                 </StackPanel>
                 <TextBlock HorizontalAlignment="Left" Margin="8,11,0,8" Text="{Binding Message, FallbackValue=Unknown Notification}" DockPanel.Dock="Left" Foreground="Black" FontWeight="Bold"/>
             </DockPanel>
-        </Border>
+        </Border>-->
     </DataTemplate>
     <DataTemplate DataType="{x:Type fileSendNotification:FileSendRequestNotification}">
         <DockPanel Style="{StaticResource NotificationDockStyle}">
