@@ -150,6 +150,32 @@ namespace BlitsMe.Agent.Components.Functions.Chat
             return chatElement;
         }
 
+        internal ChatElement LogSecondPartySystemNotification(String message)
+        {
+            ChatElement chatElement = Conversation.AddMessage(message, "_NOTIFICATION_CHAT");
+            // Fire the event
+            OnNewActivity(new ChatActivity(_engagement, ChatActivity.CHAT_RECEIVE)
+            {
+                From = "_NOTIFICATION_CHAT",
+                To = _appContext.CurrentUserManager.CurrentUser.Username,
+                Message = message
+            });
+            return chatElement;
+        }
+
+        internal ChatElement LogSecondPartySystemRDPRequest(String message)
+        {
+            ChatElement chatElement = Conversation.AddMessage(message, "_RDP_REQUEST");
+            // Fire the event
+            OnNewActivity(new ChatActivity(_engagement, ChatActivity.CHAT_RECEIVE)
+            {
+                From = "_RDP_REQUEST",
+                To = _appContext.CurrentUserManager.CurrentUser.Username,
+                Message = message
+            });
+            return chatElement;
+        }
+
         internal void LogServiceCompleteMessage(String message)
         {
             Conversation.AddMessage(new ServiceCompleteChatElement(_engagement)

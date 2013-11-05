@@ -47,6 +47,7 @@ namespace BlitsMe.Agent.UI.WPF.Engage
             InitializeComponent();
             _appContext = appContext;
             Engagement = engagement;
+            RemoteTerminateButton.Visibility = Visibility.Collapsed;
             engagement.PropertyChanged += EngagementOnPropertyChanged;
             try
             {
@@ -211,7 +212,8 @@ namespace BlitsMe.Agent.UI.WPF.Engage
             try
             {
                 ((Components.Functions.RemoteDesktop.Function)Engagement.GetFunction("RemoteDesktop")).RequestRDPSession(this, Engagement);
-
+                RemoteAssistanceButton.Visibility = Visibility.Collapsed;
+                RemoteTerminateButton.Visibility = Visibility.Visible;
             }
             catch (Exception ex)
             {
@@ -264,6 +266,8 @@ namespace BlitsMe.Agent.UI.WPF.Engage
         {
             Thread thread = new Thread(((Components.Functions.RemoteDesktop.Function)Engagement.GetFunction("RemoteDesktop")).Server.Close) { IsBackground = true };
             thread.Start();
+            RemoteAssistanceButton.Visibility = Visibility.Visible;
+            RemoteTerminateButton.Visibility = Visibility.Collapsed;
         }
 
         public void StopRDPConnection()

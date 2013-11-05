@@ -178,6 +178,7 @@
     <Compile Include="Components\Functions\FileSend\FileSendListener.cs" />
     <Compile Include="Components\Functions\FileSend\Function.cs" />
     <Compile Include="Components\Functions\FileSend\Notification\FileReceivedNotification.cs" />
+    <Compile Include="Components\Functions\FileSend\Notification\FileRecivedChatNotification.cs" />
     <Compile Include="Components\Functions\FileSend\Notification\FileSendProgressNotification.cs" />
     <Compile Include="Components\Functions\FileSend\Processors\FileSendRequestProcessor.cs" />
     <Compile Include="Components\Functions\FileSend\Processors\FileSendRequestResponseProcessor.cs" />
@@ -190,9 +191,11 @@
     <Compile Include="Components\IdleState.cs" />
     <Compile Include="Components\Interaction.cs" />
     <Compile Include="Components\Interactions.cs" />
+    <Compile Include="Components\Notification\AnswerChatNotificationTrueFalse.cs" />
     <Compile Include="Components\Notification\AnswerTrueFalseCommand.cs" />
     <Compile Include="Components\Notification\CancellableNotification.cs" />
     <Compile Include="Components\Notification\CancelCommand.cs" />
+    <Compile Include="Components\Notification\ChatNotificationTrueFalse.cs" />
     <Compile Include="Components\Notification\InfoNotification.cs" />
     <Compile Include="Components\LoginDetails.cs" />
     <Compile Include="Components\Notification\Notification.cs" />
@@ -222,6 +225,7 @@
     <Compile Include="DispatchingCollection.cs" />
     <Compile Include="Exceptions\SignUpException.cs" />
     <Compile Include="FlashWindowHelper.cs" />
+    <Compile Include="Managers\ChatElementManager.cs" />
     <Compile Include="Managers\ConnectionManager.cs" />
     <Compile Include="Managers\CurrentUserManager.cs" />
     <Compile Include="Managers\EngagementManager.cs" />

@@ -94,15 +94,16 @@ namespace BlitsMe.Agent.Components.Functions.RemoteDesktop
                     _engagement.SecondParty.ActiveShortCode = shortCode;
                     RDPNotification rdpNotification = new RDPNotification()
                         {
-                            Message = _engagement.SecondParty.Person.Name + " would like to access your desktop.",
+                            Message = "Incoming support request from " + _engagement.SecondParty.Person.Name + ".",
                             AssociatedUsername = _engagement.SecondParty.Person.Username,
+                            Flag = "RDPRequest",
                             DeleteTimeout = 300
                         };
                     rdpNotification.AnsweredTrue += delegate { ProcessAnswer(true); };
                     rdpNotification.AnsweredFalse += delegate { ProcessAnswer(false); };
                     _appContext.NotificationManager.AddNotification(rdpNotification);
-                    Chat.LogSecondPartySystemMessage(_engagement.SecondParty.Person.Firstname +
-                                                      " requested control of your desktop.");
+                    //Chat.LogSecondPartySystemMessage(_engagement.SecondParty.Person.Firstname +
+                    //                                  " requested control of your desktop.");
                     //OnRDPIncomingRequestEvent(new RdpIncomingRequest(_engagement));
                     OnNewActivity(new RemoteDesktopActivity(_engagement, RemoteDesktopActivity.REMOTE_DESKTOP_REQUEST) { To = "_SELF", From = _engagement.SecondParty.Person.Username });
                 }

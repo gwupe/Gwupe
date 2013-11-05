@@ -4,21 +4,21 @@ using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Windows.Input;
-using BlitsMe.Agent.Managers;
 using log4net;
+using BlitsMe.Agent.Managers;
 
 namespace BlitsMe.Agent.Components.Functions.FileSend.Notification
 {
-    class FileReceivedNotification : Components.Notification.Notification
+    class FileRecivedChatNotification : Components.Functions.Chat.ChatElement
     {
-        private static readonly ILog Logger = LogManager.GetLogger(typeof(FileReceivedNotification));
+        private static readonly ILog Logger = LogManager.GetLogger(typeof(FileRecivedChatNotification));
         internal FileSendInfo FileInfo
         {
             get { return _fileInfo; }
             set
             {
                 _fileInfo = value;
-                //Message = "Received " + _fileInfo.Filename;
+                Message = "Received " + _fileInfo.Filename;
             }
         }
 
@@ -33,10 +33,10 @@ namespace BlitsMe.Agent.Components.Functions.FileSend.Notification
 
         internal class OpenFileReceivedCommand : ICommand
         {
-            private readonly NotificationManager _notificationManager;
-            private readonly FileReceivedNotification _fileReceivedNotification;
+            private readonly ChatElementManager _notificationManager;
+            private readonly FileRecivedChatNotification _fileReceivedNotification;
 
-            public OpenFileReceivedCommand(NotificationManager notificationManager, FileReceivedNotification fileReceivedNotification)
+            public OpenFileReceivedCommand(ChatElementManager notificationManager, FileRecivedChatNotification fileReceivedNotification)
             {
                 _notificationManager = notificationManager;
                 this._fileReceivedNotification = fileReceivedNotification;
