@@ -304,14 +304,14 @@
         </DataTemplate.Triggers>-->
     </DataTemplate>
 
-    <DataTemplate x:Key="ChatMeGroup" >
+    <DataTemplate x:Key="ChatOtherGroup" >
         <Grid>
             <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="*"/>
                 <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="*"/>
             </Grid.ColumnDefinitions>
-            <Image Style="{DynamicResource ChatBubblePointMe}" Grid.Column="1"/>
-            <StackPanel Orientation="Vertical" Margin="0,5,0,-5" Grid.Column="0" >
+            <Image Style="{DynamicResource ChatBubblePointMe}" Grid.Column="0"/>
+            <StackPanel Orientation="Vertical" Margin="0,5,0,-5" Grid.Column="1" >
                 <Border Background="#C6D9F1" CornerRadius="5" MinHeight="40" Height="Auto" Width="Auto" >
                     <Grid Style="{DynamicResource ChatBubbleMeNew}" Background="Transparent">
                         <Grid.ColumnDefinitions>
@@ -324,7 +324,7 @@
                         </Grid.ColumnDefinitions>
                         <Border HorizontalAlignment="Left" Margin="10,5,0,0" Height="30" Width="30" VerticalAlignment="Top" 
                             BorderThickness="1" BorderBrush="White" Grid.Column="0">
-                            <engage:UserImage/>
+                            <engage:UserImageOthers/>
                         </Border>
                         <TextBlock  Style="{DynamicResource MessageTimeStyle}"
 							HorizontalAlignment="Right" Margin="0,15,0,0" Grid.Column="2" 
@@ -340,14 +340,14 @@
         </Grid>
     </DataTemplate>
 
-    <DataTemplate x:Key="ChatMeSingle">
+    <DataTemplate x:Key="ChatOtherSingle">
         <Grid>
             <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="*"/>
                 <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="*"/>
             </Grid.ColumnDefinitions>
-            <Image Style="{DynamicResource ChatBubblePointMe}" Grid.Column="1"/>
-            <Border Background="#C6D9F1" CornerRadius="5" Grid.Column="0" MinHeight="40" Height="Auto" Width="Auto" 
+            <Image Style="{DynamicResource ChatBubblePointMe}" Grid.Column="0"/>
+            <Border Background="#C6D9F1" CornerRadius="5" Grid.Column="1" MinHeight="40" Height="Auto" Width="Auto" 
                     Margin="0,5,0,0" >
                 <Grid Style="{DynamicResource ChatBubbleMeNew}" Background="Transparent">
                     <Grid.ColumnDefinitions>
@@ -360,7 +360,7 @@
                     </Grid.ColumnDefinitions>
                     <Border HorizontalAlignment="Left" Margin="10,5,0,0" Height="30" Width="30" VerticalAlignment="Top" 
                             BorderThickness="1" BorderBrush="White" Grid.Column="0">
-                        <engage:UserImage/>
+                        <engage:UserImageOthers/>
                     </Border>
                     <TextBlock  Style="{DynamicResource MessageTimeStyle}"
 							HorizontalAlignment="Right" Margin="0,15,0,0" Grid.Column="2" 
@@ -374,13 +374,13 @@
         </Grid>
     </DataTemplate>
 
-    <DataTemplate x:Key="ChatOtherGroup">
+    <DataTemplate x:Key="ChatMeGroup">
         <Grid>
             <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="Auto"/>
                 <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="Auto"/>
             </Grid.ColumnDefinitions>
-            <StackPanel Orientation="Vertical" Margin="0,5,0,-5" Grid.Column="1">
+            <StackPanel Orientation="Vertical" Margin="0,5,0,-5" Grid.Column="0">
                 <Border Background="#D7E4BD" CornerRadius="5" MinHeight="40">
                     <Grid Style="{DynamicResource ChatBubbleOthersNew}" Background="Transparent">
                         <Grid.ColumnDefinitions>
@@ -402,23 +402,23 @@
 
                         <Border Margin="0,5,0,0" Height="30" Width="30" VerticalAlignment="Top" 
                             BorderThickness="1" BorderBrush="White" Grid.Column="5">
-                            <engage:UserImageOthers />
+                            <engage:UserImage />
                         </Border>
                     </Grid>
                 </Border>
                 <Image Style="{DynamicResource ChatBubbleJoinOther}" HorizontalAlignment="Right" Margin="0,0,23,0"/>
             </StackPanel>
-            <Image Style="{DynamicResource ChatBubblePointOther}" Grid.Column="0"/>
+            <Image Style="{DynamicResource ChatBubblePointOther}" Grid.Column="1"/>
         </Grid>
     </DataTemplate>
 
-    <DataTemplate x:Key="ChatOtherSingle" >
+    <DataTemplate x:Key="ChatMeSingle" >
         <Grid>
             <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="Auto"/>
                 <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="Auto"/>
             </Grid.ColumnDefinitions>
-            <Border Background="#D7E4BD" CornerRadius="5" Grid.Column="1" MinHeight="40" Height="Auto" Width="Auto" 
+            <Border Background="#D7E4BD" CornerRadius="5" Grid.Column="0" MinHeight="40" Height="Auto" Width="Auto" 
                     Margin="0,5,0,0" >
                 <Grid Style="{DynamicResource ChatBubbleOthersNew}" Background="Transparent">
                     <Grid.ColumnDefinitions>
@@ -440,11 +440,11 @@
 
                     <Border Margin="0,5,0,0" Height="30" Width="30" VerticalAlignment="Top" 
                             BorderThickness="1" BorderBrush="White" Grid.Column="5">
-                        <engage:UserImageOthers />
+                        <engage:UserImage />
                     </Border>
                 </Grid>
             </Border>
-            <Image Style="{DynamicResource ChatBubblePointOther}" Grid.Column="0"/>
+            <Image Style="{DynamicResource ChatBubblePointOther}" Grid.Column="1"/>
         </Grid>
     </DataTemplate>
 
