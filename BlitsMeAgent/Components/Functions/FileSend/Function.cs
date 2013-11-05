@@ -189,7 +189,7 @@ namespace BlitsMe.Agent.Components.Functions.FileSend
         private void ProcessAcceptFile(FileSendInfo fileInfo)
         {
             Logger.Info("Accepted request from " + _engagement.SecondParty.Person.Username + " to send the file " + fileInfo.Filename);
-            Chat.LogSystemMessage("Accepted " + fileInfo.Filename + ".");
+            //Chat.LogSystemMessage("Accepted " + fileInfo.Filename + ".");
             FileSendRequestResponseRq request = new FileSendRequestResponseRq()
                 {
                     shortCode = _engagement.SecondParty.ActiveShortCode,
@@ -245,8 +245,7 @@ namespace BlitsMe.Agent.Components.Functions.FileSend
                         FileInfo = fileInfo
                     };
                 _appContext.NotificationManager.AddNotification(fileReceivedNotification);
-                Chat.LogSystemMessage("Successfully received the file " +
-                                                  fileInfo.Filename);
+                //Chat.LogSystemMessage("Successfully received the file " + fileInfo.Filename);
                 OnNewActivity(new FileSendActivity(_engagement, FileSendActivity.FILE_SEND_COMPLETE) { To = "_SELF", From = _engagement.SecondParty.Person.Username, FileInfo = fileInfo });
             }
             else
@@ -302,8 +301,7 @@ namespace BlitsMe.Agent.Components.Functions.FileSend
                 if (accepted)
                 {
                     fileInfo.State = FileSendState.Sending;
-                    Chat.LogSystemMessage(_engagement.SecondParty.Person.Firstname + " accepted " +
-                                                      fileInfo.Filename);
+                    //Chat.LogSystemMessage(_engagement.SecondParty.Person.Firstname + " accepted " + fileInfo.Filename);
                     Logger.Info("File send of file " + fileInfo.Filename + " accepted by " + _engagement.SecondParty.Person.Name);
                     fileInfo.FileSender = new FileSendClient(_engagement.TransportManager);
                     // this is hacky, but lets get it to work before we make it pretty

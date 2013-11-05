@@ -18,7 +18,7 @@ namespace BlitsMe.Agent.Components.Functions.FileSend.Notification
             set
             {
                 _fileInfo = value;
-                Message = "Received " + _fileInfo.Filename;
+                //Message = "Received " + _fileInfo.Filename;
             }
         }
 
