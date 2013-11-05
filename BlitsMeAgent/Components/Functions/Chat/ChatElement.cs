@@ -93,7 +93,7 @@ namespace BlitsMe.Agent.Components.Functions.Chat
                     }
                     else
                     {
-                        return "ChatMeGroup";
+                        return "ChatSystemGroup";
                     }
                 }
                 else if (Speaker.Equals("_SECONDPARTYSYSTEM"))

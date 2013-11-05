@@ -251,6 +251,9 @@
                                                     <DataTrigger Binding="{Binding ChatType}" Value="ChatSystem">
                                                         <Setter Property="ContentTemplate" Value="{DynamicResource ChatSystem}" />
                                                     </DataTrigger>
+                                                    <DataTrigger Binding="{Binding ChatType}" Value="ChatSystemGroup">
+                                                        <Setter Property="ContentTemplate" Value="{DynamicResource ChatSystemGroup}" />
+                                                    </DataTrigger>
                                                     <DataTrigger Binding="{Binding ChatType}" Value="ChatSystemError">
                                                         <Setter Property="ContentTemplate" Value="{DynamicResource ChatSystemError}" />
                                                     </DataTrigger>
