@@ -71,7 +71,6 @@
         <Setter Property="Width" Value="180" />
     </Style>
 
-
     <!-- Resource dictionary entries should be defined here. -->
     <DataTemplate DataType="{x:Type fileSendNotification:FileSendProgressNotification}">
         <!--<DockPanel Style="{StaticResource NotificationDockStyle}">

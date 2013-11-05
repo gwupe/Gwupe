@@ -122,6 +122,7 @@ namespace BlitsMe.Agent.UI.WPF.Engage
             String message = _textBox.Text.Trim();
             if (message.Length > 0)
             {
+                BlitsMeClientAppContext.CurrentAppContext.UIManager.GetFunctionChat(_chat);
                 _chat.SendChatMessage(message);
             }
             _textBox.Clear();

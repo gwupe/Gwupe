@@ -256,6 +256,12 @@
                                                     </DataTrigger>
                                                     <DataTrigger Binding="{Binding ChatType}" Value="ChatServiceComplete">
                                                         <Setter Property="ContentTemplate" Value="{DynamicResource ChatServiceComplete}" />
+                                                    </DataTrigger> 
+                                                    <DataTrigger Binding="{Binding ChatType}" Value="ChatNotification">
+                                                        <Setter Property="ContentTemplate" Value="{DynamicResource ChatNotification}" />
+                                                    </DataTrigger>
+                                                    <DataTrigger Binding="{Binding ChatType}" Value="ChatNotificationGroup">
+                                                        <Setter Property="ContentTemplate" Value="{DynamicResource ChatNotificationGroup}" />
                                                     </DataTrigger>
                                                 </Style.Triggers>
                                             </Style>

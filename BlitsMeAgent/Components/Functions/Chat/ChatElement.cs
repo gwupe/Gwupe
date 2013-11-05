@@ -1,5 +1,6 @@
 using System;
 using System.ComponentModel;
+using BlitsMe.Agent.Managers;
 using log4net;
 
 namespace BlitsMe.Agent.Components.Functions.Chat
@@ -103,6 +104,19 @@ namespace BlitsMe.Agent.Components.Functions.Chat
                 else if (Speaker.Equals("_SYSTEM_ERROR"))
                 {
                     return "ChatSystemError";
+                }
+
+                else if (Speaker.Equals("_NOTIFICATION_CHAT"))
+                {
+                    if (LastWord)
+                    {
+                        return "ChatNotification";
+                    }
+                    else
+                    {
+                        return "ChatNotificationGroup";
+                    }
+                    
                 }
                 else
                 {

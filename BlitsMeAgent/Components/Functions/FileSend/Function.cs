@@ -95,6 +95,7 @@ namespace BlitsMe.Agent.Components.Functions.FileSend
                 {
                     AssociatedUsername = _engagement.SecondParty.Person.Username,
                     Message = "Offering " + _engagement.SecondParty.Person.Firstname + " " + fileInfo.Filename,
+                    Flag = "",
                     CancelTooltip = "Cancel File Send",
                     Id = fileInfo.FileSendId
                 };
@@ -133,14 +134,16 @@ namespace BlitsMe.Agent.Components.Functions.FileSend
             var notification = new FileSendRequestNotification()
             {
                 AssociatedUsername = _engagement.SecondParty.Person.Username,
-                Message = _engagement.SecondParty.Person.Firstname + " would like to send you " + filename,
+                //Message = _engagement.SecondParty.Person.Firstname + " would like to send you " + filename,
+                Message = "Incoming file transfer request \n" + filename,
+                Flag = "ReceiveFileRequest",
                 FileInfo = fileSendInfo,
             };
             notification.AnsweredTrue += (sender, args) => ProcessAcceptFile(fileSendInfo);
             notification.AnsweredFalse += (sender, args) => ProcessDenyFile(fileSendInfo);
             fileSendInfo.Notification = notification;
             _appContext.NotificationManager.AddNotification(notification);
-            Chat.LogSystemMessage(_engagement.SecondParty.Person.Firstname + " offered you the file " + filename + ".");
+            //Chat.LogSystemMessage(_engagement.SecondParty.Person.Firstname + " offered you the file " + filename + ".");
             OnNewActivity(new FileSendActivity(_engagement, FileSendActivity.FILE_SEND_REQUEST) { To = "_SELF", From = _engagement.SecondParty.Person.Username, FileInfo = fileSendInfo });
         }
 

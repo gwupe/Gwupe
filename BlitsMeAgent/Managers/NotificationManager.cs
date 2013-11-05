@@ -62,7 +62,14 @@ namespace BlitsMe.Agent.Managers
             notification.Manager = this;
             lock (Notifications)
             {
-                Notifications.Add(notification);
+                //if (notification.Flag == "ReceiveFileRequest")
+                //{
+                //    BlitsMeClientAppContext.CurrentAppContext.UIManager.ReceiveNotificationChat(notification.Message);
+                //}
+                //else
+                //{
+                    Notifications.Add(notification);   
+                //}
             }
             if (_removerTimer.Enabled == false)
             {

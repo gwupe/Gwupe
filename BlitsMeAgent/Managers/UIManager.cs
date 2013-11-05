@@ -3,6 +3,7 @@ using System.Threading;
 using System.Windows;
 using System.Windows.Threading;
 using BlitsMe.Agent.Components;
+using BlitsMe.Agent.Components.Functions.Chat;
 using BlitsMe.Agent.Components.Search;
 using BlitsMe.Agent.UI.WPF;
 using log4net;
@@ -21,6 +22,7 @@ namespace BlitsMe.Agent.Managers
         internal bool IsClosed { get; private set; }
         private Engagement _engagement;
         private Engagement _remoteEngagement;
+        private Function _chat;
 
         internal UIManager()
         {
@@ -136,6 +138,16 @@ namespace BlitsMe.Agent.Managers
         public void PromptLogin()
         {
             dashBoard.Login(false);
+        }
+
+        public void GetFunctionChat(Function chat)
+        {
+            _chat = chat;
+        }
+
+        public void ReceiveNotificationChat(String message)
+        {
+            _chat.LogSecondPartySystemNotification(message);
         }
 
         public void GetEngagement(Engagement engagement)
