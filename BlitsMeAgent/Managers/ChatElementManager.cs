@@ -1,8 +1,9 @@
-using System;
+﻿using System;
 using System.Collections.ObjectModel;
 using System.Timers;
 using BlitsMe.Agent.Components;
 using BlitsMe.Agent.Components.Alert;
+using BlitsMe.Agent.Components.Functions.Chat;
 using BlitsMe.Agent.Components.Functions.RemoteDesktop;
 using BlitsMe.Agent.Components.Notification;
 using BlitsMe.Agent.UI.WPF.Engage;
@@ -10,25 +11,25 @@ using log4net;
 
 namespace BlitsMe.Agent.Managers
 {
-    class NotificationManager
+    public class ChatElementManager
     {
-        private static readonly ILog Logger = LogManager.GetLogger(typeof(NotificationManager));
-        public ObservableCollection<Notification> Notifications;
-        public ObservableCollection<Alert> Alerts;
+        private static readonly ILog Logger = LogManager.GetLogger(typeof(ChatElementManager));
+        public ObservableCollection<ChatElement> Notifications;
+        //public ObservableCollection<Alert> Alerts;
         private readonly Timer _removerTimer;
         internal bool IsClosed { get; private set; }
 
-        internal NotificationManager()
+        internal ChatElementManager()
         {
-            Notifications = new ObservableCollection<Notification>();
+            Notifications = new ObservableCollection<ChatElement>();
             _removerTimer = new Timer { Interval = 1000 };
             _removerTimer.Elapsed += RemoveAfterTimeoutRunner;
             _removerTimer.Start();
-            Alerts = new ObservableCollection<Alert>();
+            //Alerts = new ObservableCollection<Alert>();
             BlitsMeClientAppContext.CurrentAppContext.LoginManager.LoggedOut += (sender, args) => Reset();
         }
 
-        internal void DeleteNotification(Notification notification)
+        internal void DeleteNotification(ChatElement notification)
         {
             lock (Notifications)
             {
@@ -50,14 +51,15 @@ namespace BlitsMe.Agent.Managers
                     {
                         _removerTimer.Stop();
                     }
-                } else
+                }
+                else
                 {
                     Logger.Warn("Cannot remote notification " + notification + ", it doesn't exist.");
                 }
             }
         }
 
-        internal void AddNotification(Notification notification)
+        internal void AddNotification(ChatElement notification)
         {
             notification.Manager = this;
             lock (Notifications)
@@ -68,7 +70,7 @@ namespace BlitsMe.Agent.Managers
                 }
                 else
                 {
-                    Notifications.Add(notification);   
+                    Notifications.Add(notification);
                 }
             }
             if (_removerTimer.Enabled == false)
@@ -79,26 +81,26 @@ namespace BlitsMe.Agent.Managers
 
         internal void DeleteAlert(Alert alert)
         {
-            lock (Alerts)
-            {
-                if (Alerts.Remove(alert))
-                {
-                    Logger.Debug("Successfully removed alert [" + alert.ToString() + "]");
-                }
-                else
-                {
-                    Logger.Warn("Failed to remove notication [" + alert.ToString() + "]");
-                }
-            }
+            //lock (Alerts)
+            //{
+            //    if (Alerts.Remove(alert))
+            //    {
+            //        Logger.Debug("Successfully removed alert [" + alert.ToString() + "]");
+            //    }
+            //    else
+            //    {
+            //        Logger.Warn("Failed to remove notication [" + alert.ToString() + "]");
+            //    }
+            //}
         }
 
         internal void AddAlert(Alert alert)
         {
-            alert.Manager = this;
-            lock(Alerts)
-            {
-                Alerts.Add(alert);
-            }
+            //alert.Manager = this;
+            //lock (Alerts)
+            //{
+            //    Alerts.Add(alert);
+            //}
         }
 
         internal void Close()
@@ -118,14 +120,14 @@ namespace BlitsMe.Agent.Managers
         private void RemoveAfterTimeoutRunner(object sender, ElapsedEventArgs e)
         {
             long nowTime = DateTime.Now.Ticks;
-            Notification[] localNotifications;
+            ChatElement[] localNotifications;
             lock (Notifications)
             {
-                localNotifications = new Notification[Notifications.Count];
+                localNotifications = new ChatElement[Notifications.Count];
                 Notifications.CopyTo(localNotifications, 0);
             }
 
-            foreach (Notification notification in localNotifications)
+            foreach (ChatElement notification in localNotifications)
             {
                 if (notification.DeleteTimeout > 0)
                 {
@@ -147,7 +149,7 @@ namespace BlitsMe.Agent.Managers
         private void _reset()
         {
             Notifications.Clear();
-            Alerts.Clear();
+            //Alerts.Clear();
             _removerTimer.Stop();
         }
     }
