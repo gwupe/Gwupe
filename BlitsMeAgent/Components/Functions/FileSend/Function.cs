@@ -245,7 +245,7 @@ namespace BlitsMe.Agent.Components.Functions.FileSend
                         FileInfo = fileInfo
                     };
                 _appContext.NotificationManager.AddNotification(fileReceivedNotification);
-                //Chat.LogSystemMessage("Successfully received the file " + fileInfo.Filename);
+                Chat.LogSystemMessage("Successfully received the file " + fileInfo.Filename);
                 OnNewActivity(new FileSendActivity(_engagement, FileSendActivity.FILE_SEND_COMPLETE) { To = "_SELF", From = _engagement.SecondParty.Person.Username, FileInfo = fileInfo });
             }
             else
