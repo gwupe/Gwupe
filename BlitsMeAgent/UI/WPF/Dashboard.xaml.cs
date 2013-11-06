@@ -54,6 +54,7 @@ namespace BlitsMe.Agent.UI.WPF
         internal DashboardDataContext DashboardData;
         internal RosterList ActiveRosterList;
         internal RosterList SearchRosterList;
+        internal Attendance _Attendance;
         internal bool Searching;
         private DispatchingCollection<ObservableCollection<Attendance>, Attendance> dispatchingCollection;
 
@@ -489,6 +490,7 @@ namespace BlitsMe.Agent.UI.WPF
 
         private void ShowEngagement(Attendance attendance)
         {
+            _Attendance = attendance;
             EngagementWindow egw = _engagementWindows.GetEngagementWindow(attendance);
             if (egw != null)
             {
