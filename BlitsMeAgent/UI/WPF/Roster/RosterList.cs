@@ -46,7 +46,7 @@ namespace BlitsMe.Agent.UI.WPF.Roster
                             foreach (Attendance newItem in eventArgs.NewItems)
                             {
                                 newItem.PropertyChanged += OnAttendancePropertyChange;
-                                    
+                                BlitsMeClientAppContext.CurrentAppContext.UIManager.GetContactRating(newItem.Person.Rating);
                             }
                         }
                     }

@@ -23,6 +23,7 @@ namespace BlitsMe.Agent.Managers
         private Engagement _engagement;
         private Engagement _remoteEngagement;
         private Function _chat;
+        private int _contactsRating;
 
         internal UIManager()
         {
@@ -167,6 +168,16 @@ namespace BlitsMe.Agent.Managers
         public void GetRemoteEngagement(Engagement engagement)
         {
             _remoteEngagement = engagement;
+        }
+
+        public void GetContactRating(int ContactsRating)
+        {
+            _contactsRating = ContactsRating;
+        }
+
+        public int SetContactRating()
+        {
+            return _contactsRating;
         }
 
         public Engagement GetSourceObject()
