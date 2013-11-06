@@ -12,12 +12,12 @@ namespace BlitsMe.Agent.Components.Notification
     class AnswerChatNotificationTrueFalse : ICommand
     {
         public String Message { get; set; }
-        private readonly ChatElementManager _notificationManager;
+        //private readonly ChatElementManager _notificationManager;
         private readonly ChatNotificationTrueFalse _notification;
 
-        internal AnswerChatNotificationTrueFalse(ChatElementManager manager, ChatNotificationTrueFalse notification)
+        internal AnswerChatNotificationTrueFalse(ChatNotificationTrueFalse notification)
         {
-            _notificationManager = manager;
+            //_notificationManager = manager;
             _notification = notification;
         }
         
@@ -25,7 +25,7 @@ namespace BlitsMe.Agent.Components.Notification
         {
             bool accept = (bool)parameter;
             Thread execThread;
-            _notificationManager.DeleteNotification(_notification);
+            //_notificationManager.DeleteNotification(_notification);
             if(accept)
             {
                 execThread = new Thread(() => _notification.OnAnswerTrue(EventArgs.Empty));

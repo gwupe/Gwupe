@@ -23,7 +23,7 @@ namespace BlitsMe.Agent.Components.Functions.Chat
     public class ChatElement : INotifyPropertyChanged
     {
         private static readonly ILog Logger = LogManager.GetLogger(typeof(ChatElement));
-        public ChatElementManager Manager { get; set; }
+        //public ChatElementManager Manager { get; set; }
         private String _message;
         public String Speaker { get; set; }
         public String Message
@@ -190,7 +190,7 @@ namespace BlitsMe.Agent.Components.Functions.Chat
 
         public ICommand DeleteNotification
         {
-            get { return _deleteNotification ?? (_deleteNotification = new DeleteNotificationCommand(Manager, this)); }
+            get { return _deleteNotification ?? (_deleteNotification = new DeleteNotificationCommand(this)); }
         }
 
         internal ChatElement()
@@ -235,19 +235,19 @@ namespace BlitsMe.Agent.Components.Functions.Chat
 
     internal class DeleteNotificationCommand : ICommand
     {
-        private readonly ChatElementManager _notificationManager;
+        //private readonly ChatElementManager _notificationManager;
         private readonly ChatElement _notification;
 
-        internal DeleteNotificationCommand(ChatElementManager manager, ChatElement notification)
+        internal DeleteNotificationCommand(ChatElement notification)
         {
-            this._notificationManager = manager;
+            //this._notificationManager = manager;
             this._notification = notification;
         }
 
         public void Execute(object parameter)
         {
             // Remove from the list
-            _notificationManager.DeleteNotification(_notification);
+            //_notificationManager.DeleteNotification(_notification);
             // Process any event handlers linked to this
             _notification.OnProcessDeleteCommand(new EventArgs());
         }

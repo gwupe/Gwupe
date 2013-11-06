@@ -29,7 +29,7 @@ namespace BlitsMe.Agent.Components.Notification
         private ICommand _answerTrueFalseCommand;
         public ICommand AnswerChatNotificationTrueFalse
         {
-            get { return _answerTrueFalseCommand ?? (_answerTrueFalseCommand = new AnswerChatNotificationTrueFalse(this.Manager, this)); }
+            get { return _answerTrueFalseCommand ?? (_answerTrueFalseCommand = new AnswerChatNotificationTrueFalse(this)); }
         }
     }
 }

@@ -61,7 +61,7 @@ namespace BlitsMe.Agent.Managers
 
         internal void AddNotification(ChatElement notification)
         {
-            notification.Manager = this;
+            //notification.Manager = this;
             lock (Notifications)
             {
                 switch (notification.Flag)

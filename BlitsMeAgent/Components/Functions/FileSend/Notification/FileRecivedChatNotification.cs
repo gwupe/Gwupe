@@ -27,18 +27,18 @@ namespace BlitsMe.Agent.Components.Functions.FileSend.Notification
 
         public ICommand OpenCommand
         {
-            get { return _openCommand ?? (_openCommand = new OpenFileReceivedCommand(this.Manager, this)); }
+            get { return _openCommand ?? (_openCommand = new OpenFileReceivedCommand(this)); }
         }
 
 
         internal class OpenFileReceivedCommand : ICommand
         {
-            private readonly ChatElementManager _notificationManager;
+            //private readonly ChatElementManager _notificationManager;
             private readonly FileRecivedChatNotification _fileReceivedNotification;
 
-            public OpenFileReceivedCommand(ChatElementManager notificationManager, FileRecivedChatNotification fileReceivedNotification)
+            public OpenFileReceivedCommand(FileRecivedChatNotification fileReceivedNotification)
             {
-                _notificationManager = notificationManager;
+                //_notificationManager = notificationManager;
                 this._fileReceivedNotification = fileReceivedNotification;
             }
 
@@ -66,7 +66,7 @@ namespace BlitsMe.Agent.Components.Functions.FileSend.Notification
                     Logger.Error("Failed to open the " + type + " associated with " + _fileReceivedNotification.FileInfo.FilePath, e);
                     return;
                 }
-                _notificationManager.DeleteNotification(_fileReceivedNotification);
+                //_notificationManager.DeleteNotification(_fileReceivedNotification);
             }
 
             public bool CanExecute(object parameter)
