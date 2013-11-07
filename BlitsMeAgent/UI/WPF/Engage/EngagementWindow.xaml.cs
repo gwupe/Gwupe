@@ -42,12 +42,25 @@ namespace BlitsMe.Agent.UI.WPF.Engage
         private Alert _thisAlert;
         internal EngagementVisibleContent EngagementVisibleContent;
 
+        public static readonly DependencyProperty TerminateButtonVisibilityProperty = DependencyProperty.Register
+            (
+                "TerminateButtonVisibility",
+                typeof (Visibility),
+                typeof (EngagementWindow),
+                new PropertyMetadata(Visibility.Collapsed)
+            );
+
+        public Visibility TerminateButtonVisibility
+        {
+            get { return (Visibility)GetValue(TerminateButtonVisibilityProperty); }
+            set { SetValue(TerminateButtonVisibilityProperty, value); }
+        }
+
         internal EngagementWindow(BlitsMeClientAppContext appContext, DispatchingCollection<ObservableCollection<Notification>, Notification> notificationList, Engagement engagement)
         {
             InitializeComponent();
             _appContext = appContext;
             Engagement = engagement;
-            RemoteTerminateButton.Visibility = Visibility.Collapsed;
             engagement.PropertyChanged += EngagementOnPropertyChanged;
             try
             {
@@ -86,7 +99,7 @@ namespace BlitsMe.Agent.UI.WPF.Engage
                     //MainLayout.Background = new SolidColorBrush(Color.FromArgb(255, 43, 81, 155));
                     //_chatWindow.BubbleCover.Background = new SolidColorBrush(Color.FromArgb(255, 43, 81, 155));
                     //KickOffButton.Visibility = Visibility.Collapsed;
-                    RemoteAssistanceButton.Visibility = Visibility.Visible;
+                    //RemoteAssistanceButton.Visibility = Visibility.Visible;
                 }
                 else
                 {
@@ -111,7 +124,7 @@ namespace BlitsMe.Agent.UI.WPF.Engage
                 MainLayout.Background = new SolidColorBrush(Colors.Red);
                 //_chatWindow.BubbleCover.Background = new SolidColorBrush(Colors.Red);
                // KickOffButton.Visibility = Visibility.Visible;
-                RemoteAssistanceButton.Visibility = Visibility.Collapsed;
+                //RemoteAssistanceButton.Visibility = Visibility.Collapsed;
             }
             else
             {
@@ -120,7 +133,7 @@ namespace BlitsMe.Agent.UI.WPF.Engage
                         MainLayout.Background = new SolidColorBrush(Colors.Red);
                         //_chatWindow.BubbleCover.Background = new SolidColorBrush(Colors.Red);
                         //KickOffButton.Visibility = Visibility.Visible; ;
-                        RemoteAssistanceButton.Visibility = Visibility.Collapsed;
+                        //RemoteAssistanceButton.Visibility = Visibility.Collapsed;
 
                     }));
             }
@@ -212,8 +225,8 @@ namespace BlitsMe.Agent.UI.WPF.Engage
             try
             {
                 ((Components.Functions.RemoteDesktop.Function)Engagement.GetFunction("RemoteDesktop")).RequestRDPSession(this, Engagement);
-                RemoteAssistanceButton.Visibility = Visibility.Collapsed;
-                RemoteTerminateButton.Visibility = Visibility.Visible;
+                //RemoteAssistanceButton.Visibility = Visibility.Collapsed;
+                //RemoteTerminateButton.Visibility = Visibility.Visible;
             }
             catch (Exception ex)
             {
@@ -226,10 +239,9 @@ namespace BlitsMe.Agent.UI.WPF.Engage
             EngagementContent.Content = null;
         }
 
-
         internal void ShowChat()
         {
-            BlitsMeClientAppContext.CurrentAppContext.UIManager.GetEngagement(Engagement);
+            BlitsMeClientAppContext.CurrentAppContext.UIManager.GetEngagement(Engagement,this);
             _chatWindow = _chatWindow ?? new ChatWindow(_appContext, this) {Notifications = {ItemsSource = _notificationView.View}};
             EngagementContent.Content = _chatWindow;
             Engagement.IsUnread = false;
@@ -266,13 +278,12 @@ namespace BlitsMe.Agent.UI.WPF.Engage
         {
             Thread thread = new Thread(((Components.Functions.RemoteDesktop.Function)Engagement.GetFunction("RemoteDesktop")).Server.Close) { IsBackground = true };
             thread.Start();
-            RemoteAssistanceButton.Visibility = Visibility.Visible;
-            RemoteTerminateButton.Visibility = Visibility.Collapsed;
+            //RemoteAssistanceButton.Visibility = Visibility.Visible;
+            //RemoteTerminateButton.Visibility = Visibility.Collapsed;
         }
 
         public void StopRDPConnection()
         {
-            
             if (Engagement != null)
             {
                 Thread thread =

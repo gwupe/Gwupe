@@ -6,6 +6,7 @@ using BlitsMe.Agent.Components;
 using BlitsMe.Agent.Components.Functions.Chat;
 using BlitsMe.Agent.Components.Search;
 using BlitsMe.Agent.UI.WPF;
+using BlitsMe.Agent.UI.WPF.Engage;
 using log4net;
 
 namespace BlitsMe.Agent.Managers
@@ -23,8 +24,9 @@ namespace BlitsMe.Agent.Managers
         private Engagement _engagement;
         private Engagement _remoteEngagement;
         private Function _chat;
+        private EngagementWindow _engagementWindow;
         private int _contactsRating;
-
+        
         internal UIManager()
         {
             uiReady = new AutoResetEvent(false);
@@ -162,10 +164,16 @@ namespace BlitsMe.Agent.Managers
         }*/
          
 
-        public void GetEngagement(Engagement engagement)
+        public void GetEngagement(Engagement engagement, EngagementWindow engagementWindow)
         {
             _engagement = engagement;
+            _engagementWindow = engagementWindow;
         }
+
+        //public void ShowRDPTerminateButton()
+        //{
+        //    _engagementWindow.TerminateButtonVisibility = Visibility.Visible;
+        //}
 
         public void GetRemoteEngagement(Engagement engagement)
         {

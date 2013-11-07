@@ -8,7 +8,8 @@
 	xmlns:local="clr-namespace:BlitsMe.Agent.UI.WPF.Engage"
 	mc:Ignorable="d"
 	x:Class="BlitsMe.Agent.UI.WPF.Engage.EngagementWindow"
-	d:DesignWidth="600" d:DesignHeight="480" >
+	d:DesignWidth="600" d:DesignHeight="480" 
+    Name="EngageWindow">
     <UserControl.Resources>
         <!--<ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
@@ -54,7 +55,7 @@
 
                 <Button x:Name="RemoteTerminateButton" ToolTip="Terminate Remote Assistance" 
                         Margin="10,0,0,0" Template="{DynamicResource TransparentButtonStyle}" 
-                        Click="KickOffButton_Click">
+                        Click="KickOffButton_Click" Visibility="{Binding ElementName=EngageWindow,Path=TerminateButtonVisibility,Mode=TwoWay,UpdateSourceTrigger=PropertyChanged,NotifyOnSourceUpdated=True}">
                     <Image Source="..\Images\close.png"/>
                 </Button>
             </StackPanel>

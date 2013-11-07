@@ -31,7 +31,6 @@ namespace BlitsMe.Agent.Components.Functions.RemoteDesktop
 
         private readonly BlitsMeClientAppContext _appContext;
         private readonly Engagement _engagement;
-        public  EngagementWindow _EngagementWindow;
         public Engagement _Engagement;
         public override String Name { get { return "RemoteDesktop"; }}
 
@@ -290,14 +289,14 @@ namespace BlitsMe.Agent.Components.Functions.RemoteDesktop
             {
                 IsActive = true;
                 Chat.LogSecondPartySystemMessage(_engagement.SecondParty.Person.Firstname + " accepted your remote assistance request, please wait while we establish a connection...");
-                RDPDisconnectNotification notification = new RDPDisconnectNotification()
-                {
-                    Manager = _appContext.NotificationManager,
-                    Person = _engagement.SecondParty.Person.Avatar,
-                    Message = "TerminateRDP"
-                };
-                _appContext.NotificationManager.AddNotification(notification);
-                _appContext.UIManager.Show();
+                //RDPDisconnectNotification notification = new RDPDisconnectNotification()
+                //{
+                //    Manager = _appContext.NotificationManager,
+                //    Person = _engagement.SecondParty.Person.Avatar,
+                //    Message = "TerminateRDP"
+                //};
+                //_appContext.NotificationManager.AddNotification(notification);
+                //_appContext.UIManager.Show();
                 // Wait for a tunnel
                 lock (_engagement.TunnelWaitLock)
                 {
@@ -360,11 +359,6 @@ namespace BlitsMe.Agent.Components.Functions.RemoteDesktop
                 _client.Close();
             if (_server != null)
                 _server.Close();
-        }
-
-        public EngagementWindow GetEngageWindow()
-        {
-            return _EngagementWindow;
         }
     }
 
