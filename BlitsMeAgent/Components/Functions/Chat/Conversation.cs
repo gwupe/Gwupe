@@ -1,5 +1,6 @@
 using System;
 using System.Collections.ObjectModel;
+using BlitsMe.Agent.Components.Functions.Chat.ChatElement;
 using log4net;
 
 namespace BlitsMe.Agent.Components.Functions.Chat
@@ -8,7 +9,7 @@ namespace BlitsMe.Agent.Components.Functions.Chat
     {
         private readonly BlitsMeClientAppContext _appContext;
         private static readonly ILog Logger = LogManager.GetLogger(typeof (Conversation));
-        public ObservableCollection<ChatElement> Exchange{ get; private set; }
+        public ObservableCollection<ChatElement.ChatElement> Exchange{ get; private set; }
         public DateTime Started { get; set; }
         public DateTime Stopped { get; set; }
         // 10 minute conversation groups
@@ -17,32 +18,31 @@ namespace BlitsMe.Agent.Components.Functions.Chat
         public Conversation(BlitsMeClientAppContext appContext)
         {
             _appContext = appContext;
-            Exchange = new ObservableCollection<ChatElement>();
+            Exchange = new ObservableCollection<ChatElement.ChatElement>();
         }
 
-        public ChatElement AddMessage(String message, String speaker)
+        public ChatElement.ChatElement ReceiveMessage(String message, String speaker)
         {
-            ChatElement newMessage = new ChatElement
-                {
-                    Message = message, 
-                    Speaker = speaker, 
-                    DeliveryState = ChatDeliveryState.Delivered, 
-                    SpeakTime = DateTime.Now
-                };
+            ChatElement.ChatElement newMessage = new TargetChatElement()
+            {
+                Message = message,
+                Speaker = speaker,
+                SpeakTime = DateTime.Now
+            };
             _addToExchange(newMessage);
             return newMessage;
         }
 
-        public void AddMessage(ChatElement element)
+        public void AddMessage(ChatElement.ChatElement element)
         {
             _addToExchange(element);
         }
 
-        private void _addToExchange(ChatElement newMessage)
+        private void _addToExchange(ChatElement.ChatElement newMessage)
         {
             if (Exchange.Count > 0)
             {
-                ChatElement lastMessage = Exchange[Exchange.Count - 1];
+                ChatElement.ChatElement lastMessage = Exchange[Exchange.Count - 1];
                 if (lastMessage.Speaker.Equals(newMessage.Speaker) &&
                     (newMessage.SpeakTime.Ticks - lastMessage.SpeakTime.Ticks < MaxChatInterval))
                 {

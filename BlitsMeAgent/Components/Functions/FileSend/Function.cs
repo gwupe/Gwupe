@@ -4,6 +4,8 @@ using System.IO;
 using System.Linq;
 using System.Threading;
 using BlitsMe.Agent.Components.Functions.API;
+using BlitsMe.Agent.Components.Functions.Chat;
+using BlitsMe.Agent.Components.Functions.FileSend.ChatElement;
 using BlitsMe.Agent.Components.Functions.FileSend.Notification;
 using BlitsMe.Agent.Components.Functions.RemoteDesktop;
 using BlitsMe.Agent.Components.Notification;
@@ -95,7 +97,6 @@ namespace BlitsMe.Agent.Components.Functions.FileSend
                 {
                     AssociatedUsername = _engagement.SecondParty.Person.Username,
                     Message = "Offering " + _engagement.SecondParty.Person.Firstname + " " + fileInfo.Filename,
-                    Flag = "",
                     CancelTooltip = "Cancel File Send",
                     Id = fileInfo.FileSendId
                 };
@@ -131,6 +132,7 @@ namespace BlitsMe.Agent.Components.Functions.FileSend
                 };
             IsActive = true;
             _pendingFileReceives.Add(fileSendId, fileSendInfo);
+            /*
             var notification = new FileSendRequestNotification()
             {
                 AssociatedUsername = _engagement.SecondParty.Person.Username,
@@ -143,8 +145,31 @@ namespace BlitsMe.Agent.Components.Functions.FileSend
             notification.AnsweredFalse += (sender, args) => ProcessDenyFile(fileSendInfo);
             fileSendInfo.Notification = notification;
             _appContext.NotificationManager.AddNotification(notification);
+             */
+            FileSendRequestChatElement chatElement = LogFileSendRequest(_engagement.SecondParty.Person.Firstname + " offered you the file " + filename + ".");
+            chatElement.AnsweredTrue += (sender, args) => ProcessAcceptFile(fileSendInfo);
+            chatElement.AnsweredFalse += (sender, args) => ProcessDenyFile(fileSendInfo);
             //Chat.LogSystemMessage(_engagement.SecondParty.Person.Firstname + " offered you the file " + filename + ".");
             OnNewActivity(new FileSendActivity(_engagement, FileSendActivity.FILE_SEND_REQUEST) { To = "_SELF", From = _engagement.SecondParty.Person.Username, FileInfo = fileSendInfo });
+        }
+
+
+        internal FileSendRequestChatElement LogFileSendRequest(String message)
+        {
+            var chatElement = new FileSendRequestChatElement()
+            {
+                Message = message,
+                SpeakTime = DateTime.Now
+            };
+            Chat.Conversation.AddMessage(chatElement);
+            // Fire the event
+            OnNewActivity(new ChatActivity(_engagement, ChatActivity.LOG_FILE_SEND_REQUEST)
+            {
+                From = _engagement.SecondParty.Person.Username,
+                To = _appContext.CurrentUserManager.CurrentUser.Username,
+                Message = message
+            });
+            return chatElement;
         }
 
         // We call this when we deny them access to receive the file

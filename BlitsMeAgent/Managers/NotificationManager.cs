@@ -62,6 +62,7 @@ namespace BlitsMe.Agent.Managers
             notification.Manager = this;
             lock (Notifications)
             {
+                /*
                 switch (notification.Flag)
                 {
                     case "ReceiveFileRequest":
@@ -74,6 +75,8 @@ namespace BlitsMe.Agent.Managers
                         Notifications.Add(notification);
                         break;
                 }
+                 */
+                Notifications.Add(notification);
             }
             if (_removerTimer.Enabled == false)
             {

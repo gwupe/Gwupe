@@ -4,12 +4,13 @@
 	xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
 	xmlns:ed="http://schemas.microsoft.com/expression/2010/drawing"
 	xmlns:Utils="clr-namespace:BlitsMe.Agent.UI.WPF.Utils" 
-	xmlns:chat="clr-namespace:BlitsMe.Agent.Components.Functions.Chat" 
+	xmlns:chat="clr-namespace:BlitsMe.Agent.Components.Functions.Chat.ChatElement" 
+	xmlns:filesend="clr-namespace:BlitsMe.Agent.Components.Functions.FileSend.ChatElement" 
+	xmlns:rdp="clr-namespace:BlitsMe.Agent.Components.Functions.RemoteDesktop.ChatElement" 
     xmlns:notification="clr-namespace:BlitsMe.Agent.Components.Notification"
 	xmlns:engage="clr-namespace:BlitsMe.Agent.UI.WPF.Engage" 
-    xmlns:search="clr-namespace:BlitsMe.Agent.UI.WPF.Search"
     xmlns:s="clr-namespace:System;assembly=mscorlib"
-	xmlns:FileSendNotification="clr-namespace:BlitsMe.Agent.Components.Functions.FileSend.Notification">
+>
 
     <!-- Resource dictionary entries should be defined here. -->
     <ResourceDictionary.MergedDictionaries>
@@ -340,7 +341,7 @@
         </Grid>
     </DataTemplate>
 
-    <DataTemplate x:Key="ChatOtherSingle">
+    <DataTemplate  DataType="{x:Type chat:TargetChatElement}">
         <Grid>
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="Auto"/>
@@ -412,7 +413,7 @@
         </Grid>
     </DataTemplate>
 
-    <DataTemplate x:Key="ChatMeSingle" >
+    <DataTemplate DataType="{x:Type chat:SelfChatElement}" >
         <Grid>
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="*"/>
@@ -448,7 +449,44 @@
         </Grid>
     </DataTemplate>
 
-    <DataTemplate x:Key="ChatSystem">
+    <DataTemplate DataType="{x:Type chat:SystemChatElement}">
+        <Grid>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
+            <!--<Image Style="{DynamicResource ChatBubblePointMe}" Grid.Column="0"/>-->
+            <Border Background="#C6D9F1" CornerRadius="5" Grid.Column="1" MinHeight="40" Margin="0,5,0,0" >
+                <Grid Style="{DynamicResource ChatBubbleMeNew}" Background="Transparent">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="10"/>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="30"/>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="15"/>
+                    </Grid.ColumnDefinitions>
+
+                    <Border HorizontalAlignment="Right" Margin="10,5,0,0" Height="30" Width="30" Grid.Column="0"
+                                   VerticalAlignment="Top" BorderThickness="1" BorderBrush="Transparent">
+                        <!--<Image Stretch="Uniform" Source="{Binding Path=Person.Avatar, Converter={StaticResource imageStreamReader}}" Width="30" Height="30" />-->
+                        <!--<engage:UserImage />-->
+                    </Border>
+
+                    <TextBlock  Style="{DynamicResource MessageTimeStyle}" Grid.Column="2"
+							HorizontalAlignment="Right"
+							Margin="0,15,0,0"
+							Text="{Binding SpeakTime, Converter={StaticResource relativeMessageTimeConverter}, FallbackValue=Yesterday 8:49}"
+						/>
+
+                    <TextBlock Margin="0,10,0,0" HorizontalAlignment="Left" Style="{DynamicResource MessageTextbox}" Grid.Column="4"
+                       Text="{Binding Path=Message, FallbackValue=A message from the system}" TextAlignment="Left"/>
+                </Grid>
+            </Border>
+        </Grid>
+    </DataTemplate>
+
+    <DataTemplate DataType="{x:Type chat:TargetSystemChatElement}">
         <Grid>
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="Auto"/>
@@ -525,7 +563,7 @@
         </Grid>
     </DataTemplate>
 
-    <DataTemplate x:Key="ChatSystemError">
+    <DataTemplate DataType="{x:Type chat:SystemErrorElement}">
         <Grid>
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="*"/>
@@ -560,7 +598,7 @@
         </Grid>
     </DataTemplate>
 
-    <DataTemplate x:Key="ChatNotification" DataType="{x:Type FileSendNotification:FileRecivedChatNotification}">
+    <DataTemplate DataType="{x:Type filesend:FileSendRequestChatElement}">
         <Grid>
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="Auto"/>
@@ -589,17 +627,31 @@
                     <TextBlock Margin="20,0,0,0" Style="{DynamicResource MessageTextbox}" VerticalAlignment="Center"
                        Text="{Binding Path=Message, FallbackValue=A message from them}" Grid.Column="3"
                                Foreground="Gray" FontSize="12"/>
-
-                    <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Margin="5,0,10,0" Grid.Column="4">
-                        <Button Style="{DynamicResource AcceptButtonStyle}" Height="15" Width="15"/>
-                        <Button Style="{DynamicResource DenyButtonStyle}" Margin="5,0,0,0" Height="15" Width="15"/>
-                    </StackPanel>
+                    <ContentControl Grid.Column="4" DataContext="{Binding Path=.}">
+                        <ContentControl.Style>
+                            <Style TargetType="ContentControl">
+                                <Setter Property="ContentTemplate" Value="{DynamicResource AnswerYesNoButtons}" />
+                                <Style.Triggers>
+                                    <DataTrigger Binding="{Binding Answered}" Value="True">
+                                        <Setter Property="ContentTemplate" Value="{x:Null}" />
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </ContentControl.Style>
+                    </ContentControl>
                 </Grid>
             </Border>
         </Grid>
     </DataTemplate>
 
-    <DataTemplate x:Key="ChatNotificationGroup" DataType="{x:Type FileSendNotification:FileRecivedChatNotification}">
+    <DataTemplate x:Key="AnswerYesNoButtons">
+        <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Margin="5,0,10,0" Grid.Column="4">
+            <Button Style="{DynamicResource AcceptButtonStyle}" Height="15" Width="15"/>
+            <Button Style="{DynamicResource DenyButtonStyle}" Margin="5,0,0,0" Height="15" Width="15"/>
+        </StackPanel>
+    </DataTemplate>
+
+    <DataTemplate DataType="{x:Type rdp:RdpRequestChatElement}">
         <Grid>
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="Auto"/>
@@ -607,7 +659,6 @@
                 <ColumnDefinition Width="9"/>
             </Grid.ColumnDefinitions>
             <!--<Image Style="{DynamicResource ChatBubblePointMe}" Grid.Column="0"/>-->
-            <StackPanel Orientation="Vertical" Margin="0,5,0,-5" Grid.Column="1" >
                 <Border Background="#C6D9F1" CornerRadius="5" MinHeight="40" Height="Auto" Width="Auto" >
                     <Grid Style="{DynamicResource ChatBubbleMeNew}" Background="Transparent">
                         <Grid.ColumnDefinitions>
@@ -629,19 +680,25 @@
                        Text="{Binding Path=Message, FallbackValue=A message from them}" Grid.Column="3"
                                Foreground="Gray" FontSize="12"/>
 
-                        <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Margin="5,0,10,0" Grid.Column="4">
-                            <Button Style="{DynamicResource AcceptButtonStyle}" Height="15" Width="15"/>
-                            <Button Style="{DynamicResource DenyButtonStyle}" Margin="5,0,0,0" Height="15" Width="15"/>
-                        </StackPanel>
+                        <ContentControl Grid.Column="4" DataContext="{Binding Path=.}">
+                            <ContentControl.Style>
+                                <Style TargetType="ContentControl">
+                                    <Setter Property="ContentTemplate" Value="{DynamicResource AnswerYesNoButtons}" />
+                                    <Style.Triggers>
+                                        <DataTrigger Binding="{Binding Answered}" Value="True">
+                                            <Setter Property="ContentTemplate" Value="{x:Null}" />
+                                        </DataTrigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </ContentControl.Style>
+                        </ContentControl>
                     </Grid>
                 </Border>
-                <Image Style="{DynamicResource ChatBubbleJoinMe}" />
-            </StackPanel>
         </Grid>
     </DataTemplate>
 
     <Style x:Key="AcceptButtonStyle" TargetType="{x:Type Button}" BasedOn="{StaticResource NotificationActionButton}">
-        <Setter Property="Command" Value="{Binding AnswerChatNotificationTrueFalse}" />
+        <Setter Property="Command" Value="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type Grid}}, Path=DataContext.AnswerTrueFalse}" />
         <Setter Property="CommandParameter">
             <Setter.Value>
                 <s:Boolean>True</s:Boolean>
@@ -650,9 +707,9 @@
         <Setter Property="ContentTemplate" Value="{DynamicResource AcceptButtonTemplate}" />
         <Setter Property="ToolTip" Value="Accept" />
     </Style>
-    
+
     <Style x:Key="DenyButtonStyle" TargetType="{x:Type Button}" BasedOn="{StaticResource NotificationActionButton}">
-        <Setter Property="Command" Value="{Binding AnswerChatNotificationTrueFalse}" />
+        <Setter Property="Command" Value="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type Grid}}, Path=DataContext.AnswerTrueFalse}" />
         <Setter Property="CommandParameter">
             <Setter.Value>
                 <s:Boolean>False</s:Boolean>
@@ -691,7 +748,7 @@
         <Setter Property="HorizontalAlignment" Value="Left" />
     </Style>
 
-    <DataTemplate x:Key="ChatServiceComplete">
+    <DataTemplate DataType="{x:Type rdp:ServiceCompleteChatElement}">
         <StackPanel Margin="0,5,0,0">
             <Border Style="{DynamicResource MessageBorder}">
                 <StackPanel Orientation="Horizontal">

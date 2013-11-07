@@ -1,71 +1,36 @@
 using System;
-using System.Collections.ObjectModel;
 using System.ComponentModel;
-using System.Threading;
 using System.Windows.Input;
-using BlitsMe.Agent.Components.Notification;
-using BlitsMe.Agent.Managers;
 using BlitsMe.Common.Security;
 using log4net;
 
-namespace BlitsMe.Agent.Components.Functions.Chat
+namespace BlitsMe.Agent.Components.Functions.Chat.ChatElement
 {
 
-    public enum ChatDeliveryState
-    {
-        NotAttempted=1,
-        Trying,
-        Delivered,
-        FailedTrying,
-        Failed
-    };
 
-    public class ChatElement : INotifyPropertyChanged
+
+    public abstract class ChatElement : INotifyPropertyChanged, IChatMessage
     {
         private static readonly ILog Logger = LogManager.GetLogger(typeof(ChatElement));
         //public ChatElementManager Manager { get; set; }
         private String _message;
-        public String Speaker { get; set; }
+        public abstract string Speaker { get; set; }
+
         public String Message
         {
             get { return _message; }
-            set { _message = value; OnPropertyChanged(new PropertyChangedEventArgs("Message")); }
+            set { _message = value; OnPropertyChanged("Message"); }
         }
         public DateTime SpeakTime { get; set; }
-        public DateTime DeliveryTime
-        {
-            get { return _deliveryTime; }
-            private set
-            {
-                _deliveryTime = value;
-                OnPropertyChanged(new PropertyChangedEventArgs("DeliveryTime"));
-            }
-        }
-
-        public bool Delivered
-        {
-            get { return _delivered; }
-            private set
-            {
-                _delivered = value;
-                if (_delivered)
-                {
-                    DeliveryTime = DateTime.Now;
-                }
-                OnPropertyChanged(new PropertyChangedEventArgs("Delivered"));
-            }
-        }
 
         private bool _lastWord = true;
-        private DateTime _deliveryTime;
-        private bool _delivered;
 
         public bool LastWord
         {
             get { return _lastWord; }
-            set { _lastWord = value; OnPropertyChanged(new PropertyChangedEventArgs("ChatType")); }
+            set { _lastWord = value; OnPropertyChanged("ChatType"); }
         }
-
+/*
         public String ChatType
         {
             get
@@ -122,7 +87,7 @@ namespace BlitsMe.Agent.Components.Functions.Chat
                     {
                         return "ChatNotificationGroup";
                     }
-                    
+
                 }
                 else if (Speaker.Equals("_RDP_REQUEST"))
                 {
@@ -141,47 +106,35 @@ namespace BlitsMe.Agent.Components.Functions.Chat
                 }
             }
         }
-
+*/
         public event PropertyChangedEventHandler PropertyChanged;
 
-        protected void OnPropertyChanged(PropertyChangedEventArgs e)
+        protected virtual void OnPropertyChanged(string propertyName)
         {
             PropertyChangedEventHandler handler = PropertyChanged;
-            if (handler != null) handler(this, e);
+            if (handler != null) handler(this, new PropertyChangedEventArgs(propertyName));
         }
+
 
         public override string ToString()
         {
-            return Message;
+            return SpeakTime + ": " + Speaker + "> " + Message;
         }
 
-        private ChatDeliveryState _deliveryState = ChatDeliveryState.NotAttempted;
-        public ChatDeliveryState DeliveryState
-        {
-            get
-            {
-                return _deliveryState;
-            }
-            set
-            {
-                _deliveryState = value;
-                if (_deliveryState == ChatDeliveryState.Delivered)
-                    this.Delivered = true;
-                OnPropertyChanged(new PropertyChangedEventArgs("DeliveryState"));
-            }
-        }
 
+        /*
         private ICommand _deleteNotification;
         public event EventHandler Deleted;
         public String AssociatedUsername { get; set; }
         public int DeleteTimeout { get; set; }
         internal String Id { get; set; }
         public readonly long NotifyTime;
+        */
         private byte[] _person;
         private string _name;
         private string _location;
         private string _flag;
-
+/*
         public void OnProcessDeleteCommand(EventArgs e)
         {
             EventHandler handler = Deleted;
@@ -192,14 +145,15 @@ namespace BlitsMe.Agent.Components.Functions.Chat
         {
             get { return _deleteNotification ?? (_deleteNotification = new DeleteNotificationCommand(this)); }
         }
-
-        internal ChatElement()
+*/
+/*        internal ChatElement()
         {
-            NotifyTime = DateTime.Now.Ticks;
-            DeleteTimeout = 0;
-            Id = Util.getSingleton().generateString(32);
+//            NotifyTime = DateTime.Now.Ticks;
+//            DeleteTimeout = 0;
+//            Id = Util.getSingleton().generateString(32);
         }
-
+        */
+        /*
         public virtual byte[] Person
         {
             get { return _person; }
@@ -224,40 +178,7 @@ namespace BlitsMe.Agent.Components.Functions.Chat
             set { _flag = value; OnPropertyChanged("Flag"); }
         }
 
-
-
-        protected virtual void OnPropertyChanged(string propertyName)
-        {
-            PropertyChangedEventHandler handler = PropertyChanged;
-            if (handler != null) handler(this, new PropertyChangedEventArgs(propertyName));
-        }
-    }
-
-    internal class DeleteNotificationCommand : ICommand
-    {
-        //private readonly ChatElementManager _notificationManager;
-        private readonly ChatElement _notification;
-
-        internal DeleteNotificationCommand(ChatElement notification)
-        {
-            //this._notificationManager = manager;
-            this._notification = notification;
-        }
-
-        public void Execute(object parameter)
-        {
-            // Remove from the list
-            //_notificationManager.DeleteNotification(_notification);
-            // Process any event handlers linked to this
-            _notification.OnProcessDeleteCommand(new EventArgs());
-        }
-
-        public bool CanExecute(object parameter)
-        {
-            return true;
-        }
-
-        public event EventHandler CanExecuteChanged;
+        */
 
     }
 }

@@ -19,7 +19,6 @@ namespace BlitsMe.Agent.Components.Notification
         private byte[] _person;
         private string _name;
         private string _location;
-        private string _flag;
 
         public void OnProcessDeleteCommand(EventArgs e)
         {
@@ -61,12 +60,6 @@ namespace BlitsMe.Agent.Components.Notification
         {
             get { return _location; }
             set { _location = value; OnPropertyChanged("Location"); }
-        }
-
-        public virtual string Flag
-        {
-            get { return _flag; }
-            set { _flag = value; OnPropertyChanged("Flag"); }
         }
 
         public override string ToString()

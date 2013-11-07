@@ -3,6 +3,8 @@ using System.Diagnostics;
 using System.Threading;
 using BlitsMe.Agent.Components.Functions.API;
 using BlitsMe.Agent.Components.Functions.Chat;
+using BlitsMe.Agent.Components.Functions.Chat.ChatElement;
+using BlitsMe.Agent.Components.Functions.RemoteDesktop.ChatElement;
 using BlitsMe.Agent.Components.Functions.RemoteDesktop.Notification;
 using BlitsMe.Agent.Components.Notification;
 using BlitsMe.Agent.UI.WPF.Engage;
@@ -92,16 +94,20 @@ namespace BlitsMe.Agent.Components.Functions.RemoteDesktop
                     IsActive = true;
                     // Set the shortcode, to make sure we connect to the right caller.
                     _engagement.SecondParty.ActiveShortCode = shortCode;
+                    /*
                     RDPNotification rdpNotification = new RDPNotification()
                         {
                             Message = "Incoming support request from " + _engagement.SecondParty.Person.Name + ".",
                             AssociatedUsername = _engagement.SecondParty.Person.Username,
-                            Flag = "RDPRequest",
                             DeleteTimeout = 300
                         };
                     rdpNotification.AnsweredTrue += delegate { ProcessAnswer(true); };
                     rdpNotification.AnsweredFalse += delegate { ProcessAnswer(false); };
                     _appContext.NotificationManager.AddNotification(rdpNotification);
+                    */
+                    var rdpChatElement = LogRdpRequest(_engagement.SecondParty.Person.Firstname + " requested control of your desktop.");
+                    rdpChatElement.AnsweredTrue += delegate { ProcessAnswer(true); };
+                    rdpChatElement.AnsweredFalse += delegate { ProcessAnswer(false); };
                     //Chat.LogSecondPartySystemMessage(_engagement.SecondParty.Person.Firstname +
                     //                                  " requested control of your desktop.");
                     //OnRDPIncomingRequestEvent(new RdpIncomingRequest(_engagement));
@@ -110,6 +116,23 @@ namespace BlitsMe.Agent.Components.Functions.RemoteDesktop
             }
         }
 
+        internal RdpRequestChatElement LogRdpRequest(String message)
+        {
+            RdpRequestChatElement chatElement = new RdpRequestChatElement()
+            {
+                Message = message,
+                SpeakTime = DateTime.Now
+            };
+            Chat.Conversation.AddMessage(chatElement);
+            // Fire the event
+            OnNewActivity(new ChatActivity(_engagement, ChatActivity.LOG_RDP_REQUEST)
+            {
+                From = _engagement.SecondParty.Person.Username,
+                To = _appContext.CurrentUserManager.CurrentUser.Username,
+                Message = message
+            });
+            return chatElement;
+        }
         // Called when the local user accepts or denies the remote desktop request
         private void ProcessAnswer(bool accept)
         {
@@ -232,7 +255,7 @@ namespace BlitsMe.Agent.Components.Functions.RemoteDesktop
             RDPRequestRq request = new RDPRequestRq() { shortCode = _engagement.SecondParty.ActiveShortCode, username = _engagement.SecondParty.Person.Username, interactionId = _engagement.Interactions.CurrentOrNewInteraction.Id };
             try
             {
-                ChatElement chatElement = Chat.LogSystemMessage("You sent " + _engagement.SecondParty.Person.Firstname + " a request to control their desktop.");
+                IChatMessage chatElement = Chat.LogSystemMessage("You sent " + _engagement.SecondParty.Person.Firstname + " a request to control their desktop.");
                 _appContext.ConnectionManager.Connection.RequestAsync<RDPRequestRq, RDPRequestRs>(request, (req, res, ex) => ProcessRequestRDPSessionResponse(req, res, ex, chatElement));
             }
             catch (Exception ex)
@@ -243,18 +266,18 @@ namespace BlitsMe.Agent.Components.Functions.RemoteDesktop
         }
 
         // Async callback to a RDP Request
-        private void ProcessRequestRDPSessionResponse(RDPRequestRq request, RDPRequestRs response, Exception e, ChatElement chatElement)
+        private void ProcessRequestRDPSessionResponse(RDPRequestRq request, RDPRequestRs response, Exception e, IChatMessage chatElement)
         {
             if (e != null)
             {
                 IsActive = false;
                 Logger.Error("Received a async response to " + request.id + " that is an error", e);
-                chatElement.DeliveryState = ChatDeliveryState.Failed;
+                //chatElement.DeliveryState = ChatDeliveryState.Failed;
             }
             else
             {
                 IsActive = true;
-                chatElement.DeliveryState = ChatDeliveryState.Delivered;
+                //chatElement.DeliveryState = ChatDeliveryState.Delivered;
                 OnNewActivity(new RemoteDesktopActivity(_engagement, RemoteDesktopActivity.REMOTE_DESKTOP_REQUEST) { From = "_SELF", To = _engagement.SecondParty.Person.Username });
             }
         }

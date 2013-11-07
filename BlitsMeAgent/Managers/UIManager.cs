@@ -146,19 +146,21 @@ namespace BlitsMe.Agent.Managers
             _chat = chat;
         }
 
+        /*
         public void ReceiveNotificationChat(String message,string Flag)
         {
             switch (Flag)
             {
                 case "ReceiveFileRequest":
-                    _chat.LogSecondPartySystemNotification(message);
+                    _chat.LogFileSendRequest(message);
                     break;
                 case "RDPRequest":
-                    _chat.LogSecondPartySystemRDPRequest(message);
+                    _chat.LogRdpRequest(message);
                     break;
             }
             
-        }
+        }*/
+         
 
         public void GetEngagement(Engagement engagement)
         {

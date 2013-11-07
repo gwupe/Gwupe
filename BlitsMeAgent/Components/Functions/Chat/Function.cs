@@ -2,6 +2,9 @@
 using System.Collections.Concurrent;
 using System.Threading;
 using BlitsMe.Agent.Components.Functions.API;
+using BlitsMe.Agent.Components.Functions.Chat.ChatElement;
+using BlitsMe.Agent.Components.Functions.FileSend.ChatElement;
+using BlitsMe.Agent.Components.Functions.RemoteDesktop.ChatElement;
 using BlitsMe.Cloud.Messaging.API;
 using BlitsMe.Cloud.Messaging.Request;
 using BlitsMe.Cloud.Messaging.Response;
@@ -34,7 +37,7 @@ namespace BlitsMe.Agent.Components.Functions.Chat
 
         // Thread which handles the sending of messages (sending is async)
         private readonly Thread _chatSender;
-        private readonly ConcurrentQueue<ChatElement> _chatQueue;
+        private readonly ConcurrentQueue<SelfChatElement> _chatQueue;
 
         internal Function(BlitsMeClientAppContext appContext, Engagement engagement)
         {
@@ -42,7 +45,7 @@ namespace BlitsMe.Agent.Components.Functions.Chat
             this._engagement = engagement;
             this._to = engagement.SecondParty.Person.Username;
             Conversation = new Conversation(appContext);
-            _chatQueue = new ConcurrentQueue<ChatElement>();
+            _chatQueue = new ConcurrentQueue<SelfChatElement>();
             _chatSender = new Thread(ProcessChats) { Name = "ChatSender-" + _to, IsBackground = true };
             _chatSender.Start();
         }
@@ -61,7 +64,7 @@ namespace BlitsMe.Agent.Components.Functions.Chat
             {
                 while (_chatQueue.Count > 0)
                 {
-                    ChatElement chatElement;
+                    SelfChatElement chatElement;
                     if (_chatQueue.TryPeek(out chatElement))
                     {
                         chatElement.DeliveryState = ChatDeliveryState.Trying;
@@ -82,7 +85,7 @@ namespace BlitsMe.Agent.Components.Functions.Chat
                         {
                             Logger.Error("Failed to send chat message to " + _to + " : " + e.Message, e);
                             // Set all pending to still trying
-                            foreach (ChatElement element in _chatQueue.ToArray())
+                            foreach (SelfChatElement element in _chatQueue.ToArray())
                             {
                                 element.DeliveryState = ChatDeliveryState.FailedTrying;
                             }
@@ -108,7 +111,13 @@ namespace BlitsMe.Agent.Components.Functions.Chat
 
         internal void ReceiveChatMessage(String message, String chatId, String interactionId, String shortCode)
         {
-            Conversation.AddMessage(message, _to);
+            ChatElement.ChatElement newMessage = new TargetChatElement()
+            {
+                Message = message,
+                Speaker = _to,
+                SpeakTime = DateTime.Now
+            };
+            Conversation.AddMessage(newMessage);
             if (chatId != null)
             {
                 _threadId = chatId;
@@ -124,9 +133,14 @@ namespace BlitsMe.Agent.Components.Functions.Chat
             OnDeactivate(EventArgs.Empty);
         }
 
-        internal ChatElement LogSystemMessage(String message)
+        internal ChatElement.ChatElement LogSystemMessage(String message)
         {
-            ChatElement chatElement = Conversation.AddMessage(message, "_SYSTEM");
+            ChatElement.ChatElement chatElement = new SystemChatElement()
+            {
+                Message = message,
+                SpeakTime = DateTime.Now
+            };
+            Conversation.AddMessage(chatElement);
             // Fire the event
             OnNewActivity(new ChatActivity(_engagement, ChatActivity.LOG_SYSTEM)
                 {
@@ -137,9 +151,14 @@ namespace BlitsMe.Agent.Components.Functions.Chat
             return chatElement;
         }
 
-        internal ChatElement LogSecondPartySystemMessage(String message)
+        internal ChatElement.ChatElement LogSecondPartySystemMessage(String message)
         {
-            ChatElement chatElement = Conversation.AddMessage(message, "_SECONDPARTYSYSTEM");
+            ChatElement.ChatElement chatElement = new TargetSystemChatElement()
+            {
+                Message = message,
+                SpeakTime = DateTime.Now
+            };
+            Conversation.AddMessage(chatElement);
             // Fire the event
             OnNewActivity(new ChatActivity(_engagement, ChatActivity.LOG_SYSTEM)
             {
@@ -150,45 +169,18 @@ namespace BlitsMe.Agent.Components.Functions.Chat
             return chatElement;
         }
 
-        internal ChatElement LogSecondPartySystemNotification(String message)
-        {
-            ChatElement chatElement = Conversation.AddMessage(message, "_NOTIFICATION_CHAT");
-            // Fire the event
-            OnNewActivity(new ChatActivity(_engagement, ChatActivity.CHAT_RECEIVE)
-            {
-                From = "_NOTIFICATION_CHAT",
-                To = _appContext.CurrentUserManager.CurrentUser.Username,
-                Message = message
-            });
-            return chatElement;
-        }
-
-        internal ChatElement LogSecondPartySystemRDPRequest(String message)
-        {
-            ChatElement chatElement = Conversation.AddMessage(message, "_RDP_REQUEST");
-            // Fire the event
-            OnNewActivity(new ChatActivity(_engagement, ChatActivity.CHAT_RECEIVE)
-            {
-                From = "_RDP_REQUEST",
-                To = _appContext.CurrentUserManager.CurrentUser.Username,
-                Message = message
-            });
-            return chatElement;
-        }
 
         internal void LogServiceCompleteMessage(String message)
         {
             Conversation.AddMessage(new ServiceCompleteChatElement(_engagement)
             {
                 Message = message,
-                Speaker = "_SERVICE_COMPLETE",
-                DeliveryState = ChatDeliveryState.Delivered,
                 SpeakTime = DateTime.Now
             });
             // Fire the event
             OnNewActivity(new ChatActivity(_engagement, ChatActivity.LOG_SERVICE)
             {
-                From = "_SERVICE_COMPLETE",
+                From = "_SYSTEM",
                 To = _appContext.CurrentUserManager.CurrentUser.Username,
                 Message = message
             });
@@ -200,7 +192,7 @@ namespace BlitsMe.Agent.Components.Functions.Chat
             OnActivate(EventArgs.Empty);
             try
             {
-                var chatElement = new ChatElement() { Message = message, Speaker = "_SELF", SpeakTime = DateTime.Now };
+                var chatElement = new SelfChatElement() { Message = message, SpeakTime = DateTime.Now };
                 lock (_chatQueue)
                 {
                     _chatQueue.Enqueue(chatElement);
@@ -252,9 +244,14 @@ namespace BlitsMe.Agent.Components.Functions.Chat
                     if (handler != null) handler(this, args);
                 }
         */
-        public ChatElement LogErrorMessage(string message)
+        public ChatElement.ChatElement LogErrorMessage(string message)
         {
-            ChatElement chatElement = Conversation.AddMessage(message, "_SYSTEM_ERROR");
+            var chatElement = new SystemErrorElement()
+            {
+                Message = message,
+                SpeakTime = DateTime.Now
+            };
+            Conversation.AddMessage(chatElement);
             // Fire the event
             OnNewActivity(new ChatActivity(_engagement, ChatActivity.LOG_ERROR)
             {
@@ -273,6 +270,8 @@ namespace BlitsMe.Agent.Components.Functions.Chat
         internal const String LOG_SYSTEM = "LOG_SYSTEM";
         internal const String CHAT_RECEIVE = "CHAT_RECEIVE";
         internal const String LOG_SERVICE = "LOG_SERVICE";
+        internal const String LOG_RDP_REQUEST = "LOG_RDP_REQUEST";
+        internal const String LOG_FILE_SEND_REQUEST = "LOG_FILE_SEND_REQUEST";
         internal String Message;
 
         internal ChatActivity(Engagement engagement, String activity)
