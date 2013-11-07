@@ -565,7 +565,6 @@
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="Auto"/>
                 <ColumnDefinition Width="*"/>
-                <ColumnDefinition Width="9"/>
             </Grid.ColumnDefinitions>
             <!--<Image Style="{DynamicResource ChatBubblePointMe}" Grid.Column="0"/>-->
             <Border Background="#C6D9F1" CornerRadius="5" Grid.Column="1" MinHeight="40" Height="Auto" Width="Auto" 
