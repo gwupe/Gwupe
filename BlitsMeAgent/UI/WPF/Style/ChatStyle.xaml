@@ -603,7 +603,6 @@
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="Auto"/>
                 <ColumnDefinition Width="*"/>
-                <ColumnDefinition Width="9"/>
             </Grid.ColumnDefinitions>
             <!--<Image Style="{DynamicResource ChatBubblePointMe}" Grid.Column="0"/>-->
             <StackPanel Orientation="Vertical" Margin="0,5,0,-5" Grid.Column="1" >

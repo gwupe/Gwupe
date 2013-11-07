@@ -20,14 +20,15 @@ namespace BlitsMe.Agent.Components.Functions.Chat
             Exchange = new ObservableCollection<ChatElement>();
         }
 
-        public ChatElement AddMessage(String message, String speaker)
+        public ChatElement AddMessage(String message, String speaker, string username)
         {
             ChatElement newMessage = new ChatElement
                 {
                     Message = message, 
                     Speaker = speaker, 
                     DeliveryState = ChatDeliveryState.Delivered, 
-                    SpeakTime = DateTime.Now
+                    SpeakTime = DateTime.Now,
+                    AssociatedUsername = username
                 };
             _addToExchange(newMessage);
             return newMessage;
@@ -47,6 +48,23 @@ namespace BlitsMe.Agent.Components.Functions.Chat
                     (newMessage.SpeakTime.Ticks - lastMessage.SpeakTime.Ticks < MaxChatInterval))
                 {
                     lastMessage.LastWord = false;
+                }
+
+                if (lastMessage.Speaker.Equals(newMessage.AssociatedUsername) &&
+                        (newMessage.ChatType == "ChatNotification" || 
+                        newMessage.ChatType == "RDPRequestNotification"))
+                {
+                    lastMessage.LastWord = false;
+                }
+
+                if (lastMessage.AssociatedUsername != null)
+                {
+                    if (lastMessage.AssociatedUsername.Equals(newMessage.AssociatedUsername) &&
+                        (lastMessage.ChatType == "ChatNotification" ||
+                         lastMessage.ChatType == "RDPRequestNotification"))
+                    {
+                        lastMessage.LastWord = false;
+                    }
                 }
             }
             Exchange.Add(newMessage);

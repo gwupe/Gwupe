@@ -108,7 +108,7 @@ namespace BlitsMe.Agent.Components.Functions.Chat
 
         internal void ReceiveChatMessage(String message, String chatId, String interactionId, String shortCode)
         {
-            Conversation.AddMessage(message, _to);
+            Conversation.AddMessage(message, _to,_to);
             if (chatId != null)
             {
                 _threadId = chatId;
@@ -126,7 +126,7 @@ namespace BlitsMe.Agent.Components.Functions.Chat
 
         internal ChatElement LogSystemMessage(String message)
         {
-            ChatElement chatElement = Conversation.AddMessage(message, "_SYSTEM");
+            ChatElement chatElement = Conversation.AddMessage(message, "_SYSTEM", _appContext.CurrentUserManager.CurrentUser.Username);
             // Fire the event
             OnNewActivity(new ChatActivity(_engagement, ChatActivity.LOG_SYSTEM)
                 {
@@ -139,7 +139,7 @@ namespace BlitsMe.Agent.Components.Functions.Chat
 
         internal ChatElement LogSecondPartySystemMessage(String message)
         {
-            ChatElement chatElement = Conversation.AddMessage(message, "_SECONDPARTYSYSTEM");
+            ChatElement chatElement = Conversation.AddMessage(message, "_SECONDPARTYSYSTEM", _to);
             // Fire the event
             OnNewActivity(new ChatActivity(_engagement, ChatActivity.LOG_SYSTEM)
             {
@@ -152,7 +152,7 @@ namespace BlitsMe.Agent.Components.Functions.Chat
 
         internal ChatElement LogSecondPartySystemNotification(String message)
         {
-            ChatElement chatElement = Conversation.AddMessage(message, "_NOTIFICATION_CHAT");
+            ChatElement chatElement = Conversation.AddMessage(message, "_NOTIFICATION_CHAT", _to);
             // Fire the event
             OnNewActivity(new ChatActivity(_engagement, ChatActivity.CHAT_RECEIVE)
             {
@@ -165,7 +165,7 @@ namespace BlitsMe.Agent.Components.Functions.Chat
 
         internal ChatElement LogSecondPartySystemRDPRequest(String message)
         {
-            ChatElement chatElement = Conversation.AddMessage(message, "_RDP_REQUEST");
+            ChatElement chatElement = Conversation.AddMessage(message, "_RDP_REQUEST", _to);
             // Fire the event
             OnNewActivity(new ChatActivity(_engagement, ChatActivity.CHAT_RECEIVE)
             {
@@ -254,7 +254,7 @@ namespace BlitsMe.Agent.Components.Functions.Chat
         */
         public ChatElement LogErrorMessage(string message)
         {
-            ChatElement chatElement = Conversation.AddMessage(message, "_SYSTEM_ERROR");
+            ChatElement chatElement = Conversation.AddMessage(message, "_SYSTEM_ERROR", _to);
             // Fire the event
             OnNewActivity(new ChatActivity(_engagement, ChatActivity.LOG_ERROR)
             {
