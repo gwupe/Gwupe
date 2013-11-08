@@ -24,8 +24,7 @@ namespace BlitsMe.Agent.UI.WPF.Engage
         {
             this.InitializeComponent();
 
-            int Rating = BlitsMeClientAppContext.CurrentAppContext.UIManager.SetContactRating();
-            int starRating = 75 - (Rating * 75 / 100);
+            int starRating = 75 - (15 * 75 / 100);
 
             if (starRating >= 75)
             {

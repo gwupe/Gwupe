@@ -64,14 +64,15 @@ namespace BlitsMe.Agent.UI.WPF.Engage
         private void StarClick(object sender, RoutedEventArgs routedEventArgs)
         {
             _savedRating = (int)(100 - (RatingCover.Width * 100 / 75));
-            //MethodInfo methodInfo = DataContext.GetType().GetMethod("SetRating");
-            //if(methodInfo != null)
-            //{
-            //    methodInfo.Invoke(DataContext, new object[] {Name, _savedRating});
-            //} else
-            //{
-            //    Logger.Warn("Cannot set rating on server for " + Name + ", no SetRating method on DataContext");
-            //}
+            MethodInfo methodInfo = DataContext.GetType().GetMethod("SetRating");
+            if (methodInfo != null)
+            {
+                methodInfo.Invoke(DataContext, new object[] { Name, _savedRating });
+            }
+            else
+            {
+                Logger.Warn("Cannot set rating on server for " + Name + ", no SetRating method on DataContext");
+            }
 
             for (int i = 0; i < 5; i++)
             {

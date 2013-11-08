@@ -72,11 +72,17 @@
         <Setter Property="PointCount" Value="5"  />
         <Setter Property="Stretch" Value="Fill"  />
         <Setter Property="Width" Value="13"  />
-        <Setter Property="Fill" Value="#FF8C00"  />
+        <Setter Property="Fill" Value="Black"  />
         <Setter Property="Height" Value="13"/>
     </Style>
-    <Style x:Key="TeamMemberStarFull" TargetType="ed:RegularPolygon" BasedOn="{StaticResource TeamMemberStarEmpty}">
+    <Style x:Key="TeamMemberStarFull" TargetType="ed:RegularPolygon">
         <Setter Property="Fill" Value="#FF8C00" />
+        <Setter Property="HorizontalAlignment" Value="Left" />
+        <Setter Property="InnerRadius" Value="0.47211"  />
+        <Setter Property="PointCount" Value="5"  />
+        <Setter Property="Stretch" Value="Fill"  />
+        <Setter Property="Width" Value="13"  />
+        <Setter Property="Height" Value="13"/>
     </Style>
     <Style x:Key="TeamMemberStarCover" TargetType="Rectangle">
         <Setter Property="Fill" Value="Black" />

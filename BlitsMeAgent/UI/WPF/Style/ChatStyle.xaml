@@ -739,8 +739,8 @@
         <StackPanel Margin="0,5,0,0">
             <Border Style="{DynamicResource MessageBorder}">
                 <StackPanel Orientation="Horizontal">
-                    <Image Margin="5,5,0,0" Source="/BlitsMe.Agent;component/UI/WPF/Images/arrow.png" Width="40" Height="40" VerticalAlignment="Top" />
-                    <TextBlock  Style="{DynamicResource MessageTimeStyle}" HorizontalAlignment="Left" Margin="10,15,0,0"
+                    <!--<Image Margin="5,5,0,0" Source="/BlitsMe.Agent;component/UI/WPF/Images/arrow.png" Width="40" Height="40" VerticalAlignment="Top" />-->
+                    <TextBlock  Style="{DynamicResource MessageTimeStyle}" HorizontalAlignment="Left" Margin="40,15,0,0"
         			        Text="{Binding SpeakTime, Converter={StaticResource relativeMessageTimeConverter}, FallbackValue=Yesterday 8:49}"/>
 
                     <StackPanel Margin="20,0,0,0">
