@@ -146,7 +146,7 @@ namespace BlitsMe.Agent.Components.Functions.FileSend
             fileSendInfo.Notification = notification;
             _appContext.NotificationManager.AddNotification(notification);
              */
-            FileSendRequestChatElement chatElement = LogFileSendRequest(_engagement.SecondParty.Person.Firstname + " offered you the file " + filename + ".");
+            FileSendRequestChatElement chatElement = LogFileSendRequest(_engagement.SecondParty.Person.Firstname + " offered you the file " + filename + ".",_engagement.SecondParty.Person.Username);
             chatElement.AnsweredTrue += (sender, args) => ProcessAcceptFile(fileSendInfo);
             chatElement.AnsweredFalse += (sender, args) => ProcessDenyFile(fileSendInfo);
             //Chat.LogSystemMessage(_engagement.SecondParty.Person.Firstname + " offered you the file " + filename + ".");
@@ -154,12 +154,13 @@ namespace BlitsMe.Agent.Components.Functions.FileSend
         }
 
 
-        internal FileSendRequestChatElement LogFileSendRequest(String message)
+        internal FileSendRequestChatElement LogFileSendRequest(String message, string userName)
         {
             var chatElement = new FileSendRequestChatElement()
             {
                 Message = message,
-                SpeakTime = DateTime.Now
+                SpeakTime = DateTime.Now,
+                UserName = userName
             };
             Chat.Conversation.AddMessage(chatElement);
             // Fire the event

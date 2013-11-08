@@ -25,7 +25,7 @@ namespace BlitsMe.Agent.Components.Functions.Chat.Processors
             ChatMessageRs response = new ChatMessageRs();
             try
             {
-                ((Function)engagement.Functions["Chat"]).ReceiveChatMessage(request.message, request.chatId, request.interactionId, request.shortCode);
+                ((Function)engagement.Functions["Chat"]).ReceiveChatMessage(request.message, request.chatId, request.interactionId, request.shortCode,request.username);
             }
             catch (Exception e)
             {

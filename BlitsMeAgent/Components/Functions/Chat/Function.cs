@@ -109,13 +109,15 @@ namespace BlitsMe.Agent.Components.Functions.Chat
             }
         }
 
-        internal void ReceiveChatMessage(String message, String chatId, String interactionId, String shortCode)
+        internal void ReceiveChatMessage(String message, String chatId, String interactionId, String shortCode, string userName)
         {
             ChatElement.ChatElement newMessage = new TargetChatElement()
             {
                 Message = message,
                 Speaker = _to,
-                SpeakTime = DateTime.Now
+                SpeakTime = DateTime.Now,
+                UserName = userName
+
             };
             Conversation.AddMessage(newMessage);
             if (chatId != null)

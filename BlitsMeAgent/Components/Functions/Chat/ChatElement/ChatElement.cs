@@ -24,13 +24,20 @@ namespace BlitsMe.Agent.Components.Functions.Chat.ChatElement
         public DateTime SpeakTime { get; set; }
 
         private bool _lastWord = true;
+        private string _userName = string.Empty;
 
         public bool LastWord
         {
             get { return _lastWord; }
             set { _lastWord = value; OnPropertyChanged("ChatType"); }
         }
-/*
+
+        public string UserName
+        {
+            get { return _userName; }
+            set { _userName = value; OnPropertyChanged("UserName"); }
+        }
+
         public String ChatType
         {
             get
@@ -77,7 +84,7 @@ namespace BlitsMe.Agent.Components.Functions.Chat.ChatElement
                     return "ChatSystemError";
                 }
 
-                else if (Speaker.Equals("_NOTIFICATION_CHAT"))
+                else if (Speaker.Equals("_FILE_SEND_REQUEST"))
                 {
                     if (LastWord)
                     {
@@ -106,7 +113,7 @@ namespace BlitsMe.Agent.Components.Functions.Chat.ChatElement
                 }
             }
         }
-*/
+
         public event PropertyChangedEventHandler PropertyChanged;
 
         protected virtual void OnPropertyChanged(string propertyName)

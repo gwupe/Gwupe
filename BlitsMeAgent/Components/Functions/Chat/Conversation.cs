@@ -48,6 +48,23 @@ namespace BlitsMe.Agent.Components.Functions.Chat
                 {
                     lastMessage.LastWord = false;
                 }
+
+                if (lastMessage.UserName.Equals(newMessage.UserName) &&
+                        (newMessage.ChatType == "ChatNotification" ||
+                        newMessage.ChatType == "RDPRequestNotification"))
+                {
+                    lastMessage.LastWord = false;
+                }
+
+                if (lastMessage.UserName != null)
+                {
+                    if (lastMessage.UserName.Equals(newMessage.UserName) &&
+                        (lastMessage.ChatType == "ChatNotification" ||
+                         lastMessage.ChatType == "RDPRequestNotification"))
+                    {
+                        lastMessage.LastWord = false;
+                    }
+                }
             }
             Exchange.Add(newMessage);
         }
