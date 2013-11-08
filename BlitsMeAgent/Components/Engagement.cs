@@ -41,6 +41,23 @@ namespace BlitsMe.Agent.Components
 
         public object TunnelWaitLock = new object();
 
+        private bool _isRemoteControlActive = false;
+        internal bool IsRemoteControlActive
+        {
+            get
+            {
+                return _isRemoteControlActive;
+            }
+            set
+            {
+                if ((_isRemoteControlActive != value) && (_isRemoteControlActive == null || !_isRemoteControlActive.Equals(value)))
+                {
+                    _isRemoteControlActive = value;
+                    OnPropertyChanged("IsRemoteControlActive");
+                }
+            }
+        }
+
 
         internal readonly Dictionary<String, IFunction> Functions;
 

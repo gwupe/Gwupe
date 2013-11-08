@@ -3,7 +3,8 @@
 	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
 	xmlns:ed="http://schemas.microsoft.com/expression/2010/drawing"
 	xmlns:presentationOptions="http://schemas.microsoft.com/winfx/2006/xaml/presentation/options"
-	xmlns:person="clr-namespace:BlitsMe.Agent.Components.Person" xmlns:Engage="clr-namespace:BlitsMe.Agent.UI.WPF.Engage">
+	xmlns:person="clr-namespace:BlitsMe.Agent.Components.Person" xmlns:Engage="clr-namespace:BlitsMe.Agent.UI.WPF.Engage"
+	xmlns:Components="clr-namespace:BlitsMe.Agent.Components">
     <ResourceDictionary.MergedDictionaries>
         <ResourceDictionary Source="./Style.xaml" />
     </ResourceDictionary.MergedDictionaries>
@@ -271,8 +272,14 @@
                     </ContentControl.Style>
                 </ContentControl>-->
             </Grid>
-            <Image Source="/BlitsMe.Agent;component/UI/WPF/Images/1337420206_Char.png" Height="25" Width="25" 
-                   Margin="2,0,0,0" HorizontalAlignment="Left"/>
+            <StackPanel Orientation="Vertical">
+                <Button IsEnabled="{Binding Engagement.IsRemoteControlActive}">
+                    <Image Source="/BlitsMe.Agent;component/UI/WPF/Images/close.png" Height="15" Width="15" />
+                </Button>
+                <Image Source="/BlitsMe.Agent;component/UI/WPF/Images/1337420206_Char.png" Height="25" Width="25" 
+                   Margin="2,5,0,0" HorizontalAlignment="Left"/>
+            </StackPanel>
+            
         </StackPanel>
     </DataTemplate>
 

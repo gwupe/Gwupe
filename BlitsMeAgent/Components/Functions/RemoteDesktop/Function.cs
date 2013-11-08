@@ -72,6 +72,7 @@ namespace BlitsMe.Agent.Components.Functions.RemoteDesktop
             // Loop through existing notifications to see if we already have a remote desktop request
             // from the SecondParty. If the .From and Type of the notification match the SecondParty.UserName
             // and RDPNotification type
+            _engagement.IsRemoteControlActive = true;
             foreach (Components.Notification.Notification n in _appContext.NotificationManager.Notifications)
             {
                 if (n.AssociatedUsername == _engagement.SecondParty.Person.Username && n is RDPNotification)
@@ -288,6 +289,7 @@ namespace BlitsMe.Agent.Components.Functions.RemoteDesktop
             if (request.accepted)
             {
                 IsActive = true;
+                _engagement.IsRemoteControlActive = true;
                 Chat.LogSecondPartySystemMessage(_engagement.SecondParty.Person.Firstname + " accepted your remote assistance request, please wait while we establish a connection...");
                 //RDPDisconnectNotification notification = new RDPDisconnectNotification()
                 //{

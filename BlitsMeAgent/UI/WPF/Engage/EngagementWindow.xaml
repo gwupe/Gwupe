@@ -55,7 +55,7 @@
 
                 <Button x:Name="RemoteTerminateButton" ToolTip="Terminate Remote Assistance" 
                         Margin="10,0,0,0" Template="{DynamicResource TransparentButtonStyle}" 
-                        Click="KickOffButton_Click" Visibility="{Binding ElementName=EngageWindow,Path=TerminateButtonVisibility,Mode=TwoWay,UpdateSourceTrigger=PropertyChanged,NotifyOnSourceUpdated=True}">
+                        Click="KickOffButton_Click">
                     <Image Source="..\Images\close.png"/>
                 </Button>
             </StackPanel>

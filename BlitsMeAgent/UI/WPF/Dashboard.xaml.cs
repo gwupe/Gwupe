@@ -498,6 +498,11 @@ namespace BlitsMe.Agent.UI.WPF
                 ActiveContent.Content = egw;
                 egw.SetAsMain(this);
                 egw.ShowChat();
+
+                if (!attendance.Engagement.IsRemoteControlActive)
+                {
+                    egw.RemoteTerminateButton.Visibility = Visibility.Collapsed;
+                }
             }
             else
             {
