@@ -173,6 +173,12 @@ namespace BlitsMe.TransportEmulator
 
             }
         }
+
+
+        public void CloseTunnel(IUDPTunnel tunnel)
+        {
+            throw new NotImplementedException();
+        }
     }
 
     internal class PhysicalPacketHolder

@@ -25,6 +25,14 @@ namespace BlitsMe.Agent.Components.Person
             Person = new Person();
         }
 
+        //public bool IsRemoteControlActive
+        //{
+        //    get
+        //    {
+        //        return this.Engagement.SecondParty.IsRemoteControlActive;
+        //    }
+        //}
+
         internal Attendance(RosterElement element)
         {
             Person = new Person(element);

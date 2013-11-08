@@ -415,6 +415,7 @@
     <Compile Include="UI\WPF\UserInfoWindow.xaml.cs">
       <DependentUpon>UserInfoWindow.xaml</DependentUpon>
     </Compile>
+    <Compile Include="UI\WPF\Utils\BoolToVisibilityConverter.cs" />
     <Compile Include="UI\WPF\Utils\ImageStreamReader.cs" />
     <Compile Include="UI\WPF\Utils\InputValidator.cs" />
     <Compile Include="UI\WPF\Utils\RectConverter.cs" />

@@ -58,6 +58,16 @@ namespace BlitsMe.Agent.Components
             }
         }
 
+        //internal string IsRemoteControlActivestring
+        //{
+        //    get
+        //    {
+        //        return _isRemoteControlActive.ToString();
+        //    }
+        //}
+
+        
+
 
         internal readonly Dictionary<String, IFunction> Functions;
 

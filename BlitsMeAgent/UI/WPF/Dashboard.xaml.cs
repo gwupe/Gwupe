@@ -503,6 +503,10 @@ namespace BlitsMe.Agent.UI.WPF
                 {
                     egw.RemoteTerminateButton.Visibility = Visibility.Collapsed;
                 }
+                else
+                {
+                    egw.RemoteTerminateButton.Visibility = Visibility.Visible;
+                }
             }
             else
             {

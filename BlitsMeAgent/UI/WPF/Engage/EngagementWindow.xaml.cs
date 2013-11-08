@@ -274,6 +274,11 @@ namespace BlitsMe.Agent.UI.WPF.Engage
                 RemoteAssistanceButton.Visibility = Visibility.Visible;
                 RemoteTerminateButton.Visibility = Visibility.Collapsed;
             }
+            else
+            {
+                RemoteAssistanceButton.Visibility = Visibility.Visible;
+                RemoteTerminateButton.Visibility = Visibility.Collapsed;    
+            }
         }
 
         //public void StopRDPConnection()
@@ -292,6 +297,22 @@ namespace BlitsMe.Agent.UI.WPF.Engage
         //        }
         //    }
         //}
+
+        private bool _isRemoteControlActive = false;
+        public bool IsRemoteControlActive
+        {
+            get
+            {
+                return _isRemoteControlActive;
+            }
+            set
+            {
+                if ((_isRemoteControlActive != value) && (_isRemoteControlActive == null || !_isRemoteControlActive.Equals(value)))
+                {
+                    _isRemoteControlActive = value;
+                }
+            }
+        }
     }
 
     internal class EngagementWindowDataContext
