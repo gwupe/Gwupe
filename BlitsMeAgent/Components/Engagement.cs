@@ -57,7 +57,7 @@ namespace BlitsMe.Agent.Components
                 }
             }
         }
-
+        
         //internal string IsRemoteControlActivestring
         //{
         //    get
@@ -65,9 +65,6 @@ namespace BlitsMe.Agent.Components
         //        return _isRemoteControlActive.ToString();
         //    }
         //}
-
-        
-
 
         internal readonly Dictionary<String, IFunction> Functions;
 

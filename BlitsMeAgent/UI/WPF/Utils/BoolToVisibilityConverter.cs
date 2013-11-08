@@ -15,11 +15,11 @@ namespace BlitsMe.Agent.UI.WPF.Utils
         private static readonly ILog Logger = LogManager.GetLogger(typeof(BoolToVisibilityConverter));
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
-            Visibility visible = Visibility.Visible;
+            Visibility visible = Visibility.Collapsed;
 
             if ((value is bool && ((bool)value)))
             {
-                visible = Visibility.Collapsed;
+                visible = Visibility.Visible;
             }
             return visible;
         }
@@ -37,7 +37,7 @@ namespace BlitsMe.Agent.UI.WPF.Utils
         {
             String str = String.Empty;
 
-            if ((value is bool && ((bool)value)))
+            if (value is bool)
             {
                 str = value.ToString();
             }

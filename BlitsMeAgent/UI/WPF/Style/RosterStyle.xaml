@@ -211,6 +211,12 @@
         </Rectangle>
     </DataTemplate>
 
+    <Style x:Key="TerminateButtonStyle" TargetType="{x:Type Button}">
+        <Setter Property="Command" Value="{Binding AnswerCancel}" />
+    </Style>
+
+    <Convertors:BoolToVisibilityConverter x:Key="BoolToVisibilityConverter"/>
+    <Convertors:BoolToStringConverter x:Key="BoolToStringConverter"/>
     <DataTemplate x:Key="Contact">
         <StackPanel Orientation="Horizontal" Style="{StaticResource TeamMemberInActiveBase}"
                    Height="Auto" ToolTip="{Binding Path=Person.Name}" Width="180" HorizontalAlignment="Left">
@@ -224,12 +230,18 @@
                     <RowDefinition Height="Auto"/>
                     <RowDefinition Height="Auto"/>
                 </Grid.RowDefinitions>
-                <TextBlock Text="{Binding Path=Person.Name, FallbackValue=FirstName LastName}" Width="110" Grid.Row="0"
-                           FontSize="13" FontWeight="ExtraBlack"/>
+                <TextBlock Text="{Binding Path=Person.Name, FallbackValue=FirstName LastName}" Width="110" 
+                           Grid.Row="0" FontSize="13" FontWeight="ExtraBlack" HorizontalAlignment="Left"
+                           Margin="10,0,0,0"/>
 
-                <TextBlock Text="{Binding Path=Person.Location, FallbackValue=Planet Earth}" Grid.Row="1" Width="110" />
+                <TextBlock  Text="{Binding Path=Person.Location, FallbackValue=Planet Earth}" Grid.Row="1" 
+                           Width="110" HorizontalAlignment="Left" Margin="10,0,0,0"/>
 
                 <Engage:GetContactListRating Grid.Row="2" HorizontalAlignment="Left" Margin="10,0,0,0"/>
+                <Button Visibility="{Binding IsRemoteActive,Converter={StaticResource BoolToVisibilityConverter},Mode=TwoWay,UpdateSourceTrigger=PropertyChanged}" 
+                        Style="{DynamicResource TerminateButtonStyle}">
+                    <Image Source="/BlitsMe.Agent;component/UI/WPF/Images/close.png" Height="15" Width="15" />
+                </Button>
                 <!--<ContentControl Content="{Binding Person.Rating}" HorizontalAlignment="Left" Grid.Row="2" Margin="10,0,0,0">
                     <ContentControl.Style>
                         <Style TargetType="{x:Type ContentControl}">
@@ -260,11 +272,10 @@
                     <RowDefinition Height="Auto"/>
                 </Grid.RowDefinitions>
                 <TextBlock Text="{Binding Path=Person.Name, FallbackValue=FirstName LastName}" Width="90" Grid.Row="0" 
-                           FontSize="13" FontWeight="ExtraBlack" HorizontalAlignment="Left" Margin="10,0,0,0"
-                           TextWrapping="Wrap"/>
+                           FontSize="13" FontWeight="ExtraBlack" HorizontalAlignment="Left" Margin="10,0,0,0"/>
 
-                <TextBlock Text="{Binding Path=Person.Location, FallbackValue=Planet Earth}" Grid.Row="1" Width="90" 
-                           HorizontalAlignment="Left" Margin="10,0,0,0"/>
+                <TextBlock  Text="{Binding Path=Person.Location, FallbackValue=Planet Earth}" Grid.Row="1" 
+                           Width="110" HorizontalAlignment="Left" Margin="10,0,0,0"/>
 
                 <Engage:GetContactListRating Grid.Row="2" HorizontalAlignment="Left" Margin="10,0,0,0"/>
                 <!--<ContentControl Content="{Binding Person.Rating}" HorizontalAlignment="Left" Grid.Row="2" Margin="10,0,0,0">
@@ -281,9 +292,7 @@
                 </ContentControl>-->
             </Grid>
             <StackPanel  Orientation="Vertical">
-                <!--<Button>
-                    <Image Source="/BlitsMe.Agent;component/UI/WPF/Images/close.png" Height="15" Width="15" />
-                </Button>-->
+                
                 <Image Source="/BlitsMe.Agent;component/UI/WPF/Images/1337420206_Char.png" Height="25" Width="25" 
                    Margin="2,5,0,0" HorizontalAlignment="Left"/>
             </StackPanel>

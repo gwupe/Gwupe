@@ -490,10 +490,15 @@ namespace BlitsMe.Agent.UI.WPF
 
         private void ShowEngagement(Attendance attendance)
         {
+            if (_Attendance != null)
+            {
+                _Attendance.IsRemoteActive = _Attendance.Engagement.IsRemoteControlActive;
+            }
             _Attendance = attendance;
             EngagementWindow egw = _engagementWindows.GetEngagementWindow(attendance);
             if (egw != null)
             {
+                //attendance.IsRemoteActive = attendance.Engagement.IsRemoteControlActive;
                 attendance.IsCurrentlyEngaged = true;
                 ActiveContent.Content = egw;
                 egw.SetAsMain(this);

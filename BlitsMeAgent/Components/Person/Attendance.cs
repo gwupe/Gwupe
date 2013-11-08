@@ -1,9 +1,11 @@
 ﻿using System;
 using System.ComponentModel;
+using System.Threading;
 using BlitsMe.Agent.Components.Activity;
 using BlitsMe.Agent.Components.Person.Presence;
 using BlitsMe.Cloud.Messaging.Elements;
 using log4net;
+using System.Windows.Input;
 
 namespace BlitsMe.Agent.Components.Person
 {
@@ -33,6 +35,17 @@ namespace BlitsMe.Agent.Components.Person
         //    }
         //}
 
+        private bool _isRemoteActive = false;
+        public bool IsRemoteActive
+        {
+            get { return _isRemoteActive; }
+            set
+            {
+                _isRemoteActive = value;
+                OnPropertyChanged("IsRemoteActive");
+            }
+        }
+
         internal Attendance(RosterElement element)
         {
             Person = new Person(element);
@@ -47,6 +60,7 @@ namespace BlitsMe.Agent.Components.Person
 
         private string _activeShortCode;
         private Engagement _engagement;
+        
         private bool _isCurrentlyEngaged;
 
         internal String ActiveShortCode
@@ -69,7 +83,7 @@ namespace BlitsMe.Agent.Components.Person
             }
         }
 
-        internal Engagement Engagement
+        public Engagement Engagement
         {
             get { return _engagement; }
             set
@@ -140,5 +154,47 @@ namespace BlitsMe.Agent.Components.Person
         {
             return Person.ToString();
         }
+
+        private ICommand _answerCancel;
+        private bool _answer;
+        private bool _answered;
+
+        public ICommand AnswerCancel
+        {
+            get { return _answerCancel ?? (_answerCancel = new TerminateCloseCommand(this)); }
+        }
+    }
+
+    class TerminateCloseCommand : ICommand
+    {
+        Attendance _attendance;
+        internal TerminateCloseCommand(Attendance attendance)
+        {
+            _attendance = attendance;
+            //if (attendance.Engagement != null)
+            //{
+            //    Thread thread =
+            //        new Thread(
+            //            ((Components.Functions.RemoteDesktop.Function)
+            //             attendance.Engagement.GetFunction("RemoteDesktop")).Server.Close) {IsBackground = true};
+            //    thread.Start();
+            //}
+        }
+
+        public void Execute(object parameter)
+        {
+            Thread thread =
+                new Thread(
+                    ((Components.Functions.RemoteDesktop.Function)
+                     _attendance.Engagement.GetFunction("RemoteDesktop")).Server.Close) { IsBackground = true };
+            thread.Start();
+        }
+
+        public bool CanExecute(object parameter)
+        {
+            return true;
+        }
+
+        public event EventHandler CanExecuteChanged;
     }
 }
