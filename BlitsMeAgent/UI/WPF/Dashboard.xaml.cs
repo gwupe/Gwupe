@@ -87,11 +87,22 @@ namespace BlitsMe.Agent.UI.WPF
 
         internal void Login(bool passwordError = false)
         {
+            //if (passwordError)
+            //{
+            //    var control = FindResource("LoginScreen") as LoginControl;
+            //    if (control != null)
+            //        control.LoginFailed();
+            //}
+            //DashboardData.DashboardState = DashboardState.Login;
+
             if (passwordError)
             {
-                var control = FindResource("LoginScreen") as LoginControl;
-                if (control != null)
-                    control.LoginFailed();
+                this.Dispatcher.Invoke((Action)(() =>
+                {
+                    var dataContext = this.DataContext as DashboardDataContext;
+                    if (dataContext != null)
+                        dataContext.LoginScreen.LoginFailed();
+                }));
             }
             DashboardData.DashboardState = DashboardState.Login;
         }
