@@ -6,7 +6,8 @@
 	xmlns:PresentationOptions="http://schemas.microsoft.com/winfx/2006/xaml/presentation/options"
 	mc:Ignorable="d"
 	x:Class="BlitsMe.Agent.UI.WPF.Engage.ChatWindow"
-	x:Name="UserControl">
+	x:Name="UserControl"
+    >
     <UserControl.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>

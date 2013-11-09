@@ -269,6 +269,7 @@ namespace BlitsMe.Agent.Components.Functions.RemoteDesktop
         // Async callback to a RDP Request
         private void ProcessRequestRDPSessionResponse(RDPRequestRq request, RDPRequestRs response, Exception e, IChatMessage chatElement)
         {
+
             if (e != null)
             {
                 IsActive = false;

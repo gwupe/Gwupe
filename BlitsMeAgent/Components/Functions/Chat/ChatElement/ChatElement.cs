@@ -104,6 +104,7 @@ namespace BlitsMe.Agent.Components.Functions.Chat.ChatElement
                     }
                     else
                     {
+
                         return "RDPRequestNotificationGroup";
                     }
                 }

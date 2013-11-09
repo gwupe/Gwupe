@@ -7,7 +7,8 @@
 	xmlns:fileSendNotification="clr-namespace:BlitsMe.Agent.Components.Functions.FileSend.Notification"
 	xmlns:rdpNotification="clr-namespace:BlitsMe.Agent.Components.Functions.RemoteDesktop.Notification"
 	xmlns:utils="clr-namespace:BlitsMe.Agent.UI.WPF.Utils" 
-    xmlns:engage="clr-namespace:BlitsMe.Agent.UI.WPF.Engage">
+    xmlns:engage="clr-namespace:BlitsMe.Agent.UI.WPF.Engage"
+    >
 
     <utils:ImageStreamReader x:Key="imageStreamReader" />
     <utils:RectConverter x:Key="rectConverter" />

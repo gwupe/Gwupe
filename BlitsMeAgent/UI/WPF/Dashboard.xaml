@@ -239,7 +239,7 @@
     <Border BorderBrush="#4A7EBB" BorderThickness="2,2,2,2">
         <Grid>
             <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="200"/>
+                <ColumnDefinition Width="210"/>
                 <ColumnDefinition Width="*"/>
             </Grid.ColumnDefinitions>
 

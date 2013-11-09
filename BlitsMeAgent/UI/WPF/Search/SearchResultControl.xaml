@@ -99,7 +99,7 @@
                         MinWidth="310" Grid.Row="1" Grid.Column="0">
                     <TextBlock Style="{DynamicResource ProspectDescription}" 
                        Text="{Binding Path=Person.Description, FallbackValue=Description of my skills.}" 
-                       Margin="5,0,0,0" TextWrapping="Wrap" Width="Auto"/>
+                       Margin="5,0,0,0" TextWrapping="Wrap" MinWidth="300"/>
                 </StackPanel>
             </Grid>
 
