@@ -287,6 +287,43 @@
         </Button>
     </ControlTemplate>
 
+    <ControlTemplate TargetType="{x:Type Button}" x:Key="TransparentButtonDeleteStyle">
+        <Button BorderBrush="Transparent" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" 
+                HorizontalAlignment="Center" VerticalAlignment="Center" >
+            <Button.Content>
+                <StackPanel Orientation="Horizontal">
+                    <Border CornerRadius="3">
+                        <ContentPresenter/>
+                        <Border.Style>
+                            <Style TargetType="{x:Type Border}">
+                                <Setter Property="Background" Value="Transparent" />
+                                <Style.Triggers>
+                                    <Trigger Property="IsMouseOver" Value="True">
+                                        <Setter Property="Background" Value="Transparent" />
+                                        <Setter Property="BorderBrush" Value="Gray" />
+                                        <Setter Property="BorderThickness" Value="1" />
+                                    </Trigger>
+                                </Style.Triggers>
+                            </Style>
+                        </Border.Style>
+                    </Border>
+                </StackPanel>
+            </Button.Content>
+            <Button.Style>
+                <Style TargetType="{x:Type Button}" >
+                    <Setter Property="Command" Value="{Binding DeleteNotification}" />
+                    <Setter Property="Template">
+                        <Setter.Value>
+                            <ControlTemplate TargetType="{x:Type Button}" >
+                                <ContentPresenter />
+                            </ControlTemplate>
+                        </Setter.Value>
+                    </Setter>
+                </Style>
+            </Button.Style>
+        </Button>
+    </ControlTemplate>
+
     <ControlTemplate TargetType="{x:Type Button}" x:Key="TransparentButtonTerminateRDP">
         <Button BorderBrush="Transparent" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" 
                 HorizontalAlignment="Center" VerticalAlignment="Center" >
@@ -364,7 +401,7 @@
                         </Setter.Value>
                     </Setter>
                     <Setter Property="ContentTemplate" Value="{DynamicResource DenyButtonTemplate}" />
-                    <Setter Property="ToolTip" Value="Accept" />
+                    <Setter Property="ToolTip" Value="Deny" />
                 </Style>
             </Button.Style>
         </Button>
