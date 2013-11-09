@@ -266,15 +266,15 @@ namespace BlitsMe.Agent.UI.WPF.Engage
         {
             Thread thread = new Thread(((Components.Functions.RemoteDesktop.Function)Engagement.GetFunction("RemoteDesktop")).Server.Close) { IsBackground = true };
             thread.Start(); 
-            if (!this.Engagement.IsRemoteControlActive)
+            if (this.Engagement.IsRemoteControlActive)
             {
-                RemoteAssistanceButton.Visibility = Visibility.Visible;
-                RemoteTerminateButton.Visibility = Visibility.Collapsed;
+                RemoteAssistanceButton.Visibility = Visibility.Collapsed;
+                RemoteTerminateButton.Visibility = Visibility.Visible;
             }
             else
             {
                 RemoteAssistanceButton.Visibility = Visibility.Visible;
-                RemoteTerminateButton.Visibility = Visibility.Collapsed;    
+                RemoteTerminateButton.Visibility = Visibility.Collapsed;
             }
         }
 

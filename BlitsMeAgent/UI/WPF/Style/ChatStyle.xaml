@@ -534,24 +534,35 @@
                     Margin="0,5,0,0" >
                 <Grid Style="{DynamicResource ChatBubbleMeNew}" Background="Transparent">
                     <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="45"/>
                         <ColumnDefinition Width="Auto"/>
-                        <ColumnDefinition Width="10"/>
                         <ColumnDefinition Width="Auto"/>
-                        <ColumnDefinition Width="30"/>
                         <ColumnDefinition Width="*"/>
-                        <ColumnDefinition Width="15"/>
+                        <ColumnDefinition Width="Auto"/>
                     </Grid.ColumnDefinitions>
-                    <Border HorizontalAlignment="Left" Margin="10,5,0,0" Height="30" Width="30" VerticalAlignment="Top" 
-                            BorderThickness="1" BorderBrush="White" Grid.Column="0">
-                        <engage:UserImageOthers/>
-                    </Border>
-                    <TextBlock  Style="{DynamicResource MessageTimeStyle}"
-							HorizontalAlignment="Right" Margin="0,15,0,0" Grid.Column="2" 
+
+                    <TextBlock  Style="{DynamicResource MessageTimeStyle}" Grid.Column="1"
 							Text="{Binding SpeakTime, Converter={StaticResource relativeMessageTimeConverter}, FallbackValue=Yesterday 8:49}"
-						/>
-                    <TextBlock Margin="0,5,0,5" Style="{DynamicResource MessageTextbox}" VerticalAlignment="Top"
-                                Text="{Binding Path=Message, FallbackValue=A message from us}" Grid.Column="4"
-                               HorizontalAlignment="Left"/>
+                                VerticalAlignment="Center"/>
+
+                    <Image Height="30" Width="30" VerticalAlignment="Center" Grid.Column="2" Margin="30,0,0,0"
+                           Source="../Images/1375404724_tune.png"/>
+
+                    <TextBlock Margin="20,0,0,0" Style="{DynamicResource MessageTextbox}" VerticalAlignment="Center"
+                       Text="{Binding Path=Message, FallbackValue=A message from them}" Grid.Column="3"
+                               Foreground="Gray" FontSize="12"/>
+                    <ContentControl Grid.Column="4" DataContext="{Binding Path=.}">
+                        <ContentControl.Style>
+                            <Style TargetType="ContentControl">
+                                <Setter Property="ContentTemplate" Value="{DynamicResource AnswerYesNoButtons}" />
+                                <Style.Triggers>
+                                    <DataTrigger Binding="{Binding Answered}" Value="True">
+                                        <Setter Property="ContentTemplate" Value="{x:Null}" />
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </ContentControl.Style>
+                    </ContentControl>
                 </Grid>
             </Border>
         </Grid>
@@ -565,27 +576,40 @@
             </Grid.ColumnDefinitions>
             <!--<Image Style="{DynamicResource ChatBubblePointMe}" Grid.Column="0"/>-->
             <StackPanel Orientation="Vertical" Margin="0,5,0,-5" Grid.Column="1" >
-                <Border Background="#C6D9F1" CornerRadius="5" MinHeight="40" Height="Auto" Width="Auto" >
+                <Border Background="#C6D9F1" CornerRadius="5" Grid.Column="1" MinHeight="40" Height="Auto" 
+                        Width="Auto" 
+                    Margin="0,5,0,0" >
                     <Grid Style="{DynamicResource ChatBubbleMeNew}" Background="Transparent">
                         <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="45"/>
                             <ColumnDefinition Width="Auto"/>
-                            <ColumnDefinition Width="10"/>
                             <ColumnDefinition Width="Auto"/>
-                            <ColumnDefinition Width="30"/>
                             <ColumnDefinition Width="*"/>
-                            <ColumnDefinition Width="15"/>
+                            <ColumnDefinition Width="Auto"/>
                         </Grid.ColumnDefinitions>
-                        <Border HorizontalAlignment="Left" Margin="10,5,0,0" Height="30" Width="30" VerticalAlignment="Top" 
-                            BorderThickness="1" BorderBrush="White" Grid.Column="0">
-                            <engage:UserImageOthers/>
-                        </Border>
-                        <TextBlock  Style="{DynamicResource MessageTimeStyle}"
-							HorizontalAlignment="Right" Margin="0,15,0,0" Grid.Column="2" 
+
+                        <TextBlock  Style="{DynamicResource MessageTimeStyle}" Grid.Column="1"
 							Text="{Binding SpeakTime, Converter={StaticResource relativeMessageTimeConverter}, FallbackValue=Yesterday 8:49}"
-						/>
-                        <TextBlock Margin="0,5,0,5" Style="{DynamicResource MessageTextbox}" VerticalAlignment="Top"
-                                Text="{Binding Path=Message, FallbackValue=A message from us}" Grid.Column="4"
-                               HorizontalAlignment="Left"/>
+                                VerticalAlignment="Center"/>
+
+                        <Image Height="30" Width="30" VerticalAlignment="Center" Grid.Column="2" Margin="30,0,0,0"
+                           Source="../Images/1375404724_tune.png"/>
+
+                        <TextBlock Margin="20,0,0,0" Style="{DynamicResource MessageTextbox}" VerticalAlignment="Center"
+                       Text="{Binding Path=Message, FallbackValue=A message from them}" Grid.Column="3"
+                               Foreground="Gray" FontSize="12"/>
+                        <ContentControl Grid.Column="4" DataContext="{Binding Path=.}">
+                            <ContentControl.Style>
+                                <Style TargetType="ContentControl">
+                                    <Setter Property="ContentTemplate" Value="{DynamicResource AnswerYesNoButtons}" />
+                                    <Style.Triggers>
+                                        <DataTrigger Binding="{Binding Answered}" Value="True">
+                                            <Setter Property="ContentTemplate" Value="{x:Null}" />
+                                        </DataTrigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </ContentControl.Style>
+                        </ContentControl>
                     </Grid>
                 </Border>
                 <Image Style="{DynamicResource ChatBubbleJoinMe}" />
