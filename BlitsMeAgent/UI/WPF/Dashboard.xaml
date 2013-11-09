@@ -10,7 +10,7 @@
 	x:Name="Main"
 	Title="{Binding Title, FallbackValue=BlitsMe}"
 	WindowStartupLocation="CenterScreen" 
-	Closing="HideIfClosing" StateChanged="WindowStateChanged" MinWidth="850" MinHeight="600">
+	Closing="HideIfClosing" StateChanged="WindowStateChanged" MinWidth="860" MinHeight="600">
 
     <Window.Resources>
         <ResourceDictionary>
