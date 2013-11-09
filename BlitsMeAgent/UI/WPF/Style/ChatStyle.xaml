@@ -739,8 +739,8 @@
 
     <DataTemplate x:Key="AnswerYesNoButtons">
         <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Margin="5,0,10,0" Grid.Column="4">
-            <Button Style="{DynamicResource AcceptButtonStyle}" Height="15" Width="15"/>
-            <Button Style="{DynamicResource DenyButtonStyle}" Margin="5,0,0,0" Height="15" Width="15"/>
+            <Button Style="{DynamicResource AcceptButtonStyle}" Template="{DynamicResource TransparentButtonFileSendAcceptStyle}"/>
+            <Button Style="{DynamicResource DenyButtonStyle}" Margin="5,0,0,0" Template="{DynamicResource TransparentButtonFileSendCloseStyle}"/>
         </StackPanel>
     </DataTemplate>
 
@@ -770,8 +770,8 @@
                                Foreground="Black" FontSize="12"/>
 
                     <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Margin="5,0,10,0" Grid.Column="3">
-                        <Button Style="{DynamicResource AcceptButtonStyle}" Height="15" Width="15"/>
-                        <Button Style="{DynamicResource DenyButtonStyle}" Margin="5,0,0,0" Height="15" Width="15"/>
+                        <Button Style="{DynamicResource AcceptButtonStyle}" Template="{DynamicResource TransparentButtonFileSendAcceptStyle}"/>
+                        <Button Style="{DynamicResource DenyButtonStyle}" Margin="5,0,0,0" Template="{DynamicResource TransparentButtonFileSendCloseStyle}"/>
                     </StackPanel>
                 </Grid>
             </Border>
@@ -787,6 +787,7 @@
         </Setter>
         <Setter Property="ContentTemplate" Value="{DynamicResource AcceptButtonTemplate}" />
         <Setter Property="ToolTip" Value="Accept" />
+        
     </Style>
 
     <Style x:Key="DenyButtonStyle" TargetType="{x:Type Button}" BasedOn="{StaticResource NotificationActionButton}">

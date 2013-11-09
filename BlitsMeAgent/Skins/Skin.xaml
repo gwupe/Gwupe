@@ -2,6 +2,7 @@
 					xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
                     xmlns:ed="http://schemas.microsoft.com/expression/2010/drawing"
                     xmlns:utils="clr-namespace:BlitsMe.Agent.UI.WPF.Utils"
+                    xmlns:s="clr-namespace:System;assembly=mscorlib"
                     xmlns:Microsoft_Windows_Themes="clr-namespace:Microsoft.Windows.Themes;assembly=PresentationFramework.Aero">
 
 
@@ -234,12 +235,6 @@
                             </Style>
                         </Border.Style>
                     </Border>
-                    <Label>
-                        <Label.Content>Fichiers joints</Label.Content>
-                        <Label.Foreground>white</Label.Foreground>
-                        <Label.VerticalAlignment>center</Label.VerticalAlignment>
-                        <Label.HorizontalAlignment>center</Label.HorizontalAlignment>
-                    </Label>
                 </StackPanel>
             </Button.Content>
             <Button.Style>
@@ -287,6 +282,94 @@
                             </ControlTemplate>
                         </Setter.Value>
                     </Setter>
+                </Style>
+            </Button.Style>
+        </Button>
+    </ControlTemplate>
+
+    <ControlTemplate TargetType="{x:Type Button}" x:Key="TransparentButtonFileSendCloseStyle">
+        <Button BorderBrush="Transparent" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" 
+                HorizontalAlignment="Center" VerticalAlignment="Center" >
+            <Button.Content>
+                <StackPanel Orientation="Horizontal">
+                    <Border CornerRadius="3">
+                        <ContentPresenter/>
+                        <Border.Style>
+                            <Style TargetType="{x:Type Border}">
+                                <Setter Property="Background" Value="Transparent" />
+                                <Style.Triggers>
+                                    <Trigger Property="IsMouseOver" Value="True">
+                                        <Setter Property="Background" Value="Transparent" />
+                                        <Setter Property="BorderBrush" Value="Gray" />
+                                        <Setter Property="BorderThickness" Value="1" />
+                                    </Trigger>
+                                </Style.Triggers>
+                            </Style>
+                        </Border.Style>
+                    </Border>
+                </StackPanel>
+            </Button.Content>
+            <Button.Style>
+                <Style TargetType="{x:Type Button}" >
+                    <Setter Property="Template">
+                        <Setter.Value>
+                            <ControlTemplate TargetType="{x:Type Button}" >
+                                <ContentPresenter />
+                            </ControlTemplate>
+                        </Setter.Value>
+                    </Setter>
+                    <Setter Property="Command" Value="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type Grid}}, Path=DataContext.AnswerTrueFalse}" />
+                    <Setter Property="CommandParameter">
+                        <Setter.Value>
+                            <s:Boolean>False</s:Boolean>
+                        </Setter.Value>
+                    </Setter>
+                    <Setter Property="ContentTemplate" Value="{DynamicResource DenyButtonTemplate}" />
+                    <Setter Property="ToolTip" Value="Accept" />
+                </Style>
+            </Button.Style>
+        </Button>
+    </ControlTemplate>
+
+    <ControlTemplate TargetType="{x:Type Button}" x:Key="TransparentButtonFileSendAcceptStyle">
+        <Button BorderBrush="Transparent" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" 
+                HorizontalAlignment="Center" VerticalAlignment="Center" >
+            <Button.Content>
+                <StackPanel Orientation="Horizontal">
+                    <Border CornerRadius="3">
+                        <ContentPresenter/>
+                        <Border.Style>
+                            <Style TargetType="{x:Type Border}">
+                                <Setter Property="Background" Value="Transparent" />
+                                <Style.Triggers>
+                                    <Trigger Property="IsMouseOver" Value="True">
+                                        <Setter Property="Background" Value="Transparent" />
+                                        <Setter Property="BorderBrush" Value="Gray" />
+                                        <Setter Property="BorderThickness" Value="1" />
+                                    </Trigger>
+                                </Style.Triggers>
+                            </Style>
+                        </Border.Style>
+                    </Border>
+                </StackPanel>
+            </Button.Content>
+            <Button.Style>
+                <Style TargetType="{x:Type Button}" >
+                    <Setter Property="Template">
+                        <Setter.Value>
+                            <ControlTemplate TargetType="{x:Type Button}" >
+                                <ContentPresenter />
+                            </ControlTemplate>
+                        </Setter.Value>
+                    </Setter>
+                    <Setter Property="Command" Value="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type Grid}}, Path=DataContext.AnswerTrueFalse}" />
+                    <Setter Property="CommandParameter">
+                        <Setter.Value>
+                            <s:Boolean>True</s:Boolean>
+                        </Setter.Value>
+                    </Setter>
+                    <Setter Property="ContentTemplate" Value="{DynamicResource AcceptButtonTemplate}" />
+                    <Setter Property="ToolTip" Value="Accept" />
                 </Style>
             </Button.Style>
         </Button>
