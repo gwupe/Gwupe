@@ -253,6 +253,7 @@
             </Grid>
             <Button Style="{DynamicResource TerminateButtonStyle}" Height="18" Width="18"
                     HorizontalAlignment="Left" VerticalAlignment="Center" Margin="0,0,5,0"
+                    ToolTip="Terminate RDP Button"
                     Visibility="{Binding IsRemoteActive,Converter={StaticResource BoolToVisibilityConverter},Mode=TwoWay,UpdateSourceTrigger=PropertyChanged}" >
                 <Image Source="/BlitsMe.Agent;component/UI/WPF/Images/close.png" Height="12" Width="12" />
             </Button>

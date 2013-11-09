@@ -171,14 +171,6 @@ namespace BlitsMe.Agent.Components.Person
         internal TerminateCloseCommand(Attendance attendance)
         {
             _attendance = attendance;
-            //if (attendance.Engagement != null)
-            //{
-            //    Thread thread =
-            //        new Thread(
-            //            ((Components.Functions.RemoteDesktop.Function)
-            //             attendance.Engagement.GetFunction("RemoteDesktop")).Server.Close) {IsBackground = true};
-            //    thread.Start();
-            //}
         }
 
         public void Execute(object parameter)
@@ -188,6 +180,7 @@ namespace BlitsMe.Agent.Components.Person
                     ((Components.Functions.RemoteDesktop.Function)
                      _attendance.Engagement.GetFunction("RemoteDesktop")).Server.Close) { IsBackground = true };
             thread.Start();
+            _attendance.Engagement.IsRemoteControlActive = false;
         }
 
         public bool CanExecute(object parameter)
