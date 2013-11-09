@@ -107,7 +107,7 @@
             </Grid>
 
             <Border  Grid.Column="7"   BorderBrush="#5574AF">
-                <Button x:Name="AddPersonButton" Content="{Binding AddText, FallbackValue=Add}" Style="{DynamicResource UserinfoBtnstyle}" Width="90" Height="35" FontSize="14"
+                <Button x:Name="AddPersonButton" Content="{Binding AddText, FallbackValue=Add}" Style="{DynamicResource UserinfoBtnstyle}" Width="105" Height="35" FontSize="14"
                     IsEnabled="{Binding CanAdd, FallbackValue=true}"  />
             </Border>
         </Grid>

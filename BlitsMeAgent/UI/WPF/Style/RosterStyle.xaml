@@ -210,11 +210,7 @@
             </Rectangle.Fill>
         </Rectangle>
     </DataTemplate>
-
-    <Style x:Key="TerminateButtonStyle" TargetType="{x:Type Button}">
-        <Setter Property="Command" Value="{Binding AnswerCancel}" />
-    </Style>
-
+    
     <Convertors:BoolToVisibilityConverter x:Key="BoolToVisibilityConverter"/>
     <Convertors:BoolToStringConverter x:Key="BoolToStringConverter"/>
     <DataTemplate x:Key="Contact">
@@ -251,9 +247,9 @@
                     </ContentControl.Style>
                 </ContentControl>
             </Grid>
-            <Button Style="{DynamicResource TerminateButtonStyle}" Height="18" Width="18"
+            <Button Height="18" Width="18"
                     HorizontalAlignment="Left" VerticalAlignment="Center" Margin="0,0,5,0"
-                    ToolTip="Terminate RDP Button"
+                    Template="{DynamicResource TransparentButtonTerminateRDP}"
                     Visibility="{Binding IsRemoteActive,Converter={StaticResource BoolToVisibilityConverter},Mode=TwoWay,UpdateSourceTrigger=PropertyChanged}" >
                 <Image Source="/BlitsMe.Agent;component/UI/WPF/Images/close.png" Height="12" Width="12" />
             </Button>
