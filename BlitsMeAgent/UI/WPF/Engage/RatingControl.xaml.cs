@@ -20,12 +20,13 @@ namespace BlitsMe.Agent.UI.WPF.Engage
         public RatingControl()
         {
             this.InitializeComponent();
-            RatingCover.Width = 0;
+            /*
             poly1.Style = this.FindResource("StarEmpty") as Style;
             poly2.Style = this.FindResource("StarEmpty") as Style;
             poly3.Style = this.FindResource("StarEmpty") as Style;
             poly4.Style = this.FindResource("StarEmpty") as Style;
             poly5.Style = this.FindResource("StarEmpty") as Style;
+             */
         }
 
         private void StarMouseEnter(object sender, System.Windows.Input.MouseEventArgs e)
@@ -73,7 +74,7 @@ namespace BlitsMe.Agent.UI.WPF.Engage
             {
                 Logger.Warn("Cannot set rating on server for " + Name + ", no SetRating method on DataContext");
             }
-
+            /*
             for (int i = 0; i < 5; i++)
             {
                 switch (_starNo)
@@ -115,11 +116,13 @@ namespace BlitsMe.Agent.UI.WPF.Engage
                         break;
                 }
             }
+            */
         }
 
         private void StarMouseLeave(object sender, System.Windows.Input.MouseEventArgs e)
         {
-            RatingCover.Width = 0;
+            //RatingCover.Width = 0;
+            RatingCover.Width = (100 - _savedRating) * 75 / 100;
         }
     }
 
