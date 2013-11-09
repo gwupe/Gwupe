@@ -105,7 +105,7 @@ namespace BlitsMe.Agent.UI.WPF.Engage
             _appContext.NotificationManager.AddAlert(_thisAlert);
             if (Dispatcher.CheckAccess())
             {
-                MainLayout.Background = new SolidColorBrush(Colors.Red);
+                MainLayout.Background = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#4A7EBB"));
                 //_chatWindow.BubbleCover.Background = new SolidColorBrush(Colors.Red);
                 // KickOffButton.Visibility = Visibility.Visible;
                 if(this.Engagement.IsRemoteControlActive)
@@ -118,7 +118,7 @@ namespace BlitsMe.Agent.UI.WPF.Engage
             {
                 Dispatcher.Invoke(new Action(() =>
                     {
-                        MainLayout.Background = new SolidColorBrush(Colors.Red);
+                        MainLayout.Background = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#4A7EBB"));
                         //_chatWindow.BubbleCover.Background = new SolidColorBrush(Colors.Red);
                         //KickOffButton.Visibility = Visibility.Visible; ;
                         if (this.Engagement.IsRemoteControlActive)
