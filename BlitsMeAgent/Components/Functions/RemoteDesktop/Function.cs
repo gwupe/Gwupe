@@ -105,7 +105,7 @@ namespace BlitsMe.Agent.Components.Functions.RemoteDesktop
                     rdpNotification.AnsweredFalse += delegate { ProcessAnswer(false); };
                     _appContext.NotificationManager.AddNotification(rdpNotification);
                     */
-                    var rdpChatElement = LogRdpRequest(_engagement.SecondParty.Person.Firstname + " requested control of your desktop.");
+                    var rdpChatElement = LogRdpRequest(_engagement.SecondParty.Person.Firstname + " requested control of your desktop.",_engagement.SecondPartyUsername);
                     rdpChatElement.AnsweredTrue += delegate { ProcessAnswer(true); };
                     rdpChatElement.AnsweredFalse += delegate { ProcessAnswer(false); };
                     //Chat.LogSecondPartySystemMessage(_engagement.SecondParty.Person.Firstname +
@@ -116,12 +116,13 @@ namespace BlitsMe.Agent.Components.Functions.RemoteDesktop
             }
         }
 
-        internal RdpRequestChatElement LogRdpRequest(String message)
+        internal RdpRequestChatElement LogRdpRequest(String message,string userName)
         {
             RdpRequestChatElement chatElement = new RdpRequestChatElement()
             {
                 Message = message,
-                SpeakTime = DateTime.Now
+                SpeakTime = DateTime.Now,
+                UserName = userName
             };
             Chat.Conversation.AddMessage(chatElement);
             // Fire the event
