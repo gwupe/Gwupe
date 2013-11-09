@@ -194,13 +194,15 @@
     <DataTemplate DataType="{x:Type fileSendNotification:FileReceivedNotification}">
         <DockPanel Style="{StaticResource NotificationDockStyle}">
             <StackPanel Orientation="Horizontal" Margin="0,8,8,8" HorizontalAlignment="Right" DockPanel.Dock="Right">
-                <Button Style="{DynamicResource NotificationActionButton}" Content="Open File" Width="75" Command="{Binding OpenCommand}">
+                <Button Style="{DynamicResource NotificationActionButton}" Content="Open File" 
+                        Width="75" Command="{Binding OpenCommand}" Margin="0,0,5,0">
                     <Button.CommandParameter>File</Button.CommandParameter>
                 </Button>
-                <Button Content="Open Folder" Width="75" Command="{Binding OpenCommand}" Style="{DynamicResource NotificationActionButton}" >
+                <Button Content="Open Folder" Width="75" Command="{Binding OpenCommand}" 
+                        Style="{DynamicResource NotificationActionButton}"  Margin="0,0,5,0">
                     <Button.CommandParameter>Folder</Button.CommandParameter>
                 </Button>
-                <Button Style="{DynamicResource DeleteButtonStyle}" />
+                <Button Style="{DynamicResource DeleteButtonStyle}" Margin="0,0,5,0"/>
             </StackPanel>
             <TextBlock HorizontalAlignment="Left" Margin="8,11,0,8" Text="{Binding Message, FallbackValue=Unknown Notification}" DockPanel.Dock="Left" Foreground="Black" FontWeight="Bold"/>
         </DockPanel>
