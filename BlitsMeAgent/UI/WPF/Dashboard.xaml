@@ -339,52 +339,38 @@
                             <TextBlock HorizontalAlignment="Left" TextAlignment="Center" Text="Local Search Results"
                                    VerticalAlignment="Center" Margin="20,0,0,0"/>
                         </Border>
-                        <ScrollViewer x:Name="LocalSearchViewer" VerticalScrollBarVisibility="Auto"
-                                  HorizontalScrollBarVisibility="Hidden" Grid.Row="1" MaxHeight="200"
-                                  >
-                            <ScrollViewer.Style>
-                                <Style TargetType="{x:Type ScrollViewer}">
-                                    <Setter Property="OverridesDefaultStyle" Value="True"/>
-                                    <Setter Property="Template">
-                                        <Setter.Value>
-                                            <ControlTemplate TargetType="{x:Type ScrollViewer}">
-                                                <Grid>
-                                                    <Grid.ColumnDefinitions>
-                                                        <ColumnDefinition Width="Auto"/>
-                                                        <ColumnDefinition/>
-                                                    </Grid.ColumnDefinitions>
-                                                    <Grid.RowDefinitions>
-                                                        <RowDefinition/>
-                                                        <RowDefinition Height="Auto"/>
-                                                    </Grid.RowDefinitions>
-
-                                                    <ScrollContentPresenter Grid.Column="1"/>
-
-                                                    <ScrollBar Name="PART_VerticalScrollBar"
-            Value="{TemplateBinding VerticalOffset}"
-            Maximum="{TemplateBinding ScrollableHeight}"
-            ViewportSize="{TemplateBinding ViewportHeight}"
-            Visibility="{TemplateBinding ComputedVerticalScrollBarVisibility}"/>
-                                                    <ScrollBar Name="PART_HorizontalScrollBar"
-            Orientation="Horizontal"
-            Grid.Row="1"
-            Grid.Column="1"
-            Value="{TemplateBinding HorizontalOffset}"
-            Maximum="{TemplateBinding ScrollableWidth}"
-            ViewportSize="{TemplateBinding ViewportWidth}"
-            Visibility="{TemplateBinding ComputedHorizontalScrollBarVisibility}"/>
-
-                                                </Grid>
-                                            </ControlTemplate>
-                                        </Setter.Value>
-                                    </Setter>
-                                </Style>
-                            </ScrollViewer.Style>
-                            <ListBox x:Name="SearchContacts" DockPanel.Dock="Bottom" ItemsSource="{Binding}" ScrollViewer.CanContentScroll="False"
+                        <ListBox x:Name="SearchContacts" DockPanel.Dock="Bottom" ItemsSource="{Binding}" ScrollViewer.CanContentScroll="False"
         					FontFamily="Corbel" Margin="0,0,0,0" ScrollViewer.HorizontalScrollBarVisibility="Disabled"
 							ItemTemplate="{DynamicResource Contact}" Style="{DynamicResource TeamList}"
-                            ItemContainerStyle="{DynamicResource ListBoxItemControlStyle}" />
-                        </ScrollViewer>
+                            ItemContainerStyle="{DynamicResource ListBoxItemControlStyle}" MaxHeight="200">
+                            <ListBox.Template>
+                                <ControlTemplate TargetType="{x:Type ListBox}">
+                                    <Border x:Name="Bd" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}" Background="{TemplateBinding Background}" Padding="1" SnapsToDevicePixels="true">
+                                        <ScrollViewer Focusable="false" Padding="{TemplateBinding Padding}">
+                                            <ScrollViewer.Template>
+                                                <ControlTemplate TargetType="{x:Type ScrollViewer}">
+                                                    <Grid x:Name="Grid" Background="{TemplateBinding Background}">
+                                                        <Grid.ColumnDefinitions>
+                                                            <ColumnDefinition Width="Auto"/>
+                                                            <ColumnDefinition Width="*"/>
+                                                        </Grid.ColumnDefinitions>
+                                                        <Grid.RowDefinitions>
+                                                            <RowDefinition Height="*"/>
+                                                            <RowDefinition Height="Auto"/>
+                                                        </Grid.RowDefinitions>
+                                                        <Rectangle x:Name="Corner" Grid.Column="0" Fill="{DynamicResource {x:Static SystemColors.ControlBrushKey}}" Grid.Row="1"/>
+                                                        <ScrollContentPresenter x:Name="PART_ScrollContentPresenter" CanContentScroll="{TemplateBinding CanContentScroll}" CanHorizontallyScroll="False" CanVerticallyScroll="False" ContentTemplate="{TemplateBinding ContentTemplate}" Content="{TemplateBinding Content}" Grid.Column="1" Margin="{TemplateBinding Padding}" Grid.Row="0"/>
+                                                        <ScrollBar x:Name="PART_VerticalScrollBar" AutomationProperties.AutomationId="VerticalScrollBar" Cursor="Arrow" Grid.Column="0" Maximum="{TemplateBinding ScrollableHeight}" Minimum="0" Grid.Row="0" Visibility="{TemplateBinding ComputedVerticalScrollBarVisibility}" Value="{Binding VerticalOffset, Mode=OneWay, RelativeSource={RelativeSource TemplatedParent}}" ViewportSize="{TemplateBinding ViewportHeight}"/>
+                                                        <ScrollBar x:Name="PART_HorizontalScrollBar" AutomationProperties.AutomationId="HorizontalScrollBar" Cursor="Arrow" Grid.Column="1" Maximum="{TemplateBinding ScrollableWidth}" Minimum="0" Orientation="Horizontal" Grid.Row="1" Visibility="{TemplateBinding ComputedHorizontalScrollBarVisibility}" Value="{Binding HorizontalOffset, Mode=OneWay, RelativeSource={RelativeSource TemplatedParent}}" ViewportSize="{TemplateBinding ViewportWidth}"/>
+                                                    </Grid>
+                                                </ControlTemplate>
+                                            </ScrollViewer.Template>
+                                            <ItemsPresenter SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}"/>
+                                        </ScrollViewer>
+                                    </Border>
+                                </ControlTemplate>
+                            </ListBox.Template>
+                        </ListBox>
                     </StackPanel>
                 </Grid>
 
@@ -402,54 +388,39 @@
                                 </ItemsPanelTemplate>
                             </ItemsControl.ItemsPanel>
                         </ItemsControl>
-                        <ScrollViewer x:Name="ActiveViewer" VerticalScrollBarVisibility="Auto"
-                                  HorizontalScrollBarVisibility="Hidden" Grid.Row="1" MaxHeight="200"
-                                  >
-                            <ScrollViewer.Style>
-                                <Style TargetType="{x:Type ScrollViewer}">
-                                    <Setter Property="OverridesDefaultStyle" Value="True"/>
-                                    <Setter Property="Template">
-                                        <Setter.Value>
-                                            <ControlTemplate TargetType="{x:Type ScrollViewer}">
-                                                <Grid>
-                                                    <Grid.ColumnDefinitions>
-                                                        <ColumnDefinition Width="Auto"/>
-                                                        <ColumnDefinition/>
-                                                    </Grid.ColumnDefinitions>
-                                                    <Grid.RowDefinitions>
-                                                        <RowDefinition/>
-                                                        <RowDefinition Height="Auto"/>
-                                                    </Grid.RowDefinitions>
-
-                                                    <ScrollContentPresenter Grid.Column="1"/>
-
-                                                    <ScrollBar Name="PART_VerticalScrollBar"
-            Value="{TemplateBinding VerticalOffset}"
-            Maximum="{TemplateBinding ScrollableHeight}"
-            ViewportSize="{TemplateBinding ViewportHeight}"
-            Visibility="{TemplateBinding ComputedVerticalScrollBarVisibility}"/>
-                                                    <ScrollBar Name="PART_HorizontalScrollBar"
-            Orientation="Horizontal"
-            Grid.Row="1"
-            Grid.Column="1"
-            Value="{TemplateBinding HorizontalOffset}"
-            Maximum="{TemplateBinding ScrollableWidth}"
-            ViewportSize="{TemplateBinding ViewportWidth}"
-            Visibility="{TemplateBinding ComputedHorizontalScrollBarVisibility}"/>
-
-                                                </Grid>
-                                            </ControlTemplate>
-                                        </Setter.Value>
-                                    </Setter>
-                                </Style>
-                            </ScrollViewer.Style>
-                            <ListBox x:Name="CurrentlyActiveContacts" DockPanel.Dock="Bottom" ItemsSource="{Binding}" 
-                                 ScrollViewer.CanContentScroll="False" Panel.ZIndex="-2" Width="240"
+                        <ListBox x:Name="CurrentlyActiveContacts" DockPanel.Dock="Bottom" ItemsSource="{Binding}" 
+                                 ScrollViewer.CanContentScroll="False" Panel.ZIndex="-2" Width="240" MaxHeight="200"
         					FontFamily="Corbel" Margin="0,0,0,0" ScrollViewer.HorizontalScrollBarVisibility="Disabled"
 							ItemTemplate="{DynamicResource Contact}" Style="{DynamicResource TeamList}"
                                  ItemContainerStyle="{DynamicResource ListBoxItemControlStyle}" Background="Transparent">
-                            </ListBox>
-                        </ScrollViewer>
+                            <ListBox.Template>
+                                <ControlTemplate TargetType="{x:Type ListBox}">
+                                    <Border x:Name="Bd" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}" Background="{TemplateBinding Background}" Padding="1" SnapsToDevicePixels="true">
+                                        <ScrollViewer Focusable="false" Padding="{TemplateBinding Padding}">
+                                            <ScrollViewer.Template>
+                                                <ControlTemplate TargetType="{x:Type ScrollViewer}">
+                                                    <Grid x:Name="Grid" Background="{TemplateBinding Background}">
+                                                        <Grid.ColumnDefinitions>
+                                                            <ColumnDefinition Width="Auto"/>
+                                                            <ColumnDefinition Width="*"/>
+                                                        </Grid.ColumnDefinitions>
+                                                        <Grid.RowDefinitions>
+                                                            <RowDefinition Height="*"/>
+                                                            <RowDefinition Height="Auto"/>
+                                                        </Grid.RowDefinitions>
+                                                        <Rectangle x:Name="Corner" Grid.Column="0" Fill="{DynamicResource {x:Static SystemColors.ControlBrushKey}}" Grid.Row="1"/>
+                                                        <ScrollContentPresenter x:Name="PART_ScrollContentPresenter" CanContentScroll="{TemplateBinding CanContentScroll}" CanHorizontallyScroll="False" CanVerticallyScroll="False" ContentTemplate="{TemplateBinding ContentTemplate}" Content="{TemplateBinding Content}" Grid.Column="1" Margin="{TemplateBinding Padding}" Grid.Row="0"/>
+                                                        <ScrollBar x:Name="PART_VerticalScrollBar" AutomationProperties.AutomationId="VerticalScrollBar" Cursor="Arrow" Grid.Column="0" Maximum="{TemplateBinding ScrollableHeight}" Minimum="0" Grid.Row="0" Visibility="{TemplateBinding ComputedVerticalScrollBarVisibility}" Value="{Binding VerticalOffset, Mode=OneWay, RelativeSource={RelativeSource TemplatedParent}}" ViewportSize="{TemplateBinding ViewportHeight}"/>
+                                                        <ScrollBar x:Name="PART_HorizontalScrollBar" AutomationProperties.AutomationId="HorizontalScrollBar" Cursor="Arrow" Grid.Column="1" Maximum="{TemplateBinding ScrollableWidth}" Minimum="0" Orientation="Horizontal" Grid.Row="1" Visibility="{TemplateBinding ComputedHorizontalScrollBarVisibility}" Value="{Binding HorizontalOffset, Mode=OneWay, RelativeSource={RelativeSource TemplatedParent}}" ViewportSize="{TemplateBinding ViewportWidth}"/>
+                                                    </Grid>
+                                                </ControlTemplate>
+                                            </ScrollViewer.Template>
+                                            <ItemsPresenter SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}"/>
+                                        </ScrollViewer>
+                                    </Border>
+                                </ControlTemplate>
+                            </ListBox.Template>
+                        </ListBox>
                     </StackPanel>
                 </Grid>
 
@@ -470,53 +441,40 @@
                                 </ItemsPanelTemplate>
                             </ItemsControl.ItemsPanel>
                         </ItemsControl>-->
-                    <ScrollViewer x:Name="ChatPanelViewer" VerticalScrollBarVisibility="Auto"
-                                  HorizontalScrollBarVisibility="Hidden" Grid.Row="1"
-                                  >
-                        <ScrollViewer.Style>
-                            <Style TargetType="{x:Type ScrollViewer}">
-                                <Setter Property="OverridesDefaultStyle" Value="True"/>
-                                <Setter Property="Template">
-                                    <Setter.Value>
-                                        <ControlTemplate TargetType="{x:Type ScrollViewer}">
-                                            <Grid>
-                                                <Grid.ColumnDefinitions>
-                                                    <ColumnDefinition Width="Auto"/>
-                                                    <ColumnDefinition/>
-                                                </Grid.ColumnDefinitions>
-                                                <Grid.RowDefinitions>
-                                                    <RowDefinition/>
-                                                    <RowDefinition Height="Auto"/>
-                                                </Grid.RowDefinitions>
 
-                                                <ScrollContentPresenter Grid.Column="1"/>
-
-                                                <ScrollBar Name="PART_VerticalScrollBar"
-            Value="{TemplateBinding VerticalOffset}"
-            Maximum="{TemplateBinding ScrollableHeight}"
-            ViewportSize="{TemplateBinding ViewportHeight}"
-            Visibility="{TemplateBinding ComputedVerticalScrollBarVisibility}"/>
-                                                <ScrollBar Name="PART_HorizontalScrollBar"
-            Orientation="Horizontal"
-            Grid.Row="1"
-            Grid.Column="1"
-            Value="{TemplateBinding HorizontalOffset}"
-            Maximum="{TemplateBinding ScrollableWidth}"
-            ViewportSize="{TemplateBinding ViewportWidth}"
-            Visibility="{TemplateBinding ComputedHorizontalScrollBarVisibility}"/>
-
-                                            </Grid>
-                                        </ControlTemplate>
-                                    </Setter.Value>
-                                </Setter>
-                            </Style>
-                        </ScrollViewer.Style>
-                        <ListBox x:Name="AllContacts" DockPanel.Dock="Bottom" ItemsSource="{Binding}" 
-                                 Panel.ZIndex="-2"
+                    <ListBox x:Name="AllContacts" DockPanel.Dock="Bottom" ItemsSource="{Binding}" 
+                                 Panel.ZIndex="-2" Grid.Row="1"
         					FontFamily="Corbel" Margin="0,0,0,0" 
 							ItemTemplate="{DynamicResource Contact}" Style="{DynamicResource TeamList}" 
-                            ItemContainerStyle="{DynamicResource ListBoxItemControlStyle}"/>
-                    </ScrollViewer>
+                            ItemContainerStyle="{DynamicResource ListBoxItemControlStyle}">
+                        <ListBox.Template>
+                            <ControlTemplate TargetType="{x:Type ListBox}">
+                                <Border x:Name="Bd" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}" Background="{TemplateBinding Background}" Padding="1" SnapsToDevicePixels="true">
+                                    <ScrollViewer Focusable="false" Padding="{TemplateBinding Padding}">
+                                        <ScrollViewer.Template>
+                                            <ControlTemplate TargetType="{x:Type ScrollViewer}">
+                                                <Grid x:Name="Grid" Background="{TemplateBinding Background}">
+                                                    <Grid.ColumnDefinitions>
+                                                        <ColumnDefinition Width="Auto"/>
+                                                        <ColumnDefinition Width="*"/>
+                                                    </Grid.ColumnDefinitions>
+                                                    <Grid.RowDefinitions>
+                                                        <RowDefinition Height="*"/>
+                                                        <RowDefinition Height="Auto"/>
+                                                    </Grid.RowDefinitions>
+                                                    <Rectangle x:Name="Corner" Grid.Column="0" Fill="{DynamicResource {x:Static SystemColors.ControlBrushKey}}" Grid.Row="1"/>
+                                                    <ScrollContentPresenter x:Name="PART_ScrollContentPresenter" CanContentScroll="{TemplateBinding CanContentScroll}" CanHorizontallyScroll="False" CanVerticallyScroll="False" ContentTemplate="{TemplateBinding ContentTemplate}" Content="{TemplateBinding Content}" Grid.Column="1" Margin="{TemplateBinding Padding}" Grid.Row="0"/>
+                                                    <ScrollBar x:Name="PART_VerticalScrollBar" AutomationProperties.AutomationId="VerticalScrollBar" Cursor="Arrow" Grid.Column="0" Maximum="{TemplateBinding ScrollableHeight}" Minimum="0" Grid.Row="0" Visibility="{TemplateBinding ComputedVerticalScrollBarVisibility}" Value="{Binding VerticalOffset, Mode=OneWay, RelativeSource={RelativeSource TemplatedParent}}" ViewportSize="{TemplateBinding ViewportHeight}"/>
+                                                    <ScrollBar x:Name="PART_HorizontalScrollBar" AutomationProperties.AutomationId="HorizontalScrollBar" Cursor="Arrow" Grid.Column="1" Maximum="{TemplateBinding ScrollableWidth}" Minimum="0" Orientation="Horizontal" Grid.Row="1" Visibility="{TemplateBinding ComputedHorizontalScrollBarVisibility}" Value="{Binding HorizontalOffset, Mode=OneWay, RelativeSource={RelativeSource TemplatedParent}}" ViewportSize="{TemplateBinding ViewportWidth}"/>
+                                                </Grid>
+                                            </ControlTemplate>
+                                        </ScrollViewer.Template>
+                                        <ItemsPresenter SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}"/>
+                                    </ScrollViewer>
+                                </Border>
+                            </ControlTemplate>
+                        </ListBox.Template>
+                    </ListBox>
                 </Grid>
 
                 <ItemsControl x:Name="Alerts" DockPanel.Dock="Bottom" Grid.Row="5" >
