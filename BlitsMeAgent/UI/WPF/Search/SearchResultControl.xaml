@@ -95,12 +95,15 @@
                     </ContentControl>-->
 
                 </Grid>
-                <StackPanel Orientation="Horizontal" MinHeight="40" Background="#C6D9F1"
+                <!--<StackPanel Orientation="Horizontal" MinHeight="40" Background="#C6D9F1"
                         MinWidth="310" Grid.Row="1" Grid.Column="0">
                     <TextBlock Style="{DynamicResource ProspectDescription}" 
                        Text="{Binding Path=Person.Description, FallbackValue=Description of my skills.}" 
                        Margin="5,0,0,0" TextWrapping="Wrap"  Width="300"/>
-                </StackPanel>
+                </StackPanel>-->
+                <TextBlock Padding="2" Margin="0,0,5,5" Background="#C6D9F1" Grid.Row="1" Grid.Column="0" MinHeight="40"
+                       Text="{Binding Path=Person.Description, FallbackValue=Description of my skills.}" 
+                        TextWrapping="Wrap"  Foreground="Black"/>
             </Grid>
 
             <Border  Grid.Column="7"   BorderBrush="#5574AF">
