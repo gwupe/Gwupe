@@ -11,7 +11,7 @@ using log4net;
 
 namespace BlitsMe.Cloud.Messaging
 {
-    public class WebSocketMessageHandler
+    public class WebSocketMessageHandler : IWebSocketMessageHandler
     {
         private static readonly ILog Logger = LogManager.GetLogger(typeof(WebSocketMessageHandler));
 
@@ -29,7 +29,7 @@ namespace BlitsMe.Cloud.Messaging
             WebSocketServer = new WebSocketServer(this);
         }
 
-        public void onClose(WebSocketConnection aConnection, int aCloseCode, string aCloseReason, bool aClosedByPeer)
+        public void OnClose(WebSocketConnection aConnection, int aCloseCode, string aCloseReason, bool aClosedByPeer)
         {
             Logger.Debug("Client : Connection [" + aConnection.ToString() + "] has closed with message : " + aCloseReason);
             WebSocketClient.Reset();
@@ -38,12 +38,13 @@ namespace BlitsMe.Cloud.Messaging
             this._connectionMaintainer.WakeupManager.Set();
         }
 
-        public void onOpen(WebSocketConnection aConnection)
+        public void OnOpen(WebSocketConnection aConnection)
         {
             this._connection = aConnection;
             Logger.Debug("Client : Made connection [" + aConnection.Client.Client.RemoteEndPoint + "]");
         }
 
+        /*
         public void onMessage(WebSocketConnection connection, bool final, bool res1, bool res2, bool res3, int code, MemoryStream data)
         {
             // Deserialise it once to get its type
@@ -63,6 +64,7 @@ namespace BlitsMe.Cloud.Messaging
             }
             ProcessMessage(message);
         }
+         */
 
         private void ProcessMessage(Message message)
         {
@@ -201,5 +203,6 @@ namespace BlitsMe.Cloud.Messaging
             }
             ProcessMessage(message);
         }
+
     }
 }

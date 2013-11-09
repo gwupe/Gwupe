@@ -69,11 +69,14 @@
   <ItemGroup>
     <Compile Include="Communication\CloudConnection.cs" />
     <Compile Include="Communication\ConnectionMaintainer.cs" />
+    <Compile Include="Communication\CoupledConnection.cs" />
+    <Compile Include="Communication\WebSocketClientSSLConnection.cs" />
     <Compile Include="Exceptions\ConnectionException.cs" />
     <Compile Include="Exceptions\MessageException.cs" />
     <Compile Include="Exceptions\ProtocolException.cs" />
     <Compile Include="Exceptions\RemoteException.cs" />
     <Compile Include="Messaging\API\ElevatedRequest.cs" />
+    <Compile Include="Messaging\API\IWebSocketMessageHandler.cs" />
     <Compile Include="Messaging\API\UserToUserResponse.cs" />
     <Compile Include="Messaging\API\Processor.cs" />
     <Compile Include="Messaging\API\Message.cs" />
@@ -81,6 +84,7 @@
     <Compile Include="Messaging\API\Request.cs" />
     <Compile Include="Messaging\API\Response.cs" />
     <Compile Include="Messaging\API\UserToUserRequest.cs" />
+    <Compile Include="Messaging\CoupledWebSocketMessageHandler.cs" />
     <Compile Include="Messaging\Elements\IpEndPointElement.cs" />
     <Compile Include="Messaging\Elements\PresenceElement.cs" />
     <Compile Include="Messaging\Elements\ResultElement.cs" />

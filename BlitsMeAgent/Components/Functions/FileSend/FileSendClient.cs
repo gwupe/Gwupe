@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
+using BlitsMe.Cloud.Communication;
 using BlitsMe.Communication.P2P.RUDP.Connector;
 using BlitsMe.Communication.P2P.RUDP.Connector.API;
 using BlitsMe.Communication.P2P.RUDP.Tunnel.API;
@@ -17,6 +18,7 @@ namespace BlitsMe.Agent.Components.Functions.FileSend
         private DefaultTcpTransportConnection _transportConnection;
         private long _dataWriteSize;
         private Boolean _proceed = true;
+        private CoupledConnection coupledConnection;
         public long DataWriteSize
         {
             get { return _dataWriteSize; }
@@ -51,8 +53,7 @@ namespace BlitsMe.Agent.Components.Functions.FileSend
                 BinaryReader binReader = new BinaryReader(fs);
                 try
                 {
-                    _transportConnection =
-                        new DefaultTcpTransportConnection(_transportManager.TCPTransport.OpenConnection(fileInfo.FileSendId), ReadReply);
+                    OpenConnection(fileInfo);
                     try
                     {
                         byte[] read;
@@ -61,7 +62,7 @@ namespace BlitsMe.Agent.Components.Functions.FileSend
                             read = binReader.ReadBytes(8192);
                             if (read.Length > 0)
                             {
-                                _transportConnection.SendDataToTransportSocket(read,read.Length);
+                                SendData(read);
                                 _dataWriteSize += read.Length;
                                 OnDataWritten(EventArgs.Empty);
                             }
@@ -82,7 +83,7 @@ namespace BlitsMe.Agent.Components.Functions.FileSend
                         OnSendFileComplete(new FileSendCompleteEventArgs() { Error = "Failed to read the file", Success = false });
                     } finally
                     {
-                        _transportConnection.Close();
+                        CloseConnection();
                     }
                 }
                 catch (Exception e)
@@ -100,6 +101,23 @@ namespace BlitsMe.Agent.Components.Functions.FileSend
                 Logger.Error("Failed to open the file " + fileInfo.FilePath + " : " + e.Message, e);
                 OnSendFileComplete(new FileSendCompleteEventArgs() { Error = "Failed to open the local file", Success = false });
             }
+        }
+
+        private void CloseConnection()
+        {
+            _transportConnection.Close();
+        }
+
+        private void SendData(byte[] read)
+        {
+            _transportConnection.SendDataToTransportSocket(read, read.Length);
+        }
+
+        private void OpenConnection(FileSendInfo fileInfo)
+        {
+            //coupledConnection = new CoupledConnection();
+            _transportConnection =
+                new DefaultTcpTransportConnection(_transportManager.TCPTransport.OpenConnection(fileInfo.FileSendId), ReadReply);
         }
 
         private bool ReadReply(byte[] data, int length, TcpTransportConnection connection)
