@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Net.Security;
 using System.Security.Cryptography.X509Certificates;
 using System.Threading;
 using BlitsMe.Cloud.Messaging;
@@ -179,11 +178,11 @@ namespace BlitsMe.Cloud.Communication
         public void Connect(Uri uri)
         {
             _connection = new WebSocketClientSSLConnection(_cacert, _wsMessageHandler);
-            _connection.ConnectionClose += _wsMessageHandler.onClose;
+            _connection.ConnectionClose += _wsMessageHandler.OnClose;
             _connection.ConnectionClose += delegate { OnDisconnect(EventArgs.Empty); };
-            _connection.ConnectionOpen += _wsMessageHandler.onOpen;
+            _connection.ConnectionOpen += _wsMessageHandler.OnOpen;
             _connection.ConnectionOpen += delegate { OnConnect(EventArgs.Empty); };
-            // we no longer do it this way, but process it via a called function on full
+            // we no longer do it this way, but process it via a called function on full text being read
             //_connection.ConnectionRead += _wsMessageHandler.onMessage;
             try
             {
@@ -213,42 +212,6 @@ namespace BlitsMe.Cloud.Communication
                 _connection.Close(code, reason);
             }
             OnDisconnect(new EventArgs());
-        }
-    }
-
-    internal class WebSocketClientSSLConnection : WebSocketClientConnection
-    {
-        private static readonly ILog Logger = LogManager.GetLogger(typeof(WebSocketClientSSLConnection));
-        private readonly X509Certificate2 _cacert;
-        private readonly WebSocketMessageHandler _wsMessageHandler;
-
-        public WebSocketClientSSLConnection(X509Certificate2 cacert, WebSocketMessageHandler wsMessageHandler)
-            : base()
-        {
-            _cacert = cacert;
-            _wsMessageHandler = wsMessageHandler;
-            this.FullDataProcess = true;
-        }
-
-        protected override void ProcessTextFull(string message)
-        {
-            _wsMessageHandler.ProcessMessage(message);
-        }
-
-        protected override bool validateServerCertificate(object sender, X509Certificate certificate, X509Chain chain, SslPolicyErrors sslPolicyErrors)
-        {
-            bool isValid = false;
-            if (sslPolicyErrors == SslPolicyErrors.RemoteCertificateChainErrors)
-            {
-                X509Chain chain0 = new X509Chain();
-                chain0.ChainPolicy.RevocationMode = X509RevocationMode.NoCheck;
-                // add all your extra certificate chain
-                chain0.ChainPolicy.ExtraStore.Add(new X509Certificate2(_cacert));
-                chain0.ChainPolicy.VerificationFlags = X509VerificationFlags.AllowUnknownCertificateAuthority;
-                isValid = chain0.Build((X509Certificate2)certificate);
-            }
-            Logger.Debug("Checking cert valid, " + isValid);
-            return isValid;
         }
     }
 }

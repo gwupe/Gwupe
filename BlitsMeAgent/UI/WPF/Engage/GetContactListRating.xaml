@@ -14,23 +14,25 @@
     </UserControl.Resources>
     <Grid x:Name="LayoutRoot">
         <Grid Margin="0,0,0,0" Height="15" HorizontalAlignment="Center" Width="75">
-            <ed:RegularPolygon Name="poly1" Margin="1,0,0,0" />
-            <ed:RegularPolygon Name="poly2" Margin="16,0,0,0" />
-            <ed:RegularPolygon Name="poly3" Margin="31,0,0,0" />
-            <ed:RegularPolygon Name="poly4" Margin="46,0,0,0" />
-            <ed:RegularPolygon Name="poly5" Margin="61,0,0,0" />
-            <!-- <Rectangle Style="{StaticResource StarCover}" Width="{Binding Path=Rating, FallbackValue=25, Converter={StaticResource starRatingConverter}}" /> -->
-            <!--<Rectangle x:Name="RatingCover" Style="{StaticResource StarCover}" Width="75" />-->
-            <!--<ed:RegularPolygon Style="{StaticResource StarEmpty}" Margin="1,0,0,0" />
+            <ed:RegularPolygon Style="{StaticResource StarFull}" Name="poly1" Margin="1,0,0,0" />
+            <ed:RegularPolygon Style="{StaticResource StarFull}" Name="poly2" Margin="16,0,0,0" />
+            <ed:RegularPolygon Style="{StaticResource StarFull}" Name="poly3" Margin="31,0,0,0" />
+            <ed:RegularPolygon Style="{StaticResource StarFull}" Name="poly4" Margin="46,0,0,0" />
+            <ed:RegularPolygon Style="{StaticResource StarFull}" Name="poly5" Margin="61,0,0,0" />
+            <Rectangle Style="{StaticResource StarCover}" Width="{Binding Path=Rating, FallbackValue=25, Converter={StaticResource starRatingConverter}}" />
+            <!--<Rectangle x:Name="RatingCover" Style="{StaticResource StarCover}" Width="75" /> -->
+            <ed:RegularPolygon Style="{StaticResource StarEmpty}" Margin="1,0,0,0" />
 			<ed:RegularPolygon Style="{StaticResource StarEmpty}" Margin="16,0,0,0" />
 			<ed:RegularPolygon Style="{StaticResource StarEmpty}" Margin="31,0,0,0" />
 			<ed:RegularPolygon Style="{StaticResource StarEmpty}" Margin="46,0,0,0" />
-			<ed:RegularPolygon Style="{StaticResource StarEmpty}" Margin="61,0,0,0" />-->
+			<ed:RegularPolygon Style="{StaticResource StarEmpty}" Margin="61,0,0,0" />
+            <!--
             <Button x:Name="Star1" Margin="0,0,0,0"  Template="{StaticResource StarSelectorNew}" Style="{StaticResource StarSelector}" />
             <Button x:Name="Star2" Margin="15,0,0,0" Template="{StaticResource StarSelectorNew}" Style="{StaticResource StarSelector}" />
             <Button x:Name="Star3" Margin="30,0,0,0" Template="{StaticResource StarSelectorNew}" Style="{StaticResource StarSelector}" />
             <Button x:Name="Star4" Margin="45,0,0,0" Template="{StaticResource StarSelectorNew}" Style="{StaticResource StarSelector}" />
             <Button x:Name="Star5" Margin="60,0,0,0" Template="{StaticResource StarSelectorNew}" Style="{StaticResource StarSelector}" />
+            -->
         </Grid>
     </Grid>
 </UserControl>

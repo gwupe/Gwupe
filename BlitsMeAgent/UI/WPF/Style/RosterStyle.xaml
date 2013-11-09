@@ -9,6 +9,7 @@
 	xmlns:Convertors="clr-namespace:BlitsMe.Agent.UI.WPF.Utils">
     <ResourceDictionary.MergedDictionaries>
         <ResourceDictionary Source="./Style.xaml" />
+        <ResourceDictionary Source="./RatingStyle.xaml" />
     </ResourceDictionary.MergedDictionaries>
 
     <Style TargetType="{x:Type Grid}" x:Key="NewFade">
@@ -99,19 +100,37 @@
     <Style x:Key="TeamMemberStarCoverRDP" TargetType="Rectangle" BasedOn="{StaticResource TeamMemberStarCover}">
         <Setter Property="Fill" Value="Red" />
     </Style>
+    <DataTemplate x:Key="Rating">
+        <Grid Margin="0,0,0,0" Height="15" HorizontalAlignment="Center">
+            <ed:RegularPolygon Style="{StaticResource StarFull}" Margin="0,0,0,0" />
+            <ed:RegularPolygon Style="{StaticResource StarFull}" Margin="15,0,0,0" />
+            <ed:RegularPolygon Style="{StaticResource StarFull}" Margin="30,0,0,0" />
+            <ed:RegularPolygon Style="{StaticResource StarFull}" Margin="45,0,0,0" />
+            <ed:RegularPolygon Style="{StaticResource StarFull}" Margin="60,0,0,0" />
+            <Rectangle Fill="{Binding Path=Background, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type StackPanel}}}"
+                       Style="{StaticResource TeamMemberStarCoverActive}" Width="{Binding FallbackValue=25, Converter={StaticResource starRatingConverter}}" />
+            <ed:RegularPolygon Style="{StaticResource StarEmpty}" Margin="0,0,0,0" />
+            <ed:RegularPolygon Style="{StaticResource StarEmpty}" Margin="15,0,0,0" />
+            <ed:RegularPolygon Style="{StaticResource StarEmpty}" Margin="30,0,0,0" />
+            <ed:RegularPolygon Style="{StaticResource StarEmpty}" Margin="45,0,0,0" />
+            <ed:RegularPolygon Style="{StaticResource StarEmpty}" Margin="60,0,0,0" />
+        </Grid>
+    </DataTemplate>
+    <!--
     <DataTemplate x:Key="RatingActive">
         <Grid Margin="0,0,0,0" Height="15" HorizontalAlignment="Center">
-            <ed:RegularPolygon Style="{StaticResource TeamMemberStarFull}" Margin="0,0,0,0" />
-            <ed:RegularPolygon Style="{StaticResource TeamMemberStarFull}" Margin="15,0,0,0" />
-            <ed:RegularPolygon Style="{StaticResource TeamMemberStarFull}" Margin="30,0,0,0" />
-            <ed:RegularPolygon Style="{StaticResource TeamMemberStarFull}" Margin="45,0,0,0" />
-            <ed:RegularPolygon Style="{StaticResource TeamMemberStarFull}" Margin="60,0,0,0" />
-            <Rectangle Style="{StaticResource TeamMemberStarCoverActive}" Width="{Binding FallbackValue=25, Converter={StaticResource starRatingConverter}}" />
-            <ed:RegularPolygon Style="{StaticResource TeamMemberStarEmpty}" Margin="0,0,0,0" />
-            <ed:RegularPolygon Style="{StaticResource TeamMemberStarEmpty}" Margin="15,0,0,0" />
-            <ed:RegularPolygon Style="{StaticResource TeamMemberStarEmpty}" Margin="30,0,0,0" />
-            <ed:RegularPolygon Style="{StaticResource TeamMemberStarEmpty}" Margin="45,0,0,0" />
-            <ed:RegularPolygon Style="{StaticResource TeamMemberStarEmpty}" Margin="60,0,0,0" />
+            <ed:RegularPolygon Style="{StaticResource StarFull}" Margin="0,0,0,0" />
+            <ed:RegularPolygon Style="{StaticResource StarFull}" Margin="15,0,0,0" />
+            <ed:RegularPolygon Style="{StaticResource StarFull}" Margin="30,0,0,0" />
+            <ed:RegularPolygon Style="{StaticResource StarFull}" Margin="45,0,0,0" />
+            <ed:RegularPolygon Style="{StaticResource StarFull}" Margin="60,0,0,0" />
+            <Rectangle Fill="{Binding Path=Background, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type StackPanel}}}"
+                       Style="{StaticResource TeamMemberStarCoverActive}" Width="{Binding FallbackValue=25, Converter={StaticResource starRatingConverter}}" />
+            <ed:RegularPolygon Style="{StaticResource StarEmpty}" Margin="0,0,0,0" />
+            <ed:RegularPolygon Style="{StaticResource StarEmpty}" Margin="15,0,0,0" />
+            <ed:RegularPolygon Style="{StaticResource StarEmpty}" Margin="30,0,0,0" />
+            <ed:RegularPolygon Style="{StaticResource StarEmpty}" Margin="45,0,0,0" />
+            <ed:RegularPolygon Style="{StaticResource StarEmpty}" Margin="60,0,0,0" />
         </Grid>
     </DataTemplate>
     <DataTemplate x:Key="RatingRDP">
@@ -144,21 +163,7 @@
             <ed:RegularPolygon Style="{StaticResource TeamMemberStarEmpty}" Margin="60,0,0,0" />
         </Grid>
     </DataTemplate>
-    <DataTemplate x:Key="Rating">
-        <Grid Margin="0,0,0,0" Height="15" HorizontalAlignment="Center">
-            <ed:RegularPolygon Style="{StaticResource TeamMemberStarFull}" Margin="0,0,0,0" />
-            <ed:RegularPolygon Style="{StaticResource TeamMemberStarFull}" Margin="15,0,0,0" />
-            <ed:RegularPolygon Style="{StaticResource TeamMemberStarFull}" Margin="30,0,0,0" />
-            <ed:RegularPolygon Style="{StaticResource TeamMemberStarFull}" Margin="45,0,0,0" />
-            <ed:RegularPolygon Style="{StaticResource TeamMemberStarFull}" Margin="60,0,0,0" />
-            <Rectangle Style="{StaticResource TeamMemberStarCover}" Width="{Binding FallbackValue=25, Converter={StaticResource starRatingConverter}}" />
-            <ed:RegularPolygon Style="{StaticResource TeamMemberStarEmpty}" Margin="0,0,0,0" />
-            <ed:RegularPolygon Style="{StaticResource TeamMemberStarEmpty}" Margin="15,0,0,0" />
-            <ed:RegularPolygon Style="{StaticResource TeamMemberStarEmpty}" Margin="30,0,0,0" />
-            <ed:RegularPolygon Style="{StaticResource TeamMemberStarEmpty}" Margin="45,0,0,0" />
-            <ed:RegularPolygon Style="{StaticResource TeamMemberStarEmpty}" Margin="60,0,0,0" />
-        </Grid>
-    </DataTemplate>
+    -->
     <DataTemplate x:Key="Unrated">
         <Grid Margin="0,0,0,0" Height="15" HorizontalAlignment="Center">
             <TextBlock Foreground="#CA5100" FontSize="12">Unrated</TextBlock>
@@ -177,13 +182,7 @@
     </Style>
 
     <Style x:Key="TeamMemberUnreadBase" TargetType="StackPanel" BasedOn="{StaticResource TeamMemberInActiveBase}">
-        <Setter Property="Background" >
-            <Setter.Value>
-                <RadialGradientBrush>
-                    <GradientStop Color="#FFFBD38E" Offset="1"/>
-                    <GradientStop Color="#FFF3B13C" Offset="0.547"/>
-                </RadialGradientBrush>
-            </Setter.Value>
+        <Setter Property="Background" Value="#A9DA74">
         </Setter>
     </Style>
 
@@ -238,11 +237,11 @@
                 <TextBlock  Text="{Binding Path=Person.Location, FallbackValue=Planet Earth}" Grid.Row="1" 
                            Width="110" HorizontalAlignment="Left" Margin="10,0,0,0"/>
 
-                <Engage:GetContactListRating Grid.Row="2" HorizontalAlignment="Left" Margin="10,0,0,0"/>
-                <!--<ContentControl Content="{Binding Person.Rating}" HorizontalAlignment="Left" Grid.Row="2" Margin="10,0,0,0">
+                <!--<Engage:GetContactListRating Grid.Row="2" HorizontalAlignment="Left" Margin="10,0,0,0"/>-->
+                <ContentControl Content="{Binding Person.Rating}" HorizontalAlignment="Left" Grid.Row="2" Margin="10,0,0,0">
                     <ContentControl.Style>
                         <Style TargetType="{x:Type ContentControl}">
-                            <Setter Property="ContentTemplate" Value="{StaticResource RatingActive}" />
+                            <Setter Property="ContentTemplate" Value="{StaticResource Rating}" />
                             <Style.Triggers>
                                 <DataTrigger Binding="{Binding Person.Rating}" Value="0">
                                     <Setter Property="ContentTemplate" Value="{StaticResource Unrated}" />
@@ -250,7 +249,7 @@
                             </Style.Triggers>
                         </Style>
                     </ContentControl.Style>
-                </ContentControl>-->
+                </ContentControl>
             </Grid>
             <Button Style="{DynamicResource TerminateButtonStyle}" Height="18" Width="18"
                     HorizontalAlignment="Left" VerticalAlignment="Center" Margin="0,0,5,0"
@@ -280,11 +279,11 @@
                 <TextBlock  Text="{Binding Path=Person.Location, FallbackValue=Planet Earth}" Grid.Row="1" 
                            Width="110" HorizontalAlignment="Left" Margin="10,0,0,0"/>
 
-                <Engage:GetContactListRating Grid.Row="2" HorizontalAlignment="Left" Margin="10,0,0,0"/>
-                <!--<ContentControl Content="{Binding Person.Rating}" HorizontalAlignment="Left" Grid.Row="2" Margin="10,0,0,0">
+                <!-- <Engage:GetContactListRating Grid.Row="2" HorizontalAlignment="Left" Margin="10,0,0,0"/>-->
+                <ContentControl Content="{Binding Person.Rating}" HorizontalAlignment="Left" Grid.Row="2" Margin="10,0,0,0">
                     <ContentControl.Style>
                         <Style TargetType="{x:Type ContentControl}">
-                            <Setter Property="ContentTemplate" Value="{StaticResource RatingActive}" />
+                            <Setter Property="ContentTemplate" Value="{StaticResource Rating}" />
                             <Style.Triggers>
                                 <DataTrigger Binding="{Binding Person.Rating}" Value="0">
                                     <Setter Property="ContentTemplate" Value="{StaticResource Unrated}" />
@@ -292,7 +291,7 @@
                             </Style.Triggers>
                         </Style>
                     </ContentControl.Style>
-                </ContentControl>-->
+                </ContentControl>
             </Grid>
             <Image Source="/BlitsMe.Agent;component/UI/WPF/Images/1337420206_Char.png" Height="25" Width="25" 
                 Margin="2,0,0,0" HorizontalAlignment="Left"/>
@@ -319,12 +318,12 @@
                 <TextBlock Text="{Binding Path=Person.Location, FallbackValue=Planet Earth}" Grid.Row="1" 
                            Width="110" HorizontalAlignment="Left" Margin="10,0,0,0"/>
 
-                <Engage:GetContactListRating Grid.Row="2" HorizontalAlignment="Left" Margin="10,0,0,0"/>
+                <!--<Engage:GetContactListRating Grid.Row="2" HorizontalAlignment="Left" Margin="10,0,0,0"/> -->
 
-                <!--<ContentControl Content="{Binding Person.Rating}" HorizontalAlignment="Left" Grid.Row="2" Margin="10,0,0,0">
+                <ContentControl Content="{Binding Person.Rating}" HorizontalAlignment="Left" Grid.Row="2" Margin="10,0,0,0">
                     <ContentControl.Style>
                         <Style TargetType="{x:Type ContentControl}">
-                            <Setter Property="ContentTemplate" Value="{StaticResource RatingActive}" />
+                            <Setter Property="ContentTemplate" Value="{StaticResource Rating}" />
                             <Style.Triggers>
                                 <DataTrigger Binding="{Binding Person.Rating}" Value="0">
                                     <Setter Property="ContentTemplate" Value="{StaticResource Unrated}" />
@@ -332,7 +331,7 @@
                             </Style.Triggers>
                         </Style>
                     </ContentControl.Style>
-                </ContentControl>-->
+                </ContentControl>
             </Grid>
         </StackPanel>
     </DataTemplate>
@@ -356,12 +355,12 @@
                 <TextBlock Text="{Binding Path=Person.Location, FallbackValue=Planet Earth}" Grid.Row="1" 
                            Width="110" HorizontalAlignment="Left" Margin="10,0,0,0"/>
 
-                <Engage:GetContactListRating Grid.Row="2" HorizontalAlignment="Left" Margin="10,0,0,0"/>
-                <!--<ContentControl Content="{Binding Person.Rating}" HorizontalAlignment="Center" Grid.Row="2"
+                <!-- <Engage:GetContactListRating Grid.Row="2" HorizontalAlignment="Left" Margin="10,0,0,0"/>-->
+                <ContentControl Content="{Binding Person.Rating}" HorizontalAlignment="Center" Grid.Row="2"
                                 Width="110">
                     <ContentControl.Style>
                         <Style TargetType="{x:Type ContentControl}">
-                            <Setter Property="ContentTemplate" Value="{StaticResource RatingActive}" />
+                            <Setter Property="ContentTemplate" Value="{StaticResource Rating}" />
                             <Style.Triggers>
                                 <DataTrigger Binding="{Binding Person.Rating}" Value="0">
                                     <Setter Property="ContentTemplate" Value="{StaticResource Unrated}" />
@@ -369,7 +368,7 @@
                             </Style.Triggers>
                         </Style>
                     </ContentControl.Style>
-                </ContentControl>-->
+                    </ContentControl>
             </Grid>
 
 
