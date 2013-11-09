@@ -469,7 +469,7 @@
                     <Border HorizontalAlignment="Right" Margin="10,5,0,0" Height="30" Width="30" Grid.Column="0"
                                    VerticalAlignment="Top" BorderThickness="1" BorderBrush="Transparent">
                         <!--<Image Stretch="Uniform" Source="{Binding Path=Person.Avatar, Converter={StaticResource imageStreamReader}}" Width="30" Height="30" />-->
-                        <!--<engage:UserImage />-->
+                        <engage:UserImage />
                     </Border>
 
                     <TextBlock  Style="{DynamicResource MessageTimeStyle}" Grid.Column="2"
@@ -641,7 +641,7 @@
                         <Border HorizontalAlignment="Right" Margin="10,5,0,0" Height="30" Width="30" Grid.Column="0"
                                    VerticalAlignment="Top" BorderThickness="1" BorderBrush="Transparent">
                             <!--<Image Stretch="Uniform" Source="{Binding Path=Person.Avatar, Converter={StaticResource imageStreamReader}}" Width="30" Height="30" />-->
-                            <!--<engage:UserImage />-->
+                            <engage:UserImage />
                         </Border>
 
                         <TextBlock  Style="{DynamicResource MessageTimeStyle}" Grid.Column="2"
