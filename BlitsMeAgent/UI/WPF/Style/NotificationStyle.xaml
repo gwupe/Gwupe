@@ -158,6 +158,8 @@
                         <ColumnDefinition Width="Auto"/>
                     </Grid.ColumnDefinitions>
 
+                    <engage:UserImageOthers Grid.Column="0"/>
+                    
                     <TextBlock  Style="{DynamicResource MessageTimeStyle}" Grid.Column="1"
 							Text="{Binding SpeakTime, Converter={StaticResource relativeMessageTimeConverter}, FallbackValue=Yesterday 8:49}"
                                 VerticalAlignment="Center"/>
@@ -199,6 +201,8 @@
                             <ColumnDefinition Width="*"/>
                             <ColumnDefinition Width="Auto"/>
                         </Grid.ColumnDefinitions>
+
+                        <engage:UserImageOthers Grid.Column="0"/>
 
                         <TextBlock  Style="{DynamicResource MessageTimeStyle}" Grid.Column="1"
 							Text="{Binding SpeakTime, Converter={StaticResource relativeMessageTimeConverter}, FallbackValue=Yesterday 8:49}"
