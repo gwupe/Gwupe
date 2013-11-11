@@ -805,7 +805,7 @@
 
     <Style x:Key="MessageBorder" TargetType="Border">
         <Setter Property="CornerRadius" Value="5" />
-        <Setter Property="Background" Value="#B9CDE5" />
+        <Setter Property="Background" Value="#C6D9F1" />
         <Setter Property="BorderThickness" Value="0"  />
         <Setter Property="Padding" Value="5" />
         <Setter Property="Margin" Value="0" />
@@ -821,7 +821,7 @@
         <Setter Property="FontSize" Value="12pt" />
         <Setter Property="HorizontalAlignment" Value="Left" />
         <Setter Property="Foreground" Value="Black"/>
-        <Setter Property="Background" Value="#B9CDE5" />
+        <Setter Property="Background" Value="#C6D9F1" />
         <Setter Property="Margin" Value="0,0,0,0" />
         <Setter Property="BorderThickness" Value="0" />
     </Style>
@@ -833,16 +833,15 @@
     </Style>
 
     <DataTemplate DataType="{x:Type rdp:ServiceCompleteChatElement}">
-        <StackPanel Margin="0,5,0,0">
+        <StackPanel Margin="12,5,0,0">
             <Border Style="{DynamicResource MessageBorder}">
                 <StackPanel Orientation="Horizontal">
                     <!--<Image Margin="5,5,0,0" Source="/BlitsMe.Agent;component/UI/WPF/Images/arrow.png" Width="40" Height="40" VerticalAlignment="Top" />-->
-                    <TextBlock  Style="{DynamicResource MessageTimeStyle}" HorizontalAlignment="Left" Margin="40,15,0,0"
+                    <TextBlock  Style="{DynamicResource MessageTimeStyle}" HorizontalAlignment="Left" Margin="50,15,0,0"
         			        Text="{Binding SpeakTime, Converter={StaticResource relativeMessageTimeConverter}, FallbackValue=Yesterday 8:49}"/>
 
                     <StackPanel Margin="20,0,0,0">
-                        <RichTextBox Width="Auto"
-        						Style="{DynamicResource ServiceCompleteRichText}" MinWidth="300" HorizontalAlignment="Stretch" Margin="0,0,10,0">
+                        <RichTextBox Width="Auto" MinWidth="400" Style="{DynamicResource ServiceCompleteRichText}" HorizontalAlignment="Stretch" Margin="0,0,10,0">
                             <FlowDocument>
                                 <Paragraph>
                                     <Run Text="{Binding Message, FallbackValue=You were just helped by Joe Bloggs please rate his service below.}" />
