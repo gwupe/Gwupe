@@ -451,7 +451,7 @@
     <DataTemplate DataType="{x:Type chat:SystemChatElement}">
         <Grid>
             <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="12"/>
                 <ColumnDefinition Width="*"/>
             </Grid.ColumnDefinitions>
             <!--<Image Style="{DynamicResource ChatBubblePointMe}" Grid.Column="0"/>-->
@@ -488,7 +488,7 @@
     <DataTemplate DataType="{x:Type chat:TargetSystemChatElement}">
         <Grid>
             <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="12"/>
                 <ColumnDefinition Width="*"/>
             </Grid.ColumnDefinitions>
             <!--<Image Style="{DynamicResource ChatBubblePointMe}" Grid.Column="0"/>-->
@@ -505,8 +505,8 @@
 
                     <Border HorizontalAlignment="Right" Margin="10,5,0,0" Height="30" Width="30" Grid.Column="0"
                                    VerticalAlignment="Top" BorderThickness="1" BorderBrush="Transparent">
-                        <Image Stretch="Uniform" Source="{Binding Path=Person.Avatar, Converter={StaticResource imageStreamReader}}" Width="30" Height="30" />
-                        <!--<engage:UserImage />-->
+                        <!--<Image Stretch="Uniform" Source="{Binding Path=Person.Avatar, Converter={StaticResource imageStreamReader}}" Width="30" Height="30" />-->
+                        <engage:UserImageOthers />
                     </Border>
 
                     <TextBlock  Style="{DynamicResource MessageTimeStyle}" Grid.Column="2"
@@ -525,7 +525,7 @@
     <DataTemplate x:Key="ChatNotification" DataType="{x:Type filesend:FileSendRequestChatElement}" >
         <Grid>
             <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="12"/>
                 <ColumnDefinition Width="*"/>
             </Grid.ColumnDefinitions>
             <!--<Image Style="{DynamicResource ChatBubblePointMe}" Grid.Column="0"/>-->
@@ -572,7 +572,7 @@
     <DataTemplate x:Key="ChatNotificationGroup" DataType="{x:Type filesend:FileSendRequestChatElement}" >
         <Grid>
             <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="12"/>
                 <ColumnDefinition Width="*"/>
             </Grid.ColumnDefinitions>
             <!--<Image Style="{DynamicResource ChatBubblePointMe}" Grid.Column="0"/>-->
@@ -622,7 +622,7 @@
     <DataTemplate x:Key="ChatSystemGroup">
         <Grid>
             <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="12"/>
                 <ColumnDefinition Width="*"/>
             </Grid.ColumnDefinitions>
             <!--<Image Style="{DynamicResource ChatBubblePointMe}" Grid.Column="0"/>-->
