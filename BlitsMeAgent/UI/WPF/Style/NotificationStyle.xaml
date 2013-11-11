@@ -15,6 +15,7 @@
     <Style x:Key="NotificationActionButton" TargetType="{x:Type Button}">
         <Setter Property="Background" Value="White" />
         <Setter Property="HorizontalAlignment" Value="Right" />
+        
     </Style>
     <Style x:Key="DeleteButtonStyle" TargetType="{x:Type Button}" BasedOn="{StaticResource NotificationActionButton}">
         <Setter Property="Width" Value="20" />
@@ -48,6 +49,27 @@
         <Setter Property="ContentTemplate" Value="{DynamicResource DenyButtonTemplate}" />
         <Setter Property="ToolTip" Value="Deny" />
     </Style>
+
+    <Style x:Key="NotificationAcceptButtonStyle" TargetType="{x:Type Button}" BasedOn="{StaticResource NotificationActionButton}">
+        <Setter Property="Command" Value="{Binding AnswerTrueFalse}" />
+        <Setter Property="CommandParameter">
+            <Setter.Value>
+                <s:Boolean>True</s:Boolean>
+            </Setter.Value>
+        </Setter>
+        <Setter Property="ContentTemplate" Value="{DynamicResource AcceptButtonTemplate}" />
+        <Setter Property="ToolTip" Value="Accept" />
+    </Style>
+    <Style x:Key="NotificationDenyButtonStyle" TargetType="{x:Type Button}" BasedOn="{StaticResource NotificationActionButton}">
+        <Setter Property="Command" Value="{Binding AnswerTrueFalse}" />
+        <Setter Property="CommandParameter">
+            <Setter.Value>
+                <s:Boolean>False</s:Boolean>
+            </Setter.Value>
+        </Setter>
+        <Setter Property="ContentTemplate" Value="{DynamicResource DenyButtonTemplate}" />
+        <Setter Property="ToolTip" Value="Deny" />
+    </Style>
     <Style x:Key="StopRDPButtonStyle" TargetType="{x:Type Button}" BasedOn="{StaticResource NotificationActionButton}">
         <Setter Property="Command" Value="{Binding AnswerDeleteStopRDP}" />
         <Setter Property="CommandParameter">
@@ -69,7 +91,7 @@
         <Setter Property="HorizontalAlignment" Value="Left" />
         <Setter Property="Background" Value="#A9DA74" />
         <Setter Property="Margin" Value="2,3,0,0" />
-        <Setter Property="Width" Value="180" />
+        <Setter Property="Width" Value="190" />
     </Style>
 
     <Style x:Key="ChatBubbleMeNew" TargetType="Grid">
@@ -108,10 +130,10 @@
         </Grid>
     </DataTemplate>
     <DataTemplate DataType="{x:Type notification:AddBuddyNotification}">
-        <StackPanel Orientation="Horizontal" Style="{StaticResource NotificationStackStyle}">
+        <StackPanel Orientation="Horizontal" Style="{StaticResource NotificationStackStyle}" Height="50">
             <Image Stretch="Uniform" Source="{Binding Path=Person, Converter={StaticResource imageStreamReader}}" 
-                   Width="40" Height="40" Margin="5,0,0,0"/>
-            <StackPanel Orientation="Vertical" Margin="5,0,0,0" Width="85">
+                   Width="35" Height="40" Margin="5,0,0,0"/>
+            <StackPanel Orientation="Vertical" Margin="5,0,0,0" Width="85" VerticalAlignment="Center">
                 <TextBlock HorizontalAlignment="Left" Text="Contact Request" Foreground="Black" FontWeight="SemiBold" 
                            FontFamily="Segoe UI" FontSize="11" Width="85" TextWrapping="Wrap"/>
                 <TextBlock HorizontalAlignment="Left" Text="{Binding Name, FallbackValue=Unknown Notification}" 
@@ -121,9 +143,9 @@
                            Foreground="Black" FontFamily="Segoe UI" FontSize="10"
                            Width="85" TextWrapping="Wrap"/>
             </StackPanel>
-            <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Margin="5,0,0,0">
-                <Button Style="{DynamicResource AcceptButtonStyle}" Height="15" Width="15"/>
-                <Button Style="{DynamicResource DenyButtonStyle}" Margin="5,0,0,0" Height="15" Width="15"/>
+            <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Margin="10,0,0,0">
+                <Button Style="{DynamicResource NotificationAcceptButtonStyle}" Height="15" Width="15" Template="{DynamicResource TransparentButtonNotificationAcceptStyle}"/>
+                <Button Style="{DynamicResource NotificationDenyButtonStyle}" Height="15" Width="15" Margin="10,0,0,0" Template="{DynamicResource TransparentButtonNotificationCloseStyle}"/>
             </StackPanel>
         </StackPanel>
     </DataTemplate>
