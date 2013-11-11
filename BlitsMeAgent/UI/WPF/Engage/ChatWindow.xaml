@@ -338,7 +338,7 @@
                         <KeyBinding Key="Enter" Command="{Binding SendMessage}" />
                     </TextBox.InputBindings>
                 </TextBox>
-                <Button Width="36" Height="36" Command="{Binding SendMessage}" 
+                <Button Width="36" Height="36" Command="{Binding SendMessage}" ToolTip="Send message"
                     Margin="0,0,20,0" Grid.Column="2" Background="Transparent" BorderBrush="Transparent">
                     <Image Source="/BlitsMe.Agent;component/UI/WPF/Images/single chat.png" />
                 </Button>
