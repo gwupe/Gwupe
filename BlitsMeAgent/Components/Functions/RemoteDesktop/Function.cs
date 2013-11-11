@@ -160,6 +160,7 @@ namespace BlitsMe.Agent.Components.Functions.RemoteDesktop
             }
             else
             {
+                _engagement.IsRemoteControlActive = false;
                 Chat.LogSystemMessage("You denied the desktop assistance request from " + _engagement.SecondParty.Person.Firstname);
                 SendRDPRequestResponse(false, delegate(RDPRequestResponseRq rq, RDPRequestResponseRs rs, Exception arg3) { IsActive = false; });
             }
