@@ -44,13 +44,13 @@ namespace BlitsMe.Agent.Managers
             uiThread.SetApartmentState(ApartmentState.STA);
             uiThread.Start();
             uiReady.WaitOne();
+            LoadBaseSkin();
             if (BlitsMeClientAppContext.CurrentAppContext.Options.Contains(BlitsMeOption.Minimize))
             {
                 dashBoard.InitWindowHandle();
             }
             else
             {
-                LoadBaseSkin();
                 Show();
             }
             if (!BlitsMeClientAppContext.CurrentAppContext.StartupVersion.Equals(BlitsMeClientAppContext.CurrentAppContext.Reg.LastVersion)

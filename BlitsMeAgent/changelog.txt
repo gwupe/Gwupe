@@ -1,4 +1,1 @@
-﻿Ratings and UI Update
-Added Ratings feature
-Fixed XP UI Bugs (including tunneling bug when multicase usernames are in use)
-Completed full UI Redesign
+﻿
