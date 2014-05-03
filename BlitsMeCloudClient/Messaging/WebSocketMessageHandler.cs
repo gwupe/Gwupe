@@ -89,10 +89,10 @@ namespace BlitsMe.Cloud.Messaging
             ser.WriteObject(stream, message);
             String resAsString = Encoding.UTF8.GetString(stream.ToArray());
             _connection.SendText(resAsString);
-            //if (!Regex.Match(resAsString, "\"type\":\"Ping").Success)
-            //{
+            if (!Regex.Match(resAsString, "\"type\":\"Ping").Success)
+            {
                 Logger.Debug("Sent message : " + SanitiseMessage(resAsString));
-            //}
+            }
         }
 
         private Message GetMessage(MemoryStream rawData, bool finalFrame, int opCode)
@@ -115,11 +115,11 @@ namespace BlitsMe.Cloud.Messaging
                     data = rawData;
                 }
                 String messageString = Encoding.UTF8.GetString(data.ToArray());
-                //if (!Regex.Match(messageString, "\"type\":\"Ping").Success)
-                //{
+                if (!Regex.Match(messageString, "\"type\":\"Ping").Success)
+                {
                     Logger.Debug("Received message [" + data.Length + "] (" + (opCode == 0 ? "multi" : "single") + "): " +
                                  SanitiseMessage(messageString));
-                //}
+                }
             }
             else
             {
@@ -175,8 +175,11 @@ namespace BlitsMe.Cloud.Messaging
 
         private string SanitiseMessage(string messageString)
         {
-            return Regex.Replace(Regex.Replace(messageString, "\"password\":\".*?\"", "\"password\":\"*******\""),
-                "\"([^\"]+)\":\"([^\"]{255}.*?)\"", "\"$1\":\"<LARGE_DATA>\"");
+            return Regex.Replace(Regex.Replace(Regex.Replace(Regex.Replace(messageString, 
+                "\"password\":\".*?\"", "\"password\":\"*******\""),
+                "\"([^\"]+)\":\"([^\"]{255}.*?)\"", "\"$1\":\"<LARGE_DATA>\""),
+                "\"encryptionKey\":\".*?\"", "\"encryptionKey\":\"*******\""),
+                "\"passwordDigest\":\".*?\"", "\"passwordDigest\":\"*******\"");
         }
 
         public void ProcessMessage(String s)

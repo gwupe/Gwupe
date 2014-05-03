@@ -39,7 +39,7 @@ namespace BlitsMe.Agent
         internal readonly BlitsMeServiceProxy BlitsMeServiceProxy;
         private readonly SystemTray _systray;
         //public Dashboard UIDashBoard;
-        public P2PManager P2PManager;
+        internal P2PManager P2PManager;
         private RequestManager _requestManager;
         internal CurrentUserManager CurrentUserManager { get; private set; }
         internal RosterManager RosterManager { get; private set; }
@@ -49,6 +49,7 @@ namespace BlitsMe.Agent
         internal NotificationManager NotificationManager { get; private set; }
         internal SearchManager SearchManager { get; private set; }
         internal UIManager UIManager { get; private set; }
+        internal RepeaterManager RepeaterManager { get; private set; }
         //internal Thread DashboardUiThread;
         internal bool IsShuttingDown { get; private set; }
         internal readonly BLMRegistry Reg = new BLMRegistry();
@@ -93,6 +94,7 @@ namespace BlitsMe.Agent
             ScheduleManager.AddTask(new CheckUpgradeTask(this) { PeriodSeconds = 120 });
             ScheduleManager.AddTask(new CheckServiceTask(this) { PeriodSeconds = 120 });
             ScheduleManager.AddTask(new DetectIdleTask(this));
+            RepeaterManager = new RepeaterManager();
             SetupChangeLog();
             // Start all the Active Managers
             UIManager.Start();

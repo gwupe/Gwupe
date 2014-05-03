@@ -1,10 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Net;
 
-namespace BlitsMe.Communication.P2P.RUDP.Utils
+namespace BlitsMe.Communication.P2P.P2P.Tunnel
 {
     public class PeerInfo
     {

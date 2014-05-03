@@ -29,6 +29,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BlitsMe.TransportEmulator",
 EndProject
 Project("{930C7802-8A8C-48F9-8165-68863BCCD9DD}") = "BlitsMeSetupFull", "BlitsMeSetupFull\BlitsMeSetupFull.wixproj", "{E356991C-1A8C-4E27-B0D4-4447CA55BA45}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BlitsMe.UDTTester", "BlitsMe.UDTTester\BlitsMe.UDTTester.csproj", "{9ABBAC87-D8F0-4808-8436-29FC20E3E8F7}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		CD_ROM|Any CPU = CD_ROM|Any CPU
@@ -465,6 +467,7 @@ Global
 		{5D03D6CA-077B-4EF3-8937-8B05114B6A22}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
 		{5D03D6CA-077B-4EF3-8937-8B05114B6A22}.Debug|x64.ActiveCfg = Debug|Any CPU
 		{5D03D6CA-077B-4EF3-8937-8B05114B6A22}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{5D03D6CA-077B-4EF3-8937-8B05114B6A22}.Debug|x86.Build.0 = Debug|Any CPU
 		{5D03D6CA-077B-4EF3-8937-8B05114B6A22}.DVD-5|Any CPU.ActiveCfg = Debug|Any CPU
 		{5D03D6CA-077B-4EF3-8937-8B05114B6A22}.DVD-5|Any CPU.Build.0 = Debug|Any CPU
 		{5D03D6CA-077B-4EF3-8937-8B05114B6A22}.DVD-5|Mixed Platforms.ActiveCfg = Debug|Any CPU
@@ -515,6 +518,37 @@ Global
 		{E356991C-1A8C-4E27-B0D4-4447CA55BA45}.SingleImage|x64.ActiveCfg = Release|x86
 		{E356991C-1A8C-4E27-B0D4-4447CA55BA45}.SingleImage|x86.ActiveCfg = Release|x86
 		{E356991C-1A8C-4E27-B0D4-4447CA55BA45}.SingleImage|x86.Build.0 = Release|x86
+		{9ABBAC87-D8F0-4808-8436-29FC20E3E8F7}.CD_ROM|Any CPU.ActiveCfg = Release|Any CPU
+		{9ABBAC87-D8F0-4808-8436-29FC20E3E8F7}.CD_ROM|Any CPU.Build.0 = Release|Any CPU
+		{9ABBAC87-D8F0-4808-8436-29FC20E3E8F7}.CD_ROM|Mixed Platforms.ActiveCfg = Release|Any CPU
+		{9ABBAC87-D8F0-4808-8436-29FC20E3E8F7}.CD_ROM|Mixed Platforms.Build.0 = Release|Any CPU
+		{9ABBAC87-D8F0-4808-8436-29FC20E3E8F7}.CD_ROM|x64.ActiveCfg = Release|Any CPU
+		{9ABBAC87-D8F0-4808-8436-29FC20E3E8F7}.CD_ROM|x86.ActiveCfg = Release|Any CPU
+		{9ABBAC87-D8F0-4808-8436-29FC20E3E8F7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9ABBAC87-D8F0-4808-8436-29FC20E3E8F7}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9ABBAC87-D8F0-4808-8436-29FC20E3E8F7}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
+		{9ABBAC87-D8F0-4808-8436-29FC20E3E8F7}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
+		{9ABBAC87-D8F0-4808-8436-29FC20E3E8F7}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{9ABBAC87-D8F0-4808-8436-29FC20E3E8F7}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{9ABBAC87-D8F0-4808-8436-29FC20E3E8F7}.Debug|x86.Build.0 = Debug|Any CPU
+		{9ABBAC87-D8F0-4808-8436-29FC20E3E8F7}.DVD-5|Any CPU.ActiveCfg = Debug|Any CPU
+		{9ABBAC87-D8F0-4808-8436-29FC20E3E8F7}.DVD-5|Any CPU.Build.0 = Debug|Any CPU
+		{9ABBAC87-D8F0-4808-8436-29FC20E3E8F7}.DVD-5|Mixed Platforms.ActiveCfg = Debug|Any CPU
+		{9ABBAC87-D8F0-4808-8436-29FC20E3E8F7}.DVD-5|Mixed Platforms.Build.0 = Debug|Any CPU
+		{9ABBAC87-D8F0-4808-8436-29FC20E3E8F7}.DVD-5|x64.ActiveCfg = Debug|Any CPU
+		{9ABBAC87-D8F0-4808-8436-29FC20E3E8F7}.DVD-5|x86.ActiveCfg = Debug|Any CPU
+		{9ABBAC87-D8F0-4808-8436-29FC20E3E8F7}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9ABBAC87-D8F0-4808-8436-29FC20E3E8F7}.Release|Any CPU.Build.0 = Release|Any CPU
+		{9ABBAC87-D8F0-4808-8436-29FC20E3E8F7}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
+		{9ABBAC87-D8F0-4808-8436-29FC20E3E8F7}.Release|Mixed Platforms.Build.0 = Release|Any CPU
+		{9ABBAC87-D8F0-4808-8436-29FC20E3E8F7}.Release|x64.ActiveCfg = Release|Any CPU
+		{9ABBAC87-D8F0-4808-8436-29FC20E3E8F7}.Release|x86.ActiveCfg = Release|Any CPU
+		{9ABBAC87-D8F0-4808-8436-29FC20E3E8F7}.SingleImage|Any CPU.ActiveCfg = Release|Any CPU
+		{9ABBAC87-D8F0-4808-8436-29FC20E3E8F7}.SingleImage|Any CPU.Build.0 = Release|Any CPU
+		{9ABBAC87-D8F0-4808-8436-29FC20E3E8F7}.SingleImage|Mixed Platforms.ActiveCfg = Release|Any CPU
+		{9ABBAC87-D8F0-4808-8436-29FC20E3E8F7}.SingleImage|Mixed Platforms.Build.0 = Release|Any CPU
+		{9ABBAC87-D8F0-4808-8436-29FC20E3E8F7}.SingleImage|x64.ActiveCfg = Release|Any CPU
+		{9ABBAC87-D8F0-4808-8436-29FC20E3E8F7}.SingleImage|x86.ActiveCfg = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

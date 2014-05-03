@@ -1,5 +1,6 @@
 ﻿using System;
 using BlitsMe.Common.Security;
+using BlitsMe.Communication.P2P.P2P.Tunnel;
 using BlitsMe.Communication.P2P.RUDP.Packet;
 using BlitsMe.Communication.P2P.RUDP.Packet.Tunnel;
 using BlitsMe.Communication.P2P.RUDP.Tunnel.API;
@@ -421,7 +422,7 @@ namespace BlitsMe.Communication.P2P.RUDP.Tunnel
 #endif
                 if (_syncer != null)
                 {
-                    _syncer.ProcessSyncRq((StandardSyncRqTunnelPacket)packet, _udpClient);
+                    _syncer.ProcessSyncRq((StandardSyncRqTunnelPacket)packet);
                 }
                 else
                 {

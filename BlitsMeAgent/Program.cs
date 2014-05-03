@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.IO;
 using System.Linq;
 using System.Management;
 using System.Reflection;
@@ -20,6 +21,9 @@ namespace BlitsMe.Agent
 #endif
         private const string AppGuid = "BlitsMe.Agent" + BuildMarker + ".Application";
 
+        // unmanaged code doesn't like to be loaded via byte arrays, only via files, so we need to write them out and load them back in
+        static private readonly String[] UnmanagedAssemblies = { "UdtProtocol" };
+
         /// <summary>
         /// The main entry point for the application.
         /// </summary>
@@ -35,13 +39,13 @@ namespace BlitsMe.Agent
                     var process = Common.OsUtils.GetMyDoppleGangerProcess();
                     if (process != null)
                     {
-                        var outcome = Common.OsUtils.PostMessage((IntPtr)Common.OsUtils.HWND_BROADCAST, Common.OsUtils.WM_SHOWBM, 
+                        var outcome = Common.OsUtils.PostMessage((IntPtr)Common.OsUtils.HWND_BROADCAST, Common.OsUtils.WM_SHOWBM,
 #if DEBUG
-                            IntPtr.Zero, 
+ IntPtr.Zero,
 #else
                             new IntPtr(1), 
 #endif
-                            IntPtr.Zero);
+ IntPtr.Zero);
                     }
                     else
                     {
@@ -85,14 +89,24 @@ namespace BlitsMe.Agent
         {
             try
             {
-                String resourceName = Assembly.GetExecutingAssembly().FullName.Split(',').First() + "." + new AssemblyName(args.Name).Name + ".dll";
+                var assemblyName = new AssemblyName(args.Name);
+                String resourceName = Assembly.GetExecutingAssembly().FullName.Split(',').First() + "." + assemblyName.Name + ".dll";
                 using (var stream = Assembly.GetExecutingAssembly().GetManifestResourceStream(resourceName))
                 {
                     if (stream != null)
                     {
                         Byte[] assemblyData = new Byte[stream.Length];
                         stream.Read(assemblyData, 0, assemblyData.Length);
-                        return Assembly.Load(assemblyData);
+                        if (Array.Exists(UnmanagedAssemblies, element => element.Equals(assemblyName.Name)))
+                        {
+                            String tempFile = Path.GetTempFileName();
+                            File.WriteAllBytes(tempFile, assemblyData);
+                            return Assembly.LoadFile(tempFile);
+                        }
+                        else
+                        {
+                            return Assembly.Load(assemblyData);
+                        }
                     }
                 }
             }
@@ -105,5 +119,5 @@ namespace BlitsMe.Agent
             return null;
         }
     }
-  
+
 }

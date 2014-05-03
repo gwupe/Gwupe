@@ -1,4 +1,5 @@
-﻿using System.Runtime.Serialization;
+﻿using System;
+using System.Runtime.Serialization;
 
 namespace BlitsMe.Cloud.Messaging.Request
 {
@@ -12,5 +13,7 @@ namespace BlitsMe.Cloud.Messaging.Request
 
         [DataMember]
         public bool accepted { get; set; }
+        [DataMember]
+        public String connectionId { get; set; }
     }
 }

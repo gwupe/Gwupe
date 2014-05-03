@@ -3,7 +3,7 @@ using System.Net;
 
 namespace BlitsMe.Communication.P2P.RUDP.Packet.Tunnel
 {
-    internal abstract class StandardWaveTunnelPacket : BasicTunnelPacket
+    public abstract class StandardWaveTunnelPacket : BasicTunnelPacket
     {
         private const byte POS_IADDR = 0;
         private const byte POS_IPORT = 4;
@@ -49,7 +49,7 @@ namespace BlitsMe.Communication.P2P.RUDP.Packet.Tunnel
         }
     }
 
-    internal class StandardWaveTunnelRsPacket : StandardWaveTunnelPacket
+    public class StandardWaveTunnelRsPacket : StandardWaveTunnelPacket
     {
         internal StandardWaveTunnelRsPacket()
         {

@@ -1,14 +1,12 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Net;
-using System.Text;
-using System.Threading;
 using System.Net.Sockets;
+using System.Threading;
+using BlitsMe.Communication.P2P.RUDP.Packet;
 using BlitsMe.Communication.P2P.RUDP.Packet.Tunnel;
 using log4net;
 
-namespace BlitsMe.Communication.P2P.RUDP.Utils
+namespace BlitsMe.Communication.P2P.P2P.Tunnel
 {
     public class Syncer
     {
@@ -22,6 +20,8 @@ namespace BlitsMe.Communication.P2P.RUDP.Utils
         private IPEndPoint _lastSyncRqPacketIp;
         private readonly object _syncRsLock = new object();
         private readonly object _syncRqLock = new object();
+        private Thread _syncListenerThread;
+        private UdpClient _udpClient;
 
         public Syncer(String id )
         {
@@ -36,6 +36,8 @@ namespace BlitsMe.Communication.P2P.RUDP.Utils
 
             StandardSyncRqTunnelPacket syncRq = new StandardSyncRqTunnelPacket();
             _syncEvent.Reset();
+            _udpClient = udpClient;
+            InitReceiverThread();
             do
             {
                 byte[] syncBytes = syncRq.getBytes();
@@ -76,7 +78,100 @@ namespace BlitsMe.Communication.P2P.RUDP.Utils
             }
         }
 
-        public void ProcessSyncRq(StandardSyncRqTunnelPacket packet, UdpClient udpClient)
+        private void InitReceiverThread()
+        {
+            _syncListenerThread = new Thread(ListenForPackets) { IsBackground = true, Name = "_syncListenerThread" };
+            _syncListenerThread.Start();
+        }
+
+        private void ListenForPackets()
+        {
+            while (true)
+            {
+                IPEndPoint RemoteIpEndPoint = new IPEndPoint(IPAddress.Any, 0);
+                Byte[] bytes = null;
+                try
+                {
+                    bytes = _udpClient.Receive(ref RemoteIpEndPoint);
+                    BasicTunnelPacket packet = StandardUdpPacketFactory.instance.getPacket(bytes, RemoteIpEndPoint);
+                    if (packet.type == BasicTunnelPacket.PKT_TYPE_SYNC_RS)
+                    {
+                        ProcessSyncRs((StandardSyncRsTunnelPacket)packet);
+#if(DEBUG)
+                        Logger.Debug("Got my sync response shutting down sync listener");
+#endif
+                        break;
+                    }
+                    else if (packet.type == BasicTunnelPacket.PKT_TYPE_SYNC_RQ)
+                    {
+                        ProcessSyncRq((StandardSyncRqTunnelPacket)packet);
+#if(DEBUG)
+                        Logger.Debug("Got my sync request shutting down sync listener");
+#endif
+                        break;
+                    }
+                    else if (packet.type == BasicTunnelPacket.PKT_TYPE_NOP)
+                    {
+#if(DEBUG)
+                        Logger.Debug("Got a NOP");
+#endif
+                    }
+                    else
+                    {
+                        Logger.Error("Waiting for a sync response, but got unknown packet");
+                        break;
+                    }
+                }
+                catch (SocketException e)
+                {
+#if(DEBUG)
+                    Logger.Debug("Caught a socket exception [" + e.ErrorCode + "] : " + e.Message);
+#endif
+                    if (e.ErrorCode == 10004) // Interrupted
+                    {
+#if(DEBUG)
+                        Logger.Debug("Socket has been interrupted, shutting down");
+#endif
+                        _udpClient.Close();
+                        break;
+                    }
+                    else if (e.ErrorCode == 10054)
+                    // Got ICMP connection closed ( we need to ignore this, hole punching causes these during init )
+                    {
+#if(DEBUG)
+                        Logger.Debug("Remote host stated ICMP port closed, ignoring");
+#endif
+                    }
+                    else
+                    {
+                        Logger.Warn("Caught a socket exception [" + e.ErrorCode +
+                                    "], this looks spurious, ignoring : " + e.Message);
+                        Logger.Error("Caught a socket exception [" + e.ErrorCode + "], shutting down read thread : " +
+                                     e.Message);
+                        _udpClient.Close();
+                        break;
+                    }
+                }
+                catch (ThreadAbortException e)
+                {
+#if DEBUG
+                    Logger.Debug("Thread is aborting, closing : " + e.Message);
+#endif
+                    _udpClient.Close();
+                    break;
+                }
+                catch (Exception e)
+                {
+                    Logger.Error("Exception while reading from UDP socket, shutting down read thread : " + e.Message, e);
+                    // Most likely the link has failed (this side) or the app is closing
+                    // either way, close the thread for the moment
+                    _udpClient.Close();
+                    break;
+                }
+            }
+        }
+
+        public void ProcessSyncRq(StandardSyncRqTunnelPacket packet)
         {
             lock (_syncRqLock)
             {
@@ -89,7 +184,7 @@ namespace BlitsMe.Communication.P2P.RUDP.Utils
                         _syncRqEvent.Set();
                         StandardSyncRsTunnelPacket syncRs = new StandardSyncRsTunnelPacket();
                         byte[] syncBytes = syncRs.getBytes();
-                        udpClient.Send(syncBytes, syncBytes.Length, packet.ip);
+                        _udpClient.Send(syncBytes, syncBytes.Length, packet.ip);
                     }
                     else
                     {
@@ -114,6 +209,8 @@ namespace BlitsMe.Communication.P2P.RUDP.Utils
             StandardTunnelNopPacket nop = new StandardTunnelNopPacket();
             _expectedPeer = peer;
             _syncEvent.Reset();
+            _udpClient = udpClient;
+            InitReceiverThread();
             do
             {
                 byte[] nopBytes = nop.getBytes();

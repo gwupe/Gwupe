@@ -40,12 +40,12 @@ namespace BlitsMe.Cloud.Communication
             if (handler != null) handler(this, EventArgs.Empty);
         }
 
-        public CoupledConnection(String uniqueId, String address, X509Certificate2 cert, Func<MemoryStream,bool> ReadData)
+        public CoupledConnection(String uniqueId, String address, X509Certificate2 cert, Func<MemoryStream,bool> readData)
         {
             _uniqueId = uniqueId;
             _uri = new Uri("https://" + address + ":443/blitsme-ws/couple");
             _cert = cert;
-            _readData = ReadData;
+            _readData = readData;
         }
 
         public void Connect()
@@ -86,7 +86,12 @@ namespace BlitsMe.Cloud.Communication
             }
         }
 
-        public void ProcessStream(WebSocketConnection aconnection, int acode, MemoryStream adata)
+        public void WriteData(byte[] arrayBytes)
+        {
+            _connection.SendBinary(new MemoryStream(arrayBytes));
+        }
+
+        private void ProcessStream(WebSocketConnection aconnection, int acode, MemoryStream adata)
         {
             Logger.Debug("Received binary message of size " + adata.Length);
             adata.Position = 0;

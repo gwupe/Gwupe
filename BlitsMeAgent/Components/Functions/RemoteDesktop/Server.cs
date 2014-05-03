@@ -1,98 +1,63 @@
 ﻿using System;
 using System.Net;
-using BlitsMe.Communication.P2P.RUDP.Connector;
-using BlitsMe.Communication.P2P.RUDP.Connector.API;
-using BlitsMe.Communication.P2P.RUDP.Tunnel.API;
+using BlitsMe.Agent.Components.Functions.API;
+using BlitsMe.Communication.P2P.P2P.Connector;
+using BlitsMe.Communication.P2P.P2P.Socket;
+using BlitsMe.Communication.P2P.P2P.Socket.API;
 using log4net;
-using log4net.Repository.Hierarchy;
 
 namespace BlitsMe.Agent.Components.Functions.RemoteDesktop
 {
-    internal class Server
+    internal class Server : ServerImpl
     {
-        private static readonly ILog Logger = LogManager.GetLogger(typeof (Server));
-        private ProxyTcpTransportListener _vncListener;
-        private readonly ITransportManager _transportManager;
-        internal bool Closing { get; private set; }
-        internal bool Closed { get; private set; }
+        private static readonly ILog Logger = LogManager.GetLogger(typeof(Server));
+        private StreamProxy _proxy;
+
 #if DEBUG
         private const int VNCPort = 10231;
 #else
         private const int VNCPort = 10230;
 #endif
-        #region Event Handling
-
-        public event EventHandler ConnectionClosed;
-
-        protected virtual void OnConnectionClosed()
-        {
-            EventHandler handler = ConnectionClosed;
-            if (handler != null) handler(this, EventArgs.Empty);
-        }
-
-        public event EventHandler ConnectionAccepted;
-
-        protected virtual void OnConnectionAccepted()
-        {
-            EventHandler handler = ConnectionAccepted;
-            if (handler != null) handler(this, EventArgs.Empty);
-        }
-
-
-        private void VNCListenerOnConnectionClosed(object sender, NamedConnectionEventArgs namedConnectionEventArgs)
-        {
-            Close();
-        }
-
-        private void VNCListenerOnConnectionAccepted(object sender, NamedConnectionEventArgs namedConnectionEventArgs)
-        {
-            OnConnectionAccepted();
-        }
-
-        #endregion
-
-        internal Server(ITransportManager manager)
-        {
-            _transportManager = manager;
-            Closed = true;
-        }
 
         public bool Listening
         {
-            get { return _vncListener != null && _vncListener.Listening; }
+            get { return Socket != null && Socket.Listening; }
         }
 
         public bool Established
         {
-            get { return _vncListener != null && _vncListener.HasConnections; }
+            get { return Socket != null && Socket.Connected; }
         }
 
-        internal void Listen()
+        internal void Listen(String connectionId)
         {
-            Closed = false;
-            // A proxy transport listener listens on the TM @ the named port, if it receives a connection there, it forwards all traffic to the
-            // IP endpoint specified in the constructor
-            _vncListener = new ProxyTcpTransportListener("RDP", new IPEndPoint(IPAddress.Loopback, VNCPort), _transportManager);
-            _vncListener.ConnectionAccepted += VNCListenerOnConnectionAccepted;
-            _vncListener.ConnectionClosed += VNCListenerOnConnectionClosed;
-            _vncListener.ListenOnce();
+            BlitsMeClientAppContext.CurrentAppContext.P2PManager.AwaitConnection(connectionId, ReceiveConnection);
+        }
+
+        private void ReceiveConnection(ISocket socket)
+        {
+            Socket = socket;
+            Socket.ConnectionOpened += (sender, args) => { Closed = false; };
+            Socket.ConnectionClosed += (sender, args) => Close();
+            //Socket.ListenOnce();
+            _proxy = new StreamProxy(Socket, new BmTcpSocket(new IPEndPoint(IPAddress.Loopback, VNCPort)));
+            _proxy.Start();
         }
 
         // This is called by the RDP Function, so stop listening and terminate connections
-        internal void Close()
+        internal override void Close()
         {
             if (!Closing && !Closed)
             {
                 Logger.Debug("Closing RemoteDesktop ServerProxy");
                 Closing = true;
-                if (_vncListener != null)
+                if (_proxy != null)
                 {
-                    _vncListener.Close();
+                    _proxy.Close();
                 }
-                OnConnectionClosed();
-                _vncListener = null;
-                Closed = true;
+                _proxy = null;
                 Closing = false;
+                Closed = true;
             }
         }
     }

@@ -14,6 +14,8 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using BlitsMe.Common;
+using BlitsMe.Common.Security;
+using BlitsMe.Communication.P2P.RUDP.Packet;
 using BlitsMe.Communication.P2P.RUDP.Utils;
 
 namespace BlitsMe.Sandbox
@@ -27,34 +29,67 @@ namespace BlitsMe.Sandbox
 
         public Class1()
         {
-            var proxy = WebRequest.DefaultWebProxy.GetProxy(new Uri("https://aHost"));
-            Console.WriteLine("Found a web proxy " + proxy);
-            TcpClient client = new TcpClient(proxy.Host,proxy.Port);
-            StreamWriter writer = new StreamWriter(client.GetStream());
-            StreamReader reader = new StreamReader(client.GetStream());
-            writer.AutoFlush = true;
-            writer.WriteLine("CONNECT dev.blits.me:443 HTTP/1.0");
-            writer.WriteLine("");
-            Console.Write("'" + reader.ReadLine());
-            Console.Write("'" + reader.ReadLine());
-            Console.Write("'" + reader.ReadLine());
-            Console.Write("'" + reader.ReadLine());
-            Console.Write("'" + reader.ReadLine());
-            Console.Write("'" + reader.ReadLine());
-            writer.WriteLine("GET / HTTP/1.0");
-            writer.WriteLine("Host: www.google.com");
-            writer.WriteLine("");
-            writer.WriteLine("");
-            Console.Write(reader.ReadLine());
-            Console.Write(reader.ReadLine());
-            Console.Write(reader.ReadLine());
-            Console.Write(reader.ReadLine());
-            Console.Write(reader.ReadLine());
-            Console.Write(reader.ReadLine());
-            Console.Write(reader.ReadLine());
-            Console.Write(reader.ReadLine());
-            Console.Write(reader.ReadLine());
-            client.Close();
+            string[] first = new string[]
+            {
+                "mo ",
+                "hello world ",
+                "this is my world ",
+                "and I will use it how I like ",
+                "but don't be mistaken about how I like to do things ",
+                "because its hairy"
+            };
+            MemoryStream stream = new MemoryStream();
+            AesCryptoPacketUtil util = new AesCryptoPacketUtil(Encoding.UTF8.GetBytes("1234567890ABCDEF"));
+            byte[] encodedBytes;
+            byte[] packetBytes;
+            foreach (var stringer in first)
+            {
+                encodedBytes = Encoding.UTF8.GetBytes(stringer);
+                packetBytes = util.EncryptData(encodedBytes, encodedBytes.Length);
+                stream.Write(packetBytes, 0, packetBytes.Length);
+                Console.WriteLine(stringer);
+                Console.Write(" = ");
+                foreach (var encodedByte in encodedBytes)
+                {
+                    Console.Write(encodedByte + ",");
+                }
+                Console.WriteLine();
+                Console.Write(" = ");
+                foreach (var encodedByte in packetBytes)
+                {
+                    Console.Write(encodedByte + ",");
+                }
+                Console.WriteLine("");
+            }
+            var allBytes = stream.ToArray();
+            byte[] data = new byte[allBytes.Length];
+            Array.Copy(allBytes, 0, data, 0, allBytes.Length);
+            int length = allBytes.Length;
+            string outputString = "";
+            var rand = new Random();
+            int chunkSize;
+            while (length > 0)
+            {
+                chunkSize = rand.Next(97) + 1;
+                byte[] outBytes = util.DecryptData(data, chunkSize < length ? chunkSize : length);
+                if (outBytes != null)
+                {
+                    Console.Write(" = ");
+                    foreach (var outByte in outBytes)
+                    {
+                        Console.Write(outByte + ",");
+                    }
+                    Console.WriteLine();
+                    Console.WriteLine(" = " + Encoding.UTF8.GetString(outBytes));
+                }
+                length -= chunkSize;
+                if (length > 0)
+                {
+                    var newData = new byte[length];
+                    Array.Copy(data, chunkSize, newData, 0, length);
+                    data = newData;
+                }
+            }
         }
 
         private static void OpenExistingWindow()
@@ -167,8 +202,8 @@ namespace BlitsMe.Sandbox
                             if ((address[0] == 172 && address[1] >= 16 && address[1] <= 31)
                                 || (address[0] == 10)
                                 || (address[0] == 192 && address[1] == 168))
-                            Console.WriteLine(ipInfo.Address);
-                                ips.Add(ipInfo.Address);
+                                Console.WriteLine(ipInfo.Address);
+                            ips.Add(ipInfo.Address);
                         }
                     }
                 }

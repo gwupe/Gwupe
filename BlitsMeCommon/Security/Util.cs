@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Security.Cryptography;
@@ -10,18 +12,91 @@ namespace BlitsMe.Common.Security
     {
         private static Util oneAndOnly;
         private Random random;
+        private static RNGCryptoServiceProvider _rngCsp;
+        private static readonly object InitLock = new object();
+
         private Util()
         {
+            if (_rngCsp == null)
+            {
+                _rngCsp = new RNGCryptoServiceProvider();
+            }
             this.random = new Random((int)DateTime.Now.Ticks);
         }
 
         public static Util getSingleton()
         {
-            if (oneAndOnly == null)
+            lock (InitLock)
             {
-                oneAndOnly = new Util();
+                if (oneAndOnly == null)
+                {
+                    oneAndOnly = new Util();
+                }
             }
             return oneAndOnly;
+        }
+
+        public byte[] AesEncryptBytes(byte[] source, int offset, int length, byte[] encryptionKey)
+        {
+            var aes = new AesCryptoServiceProvider
+            {
+                BlockSize = 128,
+                KeySize = 128,
+                Mode = CipherMode.CBC,
+                Padding = PaddingMode.PKCS7,
+                Key = encryptionKey
+            };
+            byte[] encrypted;
+            using (MemoryStream msEncrypt = new MemoryStream())
+            {
+                using (CryptoStream csEncrypt = new CryptoStream(msEncrypt, aes.CreateEncryptor(), CryptoStreamMode.Write))
+                {
+                    csEncrypt.Write(source, offset, length);
+                    csEncrypt.FlushFinalBlock();
+                    encrypted = msEncrypt.ToArray();
+                }
+            }
+            var encryptedPlusIv = new byte[encrypted.Length + 16];
+            Array.Copy(aes.IV, encryptedPlusIv, 16);
+            Array.Copy(encrypted, 0, encryptedPlusIv, 16, encrypted.Length);
+            return encryptedPlusIv;
+        }
+
+        public byte[] AesDecryptBytes(byte[] encryptedPlusIv, int offset, int length, byte[] encryptionKey)
+        {
+            var encrypted = new byte[length - 16];
+            var iv = new byte[16];
+            Array.Copy(encryptedPlusIv, offset, iv, 0, 16);
+            Array.Copy(encryptedPlusIv, 16 + offset, encrypted, 0, encrypted.Length);
+            var aes = new AesCryptoServiceProvider
+            {
+                BlockSize = 128,
+                KeySize = 128,
+                Mode = CipherMode.CBC,
+                Padding = PaddingMode.PKCS7,
+                Key = encryptionKey,
+                IV = iv
+            };
+            byte[] original;
+            using (MemoryStream msDecrypt = new MemoryStream(encrypted))
+            {
+                using (CryptoStream csDecrypt = new CryptoStream(msDecrypt, aes.CreateDecryptor(), CryptoStreamMode.Read))
+                {
+                    using (MemoryStream msClear = new MemoryStream())
+                    {
+                        var buffer = new byte[4096];
+                        var read = csDecrypt.Read(buffer, 0, buffer.Length);
+                        while (read > 0)
+                        {
+                            msClear.Write(buffer, 0, read);
+                            read = csDecrypt.Read(buffer, 0, buffer.Length);
+                        }
+                        csDecrypt.Flush();
+                        original = msClear.ToArray();
+                    }
+                }
+            }
+            return original;
         }
 
         public String generateString(int size)

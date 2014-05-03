@@ -95,7 +95,7 @@
     <OutputPath>bin\Debug\</OutputPath>
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <DebugType>full</DebugType>
-    <PlatformTarget>AnyCPU</PlatformTarget>
+    <PlatformTarget>x86</PlatformTarget>
     <CodeAnalysisLogFile>bin\Debug\BlitsMe.Agent.exe.CodeAnalysisLog.xml</CodeAnalysisLogFile>
     <CodeAnalysisUseTypeNameInSuppression>true</CodeAnalysisUseTypeNameInSuppression>
     <CodeAnalysisModuleSuppressionsFile>GlobalSuppressions.cs</CodeAnalysisModuleSuppressionsFile>
@@ -158,6 +158,9 @@
     <Reference Include="System.Drawing" />
     <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xml" />
+    <Reference Include="UdtProtocol">
+      <HintPath>..\BlitsMeP2PConnection\UdtProtocol.dll</HintPath>
+    </Reference>
     <Reference Include="WindowsBase" />
   </ItemGroup>
   <ItemGroup>
@@ -166,8 +169,10 @@
     <Compile Include="Components\DataSubmitErrorArgs.cs" />
     <Compile Include="Components\Engagement.cs" />
     <Compile Include="Components\EngagementActivity.cs" />
+    <Compile Include="Components\Functions\API\ClientImpl.cs" />
     <Compile Include="Components\Functions\API\FunctionImpl.cs" />
     <Compile Include="Components\Functions\API\IFunction.cs" />
+    <Compile Include="Components\Functions\API\ServerImpl.cs" />
     <Compile Include="Components\Functions\Chat\AnswerTrueFalseCommand.cs" />
     <Compile Include="Components\Functions\Chat\ChatElement\ChatElement.cs" />
     <Compile Include="Components\Functions\Chat\ChatElement\DeliverableChatElement.cs" />
@@ -215,12 +220,14 @@
     <Compile Include="Components\Person\Presence\IPresence.cs" />
     <Compile Include="Components\Person\Presence\MultiPresence.cs" />
     <Compile Include="Components\Person\Presence\Presence.cs" />
+    <Compile Include="Components\Processors\InitRepeatedConnectionProcessor.cs" />
     <Compile Include="Components\Processors\ListenHandshakeProcessor.cs" />
     <Compile Include="Components\Processors\InitUDPConnectionProcessor.cs" />
     <Compile Include="Components\Processors\SubscribeProcessor.cs" />
     <Compile Include="Components\Processors\UserToUserProcessor.cs" />
     <Compile Include="Components\Processors\PresenceChangeProcessor.cs" />
     <Compile Include="Components\Rating.cs" />
+    <Compile Include="Components\RepeatedConnection\WaitingRepeatedConnection.cs" />
     <Compile Include="Components\Schedule\CheckServiceTask.cs" />
     <Compile Include="Components\Schedule\CheckUpgradeTask.cs" />
     <Compile Include="Components\Schedule\DetectIdleTask.cs" />
@@ -238,6 +245,7 @@
     <Compile Include="Managers\EngagementManager.cs" />
     <Compile Include="Components\Login\LoginEventArgs.cs" />
     <Compile Include="Managers\LoginManager.cs" />
+    <Compile Include="Managers\RepeaterManager.cs" />
     <Compile Include="Managers\ScheduleManager.cs" />
     <Compile Include="Managers\NotificationManager.cs" />
     <Compile Include="Managers\P2PManager.cs" />
@@ -493,6 +501,9 @@
     <EmbeddedResource Include="env\Release\cacert.pem">
       <LogicalName>BlitsMe.Agent.cacert.pem</LogicalName>
     </EmbeddedResource>
+    <RootContent Include="env\Release\bmss.exe">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </RootContent>
     <None Include="env\Release\bmss.exe.broken" />
   </ItemGroup>
   <ItemGroup>
@@ -620,14 +631,12 @@
     <EmbeddedResource Include="..\BlitsMeServiceHost\bin\$(Configuration)\BlitsMe.ServiceHost.dll" />
     <EmbeddedResource Include="..\BlitsMeServiceProxy\bin\$(Configuration)\BlitsMe.ServiceProxy.dll" />
     <EmbeddedResource Include="..\library\log4net.dll" />
+    <EmbeddedResource Include="..\BlitsMeP2PConnection\UdtProtocol.dll" />
     <EmbeddedResource Include="..\WebSocketLib\bin\$(Configuration)\Bauglir.Ex.dll" />
     <EmbeddedResource Include="..\packages\MahApps.Metro.0.10.1.1\lib\net40\MahApps.Metro.dll" />
     <EmbeddedResource Include="..\packages\MahApps.Metro.0.10.1.1\lib\net40\System.Windows.Interactivity.dll" />
     <EmbeddedResource Include="..\library\Microsoft.Expression.Drawing.dll" />
     <EmbeddedResource Include="..\library\Microsoft.Expression.Effects.dll" />
-    <RootContent Include="env\Release\bmss.exe">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </RootContent>
     <EmbeddedResource Include="changelog.txt" />
     <Content Include="icon-main.ico" />
     <Resource Include="UI\WPF\Images\arrow.png" />

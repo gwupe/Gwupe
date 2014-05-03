@@ -1,19 +1,28 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Reflection;
 using System.Security.Cryptography.X509Certificates;
+using System.Security.Policy;
 using BlitsMe.Agent.Misc;
 using BlitsMe.Cloud.Communication;
+using BlitsMe.Cloud.Repeater;
 using log4net;
 
 namespace BlitsMe.Agent.Managers
 {
     public class ConnectionManager
     {
+#if DEBUG
+        private const String Address = "i.dev.blits.me";
+#else
+        private static readonly String Address = "i.blits.me";
+#endif
         private static readonly ILog Logger = LogManager.GetLogger(typeof(ConnectionManager));
         private readonly BlitsMeClientAppContext _appContext;
         private readonly CloudConnection _connection;
         private readonly BLMRegistry _reg = new BLMRegistry();
+        private X509Certificate2 _cert;
         internal bool IsClosed { get; private set; }
         public event ConnectionEvent Disconnect
         {
@@ -44,12 +53,30 @@ namespace BlitsMe.Agent.Managers
 
         public void Start()
         {
-            var stream = Assembly.GetExecutingAssembly().GetManifestResourceStream("BlitsMe.Agent.cacert.pem");
-            Byte[] certificateData = new Byte[stream.Length];
-            stream.Read(certificateData, 0, certificateData.Length);
-            X509Certificate2 cert = new X509Certificate2(certificateData);
-            Logger.Info("Will use certificate from CA " + cert.GetNameInfo(X509NameType.SimpleName, true) + ", verified? " + cert.Verify());
-            _connection.StartConnection(_appContext.Version(), cert);
+            _connection.StartConnection(_appContext.Version(), Cert);
+        }
+
+        public X509Certificate2 Cert
+        {
+            get
+            {
+                if (_cert == null)
+                {
+                    var stream = Assembly.GetExecutingAssembly().GetManifestResourceStream("BlitsMe.Agent.cacert.pem");
+                    Byte[] certificateData = new Byte[stream.Length];
+                    stream.Read(certificateData, 0, certificateData.Length);
+                    _cert = new X509Certificate2(certificateData);
+                    Logger.Info("Will use certificate from CA " + _cert.GetNameInfo(X509NameType.SimpleName, true) +
+                                ", verified? " + _cert.Verify());
+                }
+                return _cert;
+            }
+        }
+
+        public CoupledConnection StartRepeatedConnection(String repeatId, Func<MemoryStream, bool> readData)
+        {
+            CoupledConnection connection = new CoupledConnection(repeatId, Address, Cert, readData);
+            return null;
         }
 
         private void SaveServers(List<string> servers)

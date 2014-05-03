@@ -109,7 +109,7 @@ namespace BlitsMe.Service
                     Version updateVersion = new Version(versionParts[0]);
                     if (assemblyVersion.CompareTo(updateVersion) < 0)
                     {
-                        Logger.Debug((IsPreRelease() ? "" : "PreRelease ") + "Upgrade Available : " + assemblyVersion + " => " + updateVersion);
+                        Logger.Debug((IsPreRelease() ? "PreRelease " : "") + "Upgrade Available : " + assemblyVersion + " => " + updateVersion);
                         if (IsAutoUpgrade())
                         {
                             try

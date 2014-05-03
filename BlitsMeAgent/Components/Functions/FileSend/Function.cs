@@ -9,6 +9,7 @@ using BlitsMe.Agent.Components.Functions.FileSend.ChatElement;
 using BlitsMe.Agent.Components.Functions.FileSend.Notification;
 using BlitsMe.Agent.Components.Functions.RemoteDesktop;
 using BlitsMe.Agent.Components.Notification;
+using BlitsMe.Agent.Managers;
 using BlitsMe.Cloud.Messaging.Request;
 using BlitsMe.Cloud.Messaging.Response;
 using BlitsMe.Common.Security;
@@ -132,24 +133,9 @@ namespace BlitsMe.Agent.Components.Functions.FileSend
                 };
             IsActive = true;
             _pendingFileReceives.Add(fileSendId, fileSendInfo);
-            /*
-            var notification = new FileSendRequestNotification()
-            {
-                AssociatedUsername = _engagement.SecondParty.Person.Username,
-                //Message = _engagement.SecondParty.Person.Firstname + " would like to send you " + filename,
-                Message = "Incoming file transfer request \n" + filename,
-                Flag = "ReceiveFileRequest",
-                FileInfo = fileSendInfo,
-            };
-            notification.AnsweredTrue += (sender, args) => ProcessAcceptFile(fileSendInfo);
-            notification.AnsweredFalse += (sender, args) => ProcessDenyFile(fileSendInfo);
-            fileSendInfo.Notification = notification;
-            _appContext.NotificationManager.AddNotification(notification);
-             */
             FileSendRequestChatElement chatElement = LogFileSendRequest(_engagement.SecondParty.Person.Firstname + " offered you the file " + filename + ".",_engagement.SecondParty.Person.Username);
             chatElement.AnsweredTrue += (sender, args) => ProcessAcceptFile(fileSendInfo);
             chatElement.AnsweredFalse += (sender, args) => ProcessDenyFile(fileSendInfo);
-            //Chat.LogSystemMessage(_engagement.SecondParty.Person.Firstname + " offered you the file " + filename + ".");
             OnNewActivity(new FileSendActivity(_engagement, FileSendActivity.FILE_SEND_REQUEST) { To = "_SELF", From = _engagement.SecondParty.Person.Username, FileInfo = fileSendInfo });
         }
 
@@ -226,14 +212,15 @@ namespace BlitsMe.Agent.Components.Functions.FileSend
                 };
             try
             {
+                /*
                 fileInfo.State = FileSendState.Receiving;
-                fileInfo.FileReceiver = new FileSendListener(_engagement.TransportManager, fileInfo);
+                //fileInfo.FileReceiver = new FileSendListener(_engagement.TransportManager, fileInfo);
                 var notification = ShowFileProgressNotification(fileInfo);
                 fileInfo.Notification = notification;
                 notification.ProcessCancelFile += delegate { CancelFileReceive(fileInfo); };
                 fileInfo.FileReceiver.ConnectionClosed +=
                     (o, eventArgs) => FileReceiverOnConnectionClosed(fileInfo);
-                fileInfo.FileReceiver.DataRead += delegate { notification.Progress = (int)((fileInfo.FileReceiver.DataWriteSize * 100) / fileInfo.FileSize); };
+                fileInfo.FileReceiver.DataRead += delegate { notification.Progress = (int)((fileInfo.FileReceiver.DataReadSize * 100) / fileInfo.FileSize); };
                 fileInfo.FileReceiver.ListenOnce();
                 _appContext.ConnectionManager.Connection.RequestAsync<FileSendRequestResponseRq, FileSendRequestResponseRs>(request,
                     (rq, rs, e) =>
@@ -251,7 +238,7 @@ namespace BlitsMe.Agent.Components.Functions.FileSend
                         {
                             OnNewActivity(new FileSendActivity(_engagement, FileSendActivity.FILE_SEND_RESPONSE) { From = "_SELF", To = _engagement.SecondParty.Person.Username, FileInfo = fileInfo, Answer = true });
                         }
-                    });
+                    });*/
             }
             catch (Exception e)
             {
@@ -306,19 +293,9 @@ namespace BlitsMe.Agent.Components.Functions.FileSend
             OnNewActivity(new FileSendActivity(_engagement, FileSendActivity.FILE_SEND_CANCEL) { From = "_SELF", To = _engagement.SecondParty.Person.Username, FileInfo = fileInfo });
         }
 
-        // Called when a response comes back to me from a file request I sent (either I can send or not)
+        // Called when a response comes back to me from a file request I sent (either I am allowed to send or not)
         public void ProcessFileSendRequestResponse(bool accepted, string fileSendId)
         {
-            // first remove the cancel file send notification
-            /*
-            foreach (var notification in _appContext.NotificationManager.Notifications)
-            {
-                if (notification is CancellableNotification && _engagement.SecondPartyUsername.Equals(notification.AssociatedUsername) && notification.Id.Equals(fileSendId))
-                {
-                    _appContext.NotificationManager.DeleteNotification(notification);
-                    break;
-                }
-            }*/
             if (fileSendId != null && _pendingFileSends.ContainsKey(fileSendId))
             {
                 FileSendInfo fileInfo = _pendingFileSends[fileSendId];
@@ -326,20 +303,47 @@ namespace BlitsMe.Agent.Components.Functions.FileSend
                 OnNewActivity(new FileSendActivity(_engagement, FileSendActivity.FILE_SEND_RESPONSE) { To = "_SELF", From = _engagement.SecondParty.Person.Username, FileInfo = fileInfo, Answer = accepted });
                 if (accepted)
                 {
-                    fileInfo.State = FileSendState.Sending;
-                    //Chat.LogSystemMessage(_engagement.SecondParty.Person.Firstname + " accepted " + fileInfo.Filename);
-                    Logger.Info("File send of file " + fileInfo.Filename + " accepted by " + _engagement.SecondParty.Person.Name);
-                    fileInfo.FileSender = new FileSendClient(_engagement.TransportManager);
-                    // this is hacky, but lets get it to work before we make it pretty
-                    var notification = ShowFileProgressNotification(fileInfo);
-                    fileInfo.Notification = notification;
-                    notification.ProcessCancelFile += delegate { CancelFileSend(fileInfo); };
+                    
+                        fileInfo.State = FileSendState.Sending;
+                        Logger.Info("File send of file " + fileInfo.Filename + " accepted by " + _engagement.SecondParty.Person.Name);
+                        fileInfo.FileSender = new FileSendClient(_engagement.SecondParty,fileInfo);
+                        var notification = ShowFileProgressNotification(fileInfo);
+                        fileInfo.Notification = notification;
+                        notification.ProcessCancelFile += delegate { CancelFileSend(fileInfo); };
 
-                    fileInfo.FileSender.DataWritten += delegate { notification.Progress = (int)((fileInfo.FileSender.DataWriteSize * 100) / fileInfo.FileSize); };
-                    fileInfo.FileSender.SendFileComplete += delegate { FileSendComplete(fileInfo); };
-                    Thread fileSendThread = new Thread(() => fileInfo.FileSender.SendFile(fileInfo)) { IsBackground = true, Name = "fileSend[" + fileInfo.FileSendId + "]" };
-                    fileSendThread.Start();
-                    OnNewActivity(new FileSendActivity(_engagement, FileSendActivity.FILE_SEND_START) { From = "_SELF", To = _engagement.SecondParty.Person.Username, FileInfo = fileInfo });
+                        fileInfo.FileSender.DataWritten +=
+                            delegate
+                            {
+                                notification.Progress =
+                                    (int) ((fileInfo.FileSender.DataWriteSize*100)/fileInfo.FileSize);
+                            };
+                        fileInfo.FileSender.SendFileComplete += delegate { FileSendComplete(fileInfo); };
+                        Thread fileSendThread = new Thread(() => fileInfo.FileSender.SendFile())
+                        {
+                            IsBackground = true,
+                            Name = "fileSend[" + fileInfo.FileSendId + "]"
+                        };
+                        fileSendThread.Start();
+                        OnNewActivity(new FileSendActivity(_engagement, FileSendActivity.FILE_SEND_START)
+                        {
+                            From = "_SELF",
+                            To = _engagement.SecondParty.Person.Username,
+                            FileInfo = fileInfo
+                        });
+                    /*}
+                    else
+                    {
+                        try
+                        {
+                            BlitsMeClientAppContext.CurrentAppContext.RepeaterManager.InitRepeatedConnection(
+                                _engagement.SecondParty.Person.Username, _engagement.SecondParty.ActiveShortCode,
+                                _engagement.Interactions.CurrentOrNewInteraction.Id, fileSendId);
+                        }
+                        catch (Exception e)
+                        {
+                            Logger.Error("Failed to get a repeated connection to " + _engagement.SecondParty.Person.Username);
+                        }
+                    }*/
                 }
                 else
                 {

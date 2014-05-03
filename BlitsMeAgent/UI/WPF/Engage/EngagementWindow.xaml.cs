@@ -62,8 +62,8 @@ namespace BlitsMe.Agent.UI.WPF.Engage
             _notificationView.Filter += NotificationFilter;
             _notificationView.View.Refresh();
             notificationList.CollectionChanged += NotificationListOnCollectionChanged;
-            SetTunnelIndicator(Engagement.IncomingTunnel, IncomingTunnelIndicator);
-            SetTunnelIndicator(Engagement.OutgoingTunnel, OutgoingTunnelIndicator);
+            //SetTunnelIndicator(Engagement.IncomingTunnel, IncomingTunnelIndicator);
+            //SetTunnelIndicator(Engagement.OutgoingTunnel, OutgoingTunnelIndicator);
             ShowChat();
             _ewDataContext = new EngagementWindowDataContext(_appContext, engagement);
             DataContext = _ewDataContext;
@@ -147,11 +147,11 @@ namespace BlitsMe.Agent.UI.WPF.Engage
             {
                 if (propertyChangedEventArgs.PropertyName.Equals("OutgoingTunnel"))
                 {
-                    SetTunnelIndicator(Engagement.OutgoingTunnel, OutgoingTunnelIndicator);
+                    //SetTunnelIndicator(Engagement.OutgoingTunnel, OutgoingTunnelIndicator);
                 }
                 else if (propertyChangedEventArgs.PropertyName.Equals("IncomingTunnel"))
                 {
-                    SetTunnelIndicator(Engagement.IncomingTunnel, IncomingTunnelIndicator);
+                    //SetTunnelIndicator(Engagement.IncomingTunnel, IncomingTunnelIndicator);
                 }
             }
         }
@@ -214,7 +214,7 @@ namespace BlitsMe.Agent.UI.WPF.Engage
             // Request is asynchronous, we request and RDP session and then wait, acceptance on the users side will send a request to us
             try
             {
-                ((Components.Functions.RemoteDesktop.Function)Engagement.GetFunction("RemoteDesktop")).RequestRDPSession(this, Engagement);
+                ((Components.Functions.RemoteDesktop.Function)Engagement.GetFunction("RemoteDesktop")).RequestRdpSession(this, Engagement);
             }
             catch (Exception ex)
             {

@@ -3,7 +3,10 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
+using BlitsMe.Agent.Components.Functions.API;
+using BlitsMe.Agent.Components.Person;
 using BlitsMe.Cloud.Communication;
+using BlitsMe.Communication.P2P.P2P.Socket.API;
 using BlitsMe.Communication.P2P.RUDP.Connector;
 using BlitsMe.Communication.P2P.RUDP.Connector.API;
 using BlitsMe.Communication.P2P.RUDP.Tunnel.API;
@@ -11,25 +14,17 @@ using log4net;
 
 namespace BlitsMe.Agent.Components.Functions.FileSend
 {
-    internal class FileSendClient
+    internal class FileSendClient : ClientImpl
     {
+        private readonly FileSendInfo _fileInfo;
         private static readonly ILog Logger = LogManager.GetLogger(typeof(FileSendClient));
-        private readonly ITransportManager _transportManager;
-        private DefaultTcpTransportConnection _transportConnection;
         private long _dataWriteSize;
         private Boolean _proceed = true;
         private CoupledConnection coupledConnection;
+
         public long DataWriteSize
         {
             get { return _dataWriteSize; }
-        }
-
-        internal event EventHandler DataWritten;
-
-        internal void OnDataWritten(EventArgs e)
-        {
-            EventHandler handler = DataWritten;
-            if (handler != null) handler(this, e);
         }
 
         internal event EventHandler<FileSendCompleteEventArgs> SendFileComplete;
@@ -40,20 +35,32 @@ namespace BlitsMe.Agent.Components.Functions.FileSend
             if (handler != null) handler(this, e);
         }
 
-        internal FileSendClient(ITransportManager transportManager)
+        internal event EventHandler DataWritten;
+
+        internal void OnDataWritten(EventArgs e)
         {
-            _transportManager = transportManager;
+            EventHandler handler = DataWritten;
+            if (handler != null) handler(this, e);
         }
 
-        internal void SendFile(FileSendInfo fileInfo)
+        internal FileSendClient(Attendance secondParty, FileSendInfo fileInfo) : base(secondParty)
+        {
+            _fileInfo = fileInfo;
+        }
+
+        internal void SendFile()
         {
             try
             {
-                FileStream fs = File.Open(fileInfo.FilePath, FileMode.Open);
+                FileStream fs = File.Open(_fileInfo.FilePath, FileMode.Open);
                 BinaryReader binReader = new BinaryReader(fs);
                 try
                 {
-                    OpenConnection(fileInfo);
+                    // First we need p2p connection
+                    Socket = BlitsMeClientAppContext.CurrentAppContext.P2PManager.GetP2PConnection(SecondParty, _fileInfo.FileSendId);
+                    Socket.ConnectionOpened += (sender, args) => { Closed = false; };
+                    Socket.ConnectionClosed += (sender, args) => Close();
+                    Socket.Connect();
                     try
                     {
                         byte[] read;
@@ -62,72 +69,55 @@ namespace BlitsMe.Agent.Components.Functions.FileSend
                             read = binReader.ReadBytes(8192);
                             if (read.Length > 0)
                             {
-                                SendData(read);
+                                Socket.Send(read, read.Length);
                                 _dataWriteSize += read.Length;
                                 OnDataWritten(EventArgs.Empty);
                             }
                         } while (read.Length > 0 && _proceed);
                         if (_proceed)
                         {
-                            Logger.Debug("Completed file send of " + fileInfo.Filename);
+                            Logger.Debug("Completed file send of " + _fileInfo.Filename);
                             OnSendFileComplete(new FileSendCompleteEventArgs() { Success = true });
                         } else
                         {
-                            Logger.Info("File transfer of " + fileInfo.Filename + " was cancelled");
+                            Logger.Info("File transfer of " + _fileInfo.Filename + " was cancelled");
                             OnSendFileComplete(new FileSendCompleteEventArgs() { Success = false, Error = "File transfer was cancelled"});
                         }
                     }
                     catch (Exception e)
                     {
-                        Logger.Error("Failed to read " + fileInfo.FilePath + " : " + e.Message,e);
-                        OnSendFileComplete(new FileSendCompleteEventArgs() { Error = "Failed to read the file", Success = false });
-                    } finally
-                    {
-                        CloseConnection();
-                    }
+                        Logger.Error("Failed to read " + _fileInfo.FilePath + " : " + e.Message, e);
+                        OnSendFileComplete(new FileSendCompleteEventArgs() { Error = "Failed to send the file", Success = false });
+                    } 
                 }
                 catch (Exception e)
                 {
-                    Logger.Error("Failed to connect to endpoint " + fileInfo.FileSendId + " : " + e.Message, e);
+                    Logger.Error("Failed to connect to endpoint " + _fileInfo.FileSendId + " : " + e.Message, e);
                     OnSendFileComplete(new FileSendCompleteEventArgs() { Error = "Failed to connect to peer", Success = false });
                 }
                 finally
                 {
                     binReader.Close();
+                    Close();
                 }
             }
             catch (Exception e)
             {
-                Logger.Error("Failed to open the file " + fileInfo.FilePath + " : " + e.Message, e);
+                Logger.Error("Failed to open the file " + _fileInfo.FilePath + " : " + e.Message, e);
                 OnSendFileComplete(new FileSendCompleteEventArgs() { Error = "Failed to open the local file", Success = false });
             }
         }
 
-        private void CloseConnection()
+        internal override void Close()
         {
-            _transportConnection.Close();
-        }
-
-        private void SendData(byte[] read)
-        {
-            _transportConnection.SendDataToTransportSocket(read, read.Length);
-        }
-
-        private void OpenConnection(FileSendInfo fileInfo)
-        {
-            //coupledConnection = new CoupledConnection();
-            _transportConnection =
-                new DefaultTcpTransportConnection(_transportManager.TCPTransport.OpenConnection(fileInfo.FileSendId), ReadReply);
-        }
-
-        private bool ReadReply(byte[] data, int length, TcpTransportConnection connection)
-        {
-            return true;
-        }
-
-        internal void Close()
-        {
-            _proceed = false;
+            if (!Closed && !Closing)
+            {
+                Closing = true;
+                _proceed = false;
+                Socket.Close();
+                Closing = false;
+                Closed = true;
+            }
         }
 
     }

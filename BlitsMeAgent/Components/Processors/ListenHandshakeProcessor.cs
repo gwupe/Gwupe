@@ -4,6 +4,7 @@ using System.Threading;
 using BlitsMe.Cloud.Messaging.API;
 using BlitsMe.Cloud.Messaging.Request;
 using BlitsMe.Cloud.Messaging.Response;
+using BlitsMe.Communication.P2P.P2P.Tunnel;
 using BlitsMe.Communication.P2P.RUDP.Tunnel.API;
 using BlitsMe.Communication.P2P.RUDP.Utils;
 using log4net;
@@ -37,7 +38,7 @@ namespace BlitsMe.Agent.Components.Processors
                 {
                     peerInfo.InternalEndPoints.Add(new IPEndPoint(IPAddress.Parse(ipEndPointElement.address), ipEndPointElement.port));
                 }
-                SetupIncomingTunnel(engagement, _appContext.P2PManager.CompleteTunnel(request.uniqueId), peerInfo);
+                _appContext.P2PManager.ReceiveP2PTunnel(request.uniqueId, peerInfo);
             }
             catch (Exception e)
             {
@@ -46,28 +47,6 @@ namespace BlitsMe.Agent.Components.Processors
                 response.errorMessage = "Failed to start listening for UDP traffic";
             }
             return response;
-        }
-
-        private void SetupIncomingTunnel(Engagement engagement, IUDPTunnel awareIncomingTunnel, PeerInfo peerinfo)
-        {
-            engagement.IncomingTunnel = awareIncomingTunnel;
-            engagement.IncomingTunnel.Id = engagement.SecondParty.Person.Username + "-" + engagement.SecondParty.ActiveShortCode + "-incoming";
-            var p2pListenerThread = new Thread(() => IncomingTunnelWaitSync(engagement, peerinfo)) { IsBackground = true, Name = "p2pListener[" + engagement.IncomingTunnel.Id + "]" };
-            p2pListenerThread.Start();
-        }
-
-        private void IncomingTunnelWaitSync(Engagement engagement, PeerInfo peerIP)
-        {
-            try
-            {
-                long startTime = Environment.TickCount;
-                engagement.IncomingTunnel.WaitForSyncFromPeer(peerIP, 10000);
-                Logger.Info("Successfully completed incoming sync in " + (Environment.TickCount - startTime) + "ms");
-            }
-            catch (Exception e)
-            {
-                Logger.Error("Failed waiting for sync from peer [" + peerIP + "] : " + e.Message, e);
-            }
         }
     }
 }

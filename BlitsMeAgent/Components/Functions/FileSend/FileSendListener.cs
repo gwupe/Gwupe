@@ -1,8 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Threading;
+using BlitsMe.Agent.Components.Functions.API;
+using BlitsMe.Communication.P2P.P2P.Socket.API;
 using BlitsMe.Communication.P2P.RUDP.Connector;
 using BlitsMe.Communication.P2P.RUDP.Connector.API;
 using BlitsMe.Communication.P2P.RUDP.Socket.API;
@@ -12,14 +16,13 @@ using log4net;
 
 namespace BlitsMe.Agent.Components.Functions.FileSend
 {
-    internal class FileSendListener : TcpTransportListener
+    internal class FileSendListener : ServerImpl
     {
         private static readonly ILog Logger = LogManager.GetLogger(typeof(FileSendListener));
         private readonly FileSendInfo _fileInfo;
-        private FileStream _fileStream;
-        private BinaryWriter _binWriter;
-        private long _dataWriteSize;
-        public long DataWriteSize { get { return _dataWriteSize; } }
+        private Thread _fileReceiverThread;
+        private long _dataReadSize;
+        public long DataReadSize { get { return _dataReadSize; } }
         public event EventHandler DataRead;
         public bool FileReceiveResult = false;
 
@@ -29,14 +32,92 @@ namespace BlitsMe.Agent.Components.Functions.FileSend
             if (handler != null) handler(this, e);
         }
 
-        internal FileSendListener(ITransportManager transportManager, FileSendInfo fileInfo)
-            : base(fileInfo.FileSendId, transportManager)
+        internal FileSendListener(FileSendInfo fileInfo)
         {
             _fileInfo = fileInfo;
-            this.ConnectionAccepted += OnConnectionAccepted;
-            this.ConnectionClosed += OnConnectionClosed;
         }
 
+        internal void Listen()
+        {
+            BlitsMeClientAppContext.CurrentAppContext.P2PManager.AwaitConnection(_fileInfo.FileSendId, ReceiveConnection);
+        }
+
+        private void ReceiveConnection(ISocket socket)
+        {
+            Socket = socket;
+            Socket.ConnectionOpened += (sender, args) => { Closed = false; };
+            Socket.ConnectionClosed += (sender, args) => Close();
+            _fileReceiverThread = new Thread(ReceiveFile)
+            {
+                Name = "FileReceiver-" + _fileInfo.FileSendId,
+                IsBackground = true
+            };
+        }
+
+        private void ReceiveFile()
+        {
+            try
+            {
+                Socket.ListenOnce();
+                string pathDownload = OsUtils.IsWinVistaOrHigher ? Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), "Downloads", _fileInfo.Filename)
+                                      : Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Desktop), _fileInfo.Filename);
+                FileStream fs = new FileStream(pathDownload, FileMode.OpenOrCreate);
+                var binWriter = new BinaryWriter(fs);
+                Stopwatch sw = new Stopwatch();
+                try
+                {
+                    sw.Start();
+                    var fsBuffer = new byte[16834];
+                    int totalRead = 0;
+                    int read = totalRead = Socket.Read(fsBuffer, 16834);
+                    while (totalRead < _fileInfo.FileSize)
+                    {
+                        _dataReadSize += read;
+                        OnDataRead(EventArgs.Empty);
+                        binWriter.Write(fsBuffer, 0, read);
+                        totalRead += read = Socket.Read(fsBuffer, (int) ((_fileInfo.FileSize - totalRead > 16834) ? 16834 : _fileInfo.FileSize - totalRead));
+                    }
+                    sw.Stop();
+                    Logger.Info("File " +_fileInfo.Filename+ " Received, " + _fileInfo.FileSize + " bytes in " + sw.Elapsed.TotalSeconds + " seconds (" + (sw.Elapsed.TotalSeconds == 0 ? "?" : (_fileInfo.FileSize / 1024 / sw.Elapsed.TotalSeconds).ToString()) + "kBps)");
+                }
+                catch (Exception ex)
+                {
+                    Logger.Error("Error occured while receiving file : " + ex.Message,ex);
+                    sw.Stop();
+                    Logger.Error("File " +_fileInfo.Filename+ " failed, " + _fileInfo.FileSize + " bytes in " + sw.Elapsed.TotalSeconds + " seconds (" + (sw.Elapsed.TotalSeconds == 0 ? "?" : (_fileInfo.FileSize / 1024 / sw.Elapsed.TotalSeconds).ToString()) + "kBps)");
+                }
+                finally
+                {
+                    fs.Flush();
+                    binWriter.Close();
+                }
+            }
+            catch (Exception ex)
+            {
+                Logger.Error("Failed to receive file : " + ex.Message, ex);
+            }
+            finally
+            {
+                Close();
+            }
+        }
+
+        internal override void Close()
+        {
+            if (!Closing && !Closed)
+            {
+                Logger.Debug("Closing File Listener");
+                Closing = true;
+                if (_fileReceiverThread != null && _fileReceiverThread.IsAlive && _fileReceiverThread != Thread.CurrentThread)
+                {
+                    _fileReceiverThread.Interrupt();
+                }
+                Closing = false;
+                Closed = true;
+            }
+        }
+
+        /*
         private void OnConnectionClosed(object sender, NamedConnectionEventArgs namedConnectionEventArgs)
         {
             // check file size and close file here
@@ -44,14 +125,14 @@ namespace BlitsMe.Agent.Components.Functions.FileSend
             {
                 _fileStream.Flush(true);
                 _binWriter.Close();
-                if (_dataWriteSize == _fileInfo.FileSize)
+                if (_dataReadSize == _fileInfo.FileSize)
                 {
                     Logger.Debug("File transfer of " + _fileInfo.Filename + " complete, filesize looks good");
                     FileReceiveResult = true;
                 }
                 else
                 {
-                    Logger.Warn("File transfer of " + _fileInfo.Filename + " looks like it failed, expected file size is " + _fileInfo.FileSize + " but destination filesize is " + _dataWriteSize);
+                    Logger.Warn("File transfer of " + _fileInfo.Filename + " looks like it failed, expected file size is " + _fileInfo.FileSize + " but destination filesize is " + _dataReadSize);
                 }
             }
             else
@@ -64,7 +145,7 @@ namespace BlitsMe.Agent.Components.Functions.FileSend
         private void OnConnectionAccepted(object sender, NamedConnectionEventArgs namedConnectionEventArgs)
         {
             // open the file here
-            string pathDownload = OsUtils.IsWinVistaOrHigher ? Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), "Downloads", _fileInfo.Filename) 
+            string pathDownload = OsUtils.IsWinVistaOrHigher ? Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), "Downloads", _fileInfo.Filename)
                                       : Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Desktop), _fileInfo.Filename);
             _fileInfo.FilePath = pathDownload;
             try
@@ -91,17 +172,19 @@ namespace BlitsMe.Agent.Components.Functions.FileSend
             {
                 try
                 {
-                    _binWriter.Write(data,0,length);
+                    _binWriter.Write(data, 0, length);
                 }
                 catch (Exception e)
                 {
                     Logger.Error("Failed to write data to file " + _fileInfo.Filename + " : " + e.Message, e);
                     return false;
                 }
-                _dataWriteSize += length;
+                _dataReadSize += length;
                 OnDataRead(EventArgs.Empty);
             }
             return true;
         }
+         * */
+
     }
 }
