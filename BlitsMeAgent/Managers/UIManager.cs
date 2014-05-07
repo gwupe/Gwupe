@@ -44,7 +44,7 @@ namespace BlitsMe.Agent.Managers
             uiThread.SetApartmentState(ApartmentState.STA);
             uiThread.Start();
             uiReady.WaitOne();
-            LoadBaseSkin();
+            //LoadBaseSkin();
             if (BlitsMeClientAppContext.CurrentAppContext.Options.Contains(BlitsMeOption.Minimize))
             {
                 dashBoard.InitWindowHandle();

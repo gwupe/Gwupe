@@ -19,6 +19,9 @@ namespace BlitsMe.Communication.P2P.P2P.Socket.API
         bool Closing { get; }
         bool Listening { get; }
 
+        int SentData { get; }
+        int BufferedData { get; }
+
         event EventHandler ConnectionOpened;
         event EventHandler ConnectionClosed;
     }

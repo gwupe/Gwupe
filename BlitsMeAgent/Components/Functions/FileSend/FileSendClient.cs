@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using BlitsMe.Agent.Components.Functions.API;
 using BlitsMe.Agent.Components.Person;
 using BlitsMe.Cloud.Communication;
@@ -19,7 +20,6 @@ namespace BlitsMe.Agent.Components.Functions.FileSend
         private readonly FileSendInfo _fileInfo;
         private static readonly ILog Logger = LogManager.GetLogger(typeof(FileSendClient));
         private long _dataWriteSize;
-        private Boolean _proceed = true;
         private CoupledConnection coupledConnection;
 
         public long DataWriteSize
@@ -70,12 +70,26 @@ namespace BlitsMe.Agent.Components.Functions.FileSend
                             if (read.Length > 0)
                             {
                                 Socket.Send(read, read.Length);
-                                _dataWriteSize += read.Length;
+                                //_dataWriteSize += read.Length;
+                                _dataWriteSize = Socket.SentData;
                                 OnDataWritten(EventArgs.Empty);
                             }
-                        } while (read.Length > 0 && _proceed);
-                        if (_proceed)
+                        } while (read.Length > 0 && !Closing && !Closed);
+                        if (!Closing && !Closed)
                         {
+                            while (Socket.SentData < Socket.BufferedData)
+                            {
+                                Logger.Debug("sent = " + Socket.SentData + ", buffered = " + Socket.BufferedData);
+                                if (_dataWriteSize != Socket.SentData)
+                                {
+                                    _dataWriteSize = Socket.SentData;
+                                    OnDataWritten(EventArgs.Empty);
+                                }
+                                else
+                                {
+                                    Thread.Sleep(500);
+                                }
+                            }
                             Logger.Debug("Completed file send of " + _fileInfo.Filename);
                             OnSendFileComplete(new FileSendCompleteEventArgs() { Success = true });
                         } else
@@ -113,7 +127,6 @@ namespace BlitsMe.Agent.Components.Functions.FileSend
             if (!Closed && !Closing)
             {
                 Closing = true;
-                _proceed = false;
                 Socket.Close();
                 Closing = false;
                 Closed = true;

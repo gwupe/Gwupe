@@ -52,6 +52,7 @@ namespace BlitsMe.Agent.Components.Functions.FileSend
                 Name = "FileReceiver-" + _fileInfo.FileSendId,
                 IsBackground = true
             };
+            _fileReceiverThread.Start();
         }
 
         private void ReceiveFile()
@@ -69,27 +70,52 @@ namespace BlitsMe.Agent.Components.Functions.FileSend
                     sw.Start();
                     var fsBuffer = new byte[16834];
                     int totalRead = 0;
-                    int read = totalRead = Socket.Read(fsBuffer, 16834);
-                    while (totalRead < _fileInfo.FileSize)
+                    int read = 0;
+                    do
                     {
+                        totalRead += read = Socket.Read(fsBuffer, (int)((_fileInfo.FileSize - totalRead > 16834) ? 16834 : _fileInfo.FileSize - totalRead));
                         _dataReadSize += read;
                         OnDataRead(EventArgs.Empty);
                         binWriter.Write(fsBuffer, 0, read);
-                        totalRead += read = Socket.Read(fsBuffer, (int) ((_fileInfo.FileSize - totalRead > 16834) ? 16834 : _fileInfo.FileSize - totalRead));
+                    } while (totalRead < _fileInfo.FileSize && !Closing && !Closed);
+                    if (Closed || Closing)
+                    {
+                        throw new Exception("File Receiver was closed");
                     }
                     sw.Stop();
-                    Logger.Info("File " +_fileInfo.Filename+ " Received, " + _fileInfo.FileSize + " bytes in " + sw.Elapsed.TotalSeconds + " seconds (" + (sw.Elapsed.TotalSeconds == 0 ? "?" : (_fileInfo.FileSize / 1024 / sw.Elapsed.TotalSeconds).ToString()) + "kBps)");
+                    Logger.Info("File " + _fileInfo.Filename + " Received, " +
+                                (_fileInfo.FileSize/1024).ToString("0") + " KB in " +
+                                sw.Elapsed.TotalSeconds.ToString("##.##") + " seconds (" +
+                                (sw.Elapsed.TotalSeconds == 0 ? "?" : (_fileInfo.FileSize/1024/sw.Elapsed.TotalSeconds).ToString("##.###")) + "KBps)");
+                    FileReceiveResult = true;
                 }
                 catch (Exception ex)
                 {
-                    Logger.Error("Error occured while receiving file : " + ex.Message,ex);
+                    Logger.Error("Error occured while receiving file : " + ex.Message, ex);
                     sw.Stop();
-                    Logger.Error("File " +_fileInfo.Filename+ " failed, " + _fileInfo.FileSize + " bytes in " + sw.Elapsed.TotalSeconds + " seconds (" + (sw.Elapsed.TotalSeconds == 0 ? "?" : (_fileInfo.FileSize / 1024 / sw.Elapsed.TotalSeconds).ToString()) + "kBps)");
+                    Logger.Error("File " + _fileInfo.Filename + " failed, " + 
+                        (_fileInfo.FileSize/1024).ToString("0") + " KB in " + 
+                        sw.Elapsed.TotalSeconds.ToString("##.##") + " seconds (" + 
+                        (sw.Elapsed.TotalSeconds == 0 ? "?" : (_fileInfo.FileSize / 1024 / sw.Elapsed.TotalSeconds).ToString("##.###")) + "KBps)");
+                    FileReceiveResult = false;
                 }
                 finally
                 {
                     fs.Flush();
                     binWriter.Close();
+                    if (!FileReceiveResult)
+                    {
+                        // remove the file if it was incomplete
+                        Logger.Warn("Removing incomplete file " + pathDownload);
+                        try
+                        {
+                            File.Delete(pathDownload);
+                        }
+                        catch (Exception ex)
+                        {
+                            Logger.Error("Failed to remove incomplete file : " + ex.Message);
+                        }
+                    }
                 }
             }
             catch (Exception ex)
@@ -108,10 +134,7 @@ namespace BlitsMe.Agent.Components.Functions.FileSend
             {
                 Logger.Debug("Closing File Listener");
                 Closing = true;
-                if (_fileReceiverThread != null && _fileReceiverThread.IsAlive && _fileReceiverThread != Thread.CurrentThread)
-                {
-                    _fileReceiverThread.Interrupt();
-                }
+                Socket.Close();
                 Closing = false;
                 Closed = true;
             }

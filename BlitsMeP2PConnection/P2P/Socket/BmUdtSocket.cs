@@ -24,7 +24,7 @@ namespace BlitsMe.Communication.P2P.P2P.Socket
 
         public BmUdtSocket()
         {
-            _udpClient = new UdpClient(new IPEndPoint(IPAddress.Any,0));
+            _udpClient = new UdpClient(new IPEndPoint(IPAddress.Any, 0));
 
             Closed = false;
             Closing = false;
@@ -57,7 +57,7 @@ namespace BlitsMe.Communication.P2P.P2P.Socket
             Udt.Socket udtClient = udtSocket.Accept();
             UdtConnection = udtClient;
             UdtConnection.BlockingReceive = true;
-            Logger.Info("Successfully completed incoming tunnel with " + activeIp + "-" + syncId);
+            Logger.Debug("Successfully completed incoming tunnel with " + activeIp + "-" + syncId);
             return activeIp;
         }
 
@@ -70,7 +70,7 @@ namespace BlitsMe.Communication.P2P.P2P.Socket
             udtSocket.Connect(activeIp.Address, activeIp.Port);
             UdtConnection = udtSocket;
             UdtConnection.BlockingReceive = true;
-            Logger.Info("Successfully completed outgoing tunnel with " + activeIp + "-" + syncId);
+            Logger.Debug("Successfully completed outgoing tunnel with " + activeIp + "-" + syncId);
             return activeIp;
         }
 
@@ -105,6 +105,7 @@ namespace BlitsMe.Communication.P2P.P2P.Socket
             //Logger.Debug("Writing " + length + " bytes to the udt stream");
 #endif
             UdtConnection.Send(data, 0, length);
+            BufferedData += length;
         }
 
         public int Read(byte[] data, int maxRead)
@@ -178,6 +179,27 @@ namespace BlitsMe.Communication.P2P.P2P.Socket
         public bool Closing { get; private set; }
 
         public bool Listening { get; private set; }
+
+        public int BufferedData { get; private set; }
+
+        // This returns actual data sent, buffered data minus data still in buffer
+        public int SentData
+        {
+            get
+            {
+                try
+                {
+                    return UdtConnection.IsDisposed
+                        ? BufferedData
+                        : BufferedData -
+                          (UdtConnection.SendBufferSize - UdtConnection.GetPerformanceInfo().Probe.AvailableSendBuffer);
+                }
+                catch (Exception e)
+                {
+                    return BufferedData;
+                }
+            }
+        }
 
         public event EventHandler ConnectionOpened;
 

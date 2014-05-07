@@ -125,9 +125,12 @@ namespace BlitsMe.Agent.Managers
             return InitP2PConnection(secondParty, connectionId);
         }
 
+        // This is called by a waiting Function (like file send listener or rdp server) so that 
+        // this callback can be called when its p2p connection is established
         internal void AwaitConnection(string connectionId, Action<ISocket> receiveConnection)
         {
             _awaitingConnections.Add(connectionId, receiveConnection);
+            Logger.Debug("Awaiting a connection on " + connectionId);
         }
 
         // This is where we wait to receive a connection, requested by the server
@@ -144,10 +147,18 @@ namespace BlitsMe.Agent.Managers
 
         private static void RunSyncer(string connectionId, PeerInfo peer, ITunnelEndpoint pendingTunnel, Action<ISocket> receivingMethod)
         {
-            var activeIp = pendingTunnel.WaitForSync(peer, connectionId);
-            // call the callback method
-            receivingMethod(pendingTunnel);
-            Logger.Info("Successfully completed incoming tunnel with " + activeIp.Address + ":" + activeIp.Port + " [" + connectionId + "]");
+            try
+            {
+                var activeIp = pendingTunnel.WaitForSync(peer, connectionId);
+                Logger.Info("Successfully completed incoming tunnel with " + activeIp.Address + ":" + activeIp.Port + " [" + connectionId + "]");
+                // call the callback method
+                Logger.Debug("Handing over the the receiving method for this connection");
+                receivingMethod(pendingTunnel);
+            }
+            catch (Exception ex)
+            {
+                Logger.Error("Failed to sync with peer [" + peer + "] for connection " + connectionId, ex);
+            }
         }
     }
 }

@@ -73,6 +73,7 @@ namespace BlitsMe.Communication.P2P.P2P.Socket
         public void Send(byte[] data, int length)
         {
             _client.GetStream().Write(data, 0, length);
+            BufferedData += length;
         }
 
         public int Read(byte[] data, int maxRead)
@@ -139,6 +140,10 @@ namespace BlitsMe.Communication.P2P.P2P.Socket
 
         public bool Closing { get; private set; }
         public bool Listening { get; private set; }
+
+        public int SentData { get { return BufferedData; } }
+
+        public int BufferedData { get; private set; }
 
         public event EventHandler ConnectionOpened;
 

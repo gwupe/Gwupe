@@ -6,19 +6,13 @@
                     xmlns:Microsoft_Windows_Themes="clr-namespace:Microsoft.Windows.Themes;assembly=PresentationFramework.Aero">
 
 
-    <!--<ResourceDictionary.MergedDictionaries>
-        <ResourceDictionary Source="../UI/WPF/Style/Style.xaml" />
-    </ResourceDictionary.MergedDictionaries>-->
-    <Color x:Key="HeaderFontColor">#95B3D7</Color>
-
+    
     <Style x:Key="MainLayout" TargetType="Grid">
         <Setter Property="TextOptions.TextFormattingMode" Value="Display" />
         <Setter Property="Background" Value="Transparent" />
     </Style>
 
-    <Style x:Key="MainChatView" TargetType="Grid">
-        <Setter Property="Background" Value="#B9CDE5" /> 
-    </Style>
+
 
     <Style x:Key="WindowMinimizeCloseButtonStyle" TargetType="Button">
         <Setter Property="Height" Value="20"/>
@@ -102,7 +96,7 @@
         <Setter Property="Padding" Value="5" />
     </Style>
 
-    <Style x:Key="textboxSearchStyle" TargetType="TextBox">
+    <Style x:Key="TextboxSearchStyle" TargetType="TextBox">
         <Setter Property="Background" Value="Transparent" />
         <Setter Property="TextWrapping" Value="Wrap" />
         <Setter Property="Width" Value="100" />
