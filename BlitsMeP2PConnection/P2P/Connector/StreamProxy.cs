@@ -36,6 +36,7 @@ namespace BlitsMe.Communication.P2P.P2P.Connector
         {
             Logger.Debug("Starting Proxy from " + instream + " to " + outstream);
             int read = 1;
+            Closed = false;
             try
             {
                 var inBuffer = new byte[_bufferSize];
@@ -123,27 +124,21 @@ namespace BlitsMe.Communication.P2P.P2P.Connector
             if (!Closing && !Closed)
             {
                 Closing = true;
-                if (_inRunner.IsAlive)
+                try
                 {
-                    try
-                    {
-                        _inRunner.Interrupt();
-                    }
-                    catch (Exception ex)
-                    {
-                        Logger.Error("Caught error when interrupting _inRunner thread");
-                    }
+                    _inStream.Close();
                 }
-                if (_outRunner.IsAlive)
+                catch (Exception ex)
                 {
-                    try
-                    {
-                        _outRunner.Interrupt();
-                    }
-                    catch (Exception ex)
-                    {
-                        Logger.Error("Caught error when interrupting _outRunner thread");
-                    }
+                    Logger.Error("Error occured closing instream",ex);
+                }
+                try
+                {
+                    _outStream.Close();
+                }
+                catch (Exception ex)
+                {
+                    Logger.Error("Error occured closing outstream", ex);
                 }
                 Closing = false;
                 Closed = true;

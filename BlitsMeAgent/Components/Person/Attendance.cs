@@ -42,6 +42,7 @@ namespace BlitsMe.Agent.Components.Person
             set
             {
                 _isRemoteActive = value;
+                Logger.Debug("IsRemoteActive is " + _isRemoteActive);
                 OnPropertyChanged("IsRemoteActive");
             }
         }
@@ -154,7 +155,7 @@ namespace BlitsMe.Agent.Components.Person
         {
             return Person.ToString();
         }
-
+        /*
         private ICommand _answerCancel;
         private bool _answer;
         private bool _answered;
@@ -162,9 +163,9 @@ namespace BlitsMe.Agent.Components.Person
         public ICommand AnswerCancel
         {
             get { return _answerCancel ?? (_answerCancel = new TerminateCloseCommand(this)); }
-        }
+        }*/
     }
-
+        /*
     class TerminateCloseCommand : ICommand
     {
         Attendance _attendance;
@@ -189,5 +190,5 @@ namespace BlitsMe.Agent.Components.Person
         }
 
         public event EventHandler CanExecuteChanged;
-    }
+    }*/
 }

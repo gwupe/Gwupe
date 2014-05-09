@@ -54,7 +54,7 @@ namespace BlitsMe.Agent.UI.WPF
         internal DashboardDataContext DashboardData;
         internal RosterList ActiveRosterList;
         internal RosterList SearchRosterList;
-        internal Attendance _Attendance;
+        //internal Attendance _Attendance;
         internal bool Searching;
         private DispatchingCollection<ObservableCollection<Attendance>, Attendance> dispatchingCollection;
 
@@ -501,11 +501,13 @@ namespace BlitsMe.Agent.UI.WPF
 
         private void ShowEngagement(Attendance attendance)
         {
+            /*
             if (_Attendance != null)
             {
                 _Attendance.IsRemoteActive = _Attendance.Engagement.IsRemoteControlActive;
             }
             _Attendance = attendance;
+             */
             EngagementWindow egw = _engagementWindows.GetEngagementWindow(attendance);
             if (egw != null)
             {
@@ -514,7 +516,7 @@ namespace BlitsMe.Agent.UI.WPF
                 ActiveContent.Content = egw;
                 egw.SetAsMain(this);
                 egw.ShowChat();
-
+                /*
                 if (!attendance.Engagement.IsRemoteControlActive)
                 {
                     egw.RemoteTerminateButton.Visibility = Visibility.Collapsed;
@@ -523,6 +525,7 @@ namespace BlitsMe.Agent.UI.WPF
                 {
                     egw.RemoteTerminateButton.Visibility = Visibility.Visible;
                 }
+                 * */
             }
             else
             {

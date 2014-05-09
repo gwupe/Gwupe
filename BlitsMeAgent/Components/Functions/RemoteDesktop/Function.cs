@@ -46,16 +46,15 @@ namespace BlitsMe.Agent.Components.Functions.RemoteDesktop
             _engagement = engagement;
         }
 
-        internal event EventHandler RDPConnectionAccepted { add { Server.ServerConnectionOpened += value; } remove { Server.ServerConnectionOpened -= value; } }
-        internal event EventHandler RDPConnectionClosed { add { Server.ServerConnectionClosed += value; } remove { Server.ServerConnectionClosed -= value; } }
-
         // Method is called by RequestManager when the second party is requesting a remote desktop session with us
         internal void ProcessIncomingRemoteDesktopRequest(String shortCode)
         {
+            /*
             bool notificationExists = false;
             // Loop through existing notifications to see if we already have a remote desktop request
             // from the SecondParty. If the .From and Type of the notification match the SecondParty.UserName
             // and RDPNotification type
+            
             _engagement.IsRemoteControlActive = true;
             foreach (Components.Notification.Notification n in _appContext.NotificationManager.Notifications)
             {
@@ -67,27 +66,29 @@ namespace BlitsMe.Agent.Components.Functions.RemoteDesktop
             }
             if (!notificationExists)
             {
-                if (!Server.Established)
+             * */
+            // Ignore request if a session is underway
+            if (Server.Closed)
+            {
+                if (Server.Listening)
                 {
-                    if (Server.Listening)
-                    {
-                        Server.Close();
-                    }
-                    // only process this notification if they don't already exist AND 
-                    // we are not currently in a remote session
-                    IsActive = true;
-                    // Set the shortcode, to make sure we connect to the right caller.
-                    _engagement.SecondParty.ActiveShortCode = shortCode;
-                    // Print to the chat that someone is trying to request control of the desktop (allowing them to click yes/no)
-                    var rdpChatElement = LogRdpRequest(_engagement.SecondParty.Person.Firstname + " requested control of your desktop.", _engagement.SecondPartyUsername);
-                    // Setup anser handlers
-                    rdpChatElement.AnsweredTrue += delegate { ProcessAnswer(true); };
-                    rdpChatElement.AnsweredFalse += delegate { ProcessAnswer(false); };
-                    // There has been an activity, raise the event
-                    OnNewActivity(new RemoteDesktopActivity(_engagement, RemoteDesktopActivity.REMOTE_DESKTOP_REQUEST) { To = "_SELF", From = _engagement.SecondParty.Person.Username });
-                    // Now we wait to see what the user does
+                    Server.Close();
                 }
+                // only process this notification if they don't already exist AND 
+                // we are not currently in a remote session
+                IsActive = true;
+                // Set the shortcode, to make sure we connect to the right caller.
+                _engagement.SecondParty.ActiveShortCode = shortCode;
+                // Print to the chat that someone is trying to request control of the desktop (allowing them to click yes/no)
+                var rdpChatElement = LogRdpRequest(_engagement.SecondParty.Person.Firstname + " requested control of your desktop.", _engagement.SecondPartyUsername);
+                // Setup anser handlers
+                rdpChatElement.AnsweredTrue += delegate { ProcessAnswer(true); };
+                rdpChatElement.AnsweredFalse += delegate { ProcessAnswer(false); };
+                // There has been an activity, raise the event
+                OnNewActivity(new RemoteDesktopActivity(_engagement, RemoteDesktopActivity.REMOTE_DESKTOP_REQUEST) { To = "_SELF", From = _engagement.SecondParty.Person.Username });
+                // Now we wait to see what the user does
             }
+            //}
         }
 
         // This method prints the message in the chat that someone is requesting a rdp session with us, allowing the user to answer
@@ -140,7 +141,7 @@ namespace BlitsMe.Agent.Components.Functions.RemoteDesktop
             else
             {
                 // mark the remote control as not underway
-                _engagement.IsRemoteControlActive = false;
+                //_engagement.IsRemoteControlActive = false;
                 // Log in the chat that we denied the request
                 Chat.LogSystemMessage("You denied the desktop assistance request from " + _engagement.SecondParty.Person.Firstname);
                 // notify the second party that he cannot connect.
@@ -209,6 +210,7 @@ namespace BlitsMe.Agent.Components.Functions.RemoteDesktop
         private void ServerOnConnectionAccepted(object sender, EventArgs eventArgs)
         {
             Logger.Info("The remote party has connected to the RDP server");
+            IsUnderway = true;
             OnNewActivity(new RemoteDesktopActivity(_engagement, RemoteDesktopActivity.REMOTE_DESKTOP_CONNECT) { From = _engagement.SecondParty.Person.Username, To = "_SELF" });
         }
 
@@ -216,6 +218,7 @@ namespace BlitsMe.Agent.Components.Functions.RemoteDesktop
         private void ServerOnConnectionClosed(object sender, EventArgs eventArgs)
         {
             IsActive = false;
+            IsUnderway = false;
             Logger.Info("Server connection closed, notifying end of service.");
             Chat.LogServiceCompleteMessage("You were just helped by " + _engagement.SecondParty.Person.Name + ", please rate their service below.");
             OnNewActivity(new RemoteDesktopActivity(_engagement, RemoteDesktopActivity.REMOTE_DESKTOP_DISCONNECT) { From = _engagement.SecondParty.Person.Username, To = "_SELF" });
@@ -285,7 +288,7 @@ namespace BlitsMe.Agent.Components.Functions.RemoteDesktop
                 // ok, he wants us to control his desktop
                 IsActive = true;
                 // note that we are go to remote control second partys desktop
-                _engagement.IsRemoteControlActive = true;
+                //_engagement.IsRemoteControlActive = true;
                 // print message in chat that we are about to go ahead and connect
                 Chat.LogSecondPartySystemMessage(_engagement.SecondParty.Person.Firstname + " accepted your remote assistance request, please wait while we establish a connection...");
                 try
@@ -314,6 +317,7 @@ namespace BlitsMe.Agent.Components.Functions.RemoteDesktop
 
         private void ClientOnConnectionAccepted(object sender, EventArgs eventArgs)
         {
+            IsUnderway = true;
             Chat.LogSystemMessage("You connected to " + _engagement.SecondParty.Person.Firstname + "'s desktop.");
             Logger.Info("RDP client has connected to the proxy to " + _engagement.SecondParty.Person.Username + ".");
             OnNewActivity(new RemoteDesktopActivity(_engagement, RemoteDesktopActivity.REMOTE_DESKTOP_CONNECT) { From = "_SELF", To = _engagement.SecondParty.Person.Username });
@@ -321,6 +325,7 @@ namespace BlitsMe.Agent.Components.Functions.RemoteDesktop
 
         private void ClientOnConnectionClosed(object sender, EventArgs eventArgs)
         {
+            IsUnderway = false;
             Chat.LogSystemMessage("You disconnected from " + _engagement.SecondParty.Person.Firstname + "'s desktop.");
             Logger.Info("RDP client has disconnected from the proxy to " + _engagement.SecondParty.Person.Username + ".");
             IsActive = false;

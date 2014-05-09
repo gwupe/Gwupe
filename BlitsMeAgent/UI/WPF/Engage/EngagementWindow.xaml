@@ -11,9 +11,10 @@
 	d:DesignWidth="600" d:DesignHeight="480" 
     Name="EngageWindow">
     <UserControl.Resources>
-        <!--<ResourceDictionary>
+        <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
                 <ResourceDictionary Source="../Style/EngagementStyle.xaml"/>
+                <ResourceDictionary Source="../Skins/Skin.xaml"/>
                 <ResourceDictionary Source="../Style/Style.xaml"/>
                 <ResourceDictionary Source="../Style/NotificationStyle.xaml"/>
 				<ResourceDictionary Source="../Style/RosterStyle.xaml" />
@@ -23,7 +24,7 @@
 				<ResourceDictionary Source="pack://application:,,,/MahApps.Metro;component/Styles/Accents/BaseLight.xaml" />
 				<ResourceDictionary Source="../Style/Theme.xaml" />
             </ResourceDictionary.MergedDictionaries>
-        </ResourceDictionary>-->
+        </ResourceDictionary>
     </UserControl.Resources>
     <Grid x:Name="MainLayout" >
         <Grid.RowDefinitions>
@@ -40,7 +41,7 @@
             </Grid.ColumnDefinitions>
             <StackPanel Grid.Column="0" Orientation="Horizontal" VerticalAlignment="Center"
                         Margin="10,0,0,0">
-                <Button Click="SendFileButtonClick" ToolTip="Send a File" Template="{DynamicResource TransparentButtonStyle}">
+                <Button Click="SendFileButtonClick" ToolTip="Send a File" Template="{DynamicResource TransparentButtonStyle}" >
                     <Image Source="/BlitsMe.Agent;component/UI/WPF/Images/Upload.png" />
                 </Button>
                 <!--<Button x:Name="KickOffButton" ToolTip="Disconnect Supporter" Click="KickOffButton_Click"
@@ -49,13 +50,15 @@
                 </Button>-->
                 <Button x:Name="RemoteAssistanceButton" Click="RemoteAssistanceButtonClick" ToolTip="Request Desktop Access" 
                         Margin="10,0,0,0" 
-                        Template="{DynamicResource TransparentButtonStyle}">
+                        Template="{DynamicResource TransparentButtonStyle}"
+						Visibility="Visible">
                     <Image Source="..\Images\1337424537_System.png"/>
                 </Button>
 
                 <Button x:Name="RemoteTerminateButton" ToolTip="Terminate Remote Assistance" 
                         Margin="10,0,0,0" Template="{DynamicResource TransparentButtonStyle}" 
-                        Click="KickOffButton_Click">
+                        Click="KickOffButton_Click"
+						Visibility="Collapsed">
                     <Image Source="..\Images\close.png"/>
                 </Button>
             </StackPanel>

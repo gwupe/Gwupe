@@ -24,11 +24,6 @@ namespace BlitsMe.Agent.Components.Functions.RemoteDesktop
             get { return Socket != null && Socket.Listening; }
         }
 
-        public bool Established
-        {
-            get { return Socket != null && Socket.Connected; }
-        }
-
         internal void Listen(String connectionId)
         {
             BlitsMeClientAppContext.CurrentAppContext.P2PManager.AwaitConnection(connectionId, ReceiveConnection);
@@ -39,7 +34,6 @@ namespace BlitsMe.Agent.Components.Functions.RemoteDesktop
             Socket = socket;
             Socket.ConnectionOpened += (sender, args) => { Closed = false; };
             Socket.ConnectionClosed += (sender, args) => Close();
-            //Socket.ListenOnce();
             _proxy = new StreamProxy(Socket, new BmTcpSocket(new IPEndPoint(IPAddress.Loopback, VNCPort)));
             _proxy.Start();
         }

@@ -47,12 +47,11 @@ namespace BlitsMe.Agent.UI.WPF.Engage
             InitializeComponent();
             _appContext = appContext;
             Engagement = engagement;
-            RemoteTerminateButton.Visibility = Visibility.Collapsed;
             engagement.PropertyChanged += EngagementOnPropertyChanged;
             try
             {
-                ((Components.Functions.RemoteDesktop.Function)Engagement.GetFunction("RemoteDesktop")).RDPConnectionAccepted += EngagementOnRDPConnectionAccepted;
-                ((Components.Functions.RemoteDesktop.Function)Engagement.GetFunction("RemoteDesktop")).RDPConnectionClosed += EngagementOnRDPConnectionClosed;
+                ((Components.Functions.RemoteDesktop.Function)Engagement.GetFunction("RemoteDesktop")).Server.ServerConnectionOpened += EngagementOnRDPConnectionAccepted;
+                ((Components.Functions.RemoteDesktop.Function)Engagement.GetFunction("RemoteDesktop")).Server.ServerConnectionClosed += EngagementOnRDPConnectionClosed;
             }
             catch (Exception e)
             {
@@ -79,23 +78,14 @@ namespace BlitsMe.Agent.UI.WPF.Engage
             if (_thisAlert != null)
             {
                 _appContext.NotificationManager.DeleteAlert(_thisAlert);
-                if (Dispatcher.CheckAccess())
-                {
-                    var color = (Color)ColorConverter.ConvertFromString("#B9CDE5");
-                    MainLayout.Background = new SolidColorBrush(color);
-                    RemoteAssistanceButton.Visibility = Visibility.Visible;
-                    RemoteTerminateButton.Visibility = Visibility.Collapsed;
-                }
-                else
-                {
-                    Dispatcher.Invoke(new Action(() =>
-                                                     {
-                                                         var color = (Color)ColorConverter.ConvertFromString("#B9CDE5");
-                                                         MainLayout.Background = new SolidColorBrush(color);
-                                                         RemoteAssistanceButton.Visibility = Visibility.Visible;
-                                                         RemoteTerminateButton.Visibility = Visibility.Collapsed;
-                                                     }));
-                }
+            }
+            if (Dispatcher.CheckAccess())
+            {
+                IndicateRdpConnection();
+            }
+            else
+            {
+                Dispatcher.Invoke(new Action(IndicateRdpConnection));
             }
         }
 
@@ -105,29 +95,27 @@ namespace BlitsMe.Agent.UI.WPF.Engage
             _appContext.NotificationManager.AddAlert(_thisAlert);
             if (Dispatcher.CheckAccess())
             {
-                MainLayout.Background = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#4A7EBB"));
-                //_chatWindow.BubbleCover.Background = new SolidColorBrush(Colors.Red);
-                // KickOffButton.Visibility = Visibility.Visible;
-                if(this.Engagement.IsRemoteControlActive)
-                {
-                    RemoteAssistanceButton.Visibility = Visibility.Collapsed;
-                    RemoteTerminateButton.Visibility = Visibility.Visible;
-                }
+                IndicateRdpConnection();
             }
             else
             {
-                Dispatcher.Invoke(new Action(() =>
-                    {
-                        MainLayout.Background = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#4A7EBB"));
-                        //_chatWindow.BubbleCover.Background = new SolidColorBrush(Colors.Red);
-                        //KickOffButton.Visibility = Visibility.Visible; ;
-                        if (this.Engagement.IsRemoteControlActive)
-                        {
-                            RemoteAssistanceButton.Visibility = Visibility.Collapsed;
-                            RemoteTerminateButton.Visibility = Visibility.Visible;
-                        }
+                Dispatcher.Invoke(new Action(IndicateRdpConnection));
+            }
+        }
 
-                    }));
+        private void IndicateRdpConnection()
+        {
+            if (!((Components.Functions.RemoteDesktop.Function)Engagement.GetFunction("RemoteDesktop")).Server.Closed)
+            {
+                MainLayout.Background = new SolidColorBrush((Color) ColorConverter.ConvertFromString("#4A7EBB"));
+                RemoteAssistanceButton.Visibility = Visibility.Collapsed;
+                RemoteTerminateButton.Visibility = Visibility.Visible;
+            }
+            else
+            {
+                MainLayout.Background = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#B9CDE5"));
+                RemoteAssistanceButton.Visibility = Visibility.Visible;
+                RemoteTerminateButton.Visibility = Visibility.Collapsed;
             }
         }
 
@@ -266,6 +254,7 @@ namespace BlitsMe.Agent.UI.WPF.Engage
         {
             Thread thread = new Thread(((Components.Functions.RemoteDesktop.Function)Engagement.GetFunction("RemoteDesktop")).Server.Close) { IsBackground = true };
             thread.Start(); 
+            /*
             if (this.Engagement.IsRemoteControlActive)
             {
                 RemoteAssistanceButton.Visibility = Visibility.Collapsed;
@@ -275,7 +264,7 @@ namespace BlitsMe.Agent.UI.WPF.Engage
             {
                 RemoteAssistanceButton.Visibility = Visibility.Visible;
                 RemoteTerminateButton.Visibility = Visibility.Collapsed;
-            }
+            }*/
         }
 
         //public void StopRDPConnection()
