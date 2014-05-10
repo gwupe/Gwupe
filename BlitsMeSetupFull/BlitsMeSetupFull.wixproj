@@ -27,6 +27,10 @@
     <Compile Include="Bundle.wxs" />
   </ItemGroup>
   <ItemGroup>
+    <WixExtension Include="WixUtilExtension">
+      <HintPath>$(WixExtDir)\WixUtilExtension.dll</HintPath>
+      <Name>WixUtilExtension</Name>
+    </WixExtension>
     <WixExtension Include="WixNetFxExtension">
       <HintPath>$(WixExtDir)\WixNetFxExtension.dll</HintPath>
       <Name>WixNetFxExtension</Name>
@@ -74,14 +78,10 @@
 	</Target>
 	-->
   <Target Name="SignBundleEngine">
-    <SignFile Condition=" '$(Configuration)' == 'Release' " CertificateThumbprint="83e81a9d1d88fb8718fd1df07e89ef89b000ee64"
-      SigningTarget="@(SignBundleEngine)"
- />
+    <SignFile Condition=" '$(Configuration)' == 'Release' " CertificateThumbprint="83e81a9d1d88fb8718fd1df07e89ef89b000ee64" SigningTarget="@(SignBundleEngine)" />
   </Target>
   <Target Name="SignBundle">
-    <SignFile Condition=" '$(Configuration)' == 'Release' " CertificateThumbprint="83e81a9d1d88fb8718fd1df07e89ef89b000ee64"
-      SigningTarget="@(SignBundle)"
- />
+    <SignFile Condition=" '$(Configuration)' == 'Release' " CertificateThumbprint="83e81a9d1d88fb8718fd1df07e89ef89b000ee64" SigningTarget="@(SignBundle)" />
     <!-- move the filename to its final name after signing -->
     <Exec Command="ren &quot;$(TargetPath)&quot; &quot;$(FinalTargetFileName)&quot;" />
   </Target>
