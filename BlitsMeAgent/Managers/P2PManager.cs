@@ -20,12 +20,12 @@ namespace BlitsMe.Agent.Managers
     internal class P2PManager
     {
         private static readonly ILog Logger = LogManager.GetLogger(typeof(P2PManager));
-        private readonly Dictionary<string, ITunnelEndpoint> _pendingTunnels;
+        private readonly Dictionary<string, TunnelEndpointContainer> _pendingTunnels;
         private readonly Dictionary<string, Action<ISocket>> _awaitingConnections;
 
         public P2PManager()
         {
-            _pendingTunnels = new Dictionary<string, ITunnelEndpoint>();
+            _pendingTunnels = new Dictionary<string, TunnelEndpointContainer>();
             _awaitingConnections = new Dictionary<string, Action<ISocket>>();
             BlitsMeClientAppContext.CurrentAppContext.LoginManager.LoggedOut += (sender, args) => Reset();
         }
@@ -45,7 +45,7 @@ namespace BlitsMe.Agent.Managers
                 throw new Exception("Failed to determine any local endpoints : " + self.ToString());
             }
 
-            _pendingTunnels.Add(uniqueId, tunnelEndpoint);
+            _pendingTunnels.Add(uniqueId, new TunnelEndpointContainer() { ConnectionId = uniqueId, TunnelEndpoint = tunnelEndpoint, FacilitatorEndPoint = facilitatorEndPoint });
             return self;
         }
 
@@ -53,7 +53,7 @@ namespace BlitsMe.Agent.Managers
         private ISocket InitP2PConnection(Attendance secondParty, String connectionId)
         {
             var initRq = new InitP2PConnectionRq { shortCode = secondParty.ActiveShortCode, connectionId = connectionId };
-            ITunnelEndpoint pendingTunnel;
+            TunnelEndpointContainer pendingTunnel;
             try
             {
                 var response = BlitsMeClientAppContext.CurrentAppContext.ConnectionManager.Connection.Request<InitP2PConnectionRq, InitP2PConnectionRs>(initRq);
@@ -67,7 +67,8 @@ namespace BlitsMe.Agent.Managers
 
                     // setup my peers endpoints
                     var peer = GetPeerInfoFromResponse(response);
-                    pendingTunnel.Sync(peer, response.uniqueId);
+                    peer.FacilitatorRepeatedEndPoint = pendingTunnel.FacilitatorEndPoint;
+                    pendingTunnel.TunnelEndpoint.Sync(peer, response.uniqueId, BlitsMeClientAppContext.CurrentAppContext.SettingsManager.SyncTypes);
                     Logger.Info("Successfully completed outgoing tunnel with " + secondParty.Person.Username + "-" + secondParty.ActiveShortCode + " [" + response.uniqueId + "]");
                 }
                 catch (Exception e)
@@ -81,7 +82,7 @@ namespace BlitsMe.Agent.Managers
                 Logger.Error("Failed to setup P2P Connection : " + e.Message, e);
                 throw new Exception("Failed to setup P2P Connection : " + e.Message, e);
             }
-            return pendingTunnel;
+            return pendingTunnel.TunnelEndpoint;
         }
 
         private static PeerInfo GetPeerInfoFromResponse(InitP2PConnectionRs response)
@@ -101,7 +102,7 @@ namespace BlitsMe.Agent.Managers
             return peer;
         }
 
-        private ITunnelEndpoint GetPendingTunnel(string uniqueId)
+        private TunnelEndpointContainer GetPendingTunnel(string uniqueId)
         {
             // Get the tunnel and remove it from the list of pending _pendingTunnels.
             var tunnel = _pendingTunnels[uniqueId];
@@ -114,7 +115,7 @@ namespace BlitsMe.Agent.Managers
             Logger.Debug("Resetting P2P Manager, clearing pending tunnels");
             foreach (var pendingTunnel in _pendingTunnels)
             {
-                pendingTunnel.Value.Close();
+                pendingTunnel.Value.TunnelEndpoint.Close();
             }
             _pendingTunnels.Clear(); ;
         }
@@ -136,12 +137,12 @@ namespace BlitsMe.Agent.Managers
         // This is where we wait to receive a connection, requested by the server
         internal void ReceiveP2PTunnel(string connectionId, PeerInfo peerInfo)
         {
-            ITunnelEndpoint pendingTunnel = GetPendingTunnel(connectionId);
+            TunnelEndpointContainer pendingTunnel = GetPendingTunnel(connectionId);
             var receivingMethod = _awaitingConnections[connectionId];
             _awaitingConnections.Remove(connectionId);
             // now to complete the tunnel
-
-            Thread thread = new Thread(() => RunSyncer(connectionId, peerInfo, pendingTunnel, receivingMethod)) { Name="waitforsync-" + connectionId, IsBackground = true };
+            peerInfo.FacilitatorRepeatedEndPoint = pendingTunnel.FacilitatorEndPoint;
+            Thread thread = new Thread(() => RunSyncer(connectionId, peerInfo, pendingTunnel.TunnelEndpoint, receivingMethod)) { Name = "waitforsync-" + connectionId, IsBackground = true };
             thread.Start();
         }
 
@@ -149,7 +150,7 @@ namespace BlitsMe.Agent.Managers
         {
             try
             {
-                var activeIp = pendingTunnel.WaitForSync(peer, connectionId);
+                var activeIp = pendingTunnel.WaitForSync(peer, connectionId, BlitsMeClientAppContext.CurrentAppContext.SettingsManager.SyncTypes);
                 Logger.Info("Successfully completed incoming tunnel with " + activeIp.Address + ":" + activeIp.Port + " [" + connectionId + "]");
                 // call the callback method
                 Logger.Debug("Handing over the the receiving method for this connection");
@@ -160,5 +161,12 @@ namespace BlitsMe.Agent.Managers
                 Logger.Error("Failed to sync with peer [" + peer + "] for connection " + connectionId, ex);
             }
         }
+    }
+
+    internal class TunnelEndpointContainer
+    {
+        internal ITunnelEndpoint TunnelEndpoint;
+        internal String ConnectionId;
+        internal IPEndPoint FacilitatorEndPoint;
     }
 }

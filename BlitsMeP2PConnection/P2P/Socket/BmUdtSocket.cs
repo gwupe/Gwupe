@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Net;
 using System.Net.Sockets;
 using BlitsMe.Communication.P2P.P2P.Socket.API;
@@ -47,9 +48,9 @@ namespace BlitsMe.Communication.P2P.P2P.Socket
             return _self;
         }
 
-        public IPEndPoint WaitForSync(PeerInfo peer, String syncId)
+        public IPEndPoint WaitForSync(PeerInfo peer, String syncId, List<SyncType> syncTypes = null)
         {
-            var syncer = new Syncer(syncId);
+            var syncer = new Syncer(syncId, syncTypes);
             var activeIp = syncer.WaitForSyncFromPeer(peer, 10000, _udpClient);
             var udtSocket = new Udt.Socket(AddressFamily.InterNetwork, SocketType.Stream);
             udtSocket.Bind(_udpClient.Client);
@@ -61,9 +62,9 @@ namespace BlitsMe.Communication.P2P.P2P.Socket
             return activeIp;
         }
 
-        public IPEndPoint Sync(PeerInfo peer, string syncId)
+        public IPEndPoint Sync(PeerInfo peer, string syncId, List<SyncType> syncTypes = null)
         {
-            var syncer = new Syncer(syncId);
+            var syncer = new Syncer(syncId, syncTypes);
             var activeIp = syncer.SyncWithPeer(peer, 10000, _udpClient);
             var udtSocket = new Udt.Socket(AddressFamily.InterNetwork, SocketType.Stream);
             udtSocket.Bind(_udpClient.Client);

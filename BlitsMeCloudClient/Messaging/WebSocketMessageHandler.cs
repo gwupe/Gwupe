@@ -175,11 +175,13 @@ namespace BlitsMe.Cloud.Messaging
 
         private string SanitiseMessage(string messageString)
         {
-            return Regex.Replace(Regex.Replace(Regex.Replace(Regex.Replace(messageString, 
-                "\"password\":\".*?\"", "\"password\":\"*******\""),
-                "\"([^\"]+)\":\"([^\"]{255}.*?)\"", "\"$1\":\"<LARGE_DATA>\""),
-                "\"encryptionKey\":\".*?\"", "\"encryptionKey\":\"*******\""),
-                "\"passwordDigest\":\".*?\"", "\"passwordDigest\":\"*******\"");
+            return Regex.Replace(Regex.Replace(Regex.Replace(Regex.Replace(Regex.Replace(messageString, 
+                "\"password\":\".*?\"", "\"password\":\"*******\""), // star out password
+                "\"([^\"]+)\":\"([^\"]{255}.*?)\"", "\"$1\":\"<LARGE_DATA>\""), // don't log large amounts of data
+                "\"encryptionKey\":\".*?\"", "\"encryptionKey\":\"*******\""), // star out encryption key for p2p
+                "\"passwordDigest\":\".*?\"", "\"passwordDigest\":\"*******\""), // star out password hash
+                "\"message\":\".*?\"", "\"message\":\"*******\"") // star out chat messages
+                ;
         }
 
         public void ProcessMessage(String s)

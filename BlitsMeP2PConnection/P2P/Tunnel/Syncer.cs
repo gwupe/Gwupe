@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Net;
 using System.Net.Sockets;
 using System.Threading;
@@ -8,8 +9,17 @@ using log4net;
 
 namespace BlitsMe.Communication.P2P.P2P.Tunnel
 {
+    public enum SyncType
+    {
+        Internal,
+        External,
+        Facilitator,
+        All
+    };
+
     public class Syncer
     {
+        private readonly List<SyncType> _syncTypes;
         private static readonly ILog Logger = LogManager.GetLogger(typeof(Syncer));
         private readonly AutoResetEvent _syncEvent = new AutoResetEvent(false);
         private readonly AutoResetEvent _syncRqEvent = new AutoResetEvent(false);
@@ -23,8 +33,9 @@ namespace BlitsMe.Communication.P2P.P2P.Tunnel
         private Thread _syncListenerThread;
         private UdpClient _udpClient;
 
-        public Syncer(String id )
+        public Syncer(String id, List<SyncType> syncTypes = null)
         {
+            _syncTypes = syncTypes ?? new List<SyncType> { SyncType.All };
             Id = id;
         }
 
@@ -42,9 +53,30 @@ namespace BlitsMe.Communication.P2P.P2P.Tunnel
             {
                 byte[] syncBytes = syncRq.getBytes();
                 // attempt to sync with all endpoints, external is done first
-                foreach (var endPoint in peer.EndPoints)
+                if (_syncTypes.Contains(SyncType.All))
                 {
-                    udpClient.Send(syncBytes, syncBytes.Length, endPoint);
+                    foreach (var endPoint in peer.EndPoints)
+                    {
+                        udpClient.Send(syncBytes, syncBytes.Length, endPoint);
+                    }
+                }
+                else
+                {
+                    if (_syncTypes.Contains(SyncType.Internal))
+                    {
+                        foreach (var endPoint in peer.InternalEndPoints)
+                        {
+                            udpClient.Send(syncBytes, syncBytes.Length, endPoint);
+                        }
+                    }
+                    if (_syncTypes.Contains(SyncType.External))
+                    {
+                        udpClient.Send(syncBytes, syncBytes.Length, peer.ExternalEndPoint);
+                    }
+                    if (_syncTypes.Contains(SyncType.Facilitator))
+                    {
+                        udpClient.Send(syncBytes, syncBytes.Length, peer.FacilitatorRepeatedEndPoint);
+                    }
                 }
                 if (DateTime.Now.Ticks - startTime > waitTime)
                 {
@@ -113,12 +145,12 @@ namespace BlitsMe.Communication.P2P.P2P.Tunnel
                     else if (packet.type == BasicTunnelPacket.PKT_TYPE_NOP)
                     {
 #if(DEBUG)
-                        Logger.Debug("Got a NOP");
+                        Logger.Debug("Got a NOP from " + packet.ip);
 #endif
                     }
                     else
                     {
-                        Logger.Error("Waiting for a sync response, but got unknown packet");
+                        Logger.Error("Waiting for a sync response, but got unknown packet from " + packet.ip);
                         break;
                     }
                 }
@@ -215,9 +247,30 @@ namespace BlitsMe.Communication.P2P.P2P.Tunnel
             {
                 byte[] nopBytes = nop.getBytes();
                 // attempt to open comms with all endpoints, external is done first
-                foreach (var endPoint in peer.EndPoints)
+                if (_syncTypes.Contains(SyncType.All))
                 {
-                    udpClient.Send(nopBytes, nopBytes.Length, endPoint);
+                    foreach (var endPoint in peer.EndPoints)
+                    {
+                        udpClient.Send(nopBytes, nopBytes.Length, endPoint);
+                    }
+                }
+                else
+                {
+                    if (_syncTypes.Contains(SyncType.Internal))
+                    {
+                        foreach (var endPoint in peer.InternalEndPoints)
+                        {
+                            udpClient.Send(nopBytes, nopBytes.Length, endPoint);
+                        }
+                    }
+                    if (_syncTypes.Contains(SyncType.External))
+                    {
+                        udpClient.Send(nopBytes, nopBytes.Length, peer.ExternalEndPoint);
+                    }
+                    if (_syncTypes.Contains(SyncType.Facilitator))
+                    {
+                        udpClient.Send(nopBytes, nopBytes.Length, peer.FacilitatorRepeatedEndPoint);
+                    }
                 }
                 if (DateTime.Now.Ticks - startTime > waitTime)
                 {

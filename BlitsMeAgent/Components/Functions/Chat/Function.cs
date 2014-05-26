@@ -1,6 +1,9 @@
 ﻿using System;
 using System.Collections.Concurrent;
+using System.Collections.Generic;
+using System.Linq;
 using System.Threading;
+using System.Windows.Documents;
 using BlitsMe.Agent.Components.Functions.API;
 using BlitsMe.Agent.Components.Functions.Chat.ChatElement;
 using BlitsMe.Agent.Components.Functions.FileSend.ChatElement;
@@ -9,6 +12,7 @@ using BlitsMe.Cloud.Messaging.API;
 using BlitsMe.Cloud.Messaging.Request;
 using BlitsMe.Cloud.Messaging.Response;
 using BlitsMe.Common.Security;
+using BlitsMe.Communication.P2P.P2P.Tunnel;
 using log4net;
 using Timer = System.Timers.Timer;
 
@@ -38,16 +42,19 @@ namespace BlitsMe.Agent.Components.Functions.Chat
         // Thread which handles the sending of messages (sending is async)
         private readonly Thread _chatSender;
         private readonly ConcurrentQueue<SelfChatElement> _chatQueue;
+        private Dictionary<BlitsMeCommand, Func<List<String>, bool>> BlitsMeCommands;
 
         internal Function(BlitsMeClientAppContext appContext, Engagement engagement)
         {
             this._appContext = appContext;
             this._engagement = engagement;
             this._to = engagement.SecondParty.Person.Username;
+            SetupCommands();
             Conversation = new Conversation(appContext);
             _chatQueue = new ConcurrentQueue<SelfChatElement>();
             _chatSender = new Thread(ProcessChats) { Name = "ChatSender-" + _to, IsBackground = true };
             _chatSender.Start();
+
         }
 
         public override void Close()
@@ -220,32 +227,8 @@ namespace BlitsMe.Agent.Components.Functions.Chat
             }
         }
 
-        private bool ParseSystemCommand(String message)
-        {
-            if ("/EnableDebug".Equals(message))
-            {
-                _appContext.Debug = true;
-                return true;
-            }
-            if ("/DisableDebug".Equals(message))
-            {
-                _appContext.Debug = false;
-                return true;
-            }
-            return false;
-        }
 
-        private void ChatResponseCallback(Response obj)
-        {
-            Logger.Error("Not a real error, just notice this.");
-        }
-        /*
-                internal void OnNewMessage(ChatActivity args)
-                {
-                    ChatEvent handler = NewMessage;
-                    if (handler != null) handler(this, args);
-                }
-        */
+
         public ChatElement.ChatElement LogErrorMessage(string message)
         {
             var chatElement = new SystemErrorElement()
@@ -263,7 +246,82 @@ namespace BlitsMe.Agent.Components.Functions.Chat
             });
             return chatElement;
         }
+
+        private bool ParseSystemCommand(String message)
+        {
+            if (message.StartsWith("/"))
+            {
+                BlitsMeCommand command;
+                String[] commandElements = message.Split(new char[] { ' ' });
+                if (commandElements.Length > 0 && BlitsMeCommand.TryParse(commandElements[0].Split(new char[] { '/' })[1], out command))
+                {
+                    return BlitsMeCommands[command](commandElements.Skip(1).ToList());
+                }
+                Logger.Warn("Failed to parse " + message + " into a command, probably not one.");
+            }
+            return false;
+        }
+
+        private bool DebugCommand(List<string> list)
+        {
+            if (list.Count > 0)
+            {
+                if ("true".Equals(list[0].ToLower()))
+                {
+                    _appContext.Debug = true;
+                    LogSystemMessage("Debugging is now enabled.");
+                    return true;
+                }
+                if ("false".Equals(list[0].ToLower()))
+                {
+                    _appContext.Debug = false;
+                    LogSystemMessage("Debugging is now disabled.");
+                    return true;
+                }
+            }
+            LogSystemMessage("Usage: /Debug <true|false>");
+            return true;
+        }
+
+        private void SetupCommands()
+        {
+            BlitsMeCommands = new Dictionary<BlitsMeCommand, Func<List<string>, bool>>
+            {
+                {BlitsMeCommand.Debug, DebugCommand},
+                {BlitsMeCommand.P2P, P2PCommand}
+            };
+        }
+
+        private bool P2PCommand(List<string> list)
+        {
+            if (list.Count > 0)
+            {
+                List<SyncType> syncTypes = new List<SyncType>();
+                foreach (var option in list)
+                {
+                    SyncType syncType;
+                    if (SyncType.TryParse(option, out syncType))
+                    {
+                        syncTypes.Add(syncType);
+                    }
+                }
+                if (syncTypes.Count > 0)
+                {
+                    BlitsMeClientAppContext.CurrentAppContext.SettingsManager.SyncTypes = syncTypes;
+                    LogSystemMessage("P2P is now set to " + String.Join(", ", syncTypes));
+                    return true;
+                }
+            }
+            LogSystemMessage("Usage: /P2P [<Internal|External|Facilitator|All>]");
+            return true;
+        }
     }
+
+    internal enum BlitsMeCommand
+    {
+        Debug,
+        P2P
+    };
 
     internal class ChatActivity : EngagementActivity
     {

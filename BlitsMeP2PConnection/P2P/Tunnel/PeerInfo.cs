@@ -21,6 +21,7 @@ namespace BlitsMe.Communication.P2P.P2P.Tunnel
             }
         }
         public IPEndPoint ExternalEndPoint;
+        public IPEndPoint FacilitatorRepeatedEndPoint;
 
         public PeerInfo()
         {
@@ -39,6 +40,7 @@ namespace BlitsMe.Communication.P2P.P2P.Tunnel
             }
                 
             output += "External => " + ExternalEndPoint;
+            output += ", Facilitator => " + FacilitatorRepeatedEndPoint;
             return output;
         }
 
@@ -50,6 +52,10 @@ namespace BlitsMe.Communication.P2P.P2P.Tunnel
                 if (ExternalEndPoint != null)
                 {
                     endpoints.Add(ExternalEndPoint);
+                }
+                if (FacilitatorRepeatedEndPoint != null)
+                {
+                    endpoints.Add(FacilitatorRepeatedEndPoint);
                 }
                 if (InternalEndPoints != null)
                 {

@@ -60,9 +60,8 @@ namespace BlitsMe.Agent.Components.Functions.FileSend
             try
             {
                 Socket.ListenOnce();
-                string pathDownload = OsUtils.IsWinVistaOrHigher ? Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), "Downloads", _fileInfo.Filename)
-                                      : Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Desktop), _fileInfo.Filename);
-                FileStream fs = new FileStream(pathDownload, FileMode.OpenOrCreate);
+                
+                FileStream fs = new FileStream(_fileInfo.FilePath, FileMode.OpenOrCreate);
                 var binWriter = new BinaryWriter(fs);
                 Stopwatch sw = new Stopwatch();
                 try
@@ -106,10 +105,10 @@ namespace BlitsMe.Agent.Components.Functions.FileSend
                     if (!FileReceiveResult)
                     {
                         // remove the file if it was incomplete
-                        Logger.Warn("Removing incomplete file " + pathDownload);
+                        Logger.Warn("Removing incomplete file " + _fileInfo.FilePath);
                         try
                         {
-                            File.Delete(pathDownload);
+                            File.Delete(_fileInfo.FilePath);
                         }
                         catch (Exception ex)
                         {

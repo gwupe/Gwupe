@@ -50,6 +50,7 @@ namespace BlitsMe.Agent
         internal SearchManager SearchManager { get; private set; }
         internal UIManager UIManager { get; private set; }
         internal RepeaterManager RepeaterManager { get; private set; }
+        internal SettingsManager SettingsManager { get; private set; }
         //internal Thread DashboardUiThread;
         internal bool IsShuttingDown { get; private set; }
         internal readonly BLMRegistry Reg = new BLMRegistry();
@@ -87,6 +88,7 @@ namespace BlitsMe.Agent
             NotificationManager = new NotificationManager();
             SearchManager = new SearchManager();
             CurrentUserManager = new CurrentUserManager();
+            SettingsManager = new SettingsManager();
             _systray = new SystemTray();
             UIManager = new UIManager();
             _requestManager = new RequestManager();

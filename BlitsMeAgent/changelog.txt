@@ -1,5 +1,3 @@
-﻿Performance and Stability Release
-Swapped out the tunneling protocol resulting in huge speed increase
-P2p is now more stable with new protocol
-Only setup a tunnel now when one is required
-Fixed cancellation mechanisms during file transfer
+﻿Bugfix and P2P Reliability Release
+Created failover UDP route through the server
+Fixed File Received Open/Folder Open Functionality

@@ -11,7 +11,7 @@ namespace BlitsMe.Communication.P2P.P2P.Socket
     public interface ITunnelEndpoint : ISocket
     {
         PeerInfo Wave(IPEndPoint facilitator);
-        IPEndPoint Sync(PeerInfo peer, String syncId);
-        IPEndPoint WaitForSync(PeerInfo peer, String syncId);
+        IPEndPoint Sync(PeerInfo peer, String syncId, List<SyncType> syncTypes);
+        IPEndPoint WaitForSync(PeerInfo peer, String syncId, List<SyncType> syncTypes);
     }
 }

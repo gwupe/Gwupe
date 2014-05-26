@@ -134,7 +134,7 @@ namespace BlitsMe.Communication.P2P.P2P.Tunnel
         public void ProcessWaveRs(StandardWaveTunnelRsPacket packet)
         {
             Logger.Debug("Processing Wave Response from " + packet.ip);
-            _waveResult = new PeerInfo() { ExternalEndPoint = packet.externalEndPoint };
+            _waveResult = new PeerInfo() { ExternalEndPoint = packet.externalEndPoint, FacilitatorRepeatedEndPoint = packet.ip };
             _waveEvent.Set();
         }
 

@@ -13,6 +13,7 @@ using BlitsMe.Agent.Components.Notification;
 using BlitsMe.Agent.Managers;
 using BlitsMe.Cloud.Messaging.Request;
 using BlitsMe.Cloud.Messaging.Response;
+using BlitsMe.Common;
 using BlitsMe.Common.Security;
 using log4net;
 
@@ -262,6 +263,8 @@ namespace BlitsMe.Agent.Components.Functions.FileSend
             try
             {
                 fileInfo.State = FileSendState.Receiving;
+                fileInfo.FilePath = OsUtils.IsWinVistaOrHigher ? Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), "Downloads", fileInfo.Filename)
+                                      : Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Desktop), fileInfo.Filename);
                 fileInfo.FileReceiver = new FileSendListener(fileInfo);
                 var notification = ShowFileProgressNotification(fileInfo);
                 fileInfo.Notification = notification;
