@@ -160,6 +160,7 @@
     <Reference Include="System.Xml" />
     <Reference Include="UdtProtocol">
       <HintPath>..\BlitsMeP2PConnection\UdtProtocol.dll</HintPath>
+      <Private>False</Private>
     </Reference>
     <Reference Include="WindowsBase" />
   </ItemGroup>
@@ -196,6 +197,7 @@
     <Compile Include="Components\Functions\FileSend\Processors\FileSendRequestProcessor.cs" />
     <Compile Include="Components\Functions\FileSend\Processors\FileSendRequestResponseProcessor.cs" />
     <Compile Include="Components\Functions\RemoteDesktop\ChatElement\RdpRequestChatElement.cs" />
+    <Compile Include="Components\Functions\RemoteDesktop\ChatElement\RdpRequestUnattendedChatElement.cs" />
     <Compile Include="Components\Functions\RemoteDesktop\ChatElement\ServiceCompleteChatElement.cs" />
     <Compile Include="Components\Functions\RemoteDesktop\Function.cs" />
     <Compile Include="Components\Functions\FileSend\Notification\FileSendEventArgs.cs" />
@@ -220,9 +222,11 @@
     <Compile Include="Components\Person\Presence\IPresence.cs" />
     <Compile Include="Components\Person\Presence\MultiPresence.cs" />
     <Compile Include="Components\Person\Presence\Presence.cs" />
+    <Compile Include="Components\Person\Relationship.cs" />
     <Compile Include="Components\Processors\InitRepeatedConnectionProcessor.cs" />
     <Compile Include="Components\Processors\ListenHandshakeProcessor.cs" />
     <Compile Include="Components\Processors\InitUDPConnectionProcessor.cs" />
+    <Compile Include="Components\Processors\NotifyChangeProcessor.cs" />
     <Compile Include="Components\Processors\SubscribeProcessor.cs" />
     <Compile Include="Components\Processors\UserToUserProcessor.cs" />
     <Compile Include="Components\Processors\PresenceChangeProcessor.cs" />
@@ -263,9 +267,17 @@
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
     <Compile Include="UI\SystemTray.cs" />
+    <Compile Include="UI\WPF\AlertControl.xaml.cs">
+      <DependentUpon>AlertControl.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="UI\WPF\API\BlitsMeModalUserControl.cs" />
+    <Compile Include="UI\WPF\API\IBlitsMeUserControl.cs" />
     <Compile Include="UI\WPF\API\IDashboardContentControl.cs" />
     <Compile Include="UI\WPF\AvatarImageWindow.xaml.cs">
       <DependentUpon>AvatarImageWindow.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="UI\WPF\ConfirmPasswordControl.xaml.cs">
+      <DependentUpon>ConfirmPasswordControl.xaml</DependentUpon>
     </Compile>
     <Compile Include="UI\WPF\ConfirmPasswordWindow.xaml.cs">
       <DependentUpon>ConfirmPasswordWindow.xaml</DependentUpon>
@@ -277,7 +289,28 @@
       <DependentUpon>Dashboard.xaml</DependentUpon>
     </Compile>
     <None Include="Resources\Entypo.ttf" />
+    <Page Include="Properties\DesignTimeResources.xaml" Condition="'$(DesignTime)'=='true' OR ('$(SolutionPath)'!='' AND Exists('$(SolutionPath)') AND '$(BuildingInsideVisualStudio)'!='true' AND '$(BuildingInsideExpressionBlend)'!='true')">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+      <ContainsDesignTimeResources>true</ContainsDesignTimeResources>
+    </Page>
     <Page Include="Resources\Icons.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="UI\WPF\AlertControl.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="UI\WPF\ConfirmPasswordControl.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="UI\WPF\ElevateControl.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="UI\WPF\Engage\ContactSettings.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
@@ -294,10 +327,6 @@
       <SubType>Designer</SubType>
     </Page>
     <Page Include="UI\WPF\ContactInfoWindow.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-    </Page>
-    <Page Include="UI\WPF\ElevateApprovalWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
@@ -385,11 +414,14 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Compile Include="UI\WPF\ElevateApprovalWindow.xaml.cs">
-      <DependentUpon>ElevateApprovalWindow.xaml</DependentUpon>
+    <Compile Include="UI\WPF\ElevateControl.xaml.cs">
+      <DependentUpon>ElevateControl.xaml</DependentUpon>
     </Compile>
     <Compile Include="UI\WPF\Engage\ChatWindow.xaml.cs">
       <DependentUpon>ChatWindow.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="UI\WPF\Engage\ContactSettings.xaml.cs">
+      <DependentUpon>ContactSettings.xaml</DependentUpon>
     </Compile>
     <Compile Include="UI\WPF\Engage\EngagementWindow.xaml.cs">
       <DependentUpon>EngagementWindow.xaml</DependentUpon>
@@ -422,6 +454,7 @@
     <Compile Include="UI\WPF\SignUpControl.xaml.cs">
       <DependentUpon>SignUpControl.xaml</DependentUpon>
     </Compile>
+    <Compile Include="UI\WPF\UiHelper.cs" />
     <Compile Include="UI\WPF\UpdateNotification.xaml.cs">
       <DependentUpon>UpdateNotification.xaml</DependentUpon>
     </Compile>
@@ -547,13 +580,10 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Resource>
     <Resource Include="UI\WPF\Images\1364864637_alert.png" />
-    <Resource Include="UI\WPF\Images\1375404724_tune.png" />
     <Resource Include="UI\WPF\Images\1375406488_Cute Ball - Search.png" />
     <Resource Include="UI\WPF\Images\close.png" />
-    <Resource Include="UI\WPF\Images\fileclose.png" />
     <Resource Include="UI\WPF\Images\floppy_unmount.png" />
     <Resource Include="UI\WPF\Images\stock_insert_image.png" />
-    <Resource Include="UI\WPF\Images\folder_image.png" />
     <Resource Include="UI\WPF\Images\webcam.png" />
     <Resource Include="UI\WPF\Images\exit.png" />
     <Resource Include="UI\WPF\Images\Logoff.png" />
@@ -625,9 +655,11 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="Resources\Entypo-license.txt" />
-    <Content Include="UI\WPF\Images\Document.png" />
+    <Resource Include="UI\WPF\Images\internt_web_technology-04-48.png" />
+    <Resource Include="UI\WPF\Images\1401499468_61_Screen.png" />
+    <Resource Include="UI\WPF\Images\1401500204_519673-179_Upload.png" />
     <Content Include="UI\WPF\Images\Search.png" />
-    <Content Include="UI\WPF\Images\Settings.png" />
+    <Resource Include="UI\WPF\Images\Settings.png" />
     <Content Include="UI\WPF\Images\Time.png" />
     <Resource Include="UI\WPF\Images\Blitsmewording200.png" />
     <EmbeddedResource Include="..\BlitsMeCommon\bin\$(Configuration)\BlitsMe.Common.dll" />
@@ -647,11 +679,8 @@
     <Resource Include="UI\WPF\Images\arrow.png" />
     <Resource Include="UI\WPF\Images\arrow_limited_blue_bg.png" />
     <Resource Include="UI\WPF\Images\single chat.png" />
-    <Resource Include="UI\WPF\Images\1337419346_Chat.png" />
-    <Resource Include="UI\WPF\Images\1337419835_05_phonebook.png" />
     <Resource Include="UI\WPF\Images\1337420206_Char.png" />
     <Resource Include="UI\WPF\Images\1337424537_System.png" />
-    <Resource Include="UI\WPF\Images\1337424609_Stats.png" />
     <Resource Include="UI\WPF\Images\1337425212_02.png" />
     <Resource Include="UI\WPF\Images\Speech Left.png" />
     <Resource Include="UI\WPF\Images\Speech Bubble Join Me.png" />

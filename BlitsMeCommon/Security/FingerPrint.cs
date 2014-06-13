@@ -144,7 +144,7 @@ namespace BlitsMe.Common.Security
         private static string BiosId()
         {
             return Identifier("Win32_BIOS", "Manufacturer")
-            + Identifier("Win32_BIOS", "SMBIOSBIOSVersion")
+            //+ Identifier("Win32_BIOS", "SMBIOSBIOSVersion")
             + Identifier("Win32_BIOS", "IdentificationCode")
             + Identifier("Win32_BIOS", "SerialNumber")
             + Identifier("Win32_BIOS", "ReleaseDate")

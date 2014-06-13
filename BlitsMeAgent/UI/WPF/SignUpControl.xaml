@@ -8,7 +8,7 @@
 	x:Class="BlitsMe.Agent.UI.WPF.SignUpControl"
     d:DesignWidth="640" d:DesignHeight="480">
     <UserControl.Resources>
-        <!--<ResourceDictionary>
+        <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
                 <ResourceDictionary Source="Style/Style.xaml" />
                 <ResourceDictionary Source="pack://application:,,,/MahApps.Metro;component/Styles/Colours.xaml" />
@@ -16,13 +16,15 @@
                 <ResourceDictionary Source="pack://application:,,,/MahApps.Metro;component/Styles/Controls.xaml" />
                 <ResourceDictionary Source="pack://application:,,,/MahApps.Metro;component/Styles/Accents/BaseLight.xaml" />
                 <ResourceDictionary Source="Style/Theme.xaml" />
+                <ResourceDictionary Source="Skins/Skin.xaml" />
             </ResourceDictionary.MergedDictionaries>
-        </ResourceDictionary>-->
+        </ResourceDictionary>
     </UserControl.Resources>
 
     <Grid x:Name="LayoutRoot" Background="Transparent">
+		<Grid Background="White" Opacity="0.35"></Grid>
         <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center" Margin="100,0,0,0">
-            <TextBlock Style="{DynamicResource TextblockHeaderStyle}">Create an account</TextBlock>
+            <TextBlock Style="{DynamicResource TextblockHeaderStyle}">Join BlitsMe</TextBlock>
             <TextBlock x:Name="ErrorText" Margin="0,10,0,0" TextWrapping="Wrap" Text="Error" 
                        VerticalAlignment="Top" TextAlignment="Center" Foreground="Red" Visibility="Hidden"/>
             <TextBox mahappsControls:TextboxHelper.Watermark="Firstname" Margin="0,10,0,0" x:Name="Firstname"
@@ -42,7 +44,7 @@
             <TextBlock HorizontalAlignment="Left" Margin="20,10,0,0" TextWrapping="Wrap" VerticalAlignment="Top" 
                        Height="37.92">
 				<Hyperlink Name="NewUser" RequestNavigate="ShowLogin" NavigateUri="" >
-					Already having an account ?
+					Already have an account ?
 				</Hyperlink><LineBreak/>
             </TextBlock>
             <Button Content="Sign Up" Margin="0,0,20,0" VerticalAlignment="Top" x:Name="Signin" Click="signin_click" 

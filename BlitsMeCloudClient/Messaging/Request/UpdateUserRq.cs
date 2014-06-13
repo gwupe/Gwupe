@@ -5,7 +5,7 @@ using BlitsMe.Cloud.Messaging.Elements;
 namespace BlitsMe.Cloud.Messaging.Request
 {
     [DataContract]
-    public class UpdateUserRq : API.ElevatedRequest
+    public class UpdateUserRq : API.ElevatedRequestImpl
     {
         public override string type { get { return "UpdateUser-RQ"; } set { }
         }

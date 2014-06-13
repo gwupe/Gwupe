@@ -49,7 +49,10 @@ namespace BlitsMe.Agent.Managers
                 new FileSendRequestResponseProcessor(_appContext));
             _appContext.ConnectionManager.Connection.WebSocketServer.RegisterProcessor("Subscribe",
                 new SubscribeProcessor(_appContext));
-            _appContext.ConnectionManager.Connection.WebSocketServer.RegisterProcessor("InitRepeatedConnection", new InitRepeatedConnectionProcessor(_appContext));
+            _appContext.ConnectionManager.Connection.WebSocketServer.RegisterProcessor("InitRepeatedConnection", 
+                new InitRepeatedConnectionProcessor(_appContext));
+            _appContext.ConnectionManager.Connection.WebSocketServer.RegisterProcessor("NotifyChange",
+                new NotifyChangeProcessor(_appContext));
             _setup = true;
         }
     }

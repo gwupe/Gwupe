@@ -267,7 +267,7 @@
 								<Setter Property="ContentTemplate" Value="{StaticResource InitializingWindow}" />
 								<Setter Property="Panel.ZIndex" Value="2" />
 							</DataTrigger>
-							<DataTrigger Binding="{Binding DashboardState}" Value="{x:Static bm:DashboardState.LoggedIn}">
+							<DataTrigger Binding="{Binding DashboardState}" Value="{x:Static bm:DashboardState.Default}">
 								<Setter Property="ContentTemplate" Value="{x:Null}" />
 								<Setter Property="Panel.ZIndex" Value="-2" />
 							</DataTrigger>
@@ -279,6 +279,16 @@
 							<DataTrigger Binding="{Binding DashboardState}" Value="{x:Static bm:DashboardState.Signup}">
 								<Setter Property="ContentTemplate" Value="{x:Null}" />
 								<Setter Property="Content" Value="{Binding SignUpScreen}" />
+								<Setter Property="Panel.ZIndex" Value="2" />
+							</DataTrigger>
+							<DataTrigger Binding="{Binding DashboardState}" Value="{x:Static bm:DashboardState.Elevate}">
+								<Setter Property="ContentTemplate" Value="{x:Null}" />
+								<Setter Property="Content" Value="{Binding ElevateScreen}" />
+								<Setter Property="Panel.ZIndex" Value="2" />
+							</DataTrigger>
+							<DataTrigger Binding="{Binding DashboardState}" Value="{x:Static bm:DashboardState.Alert}">
+								<Setter Property="ContentTemplate" Value="{x:Null}" />
+								<Setter Property="Content" Value="{Binding AlertScreen}" />
 								<Setter Property="Panel.ZIndex" Value="2" />
 							</DataTrigger>
 						</Style.Triggers>

@@ -32,6 +32,23 @@
             <RowDefinition Height="20"/>
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
+		<ContentControl x:Name="ModalPrompt" Grid.RowSpan="3">
+			<ContentControl.Style>
+				<Style TargetType="{x:Type ContentControl}">
+					<Setter Property="ContentTemplate" Value="{x:Null}"/>
+					<Style.Triggers>
+						<DataTrigger Binding="{Binding ContactSettingsEnabled}" Value="True">
+							<Setter Property="Content" Value="{Binding ContactSettings}" />
+							<Setter Property="Panel.ZIndex" Value="2" />
+						</DataTrigger>
+						<DataTrigger Binding="{Binding ContactSettingsEnabled}" Value="False">
+							<Setter Property="Content" Value="{x:Null}" />
+							<Setter Property="Panel.ZIndex" Value="-2" />
+						</DataTrigger>
+					</Style.Triggers>
+				</Style>
+			</ContentControl.Style>
+		</ContentControl>
         <Grid Grid.Row="0" VerticalAlignment="Center" Margin="0,20,0,0">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="Auto"/>
@@ -42,7 +59,7 @@
             <StackPanel Grid.Column="0" Orientation="Horizontal" VerticalAlignment="Center"
                         Margin="10,0,0,0">
                 <Button Click="SendFileButtonClick" ToolTip="Send a File" Template="{DynamicResource TransparentButtonStyle}" >
-                    <Image Source="/BlitsMe.Agent;component/UI/WPF/Images/Upload.png" />
+                    <Image Source="/BlitsMe.Agent;component/UI/WPF/Images/1401500204_519673-179_Upload.png" />
                 </Button>
                 <!--<Button x:Name="KickOffButton" ToolTip="Disconnect Supporter" Click="KickOffButton_Click"
                         Template="{DynamicResource TransparentButtonStyle}" Margin="10,0,0,0">
@@ -52,7 +69,7 @@
                         Margin="10,0,0,0" 
                         Template="{DynamicResource TransparentButtonStyle}"
 						Visibility="Visible">
-                    <Image Source="..\Images\1337424537_System.png"/>
+                    <Image Source="/BlitsMe.Agent;component/UI/WPF/Images/1401499468_61_Screen.png"/>
                 </Button>
 
                 <Button x:Name="RemoteTerminateButton" ToolTip="Terminate Remote Assistance" 
@@ -62,8 +79,13 @@
                     <Image Source="..\Images\close.png"/>
                 </Button>
             </StackPanel>
-            <TextBlock Text="Active" Style="{DynamicResource TextblockHeaderActiveStyle}" Grid.Column="2"
-                       VerticalAlignment="Center"/>
+			<Grid Grid.Column="1" Margin="0,0,0,0" HorizontalAlignment="Right">
+                <Button x:Name="ContactSettings" ToolTip="Contact Settings" 
+                        Margin="0,0,0,0" Template="{DynamicResource TransparentButtonStyle}" 
+						Visibility="Visible" Click="ContactSettings_Click">
+                    <Image Source="/BlitsMe.Agent;component/UI/WPF/Images/Settings.png"/>
+                </Button>
+				</Grid>
         </Grid>
 
         <Border MinWidth="640" Height="1" BorderThickness="1" BorderBrush="#4A7EBB" Grid.Row="1"

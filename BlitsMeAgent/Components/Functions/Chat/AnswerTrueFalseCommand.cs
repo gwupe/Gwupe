@@ -20,16 +20,7 @@ namespace BlitsMe.Agent.Components.Functions.Chat
         public void Execute(object parameter)
         {
             bool accept = (bool)parameter;
-            Thread execThread;
-            if (accept)
-            {
-                execThread = new Thread(() => _chatElement.OnAnswerTrue(EventArgs.Empty));
-            }
-            else
-            {
-                execThread = new Thread(() => _chatElement.OnAnswerFalse(EventArgs.Empty));
-            }
-            execThread.IsBackground = true;
+            var execThread = new Thread(() => _chatElement.Answer = accept) { IsBackground = true };
             execThread.Start();
         }
 

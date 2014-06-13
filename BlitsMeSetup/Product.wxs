@@ -11,6 +11,10 @@
       Schedule="afterInstallInitialize"
       
     />
+    <Property Id="PROMO" Value="NONE"/>
+    <Property Id="PROMO_SET" >
+      <RegistrySearch Id="PromoKey" Type="raw" Root="HKLM" Key="Software\BlitsMe$(var.buildMarker)" Name="PromoCode" />
+    </Property>
     <MediaTemplate EmbedCab="yes" />
 
     <Feature Id="ProductFeature" Title="Application" Level="1">
@@ -179,6 +183,14 @@
                        Value="[INSTALLFOLDER]BlitsMe.Agent.exe /minimize"
                        Type="string" KeyPath="yes" />
         <Condition>START_VIA_REGISTRY</Condition>
+      </Component>
+      <Component Id="BlitsMePromoSetting" NeverOverwrite="yes" Permanent="yes">
+<!--        <Condition>PROMO_SET=""</Condition> -->
+        <RegistryValue Id="BMSettings.Reg" Root="HKLM" Action="write" KeyPath="yes"
+                       Key="Software\BlitsMe$(var.buildMarker)"
+                       Name="PromoCode"
+                       Value="[PROMO]"
+                       Type="string" />
       </Component>
       <Component Id="BlitsMeServerSettings">
         <!-- turns off  http connections for vnc -->

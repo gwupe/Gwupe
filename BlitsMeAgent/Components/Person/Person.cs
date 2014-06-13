@@ -100,6 +100,7 @@ namespace BlitsMe.Agent.Components.Person
 
 
         private bool _supporter;
+
         public bool Supporter
         {
             get { return _supporter; }
@@ -118,29 +119,34 @@ namespace BlitsMe.Agent.Components.Person
 
         public Person(UserElement userElement)
         {
-            this._name = userElement.name;
-            this._username = userElement.user.Split(new char[] {'@'})[0];
-            this._email = userElement.email;
-            this._location = userElement.location;
-            this._rating = userElement.rating;
-            this._joined = userElement.joined;
-            this._subscriptionStatus = userElement.subscriptionStatus;
-            this._subscriptionType = userElement.subscriptionType;
-            this._supporter = userElement.supporter;
-            _firstname = userElement.firstname;
-            _lastname = userElement.lastname;
-            _description = userElement.description;
-            if(!String.IsNullOrWhiteSpace(userElement.avatarData))
+            InitPerson(userElement);
+        }
+
+        public void InitPerson(UserElement userElement)
+        {
+            Name = userElement.name;
+            Username = userElement.user.Split(new char[] { '@' })[0];
+            Email = userElement.email;
+            Location = userElement.location;
+            Rating = userElement.rating;
+            Joined = userElement.joined;
+            SubscriptionStatus = userElement.subscriptionStatus;
+            SubscriptionType = userElement.subscriptionType;
+            Supporter = userElement.supporter;
+            Firstname = userElement.firstname;
+            Lastname = userElement.lastname;
+            Description = userElement.description;
+            if (!String.IsNullOrWhiteSpace(userElement.avatarData))
             {
                 try
                 {
                     SetAvatarData(userElement.avatarData);
-                }catch (Exception e)
+                }
+                catch (Exception e)
                 {
-                    Logger.Error("Failed to decode avatar from avatar data",e);
+                    Logger.Error("Failed to decode avatar from avatar data", e);
                 }
             }
-            
         }
 
         internal Person() {}

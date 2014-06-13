@@ -277,8 +277,8 @@ namespace BlitsMe.Service
 
         public String HardwareFingerprint()
         {
-            //Logger.Debug("Got HardwareDesc : " + FingerPrint.HardwareDescription());
-            //Logger.Debug("Got fingerprint : " + FingerPrint.Value());
+            Logger.Debug("Got HardwareDesc : " + FingerPrint.HardwareDescription());
+            Logger.Debug("Got fingerprint : " + FingerPrint.Value());
             return FingerPrint.Value();
         }
 

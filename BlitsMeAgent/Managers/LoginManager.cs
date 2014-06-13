@@ -309,7 +309,8 @@ namespace BlitsMe.Agent.Managers
                     passwordDigest = LoginDetails.PasswordHash,
                     profile = LoginDetails.Profile,
                     workstation = LoginDetails.Workstation,
-                    version = _appContext.Version(2)
+                    version = _appContext.Version(2),
+                    promocode = _appContext.Reg.getRegValue("PromoCode",true),
                 };
             LoginRs loginRs = null;
             try

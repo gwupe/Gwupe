@@ -16,12 +16,11 @@
         <ResourceDictionary Source="RosterStyle.xaml" />
         <ResourceDictionary Source="Style.xaml" />
         <ResourceDictionary Source="Theme.xaml" />
-        <!--<ResourceDictionary Source="./Style.xaml" />
+		<ResourceDictionary Source="../Skins/Skin.xaml" />
         <ResourceDictionary Source="pack://application:,,,/MahApps.Metro;component/Styles/Colours.xaml" />
         <ResourceDictionary Source="pack://application:,,,/MahApps.Metro;component/Styles/Fonts.xaml" />
         <ResourceDictionary Source="pack://application:,,,/MahApps.Metro;component/Styles/Controls.xaml" />
         <ResourceDictionary Source="pack://application:,,,/MahApps.Metro;component/Styles/Accents/BaseLight.xaml" />
-        <ResourceDictionary Source="Theme.xaml" />-->
     </ResourceDictionary.MergedDictionaries>
     <DataTemplate x:Key="FailedImage">
         <Image Source="/BlitsMe.Agent;component/UI/WPF/Images/1364864637_alert.png" Width="20" Margin="0,0,0,0" HorizontalAlignment="Left"></Image>
@@ -521,14 +520,13 @@
             </Border>
         </Grid>
     </DataTemplate>
-
+	<!--
     <DataTemplate x:Key="ChatNotification" DataType="{x:Type filesend:FileSendRequestChatElement}" >
         <Grid>
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="12"/>
                 <ColumnDefinition Width="*"/>
             </Grid.ColumnDefinitions>
-            <!--<Image Style="{DynamicResource ChatBubblePointMe}" Grid.Column="0"/>-->
             <Border Background="#C6D9F1" CornerRadius="5" Grid.Column="1" MinHeight="40" Height="Auto" Width="Auto" 
                     Margin="0,5,0,0" >
                 <Grid Style="{DynamicResource ChatBubbleMeNew}" Background="Transparent">
@@ -575,7 +573,6 @@
                 <ColumnDefinition Width="12"/>
                 <ColumnDefinition Width="*"/>
             </Grid.ColumnDefinitions>
-            <!--<Image Style="{DynamicResource ChatBubblePointMe}" Grid.Column="0"/>-->
             <StackPanel Orientation="Vertical"  Grid.Column="1" Margin="0,5,0,-5">
                 <Border Background="#C6D9F1" CornerRadius="5" Grid.Column="1" MinHeight="40" Height="Auto" 
                         Width="Auto" >
@@ -618,7 +615,7 @@
             </StackPanel>
         </Grid>
     </DataTemplate>
-
+	-->
     <DataTemplate x:Key="ChatSystemGroup">
         <Grid>
             <Grid.ColumnDefinitions>
@@ -700,7 +697,6 @@
                 <ColumnDefinition Width="Auto"/>
                 <ColumnDefinition Width="*"/>
             </Grid.ColumnDefinitions>
-            <!--<Image Style="{DynamicResource ChatBubblePointMe}" Grid.Column="0"/>-->
             <Border Background="#C6D9F1" CornerRadius="5" Grid.Column="1" MinHeight="40" Height="Auto" Width="Auto" 
                     Margin="0,5,0,0" >
                 <Grid Style="{DynamicResource ChatBubbleMeNew}" Background="Transparent">
@@ -745,14 +741,48 @@
             <Button Style="{DynamicResource DenyButtonStyle}" Margin="15,0,10,0" Template="{DynamicResource TransparentButtonFileSendCloseStyle}"/>
         </StackPanel>
     </DataTemplate>
+	
+	<DataTemplate x:Key="RdpRequestUnattendedChatElement" DataType="{x:Type rdp:RdpRequestUnattendedChatElement}">
+        <Grid>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
+            <Border Background="#C6D9F1" CornerRadius="5" Grid.Column="1" MinHeight="40" Height="Auto" Width="Auto" 
+                    Margin="0,5,0,0" >
+                <Grid Style="{DynamicResource ChatBubbleMeNew}" Background="Transparent">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="45"/>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="Auto"/>
+                    </Grid.ColumnDefinitions>
+                   
+                    <TextBlock  Style="{DynamicResource MessageTimeStyle}" Grid.Column="1"
+							Text="{Binding SpeakTime, Converter={StaticResource relativeMessageTimeConverter}, FallbackValue=Yesterday 8:49}"
+                                VerticalAlignment="Center"/>
 
+                    <TextBlock Margin="20,10,0,0" Style="{DynamicResource MessageTextbox}" VerticalAlignment="Center"
+                       Text="{Binding Path=Message, FallbackValue=A message from them}" Grid.Column="2"
+                               Foreground="Black" FontSize="12"/>
+							   
+				   <Grid VerticalAlignment="Stretch" Margin="5,0,10,0" Grid.Column="3" Width="30">
+                        <Button Style="{DynamicResource AcceptButtonStyle}" Template="{DynamicResource TransparentButtonFileSendAcceptStyle}" Margin="0,0,17,0"/>
+						<TextBlock Text="{Binding Path=Timeout, FallbackValue=30}" Margin="1.5,25,0,0" HorizontalAlignment="Left" FontSize="10" Height="15" VerticalAlignment="Top" />
+                        <Button Style="{DynamicResource DenyButtonStyle}" Margin="0" Template="{DynamicResource TransparentButtonFileSendCloseStyle}"/>
+					</Grid>
+                </Grid>
+            </Border>
+        </Grid>
+    </DataTemplate>
+
+	<!--
     <DataTemplate DataType="{x:Type rdp:RdpRequestChatElement}">
         <Grid>
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="Auto"/>
                 <ColumnDefinition Width="*"/>
             </Grid.ColumnDefinitions>
-            <!--<Image Style="{DynamicResource ChatBubblePointMe}" Grid.Column="0"/>-->
             <Border Background="#C6D9F1" CornerRadius="5" Grid.Column="1" MinHeight="40" Height="Auto" Width="Auto" 
                     Margin="0,5,0,0" >
                 <Grid Style="{DynamicResource ChatBubbleMeNew}" Background="Transparent">
@@ -778,7 +808,7 @@
                 </Grid>
             </Border>
         </Grid>
-    </DataTemplate>
+    </DataTemplate>-->
 
     <Style x:Key="AcceptButtonStyle" TargetType="{x:Type Button}" BasedOn="{StaticResource NotificationActionButton}">
         <Setter Property="Command" Value="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type Grid}}, Path=DataContext.AnswerTrueFalse}" />

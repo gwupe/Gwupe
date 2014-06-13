@@ -271,8 +271,8 @@
                                                     <DataTrigger Binding="{Binding ChatType}" Value="RDPRequestNotification">
                                                         <Setter Property="ContentTemplate" Value="{DynamicResource RDPRequestNotification}" />
                                                     </DataTrigger>
-                                                    <DataTrigger Binding="{Binding ChatType}" Value="RDPRequestNotificationGroup">
-                                                        <Setter Property="ContentTemplate" Value="{DynamicResource RDPRequestNotificationGroup}" />
+                                                    <DataTrigger Binding="{Binding ChatType}" Value="RDPRequestUnattendedNotification">
+                                                        <Setter Property="ContentTemplate" Value="{DynamicResource RDPRequestNotification}" />
                                                     </DataTrigger>
                                                 </Style.Triggers>
                                             </Style>

@@ -31,7 +31,7 @@ namespace BlitsMe.Agent.UI.WPF
             _dashboard = dashboard;
             _appContext = BlitsMeClientAppContext.CurrentAppContext;
             this.InitializeComponent();
-            _validator = new InputValidator(null,ErrorText);
+            _validator = new InputValidator(null,ErrorText,Dispatcher);
         }
 
         private void signin_click(object sender, RoutedEventArgs e)
@@ -56,15 +56,15 @@ namespace BlitsMe.Agent.UI.WPF
                 if (_appContext.ConnectionManager.Connection.isEstablished())
                 {
                     ClearBlurEffect(_dashboard);
-                    ConfirmPasswordWindow confirmPasswordWindow = new ConfirmPasswordWindow { Owner = _appContext.UIManager.CurrentWindow };
-                    confirmPasswordWindow.ShowDialog();
+                    ConfirmPasswordWindow confirmPasswordWindow = new ConfirmPasswordWindow();
+                    BlitsMeClientAppContext.CurrentAppContext.UIManager.ShowDialog(confirmPasswordWindow);
                     if (!confirmPasswordWindow.Cancelled)
                     {
                         // OK, password will be changed
                         if (!confirmPasswordWindow.ConfirmPassword.Password.Equals(Password.Password))
                         {
                             Password.Background = new SolidColorBrush(Colors.MistyRose);
-                            _validator.setError("Passwords don't match");
+                            _validator.SetError("Passwords don't match");
                             return;
                         }
                     }
@@ -76,7 +76,7 @@ namespace BlitsMe.Agent.UI.WPF
                 }
                 else
                 {
-                    _validator.setError("Cannot sign up, BlitsMe is not connected.");
+                    _validator.SetError("Cannot sign up, BlitsMe is not connected.");
                 }
             }
         }
@@ -97,24 +97,24 @@ namespace BlitsMe.Agent.UI.WPF
                 if (dataSubmitErrorArgs.HasError(SignupRs.SignupErrorEmailAddressInUse))
                 {
                     Email.Background = new SolidColorBrush(Colors.MistyRose);
-                    _validator.setError("Email address in use");
+                    _validator.SetError("Email address in use");
                     foundError = true;
                 }
                 if (dataSubmitErrorArgs.HasError(SignupRs.SignupErrorUserExists))
                 {
                     Username.Background = new SolidColorBrush(Colors.MistyRose);
-                    _validator.setError("Username already in use");
+                    _validator.SetError("Username already in use");
                     foundError = true;
                 }
                 if (dataSubmitErrorArgs.HasError(SignupRs.SignupErrorPasswordComplexity))
                 {
                     Password.Background = new SolidColorBrush(Colors.MistyRose);
-                    _validator.setError("Password is insecure");
+                    _validator.SetError("Password is insecure");
                     foundError = true;
                 }
                 if (!foundError)
                 {
-                    _validator.setError("Unknown Error");
+                    _validator.SetError("Unknown Error");
                 }
             }
         }

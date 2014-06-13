@@ -5,13 +5,14 @@ using System.Windows.Threading;
 using BlitsMe.Agent.Components;
 using BlitsMe.Agent.Components.Functions.Chat;
 using BlitsMe.Agent.Components.Search;
+using BlitsMe.Agent.UI;
 using BlitsMe.Agent.UI.WPF;
 using BlitsMe.Agent.UI.WPF.Engage;
 using log4net;
 
 namespace BlitsMe.Agent.Managers
 {
-    internal class UIManager : Application
+    internal class UIManager
     {
         private static readonly ILog Logger = LogManager.GetLogger(typeof(UIManager));
         private Thread uiManagerThread;
@@ -19,12 +20,13 @@ namespace BlitsMe.Agent.Managers
         private AutoResetEvent uiReady;
         private Dashboard dashBoard;
         internal UpdateNotification UpdateNotification;
-        internal Window CurrentWindow { get { return dashBoard; } }
+        internal Dashboard Dashboard { get { return dashBoard; } }
         internal bool IsClosed { get; private set; }
         private Engagement _engagement;
         private Engagement _remoteEngagement;
         private Function _chat;
         private EngagementWindow _engagementWindow;
+        private readonly SystemTray _systray;
         private int _contactsRating;
         
         internal UIManager()
@@ -36,6 +38,8 @@ namespace BlitsMe.Agent.Managers
             BlitsMeClientAppContext.CurrentAppContext.LoginManager.LoginFailed += LoginManagerOnLoginFailed;
             BlitsMeClientAppContext.CurrentAppContext.LoginManager.SigningUp += LoginManagerOnSigningUp;
             BlitsMeClientAppContext.CurrentAppContext.LoginManager.SignupFailed += LoginManagerOnSignupFailed;
+            _systray = new SystemTray();
+            _systray.Start();
         }
 
         internal void Start()
@@ -94,6 +98,9 @@ namespace BlitsMe.Agent.Managers
                 }
                 if (UpdateNotification != null)
                     UpdateNotification.Close();
+                // Remove SystemTray
+                if (_systray != null)
+                    _systray.Close();
             }
         }
 
@@ -110,8 +117,10 @@ namespace BlitsMe.Agent.Managers
 
         internal void ShowDialog(Window dialogWindow)
         {
-            dialogWindow.Owner = CurrentWindow;
+            dialogWindow.Owner = dashBoard;
+            dashBoard.IsEnabled = false;
             dialogWindow.ShowDialog();
+            dashBoard.IsEnabled = true;
         }
 
         private void SetupAndRunUpdateNotificationWindow()
@@ -124,6 +133,16 @@ namespace BlitsMe.Agent.Managers
             }) { Name = "updateNotificationThread" };
             thread.SetApartmentState(ApartmentState.STA);
             thread.Start();
+        }
+        
+        public string RequestElevation(string message)
+        {
+            return dashBoard.Elevate(message);
+        }
+
+        public void CompleteElevation()
+        {
+            dashBoard.CompleteElevate();
         }
 
         #region events
@@ -252,5 +271,9 @@ namespace BlitsMe.Agent.Managers
 
         #endregion
 
+        public void Alert(string message)
+        {
+            dashBoard.Alert(message);
+        }
     }
 }

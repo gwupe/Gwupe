@@ -16,7 +16,7 @@
         LogoFile="arrow.png"
         />
     </BootstrapperApplicationRef>
-
+    <Variable Name="Promo" bal:Overridable="yes" Type="string" Value="BASELINE" />
     <Chain>
       <!-- Need client profile 4.0 -->
       <PackageGroupRef Id="NetFx40ClientWeb" />
@@ -46,7 +46,9 @@
       <MsiPackage Id="BlitsMeSetup"
         Compressed="yes"
         SourceFile="$(var.BlitsMeSetup.TargetPath)"
-        Vital="yes"  />
+        Vital="yes">
+        <MsiProperty Name="PROMO" Value="[Promo]" />
+      </MsiPackage>
     </Chain>
   </Bundle>
 </Wix>

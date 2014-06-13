@@ -11,6 +11,7 @@ namespace BlitsMe.Cloud.Messaging.Elements
     public class RosterElement
     {
         [DataMember] public UserElement userElement;
+        [DataMember] public RelationshipElement relationshipElement;
         [DataMember] public String shortCode;
         [DataMember] public IList<String> groups;
         [DataMember] public PresenceElement presence;

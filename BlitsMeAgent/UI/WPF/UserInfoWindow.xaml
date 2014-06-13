@@ -3,6 +3,7 @@
 	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
 	xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
 	xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+	xmlns:mahappsControls="clr-namespace:MahApps.Metro.Controls;assembly=MahApps.Metro"
 	mc:Ignorable="d"
 	x:Class="BlitsMe.Agent.UI.WPF.UserInfoWindow"
 	x:Name="UserControl"
@@ -16,12 +17,13 @@
                 <ResourceDictionary Source="pack://application:,,,/MahApps.Metro;component/Styles/Controls.xaml" />
                 <ResourceDictionary Source="pack://application:,,,/MahApps.Metro;component/Styles/Accents/BaseLight.xaml" />
                 <ResourceDictionary Source="Style/Theme.xaml" />
+                <ResourceDictionary Source="Skins/Skin.xaml" />
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>
     </UserControl.Resources>
     <Grid x:Name="LayoutRoot" >
-        <Border BorderThickness="1" BorderBrush="#4A7EBB"  Width="500" Height="230" >
-            <Grid Width="500" Height="230"  Background="#FFDCE6F2"  >
+        <Border BorderThickness="1" BorderBrush="#4A7EBB"  Width="500" Height="280" >
+            <Grid Width="500" Height="280"  Background="#FFDCE6F2"  >
                 <Grid.RowDefinitions>
                     <RowDefinition Height="*"/>
                 </Grid.RowDefinitions>
@@ -30,16 +32,17 @@
                     <ColumnDefinition Width="5"/>
                     <ColumnDefinition Width="*"/>
                 </Grid.ColumnDefinitions>
-
+                <ContentPresenter Name="Disabler" Content="{Binding}" ContentTemplate="{StaticResource DisablingWindow}" Panel.ZIndex="5" Visibility="Hidden" Grid.ColumnSpan="3" />
+				<StackPanel>
                 <Button Width="100"  Height="100" Background="White"  Click="AvatarImage_Click" Grid.Column="0" Grid.Row="0"
                         VerticalAlignment="Top" Margin="0,10,0,0">
                     <Image x:Name="AvatarImage" Source="{Binding Path=Avatar, Converter={StaticResource imageStreamReader}}" />
                 </Button>
+                    <Label Content="{Binding Username, FallbackValue=jamestkirk}"  Name="Username" HorizontalAlignment="Center" />
+					</StackPanel>
                 <Grid Grid.Column="2" Grid.Row="0">
                     <Grid.RowDefinitions>
                         <RowDefinition Height="10"/>
-                        <RowDefinition Height="Auto"/>
-                        <RowDefinition Height="5"/>
                         <RowDefinition Height="Auto"/>
                         <RowDefinition Height="5"/>
                         <RowDefinition Height="Auto"/>
@@ -62,29 +65,28 @@
                         <ColumnDefinition Width="15"/>
                     </Grid.ColumnDefinitions>
                     <Label Content="Name" x:Name="NameLabel"  Width="68.123"/>
-                    <TextBox Text="{Binding Firstname}"  TextWrapping="Wrap" Style="{DynamicResource NormalTextboxStyle}"  x:Name="Firstname"  Grid.Row="1" Grid.Column="1" />
-                    <TextBox Text="{Binding Lastname}"  TextWrapping="Wrap" Style="{DynamicResource NormalTextboxStyle}" x:Name="Lastname"  Grid.Row="1" Grid.Column="3" />
-                    <TextBox Text="{Binding Username, FallbackValue=UnknownUser}" Style="{DynamicResource NormalTextboxStyle}" Name="Username"  Grid.Row="3" Grid.Column="1"/>
+                    <TextBox Text="{Binding Firstname, FallbackValue=James}" mahappsControls:TextboxHelper.Watermark="Firstname" TextWrapping="Wrap" x:Name="Firstname"  Grid.Row="1" Grid.Column="1" />
+                    <TextBox Text="{Binding Lastname, FallbackValue=Kirk}"  mahappsControls:TextboxHelper.Watermark="Lastname" TextWrapping="Wrap" x:Name="Lastname"  Grid.Row="1" Grid.Column="3" />
                     <Label Content="Password"  Name="PasswordLabel" Width="68.123" />
-                    <PasswordBox  Name="Password" FontFamily="Segoe UI"  IsEnabled="False" Grid.Row="3" Grid.Column="3" Style="{DynamicResource NormalPasswordBoxStyle}"/>
+                    <PasswordBox  Name="Password" FontFamily="Segoe UI"  mahappsControls:TextboxHelper.Watermark="New Password" IsEnabled="False" Grid.Row="3" Grid.Column="3" />
                     <CheckBox x:Name="PasswordChange" Click="PasswordChange_Click" Grid.Row="3" Grid.Column="4" VerticalAlignment="Center" Margin="5,0,0,0"/>
                     <Label Content="Location" HorizontalAlignment="Left" Margin="10,89.251,0,0" VerticalAlignment="Top" Name="LocationLabel" Width="68.123" />
-                    <TextBox Text="{Binding Location}" Name="Location" Grid.Row="5" Grid.Column="1" Style="{DynamicResource NormalTextboxStyle}"/>
+                    <TextBox Text="{Binding Location, FallbackValue=Second Star to the Right}"  mahappsControls:TextboxHelper.Watermark="Location" Name="Location" Grid.Row="3" Grid.Column="1" />
 
                     <Label Content="Email" HorizontalAlignment="Left" Margin="10,117.451,0,0" VerticalAlignment="Top" Name="EmailLabel" Width="68.123" />
-                    <TextBox Text="{Binding Email}" Name="Email" Grid.Row="7" Grid.Column="1" Style="{DynamicResource NormalTextboxStyle}" />
+                    <TextBox Text="{Binding Email, FallbackValue=jamest@enterprise.com}" Name="Email"  mahappsControls:TextboxHelper.Watermark="Email Address" Grid.Row="5" Grid.Column="1"  />
 
-                    <CheckBox x:Name="Supporter" Content="I offer IT support" IsChecked="{Binding Supporter}" Grid.Row="7" Grid.Column="3" VerticalAlignment="Center"/>
+                    <CheckBox x:Name="Supporter" Content="I offer IT support" IsChecked="{Binding Supporter}" Grid.Row="5" Grid.Column="3" VerticalAlignment="Center"/>
 
-                    <TextBox Name="Description"   TextWrapping="Wrap" Text="{Binding Description}" Grid.Row="9" Grid.Column="1" Grid.ColumnSpan="3" Height="50" Margin="1,0,0,0" />
-                    <Border  Grid.Row="11" Grid.Column="1" Grid.ColumnSpan="3" BorderBrush="#5574AF" BorderThickness="1" HorizontalAlignment="Right" Margin="0,0,115,0" Width="100">
+                    <TextBox Name="Description"   TextWrapping="Wrap" Text="{Binding Description, FallbackValue=Description of Skills}"  mahappsControls:TextboxHelper.Watermark="Description of Skills" Grid.Row="7" Grid.Column="1" Grid.ColumnSpan="3" Height="110" Margin="1,0,0,0" VerticalScrollBarVisibility="Auto" ScrollViewer.CanContentScroll="True" />
+                    <Border  Grid.Row="9" Grid.Column="1" Grid.ColumnSpan="3" BorderBrush="#5574AF" BorderThickness="1" HorizontalAlignment="Right" Margin="0,0,115,0" Width="100">
                         <Button Content="Reload Info"  Name="CancelChanges" Click="CancelChanges_Click" Style="{DynamicResource UserinfoBtnstyle}" />
                     </Border>
-                    <Border  Grid.Row="11" Grid.Column="1" Grid.ColumnSpan="3" BorderBrush="#5574AF" BorderThickness="1" HorizontalAlignment="Right" Width="100">
+                    <Border  Grid.Row="9" Grid.Column="1" Grid.ColumnSpan="3" BorderBrush="#5574AF" BorderThickness="1" HorizontalAlignment="Right" Width="100">
                         <Button Content="Save Changes"   x:Name="SaveChanges" Click="SaveChanges_Click"  Style="{DynamicResource UserinfoBtnstyle}"  />
                     </Border>
-                    <TextBlock x:Name="ErrorText" Text="" VerticalAlignment="Bottom" HorizontalAlignment="Right" Foreground="Red" Height="17" TextAlignment="Justify"  Visibility="Collapsed" Grid.Row="13" Grid.Column="1" Grid.ColumnSpan="3"/>
-                    <TextBlock x:Name="StatusText" Text="" VerticalAlignment="Bottom"   Foreground="#FF2B519B" HorizontalAlignment="Right" Height="17" TextAlignment="Justify" FontWeight="Bold" Grid.Row="13" Grid.Column="1" Grid.ColumnSpan="3"
+                    <TextBlock x:Name="ErrorText" Text="" VerticalAlignment="Bottom" HorizontalAlignment="Right" Foreground="Red" Height="17" TextAlignment="Justify"  Visibility="Collapsed" Grid.Row="11" Grid.Column="1" Grid.ColumnSpan="3"/>
+                    <TextBlock x:Name="StatusText" Text="" VerticalAlignment="Bottom"   Foreground="#FF2B519B" HorizontalAlignment="Right" Height="17" TextAlignment="Justify" FontWeight="Bold" Grid.Row="11" Grid.Column="1" Grid.ColumnSpan="3"
                            Visibility="Collapsed"/>
                 </Grid>
                 <!--<Label Content="Description of skills, attitude and approach" VerticalAlignment="Top" x:Name="DescriptionLabel" Visibility="Collapsed"/>-->

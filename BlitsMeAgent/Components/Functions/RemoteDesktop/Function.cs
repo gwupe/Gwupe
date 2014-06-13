@@ -8,6 +8,7 @@ using BlitsMe.Agent.Components.Functions.RemoteDesktop.ChatElement;
 using BlitsMe.Agent.Components.Functions.RemoteDesktop.Notification;
 using BlitsMe.Agent.Components.Notification;
 using BlitsMe.Agent.UI.WPF.Engage;
+using BlitsMe.Cloud.Exceptions;
 using BlitsMe.Cloud.Messaging.Request;
 using BlitsMe.Cloud.Messaging.Response;
 using BlitsMe.Common.Security;
@@ -32,7 +33,6 @@ namespace BlitsMe.Agent.Components.Functions.RemoteDesktop
 
         private readonly BlitsMeClientAppContext _appContext;
         private readonly Engagement _engagement;
-        public Engagement _Engagement;
         public override String Name { get { return "RemoteDesktop"; } }
 
         private static readonly ILog Logger = LogManager.GetLogger(typeof(FileSend.Function));
@@ -80,7 +80,7 @@ namespace BlitsMe.Agent.Components.Functions.RemoteDesktop
                 // Set the shortcode, to make sure we connect to the right caller.
                 _engagement.SecondParty.ActiveShortCode = shortCode;
                 // Print to the chat that someone is trying to request control of the desktop (allowing them to click yes/no)
-                var rdpChatElement = LogRdpRequest(_engagement.SecondParty.Person.Firstname + " requested control of your desktop.", _engagement.SecondPartyUsername);
+                var rdpChatElement = LogRdpRequest();
                 // Setup anser handlers
                 rdpChatElement.AnsweredTrue += delegate { ProcessAnswer(true); };
                 rdpChatElement.AnsweredFalse += delegate { ProcessAnswer(false); };
@@ -92,14 +92,33 @@ namespace BlitsMe.Agent.Components.Functions.RemoteDesktop
         }
 
         // This method prints the message in the chat that someone is requesting a rdp session with us, allowing the user to answer
-        internal RdpRequestChatElement LogRdpRequest(String message, string userName)
+        internal RdpRequestChatElement LogRdpRequest()
         {
-            RdpRequestChatElement chatElement = new RdpRequestChatElement()
+            RdpRequestChatElement chatElement = null;
+            String message;
+            if (_engagement.SecondParty.Relationship.TheyHaveUnattendedAccess)
             {
-                Message = message,
-                SpeakTime = DateTime.Now,
-                UserName = userName
-            };
+                message = _engagement.SecondParty.Person.Firstname +
+                          " requested control of your desktop. Unattended access will be granted in 10 seconds.";
+                chatElement = new RdpRequestUnattendedChatElement(10)
+                {
+                    Message = message,
+                    SpeakTime = DateTime.Now,
+                    UserName = _engagement.SecondParty.Person.Username,
+                };
+
+            }
+            else
+            {
+                message = _engagement.SecondParty.Person.Firstname + " requested control of your desktop.";
+                chatElement = new RdpRequestChatElement()
+                {
+                    Message = message,
+                    SpeakTime = DateTime.Now,
+                    UserName = _engagement.SecondParty.Person.Username,
+                };
+
+            }
             Chat.Conversation.AddMessage(chatElement);
             // Notify that there is activity in the chat
             OnNewActivity(new ChatActivity(_engagement, ChatActivity.LOG_RDP_REQUEST)
@@ -220,36 +239,73 @@ namespace BlitsMe.Agent.Components.Functions.RemoteDesktop
             IsActive = false;
             IsUnderway = false;
             Logger.Info("Server connection closed, notifying end of service.");
-            Chat.LogServiceCompleteMessage("You were just helped by " + _engagement.SecondParty.Person.Name + ", please rate their service below.");
+            if (_engagement.SecondParty.Relationship.TheyHaveUnattendedAccess)
+            {
+                Chat.LogServiceCompleteMessage("You were just helped by " + _engagement.SecondParty.Person.Name, false);
+            }
+            else
+            {
+                Chat.LogServiceCompleteMessage("You were just helped by " + _engagement.SecondParty.Person.Name +
+                                               ", please rate their service below.");
+            }
             OnNewActivity(new RemoteDesktopActivity(_engagement, RemoteDesktopActivity.REMOTE_DESKTOP_DISCONNECT) { From = _engagement.SecondParty.Person.Username, To = "_SELF" });
         }
 
-        // Called When this user send a rdp request to the second party
-        internal void RequestRdpSession(EngagementWindow egw, Engagement eg)
+        internal void RequestRdpSession()
         {
-            _Engagement = eg;
-            BlitsMeClientAppContext.CurrentAppContext.UIManager.GetRemoteEngagement(_Engagement);
-            // all these checks are to make sure that we aren't currently accessing second partys desktop
-            if (_bmssHandle != null && !_bmssHandle.HasExited && IsWindow(_bmssHandle.MainWindowHandle) && _bmssHandle.MainWindowTitle.Contains("BlitsMe"))
+            if (_engagement.SecondParty.Relationship.IHaveUnattendedAccess)
             {
-                // hey, we have a valid window, raise it and bring it to the front
-                // First call SwitchToThisWindow to unminimize it if it is minimized
-                SwitchToThisWindow(_bmssHandle.MainWindowHandle, true);
-                // Then foreground it so that it is at the front.
-                SetForegroundWindow(_bmssHandle.MainWindowHandle);
-                // we are done - window acticated nothing more to do so bug out
-                return;
+                ElevatedRequestRdpSession();
             }
-            // if we get this far then _bmssHandle is not valid so null it to be sure.
-            _bmssHandle = null;
+            else
+            {
+                RequestRdpSession(null, null);
+            }
+        }
+
+        // Called When this user send a rdp request to the second party
+        private void RequestRdpSession(string tokenId, string securityKey)
+        {
+            //BlitsMeClientAppContext.CurrentAppContext.UIManager.GetRemoteEngagement(_engagement);
+            // all these checks are to make sure that we aren't currently accessing second partys desktop
+            if (CheckRdpActive()) return;
             // now we compile the request to second party to control his desktop
-            RDPRequestRq request = new RDPRequestRq() { shortCode = _engagement.SecondParty.ActiveShortCode, username = _engagement.SecondParty.Person.Username, interactionId = _engagement.Interactions.CurrentOrNewInteraction.Id };
+            RDPRequestRq request = new RDPRequestRq()
+            {
+                shortCode = _engagement.SecondParty.ActiveShortCode,
+                username = _engagement.SecondParty.Person.Username,
+                interactionId = _engagement.Interactions.CurrentOrNewInteraction.Id,
+                securityKey = securityKey,
+                tokenId = tokenId,
+            };
             try
             {
                 // Print in chat that we sent the second party a rdp request
-                IChatMessage chatElement = Chat.LogSystemMessage("You sent " + _engagement.SecondParty.Person.Firstname + " a request to control their desktop.");
+                IChatMessage chatElement =
+                    Chat.LogSystemMessage("You sent " + _engagement.SecondParty.Person.Firstname +
+                                          " a request to control their desktop.");
                 // Actually send the message asynchronously
-                _appContext.ConnectionManager.Connection.RequestAsync<RDPRequestRq, RDPRequestRs>(request, (req, res, ex) => ProcessRequestRDPSessionResponse(req, res, ex, chatElement));
+                //_appContext.ConnectionManager.Connection.RequestAsync<RDPRequestRq, RDPRequestRs>(request, (req, res, ex) => ProcessRequestRDPSessionResponse(req, res, ex, chatElement));
+                try
+                {
+                    var response = _appContext.ConnectionManager.Connection.Request<RDPRequestRq, RDPRequestRs>(request);
+                    // The message was delivered
+                    IsActive = true;
+                    // Raise an activity that we managed to send a rdp request to second party successfully.
+                    OnNewActivity(new RemoteDesktopActivity(_engagement, RemoteDesktopActivity.REMOTE_DESKTOP_REQUEST) { From = "_SELF", To = _engagement.SecondParty.Person.Username });
+                }
+                catch (MessageException<RDPRequestRs> e)
+                {
+                    if ("WILL_NOT_PROCESS_ELEVATE".Equals(e.ErrorCode) && (tokenId == null && securityKey == null))
+                    {
+                        // need elevation
+                        ElevatedRequestRdpSession();
+                    }
+                    else
+                    {
+                        throw;
+                    }
+                }
             }
             catch (Exception ex)
             {
@@ -258,16 +314,77 @@ namespace BlitsMe.Agent.Components.Functions.RemoteDesktop
             }
         }
 
+        private void ElevatedRequestRdpSession()
+        {
+            string tokenId;
+            string securityKey;
+            if (
+                BlitsMeClientAppContext.CurrentAppContext.Elevate(
+                    "This connection requires you to verify your identify, please enter your BlitsMe password to connect to " +
+                    _engagement.SecondParty.Person.Name + ".", out tokenId, out securityKey))
+            {
+                RequestRdpSession(tokenId, securityKey);
+            }
+            else
+            {
+                Chat.LogErrorMessage("Failed to elevate privileges to connect to " + _engagement.SecondParty.Person.Name);
+                throw new Exception("Failed to gain unattended access through elevation");
+            }
+        }
+
+        private bool CheckRdpActive()
+        {
+            if (_bmssHandle != null && !_bmssHandle.HasExited && IsWindow(_bmssHandle.MainWindowHandle) &&
+                _bmssHandle.MainWindowTitle.Contains("BlitsMe"))
+            {
+                // hey, we have a valid window, raise it and bring it to the front
+                // First call SwitchToThisWindow to unminimize it if it is minimized
+                SwitchToThisWindow(_bmssHandle.MainWindowHandle, true);
+                // Then foreground it so that it is at the front.
+                SetForegroundWindow(_bmssHandle.MainWindowHandle);
+                // we are done - window acticated nothing more to do so bug out
+                return true;
+            }
+            // if we get this far then _bmssHandle is not valid so null it to be sure.
+            _bmssHandle = null;
+            return false;
+        }
+
+        /*
         // This is called once our async request to second party to control his desktop has completed
         private void ProcessRequestRDPSessionResponse(RDPRequestRq request, RDPRequestRs response, Exception e, IChatMessage chatElement)
         {
 
             if (e != null)
             {
-                // The message wasn't delivered
-                IsActive = false;
-                Logger.Error("Received a async response to " + request.id + " that is an error", e);
-                //chatElement.DeliveryState = ChatDeliveryState.Failed;
+                if (e is MessageException<RDPRequestRs>)
+                {
+                    var exception = (MessageException<RDPRequestRs>)e;
+                    if ("WILL_NOT_PROCESS_ELEVATE".Equals(exception.ErrorCode))
+                    {
+                        // need elevation
+                        string tokenId;
+                        string securityKey;
+                        if (BlitsMeClientAppContext.CurrentAppContext.Elevate(
+                            "This connection requires you to verify your identify, please enter your BlitsMe password to connect to " +
+                            _engagement.SecondParty.Person.Name + ".",
+                            out tokenId, out securityKey))
+                        {
+                            RequestRdpSession(tokenId, securityKey);
+                        }
+                        else
+                        {
+                            Chat.LogErrorMessage("Failed to elevate privileges to connect to " +
+                                                 _engagement.SecondParty.Person.Name);
+                        }
+                    }
+                }
+                else
+                {
+                    // The message wasn't delivered
+                    IsActive = false;
+                    Logger.Error("Received a async response to " + request.id + " that is an error", e);
+                }
             }
             else
             {
@@ -277,6 +394,7 @@ namespace BlitsMe.Agent.Components.Functions.RemoteDesktop
                 OnNewActivity(new RemoteDesktopActivity(_engagement, RemoteDesktopActivity.REMOTE_DESKTOP_REQUEST) { From = "_SELF", To = _engagement.SecondParty.Person.Username });
             }
         }
+         */
 
         // this is called by the request manager when we receive a answer our remote desktop request (yes or no)
         internal void ProcessRemoteDesktopRequestResponse(RDPRequestResponseRq request)
@@ -295,7 +413,7 @@ namespace BlitsMe.Agent.Components.Functions.RemoteDesktop
                 {
                     int port = Client.Start(request.connectionId);
                     String viewerExe = System.IO.Path.GetDirectoryName(Environment.GetCommandLineArgs()[0]) + "\\bmss.exe";
-                    var parameters = "-username=\"" + _engagement.SecondParty.Person.Name + "\" -scale=auto 127.0.0.1::" + port;
+                    var parameters = "-username=\"" + _engagement.SecondParty.Person.Name + "\" -copyrect=yes -encoding=tight -compressionlevel=9 -jpegimagequality=3 -scale=auto 127.0.0.1::" + port;
                     Logger.Debug("Running " + viewerExe + " " + parameters);
                     _bmssHandle = Process.Start(viewerExe, parameters);
 
@@ -318,7 +436,7 @@ namespace BlitsMe.Agent.Components.Functions.RemoteDesktop
         private void ClientOnConnectionAccepted(object sender, EventArgs eventArgs)
         {
             IsUnderway = true;
-            Chat.LogSystemMessage("You connected to " + _engagement.SecondParty.Person.Firstname + "'s desktop.");
+            Chat.LogSystemMessage("Launching BlitsMe Support Screen...");
             Logger.Info("RDP client has connected to the proxy to " + _engagement.SecondParty.Person.Username + ".");
             OnNewActivity(new RemoteDesktopActivity(_engagement, RemoteDesktopActivity.REMOTE_DESKTOP_CONNECT) { From = "_SELF", To = _engagement.SecondParty.Person.Username });
         }

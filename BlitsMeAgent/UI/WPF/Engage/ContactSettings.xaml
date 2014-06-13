@@ -1,0 +1,42 @@
+﻿<bm:BlitsMeModalUserControl
+	xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+	xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+	xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+	xmlns:mahappsControls="clr-namespace:MahApps.Metro.Controls;assembly=MahApps.Metro"
+    xmlns:bm="clr-namespace:BlitsMe.Agent.UI.WPF.API"
+	mc:Ignorable="d"
+	x:Class="BlitsMe.Agent.UI.WPF.Engage.ContactSettings"
+	>
+    <bm:BlitsMeModalUserControl.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+            	<ResourceDictionary Source="../Style/Style.xaml" />
+            	<ResourceDictionary Source="pack://application:,,,/MahApps.Metro;component/Styles/Colours.xaml" />
+            	<ResourceDictionary Source="pack://application:,,,/MahApps.Metro;component/Styles/Fonts.xaml" />
+            	<ResourceDictionary Source="pack://application:,,,/MahApps.Metro;component/Styles/Controls.xaml" />
+            	<ResourceDictionary Source="pack://application:,,,/MahApps.Metro;component/Styles/Accents/BaseLight.xaml" />
+            	<ResourceDictionary Source="../Style/Theme.xaml" />
+            	<ResourceDictionary Source="../Skins/Skin.xaml" />
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+    </bm:BlitsMeModalUserControl.Resources>
+	<Grid MinHeight="175" MinWidth="350">
+		<Grid Background="White" Opacity="0.35"></Grid>
+		<Border BorderThickness="1" BorderBrush="#4A7EBB" HorizontalAlignment="Center" VerticalAlignment="Center">
+			<Grid Background="#FFDCE6F2" >
+				<ContentPresenter Name="Disabler" Content="{Binding}" ContentTemplate="{StaticResource DisablingWindow}" Panel.ZIndex="5" Visibility="Hidden" Grid.ColumnSpan="3" />
+				<StackPanel Margin="10">
+					<TextBlock Margin="0,0,0,0" Style="{DynamicResource TextblockHeaderStyle}"><Run Text="Settings for "/><Run Text="{Binding Name, FallbackValue=Contact, Mode=OneWay}"/></TextBlock>
+					<CheckBox Name="UnattendedAccessCheckbox" Margin="10,10,10,0" Content="Allow Desktop Access without confirmation."/>
+					<TextBlock Name="ErrorText" Margin="0" Foreground="Red" Visibility="Collapsed" HorizontalAlignment="Center"/>
+					<StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,10,0,0">
+						<TextBlock Name="Saving" Foreground="Blue" Text="Saving" Visibility="Collapsed" VerticalAlignment="Center" />
+						<Button Name="CancelButton" Margin="10,0,0,0" Content="Cancel" Click="CancelUserInput" />
+						<Button Name="SaveButton" Margin="10,0,0,0" Click="ProcessUserInput" Content="Save Settings"/>
+					</StackPanel>
+				</StackPanel>
+			</Grid>
+		</Border>
+	</Grid>
+</bm:BlitsMeModalUserControl>

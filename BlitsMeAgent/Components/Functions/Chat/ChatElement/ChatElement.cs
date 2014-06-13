@@ -96,17 +96,13 @@ namespace BlitsMe.Agent.Components.Functions.Chat.ChatElement
                     }
 
                 }
+                else if (Speaker.Equals("_UNATTENDED_RDP_REQUEST"))
+                {
+                    return "RDPRequestUnattendedNotification";
+                }
                 else if (Speaker.Equals("_RDP_REQUEST"))
                 {
-                    if (LastWord)
-                    {
-                        return "RDPRequestNotification";
-                    }
-                    else
-                    {
-
-                        return "RDPRequestNotificationGroup";
-                    }
+                    return "RDPRequestNotification";
                 }
                 else
                 {
@@ -149,25 +145,25 @@ namespace BlitsMe.Agent.Components.Functions.Chat.ChatElement
         private string _name;
         private string _location;
         private string _flag;
-/*
-        public void OnProcessDeleteCommand(EventArgs e)
-        {
-            EventHandler handler = Deleted;
-            if (handler != null) handler(this, e);
-        }
+        /*
+                public void OnProcessDeleteCommand(EventArgs e)
+                {
+                    EventHandler handler = Deleted;
+                    if (handler != null) handler(this, e);
+                }
 
-        public ICommand DeleteNotification
-        {
-            get { return _deleteNotification ?? (_deleteNotification = new DeleteNotificationCommand(this)); }
-        }
-*/
-/*        internal ChatElement()
-        {
-//            NotifyTime = DateTime.Now.Ticks;
-//            DeleteTimeout = 0;
-//            Id = Util.getSingleton().generateString(32);
-        }
+                public ICommand DeleteNotification
+                {
+                    get { return _deleteNotification ?? (_deleteNotification = new DeleteNotificationCommand(this)); }
+                }
         */
+        /*        internal ChatElement()
+                {
+        //            NotifyTime = DateTime.Now.Ticks;
+        //            DeleteTimeout = 0;
+        //            Id = Util.getSingleton().generateString(32);
+                }
+                */
         /*
         public virtual byte[] Person
         {

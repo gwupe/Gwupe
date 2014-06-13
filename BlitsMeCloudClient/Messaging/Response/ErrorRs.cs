@@ -9,10 +9,6 @@ namespace BlitsMe.Cloud.Messaging.Response
     [DataContract]
     public class ErrorRs : BlitsMe.Cloud.Messaging.API.Response
     {
-        public ErrorRs()
-        {
-        }
-
         [DataMember]
         public override string type
         {

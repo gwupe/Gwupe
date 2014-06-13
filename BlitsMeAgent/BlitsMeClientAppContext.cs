@@ -37,7 +37,6 @@ namespace BlitsMe.Agent
         internal List<BlitsMeOption> Options { get; private set; }
         private static readonly ILog Logger = LogManager.GetLogger(typeof(BlitsMeClientAppContext));
         internal readonly BlitsMeServiceProxy BlitsMeServiceProxy;
-        private readonly SystemTray _systray;
         //public Dashboard UIDashBoard;
         internal P2PManager P2PManager;
         private RequestManager _requestManager;
@@ -89,7 +88,6 @@ namespace BlitsMe.Agent
             SearchManager = new SearchManager();
             CurrentUserManager = new CurrentUserManager();
             SettingsManager = new SettingsManager();
-            _systray = new SystemTray();
             UIManager = new UIManager();
             _requestManager = new RequestManager();
             ScheduleManager = new ScheduleManager();
@@ -103,7 +101,6 @@ namespace BlitsMe.Agent
             ScheduleManager.Start();
             ConnectionManager.Start();
             LoginManager.Start();
-            _systray.Start();
             // Set correct last version
             Reg.LastVersion = StartupVersion;
         }
@@ -142,7 +139,7 @@ namespace BlitsMe.Agent
 
         internal bool Debug
         {
-            set { ((Logger) Logger.Logger).Parent.Level = value ? Level.Debug : Level.Info; }
+            set { ((Logger)Logger.Logger).Parent.Level = value ? Level.Debug : Level.Info; }
         }
 
         public String Version(int level = 1)
@@ -189,14 +186,52 @@ namespace BlitsMe.Agent
             Dispatcher.Run();
         }*/
 
-        public bool Elevate(Window parentWindow, out String tokenId, out String securityKey)
+        public void Alert(String message)
+        {
+            UIManager.Alert(message);
+            //AlertWindow alertWindow = new AlertWindow(message);
+            //UIManager.ShowDialog(alertWindow);
+//            parentWindow.IsEnabled = false;
+            //alertWindow.ShowDialog();
+            //parentWindow.IsEnabled = true;
+        }
+
+        public bool Elevate(out String tokenId, out String securityKey)
+        {
+            return Elevate("The secure action you are requesting requires you to enter your current BlitsMe password to verify your identity.", 
+                out tokenId, out securityKey);
+        }
+
+        public bool Elevate(String message, out String tokenId, out String securityKey)
         {
             ElevateTokenRq erq = new ElevateTokenRq();
-            ElevateTokenRs ers = ConnectionManager.Connection.Request<ElevateTokenRq, ElevateTokenRs>(erq);
-            ElevateApprovalWindow approvalWindow = new ElevateApprovalWindow {Owner = parentWindow};
-            parentWindow.IsEnabled = false;
+            try
+            {
+                String password = UIManager.RequestElevation(message);
+                if (!String.IsNullOrWhiteSpace(password))
+                {
+                    ElevateTokenRs ers = ConnectionManager.Connection.Request<ElevateTokenRq, ElevateTokenRs>(erq);
+                    tokenId = ers.tokenId;
+                    securityKey = Util.getSingleton().hashPassword(password, ers.token);
+                }
+                else
+                {
+                    tokenId = null;
+                    securityKey = null;
+                    return false;
+                }
+            }
+            finally
+            {
+                UIManager.CompleteElevation();
+            }
+            return true;
+            /*
+            ElevateApprovalWindow approvalWindow = new ElevateApprovalWindow { Owner = UIManager.Dashboard };
+            if (!String.IsNullOrWhiteSpace(message)) { approvalWindow.Message.Text = message; }
+            UIManager.Dashboard.IsEnabled = false;
             approvalWindow.ShowDialog();
-            parentWindow.IsEnabled = true;
+            UIManager.Dashboard.IsEnabled = true;
             if (!approvalWindow.Cancelled)
             {
                 tokenId = ers.tokenId;
@@ -213,6 +248,7 @@ namespace BlitsMe.Agent
                 return false;
             }
             return true;
+            */
         }
 
         /*
@@ -232,11 +268,11 @@ namespace BlitsMe.Agent
         {
             if (msg == OsUtils.WM_SHOWBM &&
 #if DEBUG
-                wParam.ToInt32() == 0
+ wParam.ToInt32() == 0
 #else
                 wParam.ToInt32() == 1
 #endif
-                )
+)
             {
                 Logger.Debug("Received show message to my handle " + hwnd);
                 UIManager.Show();
@@ -244,11 +280,11 @@ namespace BlitsMe.Agent
             }
             else if (msg == OsUtils.WM_SHUTDOWNBM &&
 #if DEBUG
-                wParam.ToInt32() == 0
+ wParam.ToInt32() == 0
 #else
                 wParam.ToInt32() == 1
 #endif
-            )
+)
             {
                 Logger.Debug("Received shutdown message to my handle " + hwnd);
                 Thread shutdownThread = new Thread(Shutdown) { IsBackground = true, Name = "shutdownByMessageThread" };
@@ -256,11 +292,11 @@ namespace BlitsMe.Agent
             }
             else if (msg == OsUtils.WM_UPGRADEBM &&
 #if DEBUG
-                wParam.ToInt32() == 0
+ wParam.ToInt32() == 0
 #else
                 wParam.ToInt32() == 1
 #endif
-            )
+)
             {
                 Logger.Debug("Received upgrade message to my handle " + hwnd);
                 Thread upgradeThread = new Thread(new CheckUpgradeTask(this).RunTask) { IsBackground = true, Name = "upgradeByMessageThread" };
@@ -307,9 +343,6 @@ namespace BlitsMe.Agent
             // Stop showing stuff
             if (UIManager != null)
                 UIManager.Close();
-            // Remove SystemTray
-            if (_systray != null)
-                _systray.Close();
             // Done
             Logger.Info("BlitsMe.Agent has shut down");
             base.ExitThreadCore();

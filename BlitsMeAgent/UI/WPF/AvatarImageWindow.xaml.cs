@@ -30,7 +30,7 @@ namespace BlitsMe.Agent.UI.WPF
         {
             _appContext = appContext;
             this.InitializeComponent();
-            validator = new InputValidator(StatusText, ErrorText);
+            validator = new InputValidator(StatusText, ErrorText,Dispatcher);
             // Insert code required on object creation below this point.
         }
 
@@ -75,7 +75,7 @@ namespace BlitsMe.Agent.UI.WPF
                 catch (Exception ex)
                 {
                     Logger.Error("Failed to load the image from file " + filename + " : " + ex.Message, ex);
-                    validator.setError("Could not load image from file");
+                    validator.SetError("Could not load image from file");
                 }
             }
         }
@@ -101,7 +101,7 @@ namespace BlitsMe.Agent.UI.WPF
             catch (Exception ex)
             {
                 Logger.Error("Failed to save the image : " + ex.Message, ex);
-                validator.setError("Failed to save the image");
+                validator.SetError("Failed to save the image");
                 return;
             }
             Close();

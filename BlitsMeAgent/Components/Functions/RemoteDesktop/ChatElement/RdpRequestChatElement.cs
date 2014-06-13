@@ -1,4 +1,5 @@
-﻿using BlitsMe.Agent.Components.Functions.Chat.ChatElement;
+﻿using System.ComponentModel;
+using BlitsMe.Agent.Components.Functions.Chat.ChatElement;
 
 namespace BlitsMe.Agent.Components.Functions.RemoteDesktop.ChatElement
 {

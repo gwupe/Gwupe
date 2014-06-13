@@ -11,31 +11,43 @@ namespace BlitsMe.Agent.Components.Functions.Chat.ChatElement
         public bool Answered
         {
             get { return _answered; }
-            set { _answered = value; OnPropertyChanged("Answered"); }
+            private set { _answered = value; OnPropertyChanged("Answered"); }
         }
 
         public bool Answer
         {
             get { return _answer; }
-            set { _answer = value; OnPropertyChanged("Answer"); }
+            set
+            {
+                if (!Answered)
+                {
+                    _answer = value;
+                    OnPropertyChanged("Answer");
+                    Answered = true;
+                    if (_answer)
+                    {
+                        OnAnswerTrue(EventArgs.Empty);
+                    }
+                    else
+                    {
+                        OnAnswerFalse(EventArgs.Empty);
+                    }
+                }
+            }
         }
 
         public event EventHandler AnsweredTrue;
 
-        public void OnAnswerTrue(EventArgs e)
+        private void OnAnswerTrue(EventArgs e)
         {
-            Answered = true;
-            Answer = true;
             EventHandler handler = AnsweredTrue;
             if (handler != null) handler(this, e);
         }
 
         public event EventHandler AnsweredFalse;
 
-        public void OnAnswerFalse(EventArgs e)
+        private void OnAnswerFalse(EventArgs e)
         {
-            Answered = true;
-            Answer = false;
             EventHandler handler = AnsweredFalse;
             if (handler != null) handler(this, e);
         }

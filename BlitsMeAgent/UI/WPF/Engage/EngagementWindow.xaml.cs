@@ -10,6 +10,7 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Shapes;
 using System.Windows.Threading;
+using BlitsMe.Agent.Annotations;
 using BlitsMe.Agent.Components;
 using BlitsMe.Agent.Components.Alert;
 using BlitsMe.Agent.Components.Notification;
@@ -41,6 +42,7 @@ namespace BlitsMe.Agent.UI.WPF.Engage
         private readonly EngagementWindowDataContext _ewDataContext;
         private Alert _thisAlert;
         internal EngagementVisibleContent EngagementVisibleContent;
+        private ContactSettings _contactSettings;
 
         internal EngagementWindow(BlitsMeClientAppContext appContext, DispatchingCollection<ObservableCollection<Notification>, Notification> notificationList, Engagement engagement)
         {
@@ -107,7 +109,7 @@ namespace BlitsMe.Agent.UI.WPF.Engage
         {
             if (!((Components.Functions.RemoteDesktop.Function)Engagement.GetFunction("RemoteDesktop")).Server.Closed)
             {
-                MainLayout.Background = new SolidColorBrush((Color) ColorConverter.ConvertFromString("#4A7EBB"));
+                MainLayout.Background = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#4A7EBB"));
                 RemoteAssistanceButton.Visibility = Visibility.Collapsed;
                 RemoteTerminateButton.Visibility = Visibility.Visible;
             }
@@ -189,7 +191,7 @@ namespace BlitsMe.Agent.UI.WPF.Engage
         private void SendFileButtonClick(object sender, RoutedEventArgs e)
         {
             var fileDialog = new OpenFileDialog();
-            Nullable<bool> result = fileDialog.ShowDialog(_appContext.UIManager.CurrentWindow);
+            Nullable<bool> result = fileDialog.ShowDialog(_appContext.UIManager.Dashboard);
             if (result == true)
             {
                 string filename = fileDialog.FileName;
@@ -199,15 +201,17 @@ namespace BlitsMe.Agent.UI.WPF.Engage
 
         private void RemoteAssistanceButtonClick(object sender, RoutedEventArgs e)
         {
-            // Request is asynchronous, we request and RDP session and then wait, acceptance on the users side will send a request to us
-            try
+            ThreadPool.QueueUserWorkItem(state =>
             {
-                ((Components.Functions.RemoteDesktop.Function)Engagement.GetFunction("RemoteDesktop")).RequestRdpSession(this, Engagement);
-            }
-            catch (Exception ex)
-            {
-                Logger.Warn("Failed to get the client : " + ex.Message, ex);
-            }
+                try
+                {
+                    ((Components.Functions.RemoteDesktop.Function)Engagement.GetFunction("RemoteDesktop")).RequestRdpSession();
+                }
+                catch (Exception ex)
+                {
+                    Logger.Warn("Failed to get the client : " + ex.Message, ex);
+                }
+            });
         }
 
         private void HistoryButtonClick(object sender, RoutedEventArgs e)
@@ -252,37 +256,10 @@ namespace BlitsMe.Agent.UI.WPF.Engage
 
         private void KickOffButton_Click(object sender, System.Windows.RoutedEventArgs e)
         {
-            Thread thread = new Thread(((Components.Functions.RemoteDesktop.Function)Engagement.GetFunction("RemoteDesktop")).Server.Close) { IsBackground = true };
-            thread.Start(); 
-            /*
-            if (this.Engagement.IsRemoteControlActive)
-            {
-                RemoteAssistanceButton.Visibility = Visibility.Collapsed;
-                RemoteTerminateButton.Visibility = Visibility.Visible;
-            }
-            else
-            {
-                RemoteAssistanceButton.Visibility = Visibility.Visible;
-                RemoteTerminateButton.Visibility = Visibility.Collapsed;
-            }*/
+            ThreadPool.QueueUserWorkItem(
+                state =>
+                    ((Components.Functions.RemoteDesktop.Function)Engagement.GetFunction("RemoteDesktop")).Server.Close());
         }
-
-        //public void StopRDPConnection()
-        //{
-        //    if (Engagement != null)
-        //    {
-        //        Thread thread =
-        //            new Thread(
-        //                ((Components.Functions.RemoteDesktop.Function)Engagement.GetFunction("RemoteDesktop")).Server.
-        //                    Close) { IsBackground = true };
-        //        thread.Start();
-        //        if (!this.Engagement.SecondParty.IsRemoteControlActive)
-        //        {
-        //            RemoteAssistanceButton.Visibility = Visibility.Collapsed;
-        //            RemoteTerminateButton.Visibility = Visibility.Visible;
-        //        }
-        //    }
-        //}
 
         private bool _isRemoteControlActive = false;
         public bool IsRemoteControlActive
@@ -299,21 +276,65 @@ namespace BlitsMe.Agent.UI.WPF.Engage
                 }
             }
         }
+
+        private void ContactSettings_Click(object sender, RoutedEventArgs e)
+        {
+            if (_ewDataContext.ContactSettings == null)
+            {
+                _ewDataContext.ContactSettings = new ContactSettings(_ewDataContext);
+            }
+            ThreadPool.QueueUserWorkItem(state =>
+            {
+                if (_ewDataContext.ContactSettings.PresentModal())
+                {
+
+                }/*
+                if (_appContext.ConnectionManager.IsOnline())
+                {
+                    _ewDataContext.ContactSettingsEnabled = true;
+                }*/
+            });
+        }
+
     }
 
-    internal class EngagementWindowDataContext
+    internal class EngagementWindowDataContext : INotifyPropertyChanged
     {
         private readonly BlitsMeClientAppContext _appContext;
+        private bool _contactSettingsEnabled;
+        private ContactSettings _contactSettings;
         public Attendance SecondParty { get; private set; }
+        public String Name { get { return SecondParty.Person.Name; } }
         private static readonly ILog Logger = LogManager.GetLogger(typeof(EngagementWindowDataContext));
 
         public Engagement Engagement { get; private set; }
+
+        public bool ContactSettingsEnabled
+        {
+            get { return _contactSettingsEnabled; }
+            set { _contactSettingsEnabled = value; OnPropertyChanged("ContactSettingsEnabled"); }
+        }
+
+        public ContactSettings ContactSettings
+        {
+            get;
+            set;
+        }
 
         public EngagementWindowDataContext(BlitsMeClientAppContext appContext, Engagement engagement)
         {
             _appContext = appContext;
             Engagement = engagement;
             SecondParty = Engagement.SecondParty;
+        }
+
+        public event PropertyChangedEventHandler PropertyChanged;
+
+        [NotifyPropertyChangedInvocator]
+        protected virtual void OnPropertyChanged(string propertyName)
+        {
+            PropertyChangedEventHandler handler = PropertyChanged;
+            if (handler != null) handler(this, new PropertyChangedEventArgs(propertyName));
         }
     }
 }

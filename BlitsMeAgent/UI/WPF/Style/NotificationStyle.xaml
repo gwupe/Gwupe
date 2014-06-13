@@ -230,6 +230,48 @@
             </DockPanel>
         </Border>-->
     </DataTemplate>
+    <DataTemplate x:Key="RDPRequestUnattendedNotification" DataType="{x:Type rdpNotification:RDPNotification}">
+        <Grid>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="12"/>
+                <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
+            <Border Background="#C6D9F1" CornerRadius="5" Grid.Column="1" MinHeight="40" Height="Auto" Width="Auto" 
+                    Margin="0,5,0,0" >
+                <Grid Style="{DynamicResource ChatBubbleMeNew}" Background="Transparent">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="45"/>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="Auto"/>
+                    </Grid.ColumnDefinitions>
+
+                    <engage:UserImageOthers Grid.Column="0"/>
+                    
+                    <TextBlock  Style="{DynamicResource MessageTimeStyle}" Grid.Column="1"
+							Text="{Binding SpeakTime, Converter={StaticResource relativeMessageTimeConverter}, FallbackValue=Yesterday 8:49}"
+                                VerticalAlignment="Center"/>
+
+                    <TextBlock Margin="30,10,0,0" Style="{DynamicResource MessageTextbox}" VerticalAlignment="Center"
+                       Text="{Binding Path=Message, FallbackValue=A message from them}" Grid.Column="2"
+                               Foreground="Gray" FontSize="12"/>
+
+                    <ContentControl VerticalAlignment="Center" Margin="15,0,0,0" Grid.Column="3" DataContext="{Binding Path=.}">
+                        <ContentControl.Style>
+                            <Style TargetType="ContentControl">
+                                <Setter Property="ContentTemplate" Value="{DynamicResource AnswerYesNoButtons}" />
+                                <Style.Triggers>
+                                    <DataTrigger Binding="{Binding Answered}" Value="True">
+                                        <Setter Property="ContentTemplate" Value="{x:Null}" />
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </ContentControl.Style>
+                    </ContentControl>
+                </Grid>
+            </Border>
+        </Grid>
+    </DataTemplate>
     <DataTemplate x:Key="RDPRequestNotificationGroup" DataType="{x:Type rdpNotification:RDPNotification}">
         <Grid>
             <Grid.ColumnDefinitions>

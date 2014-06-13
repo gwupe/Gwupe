@@ -87,14 +87,6 @@ namespace BlitsMe.Agent.UI.WPF
 
         internal void Login(bool passwordError = false)
         {
-            //if (passwordError)
-            //{
-            //    var control = FindResource("LoginScreen") as LoginControl;
-            //    if (control != null)
-            //        control.LoginFailed();
-            //}
-            //DashboardData.DashboardState = DashboardState.Login;
-
             if (passwordError)
             {
                 this.Dispatcher.Invoke((Action)(() =>
@@ -107,6 +99,29 @@ namespace BlitsMe.Agent.UI.WPF
             DashboardData.DashboardState = DashboardState.Login;
         }
 
+        public void Alert(string message)
+        {
+            Dispatcher.Invoke(new Action(() => DashboardData.AlertScreen.SetPrompt(message)));
+            DashboardData.AlertScreen.PresentModal();
+        }
+
+        internal string Elevate(String message)
+        {
+            String password = null;
+            Dispatcher.Invoke(new Action(() => DashboardData.ElevateScreen.SetPrompt(message)));
+            if (DashboardData.ElevateScreen.PresentModal(30000))
+            {
+                password = DashboardData.ElevateScreen.ConfirmPassword.Password;
+            }
+            return password;
+        }
+
+        public void CompleteElevate()
+        {
+            DashboardData.DashboardState = DashboardState.Default;
+            DashboardData.ElevateScreen.Reset();
+        }
+
         internal void LoggingIn()
         {
             DashboardData.DashboardState = DashboardState.LoggingIn;
@@ -114,7 +129,7 @@ namespace BlitsMe.Agent.UI.WPF
 
         internal void LoggedIn()
         {
-            DashboardData.DashboardState = DashboardState.LoggedIn;
+            DashboardData.DashboardState = DashboardState.Default;
         }
 
         public void SigningUp()
@@ -708,19 +723,22 @@ namespace BlitsMe.Agent.UI.WPF
         {
             // TODO: Add event handler implementation here.
         }
+
     }
 
     public enum DashboardState
     {
         LoggingIn,
         Initializing,
-        LoggedIn,
+        Default,
         Login,
         SigningUp,
-        Signup
+        Signup,
+        Elevate,
+        Alert
     };
 
-    internal class DashboardDataContext : INotifyPropertyChanged
+    public class DashboardDataContext : INotifyPropertyChanged
     {
 
         private static readonly ILog Logger = LogManager.GetLogger(typeof(DashboardDataContext));
@@ -730,14 +748,24 @@ namespace BlitsMe.Agent.UI.WPF
         private DashboardState _dashboardState;
         private LoginControl _loginScreen;
         private SignUpControl _signUpScreen;
+        private ElevateControl _elevateScreen;
+        private AlertControl _alertScreen;
 
         public LoginControl LoginScreen
         {
-            get
-            {
-                return _loginScreen ?? (_loginScreen = new LoginControl(_dashboard));
-            }
+            get { return _loginScreen ?? (_loginScreen = new LoginControl(_dashboard)); }
         }
+
+        public ElevateControl ElevateScreen
+        {
+            get { return _elevateScreen ?? (_elevateScreen = new ElevateControl(this)); }
+        }
+
+        public AlertControl AlertScreen
+        {
+            get { return _alertScreen ?? (_alertScreen = new AlertControl(this)); }
+        }
+
 
         public SignUpControl SignUpScreen
         {

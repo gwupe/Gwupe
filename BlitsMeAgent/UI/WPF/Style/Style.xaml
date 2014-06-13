@@ -4,6 +4,7 @@
 	xmlns:utils="clr-namespace:BlitsMe.Agent.UI.WPF.Utils"
 	xmlns:mahappsControls="clr-namespace:MahApps.Metro.Controls;assembly=MahApps.Metro"
 	xmlns:ed="http://schemas.microsoft.com/expression/2010/drawing"
+	xmlns:diag="clr-namespace:System.Diagnostics;assembly=WindowsBase"
 	xmlns:wpf="clr-namespace:BlitsMe.Agent.UI.WPF">
     <ResourceDictionary.MergedDictionaries>
         <ResourceDictionary Source="pack://application:,,,/MahApps.Metro;component/Styles/Colours.xaml" />
@@ -90,4 +91,11 @@
             </Grid>
         </Grid>
     </DataTemplate>
+	<DataTemplate x:Key="DisablingWindow">
+		<Grid>
+			<Grid Background="White" Opacity="0.55"></Grid>
+			<mahappsControls:ProgressRing Name="SignupProgress" IsActive="True" Margin="0,0,0,0" Height="100" Width="100" HorizontalAlignment="Center" VerticalAlignment="Center" />
+			<TextBlock Name="DisableText" Text="{Binding Path=DisableMessage, FallbackValue=Whirring}" HorizontalAlignment="Center" VerticalAlignment="Center" FontWeight="Bold" Foreground="#FF2B519B" FontSize="14.667" />
+		</Grid>
+	</DataTemplate>
 </ResourceDictionary>

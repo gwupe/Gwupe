@@ -27,14 +27,6 @@ namespace BlitsMe.Agent.Components.Person
             Person = new Person();
         }
 
-        //public bool IsRemoteControlActive
-        //{
-        //    get
-        //    {
-        //        return this.Engagement.SecondParty.IsRemoteControlActive;
-        //    }
-        //}
-
         private bool _isRemoteActive = false;
         public bool IsRemoteActive
         {
@@ -47,15 +39,23 @@ namespace BlitsMe.Agent.Components.Person
             }
         }
 
+        private Relationship _relationship;
+        public Relationship Relationship
+        {
+            get { return _relationship; }
+            set { _relationship = value; OnPropertyChanged("Relationship"); }
+        }
+
         internal Attendance(RosterElement element)
         {
             Person = new Person(element);
             this._presence = new MultiPresence();
         }
 
-        internal Attendance(UserElement element)
+        internal Attendance(UserElement element, RelationshipElement relationshipElement)
         {
             Person = new Person(element);
+            Relationship = new Relationship(relationshipElement);
             this._presence = new MultiPresence();
         }
 
@@ -140,6 +140,10 @@ namespace BlitsMe.Agent.Components.Person
         internal void SetPresence(IPresence presence)
         {
             _presence.AddPresence(presence);
+            if (!Presence.IsOnline)
+            {
+                ActiveShortCode = null;
+            }
             OnPropertyChanged("Presence");
         }
 
@@ -155,40 +159,5 @@ namespace BlitsMe.Agent.Components.Person
         {
             return Person.ToString();
         }
-        /*
-        private ICommand _answerCancel;
-        private bool _answer;
-        private bool _answered;
-
-        public ICommand AnswerCancel
-        {
-            get { return _answerCancel ?? (_answerCancel = new TerminateCloseCommand(this)); }
-        }*/
     }
-        /*
-    class TerminateCloseCommand : ICommand
-    {
-        Attendance _attendance;
-        internal TerminateCloseCommand(Attendance attendance)
-        {
-            _attendance = attendance;
-        }
-
-        public void Execute(object parameter)
-        {
-            Thread thread =
-                new Thread(
-                    ((Components.Functions.RemoteDesktop.Function)
-                     _attendance.Engagement.GetFunction("RemoteDesktop")).Server.Close) { IsBackground = true };
-            thread.Start();
-            _attendance.Engagement.IsRemoteControlActive = false;
-        }
-
-        public bool CanExecute(object parameter)
-        {
-            return true;
-        }
-
-        public event EventHandler CanExecuteChanged;
-    }*/
 }

@@ -179,13 +179,24 @@ namespace BlitsMe.Agent.Components.Functions.Chat
         }
 
 
-        internal void LogServiceCompleteMessage(String message)
+        internal void LogServiceCompleteMessage(string message, bool requestFeedback = true)
         {
-            Conversation.AddMessage(new ServiceCompleteChatElement(_engagement)
+            if (requestFeedback)
             {
-                Message = message,
-                SpeakTime = DateTime.Now
-            });
+                Conversation.AddMessage(new ServiceCompleteChatElement(_engagement)
+                {
+                    Message = message,
+                    SpeakTime = DateTime.Now
+                });
+            }
+            else
+            {
+                Conversation.AddMessage(new SystemChatElement
+                {
+                    Message = message,
+                    SpeakTime = DateTime.Now
+                });
+            }
             // Fire the event
             OnNewActivity(new ChatActivity(_engagement, ChatActivity.LOG_SERVICE)
             {

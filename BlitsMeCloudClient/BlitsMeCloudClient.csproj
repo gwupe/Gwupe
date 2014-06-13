@@ -75,7 +75,8 @@
     <Compile Include="Exceptions\MessageException.cs" />
     <Compile Include="Exceptions\ProtocolException.cs" />
     <Compile Include="Exceptions\RemoteException.cs" />
-    <Compile Include="Messaging\API\ElevatedRequest.cs" />
+    <Compile Include="Messaging\API\ElevatedRequestImpl.cs" />
+    <Compile Include="Messaging\API\IElevatedRequest.cs" />
     <Compile Include="Messaging\API\IWebSocketMessageHandler.cs" />
     <Compile Include="Messaging\API\UserToUserResponse.cs" />
     <Compile Include="Messaging\API\Processor.cs" />
@@ -87,11 +88,13 @@
     <Compile Include="Messaging\CoupledWebSocketMessageHandler.cs" />
     <Compile Include="Messaging\Elements\IpEndPointElement.cs" />
     <Compile Include="Messaging\Elements\PresenceElement.cs" />
+    <Compile Include="Messaging\Elements\RelationshipElement.cs" />
     <Compile Include="Messaging\Elements\ResultElement.cs" />
     <Compile Include="Messaging\Elements\RosterElement.cs" />
     <Compile Include="Messaging\Elements\UserElement.cs" />
     <Compile Include="Messaging\Request\ChatMessageRq.cs" />
     <Compile Include="Messaging\Request\InitRepeatedConnectionRq.cs" />
+    <Compile Include="Messaging\Request\NotifyChangeRq.cs" />
     <Compile Include="Messaging\Request\RateRq.cs" />
     <Compile Include="Messaging\Request\CurrentUserRq.cs" />
     <Compile Include="Messaging\Request\ElevateTokenRq.cs" />
@@ -110,11 +113,13 @@
     <Compile Include="Messaging\Request\SearchRq.cs" />
     <Compile Include="Messaging\Request\SignupRq.cs" />
     <Compile Include="Messaging\Request\SubscribeRq.cs" />
+    <Compile Include="Messaging\Request\UpdateRelationshipRq.cs" />
     <Compile Include="Messaging\Request\UpdateUserRq.cs" />
     <Compile Include="Messaging\Request\VCardRq.cs" />
     <Compile Include="Messaging\Request\VersionRq.cs" />
     <Compile Include="Messaging\Response\ChatMessageRs.cs" />
     <Compile Include="Messaging\Response\InitRepeatedConnectionRs.cs" />
+    <Compile Include="Messaging\Response\NotifyChangeRs.cs" />
     <Compile Include="Messaging\Response\RateRs.cs" />
     <Compile Include="Messaging\Response\CurrentUserRs.cs" />
     <Compile Include="Messaging\Response\ElevateTokenRs.cs" />
@@ -134,6 +139,7 @@
     <Compile Include="Messaging\Response\SearchRs.cs" />
     <Compile Include="Messaging\Response\SignupRs.cs" />
     <Compile Include="Messaging\Response\SubscribeRs.cs" />
+    <Compile Include="Messaging\Response\UpdateRelationshipRs.cs" />
     <Compile Include="Messaging\Response\UpdateUserRs.cs" />
     <Compile Include="Messaging\Response\VCardRs.cs" />
     <Compile Include="Messaging\Response\VersionRs.cs" />

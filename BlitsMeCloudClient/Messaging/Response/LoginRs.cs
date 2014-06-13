@@ -23,5 +23,7 @@ namespace BlitsMe.Cloud.Messaging.Response
         public String shortCode { get; set; }
         [DataMember]
         public UserElement userElement { get; set; }
+        [DataMember]
+        public string promocode { get; set; }
     }
 }

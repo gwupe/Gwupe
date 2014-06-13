@@ -3,6 +3,7 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
+using System.Linq.Expressions;
 using System.Runtime.Serialization;
 using System.Threading;
 using BlitsMe.Agent.Components.Person;
@@ -112,7 +113,7 @@ namespace BlitsMe.Agent.Managers
                                 continue;
                             // Add each buddy to the list
                             // I think we should not add a default presence, lets see how it goes
-                            AddUserElementToList(rosterElement.userElement);
+                            AddUserElementToList(rosterElement.userElement, rosterElement.relationshipElement);
                             // Now async get the images
                             if (rosterElement.userElement.hasAvatar)
                             {
@@ -201,7 +202,7 @@ namespace BlitsMe.Agent.Managers
             try
             {
                 VCardRs cardRs = _appContext.ConnectionManager.Connection.Request<VCardRq, VCardRs>(new VCardRq(username));
-                AddUserElementToList(cardRs.userElement, presence);
+                AddUserElementToList(cardRs.userElement, cardRs.relationshipElement, presence);
             }
             catch (Exception e)
             {
@@ -209,9 +210,9 @@ namespace BlitsMe.Agent.Managers
             }
         }
 
-        private void AddUserElementToList(UserElement userElement, Presence presence = null)
+        private void AddUserElementToList(UserElement userElement, RelationshipElement relationshipElement, Presence presence = null)
         {
-            Attendance attendance = new Attendance(userElement);
+            Attendance attendance = new Attendance(userElement, relationshipElement);
             attendance.PropertyChanged += MarkUnmarkCurrentlyEngaged;
             if (presence != null)
             {
@@ -256,6 +257,32 @@ namespace BlitsMe.Agent.Managers
             }
         }
 
+        internal void UpdateRelationship(String contactUsername, Relationship relationship, String tokenId, String securityKey)
+        {
+            var response = _appContext.ConnectionManager.Connection
+                .Request<UpdateRelationshipRq, UpdateRelationshipRs>(
+                    new UpdateRelationshipRq()
+                    {
+                        relationshipElement = new RelationshipElement()
+                        {
+                            theyHaveUnattendedAccess = relationship.TheyHaveUnattendedAccess,
+                            ihaveUnattendedAccess = relationship.IHaveUnattendedAccess
+                        },
+                        contactUsername = contactUsername,
+                        tokenId = tokenId,
+                        securityKey = securityKey
+                    });
+            if (!ServicePersonAttendanceLookup.ContainsKey(contactUsername))
+            {
+                Logger.Error("Failed to update relationship to " + contactUsername + ", no such contact.");
+            }
+            else
+            {
+                ServicePersonAttendanceLookup[contactUsername].Relationship =
+                    new Relationship(response.relationshipElement);
+            }
+        }
+
         private void ResponseHandler(SubscribeRq request, SubscribeRs response, Exception e, Person person)
         {
             if (e == null)
@@ -266,6 +293,36 @@ namespace BlitsMe.Agent.Managers
             else
             {
                 Logger.Error("Failed to subscribe to " + person.Username + " : " + e.Message, e);
+            }
+        }
+
+        public void RequestContactUpdate(string changeId)
+        {
+            _appContext.ConnectionManager.Connection.RequestAsync<VCardRq, VCardRs>(
+                new VCardRq(changeId), UpdateContactResponseHandler);
+
+        }
+
+        private void UpdateContactResponseHandler(VCardRq vCardRq, VCardRs vCardRs, Exception exception)
+        {
+            if (exception == null)
+            {
+                if (ServicePersonAttendanceLookup.ContainsKey(vCardRq.username))
+                {
+                    try
+                    {
+                        ServicePersonAttendanceLookup[vCardRq.username].Person.InitPerson(vCardRs.userElement);
+                        ServicePersonAttendanceLookup[vCardRq.username].Relationship.InitRelationship(vCardRs.relationshipElement);
+                    }
+                    catch (Exception e1)
+                    {
+                        Logger.Error("Failed to update contact information for " + vCardRq.username, e1);
+                    }
+                }
+            }
+            else
+            {
+                Logger.Error("Failed to update contact " + vCardRq.username, exception);
             }
         }
     }

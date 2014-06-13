@@ -1,10 +1,13 @@
 ﻿using System;
+using System.ComponentModel;
 using System.IO;
 using System.Text.RegularExpressions;
+using System.Threading;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
+using BlitsMe.Agent.Annotations;
 using BlitsMe.Agent.Managers;
 using BlitsMe.Agent.UI.WPF.API;
 using BlitsMe.Agent.UI.WPF.Utils;
@@ -18,16 +21,16 @@ namespace BlitsMe.Agent.UI.WPF
     /// <summary>
     /// Interaction logic for UserInfo.xaml
     /// </summary>
-    public partial class UserInfoWindow : UserControl, IDashboardContentControl
+    public partial class UserInfoWindow : IDashboardContentControl, IBlitsMeUserControl
     {
         private static readonly ILog Logger = LogManager.GetLogger(typeof(UserInfoWindow));
         private readonly BlitsMeClientAppContext _appContext;
-        private InputValidator validator;
+        private readonly UiHelper _uiHelper;
 
         public UserInfoWindow(BlitsMeClientAppContext appContext)
         {
             this.InitializeComponent();
-            validator = new InputValidator(StatusText, ErrorText);
+            _uiHelper = new UiHelper(Dispatcher, Disabler, StatusText, ErrorText);
             _appContext = appContext;
             DataContext = _appContext.CurrentUserManager.CurrentUser;
             _appContext.CurrentUserManager.CurrentUserChanged += CurrentUserManagerOnCurrentUserChanged;
@@ -50,22 +53,22 @@ namespace BlitsMe.Agent.UI.WPF
             ResetStatus();
 
             bool dataOK = true;
-            dataOK = validator.ValidateFieldNonEmpty(Email, Email.Text, EmailLabel, "Please enter your email address") && validator.ValidateEmail(Email, EmailLabel) && dataOK;
-            dataOK = validator.ValidateFieldNonEmpty(Location, Location.Text, LocationLabel, "Please enter your location", "City, Country") && dataOK;
-            if (PasswordChange != null && (bool)PasswordChange.IsChecked)
+            dataOK = _uiHelper.Validator.ValidateFieldNonEmpty(Email, Email.Text, EmailLabel, "Please enter your email address") && _uiHelper.Validator.ValidateEmail(Email, EmailLabel) && dataOK;
+            dataOK = _uiHelper.Validator.ValidateFieldNonEmpty(Location, Location.Text, LocationLabel, "Please enter your location", "City, Country") && dataOK;
+            if (PasswordChange != null && PasswordChange.IsChecked == true)
             {
-                dataOK = validator.ValidateFieldNonEmpty(Password, Password.Password, PasswordLabel, "Please enter your password") && dataOK;
+                dataOK = _uiHelper.Validator.ValidateFieldNonEmpty(Password, Password.Password, PasswordLabel, "Please enter your password") && dataOK;
             }
-            dataOK = validator.ValidateFieldNonEmpty(Lastname, Lastname.Text, NameLabel, "Please enter your last name", "Last") && dataOK;
-            dataOK = validator.ValidateFieldNonEmpty(Firstname, Firstname.Text, NameLabel, "Please enter your first name", "First") && dataOK;
+            dataOK = _uiHelper.Validator.ValidateFieldNonEmpty(Lastname, Lastname.Text, NameLabel, "Please enter your last name", "Last") && dataOK;
+            dataOK = _uiHelper.Validator.ValidateFieldNonEmpty(Firstname, Firstname.Text, NameLabel, "Please enter your first name", "First") && dataOK;
 
             if (dataOK)
             {
                 if (_appContext.ConnectionManager.Connection.isEstablished())
                 {
-                    if (PasswordChange != null && (bool)PasswordChange.IsChecked)
+                    if (PasswordChange != null && PasswordChange.IsChecked == true)
                     {
-                        ConfirmPasswordWindow confirmPasswordWindow = new ConfirmPasswordWindow();
+                        var confirmPasswordWindow = new ConfirmPasswordWindow();
                         _appContext.UIManager.ShowDialog(confirmPasswordWindow);
                         if (!confirmPasswordWindow.Cancelled)
                         {
@@ -74,7 +77,7 @@ namespace BlitsMe.Agent.UI.WPF
                             {
                                 Password.Background = new SolidColorBrush(Colors.MistyRose);
                                 PasswordLabel.Foreground = new SolidColorBrush(Colors.Red);
-                                validator.setError("Cannot save changes, passwords don't match");
+                                _uiHelper.Validator.SetError("Cannot save changes, passwords don't match");
                                 return;
                             }
                         }
@@ -83,64 +86,79 @@ namespace BlitsMe.Agent.UI.WPF
                             return;
                         }
                     }
-                    try
-                    {
-                        String tokenId;
-                        String securityKey;
-                        if (_appContext.Elevate(_appContext.UIManager.CurrentWindow, out tokenId, out securityKey))
-                        {
-
-                            try
-                            {
-                                _appContext.CurrentUserManager.SaveCurrentUser(tokenId, securityKey, (PasswordChange != null && (bool)PasswordChange.IsChecked) ? Password.Password : null);
-                                StatusText.Text = "Your changes have been saved";
-                                StatusText.Visibility = Visibility.Visible;
-                                Password.Password = "";
-                                PasswordChange.IsChecked = false;
-                                Password.IsEnabled = false;
-                            }
-                            catch (MessageException<UpdateUserRs> ex)
-                            {
-                                Logger.Error("Attempt to update user failed : " + ex.Message, ex);
-                                if ("WILL_NOT_PROCESS_AUTH".Equals(ex.Response.error))
-                                {
-                                    validator.setError("Incorrect password, please try again");
-                                }
-                                else
-                                {
-                                    validator.setError("Failed to save changes to server");
-                                }
-                            }
-                            catch (Exception ex)
-                            {
-                                Logger.Error("Failed to save the current user : " + ex.Message, ex);
-                                validator.setError("Failed to save changes to server");
-                            }
-                        }
-                        else
-                        {
-                            validator.setError("Failed to authorise user details change");
-                        }
-                    }
-                    catch (Exception ex)
-                    {
-                        Logger.Error("Failed to elevate privileges for user details change : " + ex.Message, ex);
-                        validator.setError("Failed to elevate privileges to change details");
-                    }
+                    ThreadPool.QueueUserWorkItem(state => _uiHelper.RunElevation("Saving", SaveCurrentUser, "save user"));
                 }
+            }
+        }
+
+        private void SaveCurrentUser(string tokenId, string securityKey)
+        {
+            try
+            {
+                _appContext.CurrentUserManager.SaveCurrentUser(tokenId, securityKey, GetPasswordChange());
+                _uiHelper.Validator.SetStatus("Saved changes to server.");
+                Dispatcher.Invoke(new Action(() =>
+                {
+                    Password.Password = "";
+                    PasswordChange.IsChecked = false;
+                    Password.IsEnabled = false;
+                }));
+            }
+            catch (MessageException<UpdateUserRs> ex)
+            {
+                Logger.Error("Attempt to update user failed : " + ex.Message, ex);
+                if ("WILL_NOT_PROCESS_AUTH".Equals(ex.Response.error))
+                {
+                    _uiHelper.Validator.SetError("Incorrect password, please try again");
+                }
+                else
+                {
+                    _uiHelper.Validator.SetError("Failed to save changes to server");
+                }
+            }
+            catch (Exception ex)
+            {
+                Logger.Error("Failed to save the current user : " + ex.Message, ex);
+                _uiHelper.Validator.SetError("Failed to save changes to server");
+            }
+        }
+
+        private string GetPasswordChange()
+        {
+            if (Dispatcher.CheckAccess())
+            {
+                return (PasswordChange != null && PasswordChange.IsChecked == true) ? Password.Password : null;
+            }
+            else
+            {
+                String ret = null;
+                Dispatcher.Invoke(new Action(() => { ret = GetPasswordChange(); }));
+                return ret;
             }
         }
 
         private void CancelChanges_Click(object sender, RoutedEventArgs e)
         {
             ResetStatus();
+            ThreadPool.QueueUserWorkItem(state => ReloadCurrentUser());
+        }
+
+        private void ReloadCurrentUser()
+        {
+            _uiHelper.Disabler.DisableInputs(true, "Reloading");
             try
             {
                 _appContext.CurrentUserManager.ReloadCurrentUser();
+                _uiHelper.Validator.SetStatus("Reloaded user details from server.");
             }
             catch (Exception exception)
             {
                 Logger.Error("Failed to reload current user : " + exception.Message, exception);
+                _uiHelper.Validator.SetError("Failed to reload user details.");
+            }
+            finally
+            {
+                _uiHelper.Disabler.DisableInputs(false);
             }
         }
 
@@ -159,7 +177,7 @@ namespace BlitsMe.Agent.UI.WPF
 
         private void ResetStatus()
         {
-            validator.ResetStatus(new Control[] { Email, Location, Password, Lastname, Firstname }, new[] { EmailLabel, LocationLabel, PasswordLabel, NameLabel, null });
+            _uiHelper.Validator.ResetStatus(new Control[] { Email, Location, Password, Lastname, Firstname }, new[] { EmailLabel, LocationLabel, PasswordLabel, NameLabel, null });
         }
 
         private void AvatarImage_Click(object sender, RoutedEventArgs e)
@@ -171,16 +189,16 @@ namespace BlitsMe.Agent.UI.WPF
             ClearBlurEffect(UserControl);
         }
 
-        private void ClearBlurEffect(UserInfoWindow UserControl)
+        private void ClearBlurEffect(UserInfoWindow userControl)
         {
-            UserControl.Background = new SolidColorBrush(Colors.Transparent);
-            UserControl.UserControl.Opacity = 100;
+            userControl.Background = new SolidColorBrush(Colors.Transparent);
+            userControl.UserControl.Opacity = 100;
         }
 
-        private void ApplyBlurEffect(UserInfoWindow UserControl)
+        private void ApplyBlurEffect(UserInfoWindow userControl)
         {
-            UserControl.Background = new SolidColorBrush(Colors.Gray);
-            UserControl.UserControl.Opacity = 0.4;
+            userControl.Background = new SolidColorBrush(Colors.Gray);
+            userControl.UserControl.Opacity = 0.4;
         }
 
         public void SetAsMain(Dashboard dashboard)
