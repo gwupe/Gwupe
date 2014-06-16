@@ -413,7 +413,7 @@ namespace BlitsMe.Agent.Components.Functions.RemoteDesktop
                 {
                     int port = Client.Start(request.connectionId);
                     String viewerExe = System.IO.Path.GetDirectoryName(Environment.GetCommandLineArgs()[0]) + "\\bmss.exe";
-                    var parameters = "-username=\"" + _engagement.SecondParty.Person.Name + "\" -copyrect=yes -encoding=tight -compressionlevel=9 -jpegimagequality=3 -scale=auto 127.0.0.1::" + port;
+                    var parameters = "-username=\"" + _engagement.SecondParty.Person.Name + "\" -copyrect=yes -encoding=tight -compressionlevel=9 -jpegimagequality=3 -scale=auto -host=127.0.0.1 -port=" + port;
                     Logger.Debug("Running " + viewerExe + " " + parameters);
                     _bmssHandle = Process.Start(viewerExe, parameters);
 

@@ -17,7 +17,7 @@ namespace BlitsMe.Agent.UI.WPF
             _dashboardDataContext = dashboardDataContext;
             InitBlitsMeModalUserControl(Disabler, null, null);
             ProcessingWord = "Verifying";
-            StartWithFocus = ConfirmButton;
+            StartWithFocus = ConfirmPassword;
         }
 
         protected override void ResetInputs()

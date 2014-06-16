@@ -542,7 +542,6 @@
     <RootContent Include="env\Release\bmss.exe">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </RootContent>
-    <None Include="env\Release\bmss.exe.broken" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="app.config" />

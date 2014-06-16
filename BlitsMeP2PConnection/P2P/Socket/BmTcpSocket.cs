@@ -27,6 +27,7 @@ namespace BlitsMe.Communication.P2P.P2P.Socket
         public BmTcpSocket(IPEndPoint bindLocalEndPoint)
         {
             _bindLocalEndPoint = bindLocalEndPoint;
+            _toString = "BmTcpSocket()";
         }
 
         public IPEndPoint BindListen()
@@ -44,11 +45,12 @@ namespace BlitsMe.Communication.P2P.P2P.Socket
                 {
                     if (_listener == null) { BindListen(); }
                     Listening = true;
+                    _toString = "BmTcpSocket(Listen " + _listener.LocalEndpoint + ")";
                     _client = _listener.AcceptTcpClient();
                     Connected = true;
                     _listener.Stop();
                     Listening = false;
-                    _toString = "BmTcpSocket(" + ((IPEndPoint)_client.Client.RemoteEndPoint).Address + ":" +
+                    _toString = "BmTcpSocket(Connected " + ((IPEndPoint)_client.Client.RemoteEndPoint).Address + ":" +
                                 ((IPEndPoint)_client.Client.RemoteEndPoint).Port + ")";
                 }
             }
@@ -65,7 +67,7 @@ namespace BlitsMe.Communication.P2P.P2P.Socket
                 _client = new TcpClient();
                 _client.Connect(_bindLocalEndPoint);
                 Connected = true;
-                _toString = "BmTcpSocket(" + ((IPEndPoint)_client.Client.RemoteEndPoint).Address + ":" +
+                _toString = "BmTcpSocket(Connected " + ((IPEndPoint)_client.Client.RemoteEndPoint).Address + ":" +
                             ((IPEndPoint)_client.Client.RemoteEndPoint).Port + ")";
             }
         }

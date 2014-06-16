@@ -27,12 +27,14 @@ namespace BlitsMe.Communication.P2P.P2P.Connector
 
         public void Start()
         {
-            _inRunner = new Thread(() => ProxyThis(_inStream, _outStream)) { Name = "proxyForwards", IsBackground = true };
-            _outRunner = new Thread(() => ProxyThis(_outStream, _inStream)) { Name = "proxyReverse", IsBackground = true };
+            AutoResetEvent _inRunnerReady = new AutoResetEvent(false);
+            _inRunner = new Thread(() => ProxyThis(_inStream, _outStream, _inRunnerReady)) { Name = "proxyForwards", IsBackground = true };
+            _outRunner = new Thread(() => ProxyThis(_outStream, _inStream, new AutoResetEvent(false))) { Name = "proxyReverse", IsBackground = true };
             _inRunner.Start();
+            _inRunnerReady.WaitOne(30000);
         }
 
-        private void ProxyThis(ISocket instream, ISocket outstream)
+        private void ProxyThis(ISocket instream, ISocket outstream, AutoResetEvent readyToConnect)
         {
             Logger.Debug("Starting Proxy from " + instream + " to " + outstream);
             int read = 1;
@@ -44,6 +46,7 @@ namespace BlitsMe.Communication.P2P.P2P.Connector
                 if (!instream.Connected)
                 {
                     Logger.Debug("Listening for incoming connections");
+                    readyToConnect.Set();
                     instream.ListenOnce();
                     Logger.Debug("Connected incoming");
                 }
