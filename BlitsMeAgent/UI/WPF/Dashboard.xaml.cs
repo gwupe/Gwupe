@@ -2,6 +2,7 @@
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using System.ComponentModel;
+using System.Diagnostics;
 using System.Linq;
 using System.Threading;
 using System.Timers;
@@ -10,6 +11,7 @@ using System.Windows.Controls;
 using System.Windows.Data;
 using System.Windows.Forms;
 using System.Windows.Interop;
+using System.Windows.Navigation;
 using BlitsMe.Agent.Components;
 using BlitsMe.Agent.Components.Alert;
 using BlitsMe.Agent.Components.Notification;
@@ -74,8 +76,40 @@ namespace BlitsMe.Agent.UI.WPF
             activateEngagementChecker = new Timer(30000);
             activateEngagementChecker.Elapsed += CheckActiveEngagements;
             activateEngagementChecker.Start();
+            appContext.SettingsManager.PropertyChanged += SettingsOnPropertyChanged;
+            SetupPartner();
             Logger.Info("Dashboard setup completed");
             ((INotifyCollectionChanged)Notifications.Items).CollectionChanged += new NotifyCollectionChangedEventHandler(Notification_CollectionChanged);
+        }
+
+        private void SettingsOnPropertyChanged(object sender, PropertyChangedEventArgs propertyChangedEventArgs)
+        {
+            if (propertyChangedEventArgs.PropertyName.Equals("Partner"))
+            {
+                if (Dispatcher.CheckAccess())
+                {
+                    SetupPartner();
+                }
+                else
+                {
+                    Dispatcher.Invoke(new Action(SetupPartner));
+                }
+            }
+        }
+
+        private void SetupPartner()
+        {
+            if (_appContext.SettingsManager.Partner != null)
+            {
+                Logger.Debug("Enabling Partner " + _appContext.SettingsManager.Partner.Name);
+                PartnerBanner.Visibility = Visibility.Visible;
+                PartnerBanner.DataContext = _appContext.SettingsManager.Partner;
+            }
+            else
+            {
+                Logger.Debug("Disabling Partner");
+                PartnerBanner.Visibility = Visibility.Collapsed;
+            }
         }
 
         #region Overlay Screen Management
@@ -147,6 +181,8 @@ namespace BlitsMe.Agent.UI.WPF
         }
 
         #endregion
+
+
 
         #region Current User interaction
 
@@ -724,6 +760,11 @@ namespace BlitsMe.Agent.UI.WPF
             // TODO: Add event handler implementation here.
         }
 
+        private void NavigateToUrl(object sender, RequestNavigateEventArgs e)
+        {
+            Logger.Debug("Opening web browser to " + e.Uri);
+            Process.Start(e.Uri.ToString());
+        }
     }
 
     public enum DashboardState

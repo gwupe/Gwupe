@@ -22,6 +22,6 @@ namespace BlitsMe.Cloud.Messaging.Request
         [DataMember]
         public string version { get; set; }
         [DataMember]
-        public string promocode { get; set; }
+        public string partnerCode { get; set; }
     }
 }

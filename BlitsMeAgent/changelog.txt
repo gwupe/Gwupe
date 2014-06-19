@@ -1,8 +1,1 @@
-﻿Bugfix, P2P Reliability and Unattended Access
-Created failover UDP route through the server
-Fixed File Received Open/Folder Open Functionality
-Changed Default Compression and Quality Settings for speed
-Setup unattended access so users can grant access to their supporters 
-when they are away from their machines.  
-Unattended access can also be used with servers.
-Various bug fixes relating to UI responsiveness
+﻿

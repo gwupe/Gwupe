@@ -16,7 +16,7 @@
         LogoFile="arrow.png"
         />
     </BootstrapperApplicationRef>
-    <Variable Name="Promo" bal:Overridable="yes" Type="string" Value="BASELINE" />
+    <Variable Name="Promo" bal:Overridable="yes" Type="string" Value="BLITSME" />
     <Chain>
       <!-- Need client profile 4.0 -->
       <PackageGroupRef Id="NetFx40ClientWeb" />

@@ -283,7 +283,7 @@ namespace BlitsMe.Agent.Components.Functions.RemoteDesktop
                 // Print in chat that we sent the second party a rdp request
                 IChatMessage chatElement =
                     Chat.LogSystemMessage("You sent " + _engagement.SecondParty.Person.Firstname +
-                                          " a request to control their desktop.");
+                    " a request to control their desktop." + (tokenId == null ? "" : "  You have unattended access to their desktop, you will be granted access automatically after 10 seconds."));
                 // Actually send the message asynchronously
                 //_appContext.ConnectionManager.Connection.RequestAsync<RDPRequestRq, RDPRequestRs>(request, (req, res, ex) => ProcessRequestRDPSessionResponse(req, res, ex, chatElement));
                 try

@@ -310,7 +310,7 @@ namespace BlitsMe.Agent.Managers
                     profile = LoginDetails.Profile,
                     workstation = LoginDetails.Workstation,
                     version = _appContext.Version(2),
-                    promocode = _appContext.Reg.getRegValue("PromoCode",true),
+                    partnerCode = _appContext.Reg.getRegValue("PromoCode",true),
                 };
             LoginRs loginRs = null;
             try
@@ -318,6 +318,22 @@ namespace BlitsMe.Agent.Managers
                 loginRs = _appContext.ConnectionManager.Connection.Request<LoginRq, LoginRs>(loginRq);
                 _appContext.RosterManager.RetrieveRoster();
                 _appContext.CurrentUserManager.SetUser(loginRs.userElement, loginRs.shortCode);
+                if (loginRs.partnerElement != null)
+                {
+                    _appContext.SettingsManager.Partner = new Partner()
+                    {
+                        Basename = loginRs.partnerElement.basename,
+                        LinkText = loginRs.partnerElement.linkText,
+                        Logo = Convert.FromBase64String(loginRs.partnerElement.logo),
+                        Name = loginRs.partnerElement.name,
+                        Text = loginRs.partnerElement.text,
+                        Website = loginRs.partnerElement.website
+                    };
+                }
+                else
+                {
+                    _appContext.SettingsManager.Partner = null;
+                }
             }
             catch (MessageException<LoginRs> e)
             {

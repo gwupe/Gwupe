@@ -134,8 +134,9 @@ namespace BlitsMe.Common.Security
                     {
                         retVal = Identifier("Win32_Processor", "Manufacturer");
                     }
+                    // Don't do this, Clock speed Varies
                     //Add clock speed for extra security
-                    retVal += Identifier("Win32_Processor", "MaxClockSpeed");
+                    //retVal += Identifier("Win32_Processor", "MaxClockSpeed");
                 }
             }
             return retVal;
@@ -147,8 +148,9 @@ namespace BlitsMe.Common.Security
             //+ Identifier("Win32_BIOS", "SMBIOSBIOSVersion")
             + Identifier("Win32_BIOS", "IdentificationCode")
             + Identifier("Win32_BIOS", "SerialNumber")
-            + Identifier("Win32_BIOS", "ReleaseDate")
-            + Identifier("Win32_BIOS", "Version");
+            //+ Identifier("Win32_BIOS", "ReleaseDate")
+            //+ Identifier("Win32_BIOS", "Version")
+            ;
         }
         //Main physical hard drive ID
         private static string DiskId()
@@ -169,8 +171,8 @@ namespace BlitsMe.Common.Security
         //Primary video controller ID
         private static string VideoId()
         {
-            return Identifier("Win32_VideoController", "DriverVersion")
-            + Identifier("Win32_VideoController", "Name");
+            return //Identifier("Win32_VideoController", "DriverVersion") +
+             Identifier("Win32_VideoController", "Name");
         }
         //First enabled network card ID
         private static string MacId()

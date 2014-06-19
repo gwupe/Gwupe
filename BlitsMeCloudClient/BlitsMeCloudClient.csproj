@@ -87,6 +87,7 @@
     <Compile Include="Messaging\API\UserToUserRequest.cs" />
     <Compile Include="Messaging\CoupledWebSocketMessageHandler.cs" />
     <Compile Include="Messaging\Elements\IpEndPointElement.cs" />
+    <Compile Include="Messaging\Elements\PartnerElement.cs" />
     <Compile Include="Messaging\Elements\PresenceElement.cs" />
     <Compile Include="Messaging\Elements\RelationshipElement.cs" />
     <Compile Include="Messaging\Elements\ResultElement.cs" />
@@ -94,6 +95,7 @@
     <Compile Include="Messaging\Elements\UserElement.cs" />
     <Compile Include="Messaging\Request\ChatMessageRq.cs" />
     <Compile Include="Messaging\Request\InitRepeatedConnectionRq.cs" />
+    <Compile Include="Messaging\Request\MultiRq.cs" />
     <Compile Include="Messaging\Request\NotifyChangeRq.cs" />
     <Compile Include="Messaging\Request\RateRq.cs" />
     <Compile Include="Messaging\Request\CurrentUserRq.cs" />
@@ -119,6 +121,7 @@
     <Compile Include="Messaging\Request\VersionRq.cs" />
     <Compile Include="Messaging\Response\ChatMessageRs.cs" />
     <Compile Include="Messaging\Response\InitRepeatedConnectionRs.cs" />
+    <Compile Include="Messaging\Response\MultiRs.cs" />
     <Compile Include="Messaging\Response\NotifyChangeRs.cs" />
     <Compile Include="Messaging\Response\RateRs.cs" />
     <Compile Include="Messaging\Response\CurrentUserRs.cs" />

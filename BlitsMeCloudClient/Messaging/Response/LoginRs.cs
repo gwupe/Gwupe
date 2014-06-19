@@ -8,7 +8,7 @@ using BlitsMe.Cloud.Messaging.Elements;
 namespace BlitsMe.Cloud.Messaging.Response
 {
     [DataContract]
-    public class LoginRs : BlitsMe.Cloud.Messaging.API.Response
+    public class LoginRs : API.Response
     {
         public override String type
         {
@@ -24,6 +24,6 @@ namespace BlitsMe.Cloud.Messaging.Response
         [DataMember]
         public UserElement userElement { get; set; }
         [DataMember]
-        public string promocode { get; set; }
+        public PartnerElement partnerElement { get; set; }
     }
 }
