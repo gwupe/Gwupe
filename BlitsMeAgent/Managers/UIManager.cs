@@ -275,5 +275,10 @@ namespace BlitsMe.Agent.Managers
         {
             dashBoard.Alert(message);
         }
+
+        public FaultReport GenerateFaultReport()
+        {
+            return dashBoard.GenerateFaultReport();
+        }
     }
 }

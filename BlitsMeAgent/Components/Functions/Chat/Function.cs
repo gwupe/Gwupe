@@ -299,8 +299,15 @@ namespace BlitsMe.Agent.Components.Functions.Chat
             BlitsMeCommands = new Dictionary<BlitsMeCommand, Func<List<string>, bool>>
             {
                 {BlitsMeCommand.Debug, DebugCommand},
-                {BlitsMeCommand.P2P, P2PCommand}
+                {BlitsMeCommand.P2P, P2PCommand},
+                {BlitsMeCommand.ReportFault, ReportFault}
             };
+        }
+
+        private bool ReportFault(List<string> arg)
+        {
+            ThreadPool.QueueUserWorkItem(state => BlitsMeClientAppContext.CurrentAppContext.GenerateFaultReport());
+            return true;
         }
 
         private bool P2PCommand(List<string> list)
@@ -331,7 +338,8 @@ namespace BlitsMe.Agent.Components.Functions.Chat
     internal enum BlitsMeCommand
     {
         Debug,
-        P2P
+        P2P,
+        ReportFault
     };
 
     internal class ChatActivity : EngagementActivity

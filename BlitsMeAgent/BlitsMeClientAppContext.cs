@@ -178,22 +178,15 @@ namespace BlitsMe.Agent
         {
             UIManager.Show();
         }
-        /*
-        private void RunDashboard()
-        {
-            UIDashBoard = new Dashboard(this);
-            _dashboardReady.Set();
-            Dispatcher.Run();
-        }*/
 
         public void Alert(String message)
         {
             UIManager.Alert(message);
-            //AlertWindow alertWindow = new AlertWindow(message);
-            //UIManager.ShowDialog(alertWindow);
-//            parentWindow.IsEnabled = false;
-            //alertWindow.ShowDialog();
-            //parentWindow.IsEnabled = true;
+        }
+
+        public void GenerateFaultReport()
+        {
+            FaultReport report = UIManager.GenerateFaultReport();
         }
 
         public bool Elevate(out String tokenId, out String securityKey)

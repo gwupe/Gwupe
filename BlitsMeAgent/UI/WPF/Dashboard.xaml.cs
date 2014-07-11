@@ -17,6 +17,7 @@ using BlitsMe.Agent.Components.Alert;
 using BlitsMe.Agent.Components.Notification;
 using BlitsMe.Agent.Components.Person;
 using BlitsMe.Agent.Managers;
+using BlitsMe.Agent.UI.WPF.API;
 using BlitsMe.Agent.UI.WPF.Engage;
 using BlitsMe.Agent.UI.WPF.Roster;
 using BlitsMe.Agent.UI.WPF.Search;
@@ -137,6 +138,15 @@ namespace BlitsMe.Agent.UI.WPF
         {
             Dispatcher.Invoke(new Action(() => DashboardData.AlertScreen.SetPrompt(message)));
             DashboardData.AlertScreen.PresentModal();
+        }
+
+        public FaultReport GenerateFaultReport()
+        {
+            Dispatcher.Invoke(new Action(() => DashboardData.UserInputPrompt = new FaultReportControl(DashboardData)));
+            DashboardData.UserInputPrompt.PresentModal();
+            //DashboardData.DashboardState = DashboardState.Default;
+            DashboardData.UserInputPrompt.Reset();
+            return ((FaultReportControl)DashboardData.UserInputPrompt).FaultReport;
         }
 
         internal string Elevate(String message)
@@ -765,6 +775,7 @@ namespace BlitsMe.Agent.UI.WPF
             Logger.Debug("Opening web browser to " + e.Uri);
             Process.Start(e.Uri.ToString());
         }
+
     }
 
     public enum DashboardState
@@ -776,7 +787,8 @@ namespace BlitsMe.Agent.UI.WPF
         SigningUp,
         Signup,
         Elevate,
-        Alert
+        Alert,
+        UserInputPrompt
     };
 
     public class DashboardDataContext : INotifyPropertyChanged
@@ -791,6 +803,7 @@ namespace BlitsMe.Agent.UI.WPF
         private SignUpControl _signUpScreen;
         private ElevateControl _elevateScreen;
         private AlertControl _alertScreen;
+        public BlitsMeModalUserControl UserInputPrompt { get; set; }
 
         public LoginControl LoginScreen
         {
@@ -816,7 +829,10 @@ namespace BlitsMe.Agent.UI.WPF
         public DashboardState DashboardState
         {
             get { return _dashboardState; }
-            set { _dashboardState = value; OnPropertyChanged("DashboardState"); }
+            set
+            {
+                Logger.Debug("Changing dashboard state to " + value); _dashboardState = value; OnPropertyChanged("DashboardState");
+            }
         }
 
         public DashboardDataContext(Dashboard dashboard)

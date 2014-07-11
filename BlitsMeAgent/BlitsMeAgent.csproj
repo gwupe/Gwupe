@@ -244,6 +244,7 @@
     <Compile Include="Components\Functions\RemoteDesktop\Server.cs" />
     <Compile Include="DispatchingCollection.cs" />
     <Compile Include="Exceptions\SignUpException.cs" />
+    <Compile Include="FaultReport.cs" />
     <Compile Include="FlashWindowHelper.cs" />
     <Compile Include="Managers\ConnectionManager.cs" />
     <Compile Include="Managers\CurrentUserManager.cs" />
@@ -286,6 +287,9 @@
     <Compile Include="UI\WPF\ContactInfoWindow.xaml.cs">
       <DependentUpon>ContactInfoWindow.xaml</DependentUpon>
     </Compile>
+    <Compile Include="UI\WPF\FaultReportControl.xaml.cs">
+      <DependentUpon>FaultReportControl.xaml</DependentUpon>
+    </Compile>
     <Compile Include="UI\WPF\Dashboard.xaml.cs">
       <DependentUpon>Dashboard.xaml</DependentUpon>
     </Compile>
@@ -306,6 +310,10 @@
     <Page Include="UI\WPF\ConfirmPasswordControl.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="UI\WPF\FaultReportControl.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
     </Page>
     <Page Include="UI\WPF\ElevateControl.xaml">
       <Generator>MSBuild:Compile</Generator>
@@ -702,7 +710,11 @@
   -->
   <Target Name="AfterBuild">
     <Copy DestinationFolder="$(OutputPath)" SourceFiles="@(RootContent)" SkipUnchangedFiles="true" />
+<!-- 2013 Certificate
     <Exec Condition=" '$(Configuration)' == 'Release' " Command="&quot;C:\Program Files (x86)\Microsoft SDKs\Windows\v7.1A\Bin\Signtool.exe&quot; sign /d &quot;BlitsMe Agent Application&quot; /sha1 83e81a9d1d88fb8718fd1df07e89ef89b000ee64 &quot;$(TargetDir)BlitsMe.Agent.exe&quot;" />
     <Exec Condition=" '$(Configuration)' == 'Release' " Command="&quot;C:\Program Files (x86)\Microsoft SDKs\Windows\v7.1A\Bin\Signtool.exe&quot; sign /d &quot;BlitsMe Support Screen&quot; /sha1 83e81a9d1d88fb8718fd1df07e89ef89b000ee64 &quot;$(TargetDir)bmss.exe&quot;" />
+-->
+    <Exec Condition=" '$(Configuration)' == 'Release' " Command="&quot;C:\Program Files (x86)\Microsoft SDKs\Windows\v7.1A\Bin\Signtool.exe&quot; sign /d &quot;BlitsMe Agent Application&quot; /sha1 ab9772b33b05e157f66d29ba9c29ee8ed66688e7 &quot;$(TargetDir)BlitsMe.Agent.exe&quot;" />
+    <Exec Condition=" '$(Configuration)' == 'Release' " Command="&quot;C:\Program Files (x86)\Microsoft SDKs\Windows\v7.1A\Bin\Signtool.exe&quot; sign /d &quot;BlitsMe Support Screen&quot; /sha1 ab9772b33b05e157f66d29ba9c29ee8ed66688e7 &quot;$(TargetDir)bmss.exe&quot;" />
   </Target>
 </Project>

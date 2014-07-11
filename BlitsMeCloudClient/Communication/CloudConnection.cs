@@ -128,7 +128,7 @@ namespace BlitsMe.Cloud.Communication
                     }
                     catch (Exception e)
                     {
-                        Logger.Error("Failed to run response handler for request", e);
+                        Logger.Error("Request failed", e);
                         responseHandler(req, null, e);
                     }
                 });

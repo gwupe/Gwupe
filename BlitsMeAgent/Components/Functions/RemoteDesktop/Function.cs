@@ -320,7 +320,7 @@ namespace BlitsMe.Agent.Components.Functions.RemoteDesktop
             string securityKey;
             if (
                 BlitsMeClientAppContext.CurrentAppContext.Elevate(
-                    "This connection requires you to verify your identify, please enter your BlitsMe password to connect to " +
+                    "This connection requires you to verify your identity, please enter your BlitsMe password to connect to " +
                     _engagement.SecondParty.Person.Name + ".", out tokenId, out securityKey))
             {
                 RequestRdpSession(tokenId, securityKey);

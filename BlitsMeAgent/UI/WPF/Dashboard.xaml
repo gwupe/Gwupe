@@ -305,6 +305,11 @@
                                     <Setter Property="Content" Value="{Binding AlertScreen}" />
                                     <Setter Property="Panel.ZIndex" Value="2" />
                                 </DataTrigger>
+                                <DataTrigger Binding="{Binding DashboardState}" Value="{x:Static bm:DashboardState.UserInputPrompt}">
+                                    <Setter Property="ContentTemplate" Value="{x:Null}" />
+                                    <Setter Property="Content" Value="{Binding UserInputPrompt}" />
+                                    <Setter Property="Panel.ZIndex" Value="2" />
+                                </DataTrigger>
                             </Style.Triggers>
                         </Style>
                     </ContentControl.Style>
