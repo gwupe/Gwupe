@@ -52,7 +52,7 @@ namespace BlitsMe.Communication.P2P.P2P.Socket
         {
             var syncer = new Syncer(syncId, syncTypes);
             var activeIp = syncer.WaitForSyncFromPeer(peer, 10000, _udpClient);
-            var udtSocket = new Udt.Socket(AddressFamily.InterNetwork, SocketType.Stream);
+            var udtSocket = SetupUdtSocket();
             udtSocket.Bind(_udpClient.Client);
             udtSocket.Listen(10);
             Udt.Socket udtClient = udtSocket.Accept();
@@ -62,11 +62,19 @@ namespace BlitsMe.Communication.P2P.P2P.Socket
             return activeIp;
         }
 
+        private Udt.Socket SetupUdtSocket()
+        {
+            var udtSocket = new Udt.Socket(AddressFamily.InterNetwork, SocketType.Stream);
+            udtSocket.SetSocketOption(Udt.SocketOptionName.SendBuffer, 16384);
+            udtSocket.SetSocketOption(Udt.SocketOptionName.ReceiveBuffer, 16384);
+            return udtSocket;
+        }
+
         public IPEndPoint Sync(PeerInfo peer, string syncId, List<SyncType> syncTypes = null)
         {
             var syncer = new Syncer(syncId, syncTypes);
             var activeIp = syncer.SyncWithPeer(peer, 10000, _udpClient);
-            var udtSocket = new Udt.Socket(AddressFamily.InterNetwork, SocketType.Stream);
+            var udtSocket = SetupUdtSocket();
             udtSocket.Bind(_udpClient.Client);
             udtSocket.Connect(activeIp.Address, activeIp.Port);
             UdtConnection = udtSocket;

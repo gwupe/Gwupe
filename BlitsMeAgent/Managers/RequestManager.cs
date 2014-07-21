@@ -51,6 +51,8 @@ namespace BlitsMe.Agent.Managers
                 new SubscribeProcessor(_appContext));
             _appContext.ConnectionManager.Connection.WebSocketServer.RegisterProcessor("InitRepeatedConnection", 
                 new InitRepeatedConnectionProcessor(_appContext));
+            _appContext.ConnectionManager.Connection.WebSocketServer.RegisterProcessor("ServerNotification",
+                new ServerNotificationProcessor(_appContext));
             _appContext.ConnectionManager.Connection.WebSocketServer.RegisterProcessor("NotifyChange",
                 new NotifyChangeProcessor(_appContext));
             _setup = true;

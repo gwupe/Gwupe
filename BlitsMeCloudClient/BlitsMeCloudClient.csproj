@@ -94,6 +94,7 @@
     <Compile Include="Messaging\Elements\RosterElement.cs" />
     <Compile Include="Messaging\Elements\UserElement.cs" />
     <Compile Include="Messaging\Request\ChatMessageRq.cs" />
+    <Compile Include="Messaging\Request\ServerNotificationRq.cs" />
     <Compile Include="Messaging\Request\InitRepeatedConnectionRq.cs" />
     <Compile Include="Messaging\Request\MultiRq.cs" />
     <Compile Include="Messaging\Request\NotifyChangeRq.cs" />
@@ -120,6 +121,7 @@
     <Compile Include="Messaging\Request\VCardRq.cs" />
     <Compile Include="Messaging\Request\VersionRq.cs" />
     <Compile Include="Messaging\Response\ChatMessageRs.cs" />
+    <Compile Include="Messaging\Response\ServerNotificationRs.cs" />
     <Compile Include="Messaging\Response\InitRepeatedConnectionRs.cs" />
     <Compile Include="Messaging\Response\MultiRs.cs" />
     <Compile Include="Messaging\Response\NotifyChangeRs.cs" />

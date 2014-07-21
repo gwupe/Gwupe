@@ -213,5 +213,10 @@ namespace BlitsMe.Cloud.Communication
             }
             OnDisconnect(new EventArgs());
         }
+
+        public void ManualBreak(string reason)
+        {
+            CloseConnection(WebSocketCloseCode.DataError,reason);
+        }
     }
 }

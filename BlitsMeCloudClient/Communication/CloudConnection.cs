@@ -126,6 +126,14 @@ namespace BlitsMe.Cloud.Communication
                             Logger.Error("Assigned response handler threw an exception : " + e.Message, e);
                         }
                     }
+                    catch (MessageException<TRs> e)
+                    {
+                        if ("WILL_NOT_PROCESS_INVALID_SESSION".Equals(e.ErrorCode))
+                        {
+                            // something broke server side, cut the connection
+                            _connectionMaintainer.ManualBreak("Invalid session, will reconnect.");
+                        }
+                    }
                     catch (Exception e)
                     {
                         Logger.Error("Request failed", e);

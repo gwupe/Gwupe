@@ -212,17 +212,22 @@ namespace BlitsMe.Agent.Managers
                         Logger.Error("Failed to logout correctly : " + e.Message, e);
                     }
                 }
-                IsLoggedIn = false;
-                // Lets pulse the logout occurred lock
-                lock (LogoutOccurredLock)
-                {
-                    Monitor.PulseAll(LogoutOccurredLock);
-                }
-                OnLoggedOut();
-                if(clearPassword)
+                if (clearPassword)
                     LoginDetails.PasswordHash = "";
-                lock (LoginReadyLock) Monitor.PulseAll(LoginReadyLock);
+                InvalidateSession();
             }
+        }
+
+        public void InvalidateSession()
+        {
+            IsLoggedIn = false;
+            // Lets pulse the logout occurred lock
+            lock (LogoutOccurredLock)
+            {
+                Monitor.PulseAll(LogoutOccurredLock);
+            }
+            OnLoggedOut();
+            lock (LoginReadyLock) Monitor.PulseAll(LoginReadyLock);
         }
 
         public void Run()

@@ -224,6 +224,7 @@
     <Compile Include="Components\Person\Presence\MultiPresence.cs" />
     <Compile Include="Components\Person\Presence\Presence.cs" />
     <Compile Include="Components\Person\Relationship.cs" />
+    <Compile Include="Components\Processors\ServerNotificationProcessor.cs" />
     <Compile Include="Components\Processors\InitRepeatedConnectionProcessor.cs" />
     <Compile Include="Components\Processors\ListenHandshakeProcessor.cs" />
     <Compile Include="Components\Processors\InitUDPConnectionProcessor.cs" />
@@ -710,7 +711,7 @@
   -->
   <Target Name="AfterBuild">
     <Copy DestinationFolder="$(OutputPath)" SourceFiles="@(RootContent)" SkipUnchangedFiles="true" />
-<!-- 2013 Certificate
+    <!-- 2013 Certificate
     <Exec Condition=" '$(Configuration)' == 'Release' " Command="&quot;C:\Program Files (x86)\Microsoft SDKs\Windows\v7.1A\Bin\Signtool.exe&quot; sign /d &quot;BlitsMe Agent Application&quot; /sha1 83e81a9d1d88fb8718fd1df07e89ef89b000ee64 &quot;$(TargetDir)BlitsMe.Agent.exe&quot;" />
     <Exec Condition=" '$(Configuration)' == 'Release' " Command="&quot;C:\Program Files (x86)\Microsoft SDKs\Windows\v7.1A\Bin\Signtool.exe&quot; sign /d &quot;BlitsMe Support Screen&quot; /sha1 83e81a9d1d88fb8718fd1df07e89ef89b000ee64 &quot;$(TargetDir)bmss.exe&quot;" />
 -->
