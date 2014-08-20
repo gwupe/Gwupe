@@ -159,7 +159,7 @@ namespace BlitsMe.Agent.Managers
 
         public void PromptLogin()
         {
-            dashBoard.Login(false);
+            dashBoard.Login();
         }
 
         public void GetFunctionChat(Function chat)
@@ -218,16 +218,8 @@ namespace BlitsMe.Agent.Managers
         {
             if (BlitsMeClientAppContext.CurrentAppContext.IsShuttingDown) return;
             Logger.Debug("Received a login error " + dataSubmitErrorArgs);
-            if (dataSubmitErrorArgs.HasErrorField("PasswordHash"))
-            {
-                Logger.Debug("Password was incorrect, showing login screen");
-                dashBoard.Login(true);
-            }
-            else if (dataSubmitErrorArgs.HasError("INCOMPLETE"))
-            {
-                Logger.Debug("Data is incomplete, showing login screen");
-                dashBoard.Login();
-            }
+            dashBoard.LoginFailed(dataSubmitErrorArgs.HasErrorField("PasswordHash"));
+            dashBoard.Login();
         }
 
         private void LoginManagerOnLoggingIn(object sender, LoginEventArgs loginEventArgs)

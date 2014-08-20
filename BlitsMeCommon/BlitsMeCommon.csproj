@@ -61,6 +61,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="BlockingStream.cs" />
+    <Compile Include="Misc.cs" />
     <Compile Include="OSUtils.cs" />
     <Compile Include="PipeStream.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

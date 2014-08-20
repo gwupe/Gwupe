@@ -63,6 +63,7 @@ namespace BlitsMe.Agent.UI.WPF
                 ClearBlurEffect(_dashboard);
                 Logger.Debug("Got username and password, submitting to login manager");
                 BlitsMeClientAppContext.CurrentAppContext.LoginManager.Login(Username.Text, Password.Password);
+                _dashboard.DashboardData.DashboardStateManager.DisableDashboardState(DashboardState.Login);
             }
         }
 

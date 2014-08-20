@@ -46,7 +46,7 @@ namespace BlitsMe.Agent.UI.WPF.API
                 // can't focus immediately because it might not be setup correctly
                 ThreadPool.QueueUserWorkItem(state =>
                 {
-                    Thread.Sleep(100);
+                    Thread.Sleep(10);
                     Dispatcher.Invoke(new Action(() => StartWithFocus.Focus()));
                 });
             }

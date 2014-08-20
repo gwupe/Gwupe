@@ -3,7 +3,9 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.IO;
+using System.Linq;
 using System.Reflection;
+using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading;
 using System.Windows;
@@ -21,6 +23,7 @@ using BlitsMe.Common;
 using BlitsMe.Common.Security;
 using BlitsMe.ServiceProxy;
 using log4net;
+using log4net.Appender;
 using log4net.Config;
 using log4net.Core;
 using log4net.Repository.Hierarchy;
@@ -187,11 +190,60 @@ namespace BlitsMe.Agent
         public void GenerateFaultReport()
         {
             FaultReport report = UIManager.GenerateFaultReport();
+            // Submit the report in the background
+            if (report != null)
+            {
+                ThreadPool.QueueUserWorkItem(state => SubmitFaultReport(report));
+            }
+        }
+
+        private void SubmitFaultReport(FaultReport report)
+        {
+            // get the log file data
+            var rootAppender = ((Hierarchy)LogManager.GetRepository()).Root.Appenders.OfType<FileAppender>().FirstOrDefault();
+            string filename = rootAppender != null ? rootAppender.File : string.Empty;
+            if (!String.IsNullOrEmpty(filename))
+            {
+                Logger.Debug("Retrieving log from " + filename);
+                try
+                {
+                    FileStream stream = new FileStream(filename, FileMode.Open, FileAccess.Read, FileShare.ReadWrite);
+                    long toRead = stream.Length < 131072 ? stream.Length : 131072;
+                    stream.Seek(-toRead, SeekOrigin.End);
+                    byte[] buffer = new byte[toRead];
+                    var read = stream.Read(buffer, 0, (int)toRead);
+                    stream.Close();
+                    Logger.Debug("Read " + read + " bytes");
+                    byte[] zippedLog = Common.Misc.Instance().Zip(buffer);
+                    Logger.Debug("Zipped to " + zippedLog.Length);
+                    var request = new FaultReportRq
+                    {
+                        log = Convert.ToBase64String(zippedLog),
+                        report = report.UserReport
+                    };
+                    try
+                    {
+                        var response = ConnectionManager.Connection.Request<FaultReportRq, FaultReportRs>(request);
+                    }
+                    catch (Exception e)
+                    {
+                        Logger.Error("Failed to send fault report to server", e);
+                    }
+                }
+                catch (Exception e)
+                {
+                    Logger.Error("Failed to read the log file", e);
+                }
+            }
+            else
+            {
+                Logger.Error("Failed to get the log file, cannot submit fault.");
+            }
         }
 
         public bool Elevate(out String tokenId, out String securityKey)
         {
-            return Elevate("The secure action you are requesting requires you to enter your current BlitsMe password to verify your identity.", 
+            return Elevate("The secure action you are requesting requires you to enter your current BlitsMe password to verify your identity.",
                 out tokenId, out securityKey);
         }
 

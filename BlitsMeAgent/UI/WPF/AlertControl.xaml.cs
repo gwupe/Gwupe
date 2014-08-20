@@ -30,12 +30,12 @@ namespace BlitsMe.Agent.UI.WPF
 
         protected override void Show()
         {
-            _dashboardDataContext.DashboardState = DashboardState.Alert;
+            _dashboardDataContext.DashboardStateManager.EnableDashboardState(DashboardState.Alert);
         }
 
         protected override void Hide()
         {
-            _dashboardDataContext.DashboardState = DashboardState.Default;
+            _dashboardDataContext.DashboardStateManager.DisableDashboardState(DashboardState.Alert);
         }
 
         protected override void ResetInputs()

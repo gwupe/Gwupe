@@ -125,7 +125,7 @@
       <Private>False</Private>
     </Reference>
     <Reference Include="MahApps.Metro">
-      <HintPath>..\packages\MahApps.Metro.0.10.1.1\lib\net40\MahApps.Metro.dll</HintPath>
+      <HintPath>..\packages\MahApps.Metro.0.13.1.0\lib\net40\MahApps.Metro.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="Microsoft.Expression.Drawing">
@@ -146,7 +146,7 @@
     <Reference Include="System.ServiceModel" />
     <Reference Include="System.ServiceProcess" />
     <Reference Include="System.Windows.Interactivity, Version=4.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-      <HintPath>..\packages\MahApps.Metro.0.10.1.1\lib\net40\System.Windows.Interactivity.dll</HintPath>
+      <HintPath>..\packages\MahApps.Metro.0.13.1.0\lib\net40\System.Windows.Interactivity.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="System.Xaml" />
@@ -288,6 +288,7 @@
     <Compile Include="UI\WPF\ContactInfoWindow.xaml.cs">
       <DependentUpon>ContactInfoWindow.xaml</DependentUpon>
     </Compile>
+    <Compile Include="UI\WPF\DashboardStateManager.cs" />
     <Compile Include="UI\WPF\FaultReportControl.xaml.cs">
       <DependentUpon>FaultReportControl.xaml</DependentUpon>
     </Compile>
@@ -663,12 +664,13 @@
     <Resource Include="Icons\icon-main.ico" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="Resources\Entypo-license.txt" />
     <Resource Include="UI\WPF\Images\internt_web_technology-04-48.png" />
     <Resource Include="UI\WPF\Images\1401499468_61_Screen.png" />
     <Resource Include="UI\WPF\Images\1401500204_519673-179_Upload.png" />
     <Resource Include="UI\WPF\Images\logo.jpg" />
     <Resource Include="UI\WPF\Images\baseline.png" />
+    <Content Include="Resources\Entypo-license.txt" />
+    <Content Include="Resources\WindowsIcons-license.txt" />
     <Content Include="UI\WPF\Images\Search.png" />
     <Resource Include="UI\WPF\Images\Settings.png" />
     <Content Include="UI\WPF\Images\Time.png" />
@@ -681,8 +683,8 @@
     <EmbeddedResource Include="..\library\log4net.dll" />
     <EmbeddedResource Include="..\BlitsMeP2PConnection\UdtProtocol.dll" />
     <EmbeddedResource Include="..\WebSocketLib\bin\$(Configuration)\Bauglir.Ex.dll" />
-    <EmbeddedResource Include="..\packages\MahApps.Metro.0.10.1.1\lib\net40\MahApps.Metro.dll" />
-    <EmbeddedResource Include="..\packages\MahApps.Metro.0.10.1.1\lib\net40\System.Windows.Interactivity.dll" />
+    <EmbeddedResource Include="..\packages\MahApps.Metro.0.13.1.0\lib\net40\MahApps.Metro.dll" />
+    <EmbeddedResource Include="..\packages\MahApps.Metro.0.13.1.0\lib\net40\System.Windows.Interactivity.dll" />
     <EmbeddedResource Include="..\library\Microsoft.Expression.Drawing.dll" />
     <EmbeddedResource Include="..\library\Microsoft.Expression.Effects.dll" />
     <EmbeddedResource Include="changelog.txt" />

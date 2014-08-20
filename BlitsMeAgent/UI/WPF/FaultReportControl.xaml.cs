@@ -16,7 +16,7 @@ namespace BlitsMe.Agent.UI.WPF
             this.InitializeComponent();
             _dashboardDataContext = dashboardDataContext;
             InitBlitsMeModalUserControl(Disabler, null, null);
-            ProcessingWord = "Submitting";
+            ProcessingWord = "Sending";
             StartWithFocus = UserReport;
         }
 
@@ -30,6 +30,8 @@ namespace BlitsMe.Agent.UI.WPF
 
         protected override bool CommitInput()
         {
+            FaultReport = new FaultReport();
+            Dispatcher.Invoke(new Action(() => FaultReport.UserReport = UserReport.Text));
             return true;
         }
 
@@ -42,12 +44,12 @@ namespace BlitsMe.Agent.UI.WPF
 
         protected override void Show()
         {
-            _dashboardDataContext.DashboardState = DashboardState.UserInputPrompt;
+            _dashboardDataContext.DashboardStateManager.EnableDashboardState(DashboardState.FaultReport);
         }
 
         protected override void Hide()
         {
-            _dashboardDataContext.DashboardState = DashboardState.Default;
+            _dashboardDataContext.DashboardStateManager.DisableDashboardState(DashboardState.FaultReport);
         }
     }
 }

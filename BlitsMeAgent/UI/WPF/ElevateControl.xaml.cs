@@ -40,12 +40,12 @@ namespace BlitsMe.Agent.UI.WPF
 
         protected override void Show()
         {
-            _dashboardDataContext.DashboardState = DashboardState.Elevate;
+            _dashboardDataContext.DashboardStateManager.EnableDashboardState(DashboardState.Elevate);
         }
 
         protected override void Hide()
         {
-            _dashboardDataContext.DashboardState = DashboardState.Default;
+            _dashboardDataContext.DashboardStateManager.DisableDashboardState(DashboardState.Elevate);
         }
 
         public void SetPrompt(string message)

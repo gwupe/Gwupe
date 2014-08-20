@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using System.ComponentModel;
@@ -59,6 +60,7 @@ namespace BlitsMe.Agent.UI.WPF
         internal RosterList SearchRosterList;
         //internal Attendance _Attendance;
         internal bool Searching;
+        
         private DispatchingCollection<ObservableCollection<Attendance>, Attendance> dispatchingCollection;
 
         public Dashboard(BlitsMeClientAppContext appContext)
@@ -70,7 +72,7 @@ namespace BlitsMe.Agent.UI.WPF
             // Setup the various data contexts and sources
             DashboardData = new DashboardDataContext(this);
             DataContext = DashboardData;
-            Initialize();
+            DashboardData.DashboardStateManager.EnableDashboardState(DashboardState.Initializing);
             _appContext.CurrentUserManager.CurrentUserChanged += delegate { SetupCurrentUserListener(); };
             SetupEngagementWindows();
             appContext.LoginManager.LoggedOut += LoginManagerOnLoggedOut;
@@ -81,6 +83,7 @@ namespace BlitsMe.Agent.UI.WPF
             SetupPartner();
             Logger.Info("Dashboard setup completed");
             ((INotifyCollectionChanged)Notifications.Items).CollectionChanged += new NotifyCollectionChangedEventHandler(Notification_CollectionChanged);
+            DashboardData.DashboardStateManager.DisableDashboardState(DashboardState.Initializing);
         }
 
         private void SettingsOnPropertyChanged(object sender, PropertyChangedEventArgs propertyChangedEventArgs)
@@ -115,23 +118,25 @@ namespace BlitsMe.Agent.UI.WPF
 
         #region Overlay Screen Management
 
-        internal void Initialize()
+        internal void LoginFailed(bool passwordError = false)
         {
-            DashboardData.DashboardState = DashboardState.Initializing;
+            if (!Dispatcher.CheckAccess())
+            {
+                Dispatcher.Invoke((Action) (() => LoginFailed(passwordError)));
+            }
+            else
+            {
+                if (passwordError)
+                {
+                    DashboardData.LoginScreen.LoginFailed();
+                }
+                DashboardData.DashboardStateManager.DisableDashboardState(DashboardState.LoggingIn);
+            }
         }
 
-        internal void Login(bool passwordError = false)
+        internal void Login()
         {
-            if (passwordError)
-            {
-                this.Dispatcher.Invoke((Action)(() =>
-                {
-                    var dataContext = this.DataContext as DashboardDataContext;
-                    if (dataContext != null)
-                        dataContext.LoginScreen.LoginFailed();
-                }));
-            }
-            DashboardData.DashboardState = DashboardState.Login;
+            DashboardData.DashboardStateManager.EnableDashboardState(DashboardState.Login);
         }
 
         public void Alert(string message)
@@ -142,11 +147,22 @@ namespace BlitsMe.Agent.UI.WPF
 
         public FaultReport GenerateFaultReport()
         {
-            Dispatcher.Invoke(new Action(() => DashboardData.UserInputPrompt = new FaultReportControl(DashboardData)));
-            DashboardData.UserInputPrompt.PresentModal();
-            //DashboardData.DashboardState = DashboardState.Default;
-            DashboardData.UserInputPrompt.Reset();
-            return ((FaultReportControl)DashboardData.UserInputPrompt).FaultReport;
+            FaultReport result = null;
+            if (!DashboardData.DashboardStateManager.DashboardStateContains(DashboardState.FaultReport))
+            {
+                FaultReportControl faultReporter = null;
+                Dispatcher.Invoke(new Action(() =>
+                {
+                    faultReporter = new FaultReportControl(DashboardData);
+                    DashboardData.FaultReportPrompt = faultReporter;
+                }));
+                faultReporter.PresentModal();
+                //DashboardData.DashboardState = DashboardState.Default;
+                faultReporter.Reset();
+                result = faultReporter.FaultReport;
+                Dispatcher.Invoke(new Action(() => DashboardData.FaultReportPrompt = null));
+            }
+            return result;
         }
 
         internal string Elevate(String message)
@@ -162,23 +178,22 @@ namespace BlitsMe.Agent.UI.WPF
 
         public void CompleteElevate()
         {
-            DashboardData.DashboardState = DashboardState.Default;
             DashboardData.ElevateScreen.Reset();
         }
 
         internal void LoggingIn()
         {
-            DashboardData.DashboardState = DashboardState.LoggingIn;
+            DashboardData.DashboardStateManager.EnableDashboardState(DashboardState.LoggingIn);
         }
 
         internal void LoggedIn()
         {
-            DashboardData.DashboardState = DashboardState.Default;
+            DashboardData.DashboardStateManager.DisableDashboardState(DashboardState.LoggingIn);
         }
 
         public void SigningUp()
         {
-            DashboardData.DashboardState = DashboardState.SigningUp;
+            DashboardData.DashboardStateManager.EnableDashboardState(DashboardState.SigningUp);
         }
 
         internal void PromptSignup(DataSubmitErrorArgs dataSubmitErrorArgs = null)
@@ -187,7 +202,7 @@ namespace BlitsMe.Agent.UI.WPF
             {
                 DashboardData.SignUpScreen.SetErrors(dataSubmitErrorArgs);
             }
-            DashboardData.DashboardState = DashboardState.Signup;
+            DashboardData.DashboardStateManager.EnableDashboardState(DashboardState.Signup);
         }
 
         #endregion
@@ -776,20 +791,13 @@ namespace BlitsMe.Agent.UI.WPF
             Process.Start(e.Uri.ToString());
         }
 
+        private void ReportFaultButtonClick(object sender, System.Windows.RoutedEventArgs e)
+        {
+            ThreadPool.QueueUserWorkItem(state =>  BlitsMeClientAppContext.CurrentAppContext.GenerateFaultReport());
+        }
+
     }
 
-    public enum DashboardState
-    {
-        LoggingIn,
-        Initializing,
-        Default,
-        Login,
-        SigningUp,
-        Signup,
-        Elevate,
-        Alert,
-        UserInputPrompt
-    };
 
     public class DashboardDataContext : INotifyPropertyChanged
     {
@@ -798,12 +806,25 @@ namespace BlitsMe.Agent.UI.WPF
 
         private readonly Dashboard _dashboard;
         private string _customTitle;
-        private DashboardState _dashboardState;
         private LoginControl _loginScreen;
         private SignUpControl _signUpScreen;
         private ElevateControl _elevateScreen;
         private AlertControl _alertScreen;
-        public BlitsMeModalUserControl UserInputPrompt { get; set; }
+        private BlitsMeModalUserControl _faultReportPrompt;
+        public DashboardState DashboardState
+        {
+            get
+            {
+                return DashboardStateManager.DashboardState;
+            }
+        }
+        public DashboardStateManager DashboardStateManager { get; private set; }
+
+        public BlitsMeModalUserControl FaultReportPrompt
+        {
+            get { return _faultReportPrompt; }
+            set { _faultReportPrompt = value; OnPropertyChanged("FaultReportPrompt"); }
+        }
 
         public LoginControl LoginScreen
         {
@@ -826,18 +847,17 @@ namespace BlitsMe.Agent.UI.WPF
             get { return _signUpScreen ?? (_signUpScreen = new SignUpControl(_dashboard)); }
         }
 
-        public DashboardState DashboardState
-        {
-            get { return _dashboardState; }
-            set
-            {
-                Logger.Debug("Changing dashboard state to " + value); _dashboardState = value; OnPropertyChanged("DashboardState");
-            }
-        }
-
         public DashboardDataContext(Dashboard dashboard)
         {
             _dashboard = dashboard;
+            DashboardStateManager = new DashboardStateManager();
+            DashboardStateManager.PropertyChanged += (sender, args) =>
+            {
+                if (args.PropertyName.Equals("DashboardState"))
+                {
+                    OnPropertyChanged("DashboardState");
+                }
+            };
         }
 
         public String Title
