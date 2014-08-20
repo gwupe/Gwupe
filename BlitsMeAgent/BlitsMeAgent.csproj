@@ -671,6 +671,7 @@
     <Resource Include="UI\WPF\Images\baseline.png" />
     <Content Include="Resources\Entypo-license.txt" />
     <Content Include="Resources\WindowsIcons-license.txt" />
+    <Content Include="SuggestedTests.txt" />
     <Content Include="UI\WPF\Images\Search.png" />
     <Resource Include="UI\WPF\Images\Settings.png" />
     <Content Include="UI\WPF\Images\Time.png" />

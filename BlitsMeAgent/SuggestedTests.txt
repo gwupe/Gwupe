@@ -1,0 +1,14 @@
+﻿Signup New User
+ - Provide missing data for all fields, one at a time and combinations
+ - Generate fault report while doing so
+ - Provide incorrect email address
+ - Provide used email address hi@moo.com
+ - Signup and login
+Login
+ - Logout and Log back in as this new user
+ - Login as an previously existing user
+ - Login as a new user in a new instance (so both are online at once)
+Search
+ - Search for new user from existing (or vice versa)
+ - Add the found user
+ - Accept the add
