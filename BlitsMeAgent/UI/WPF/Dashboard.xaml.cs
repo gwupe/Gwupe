@@ -60,7 +60,7 @@ namespace BlitsMe.Agent.UI.WPF
         internal RosterList SearchRosterList;
         //internal Attendance _Attendance;
         internal bool Searching;
-        
+
         private DispatchingCollection<ObservableCollection<Attendance>, Attendance> dispatchingCollection;
 
         public Dashboard(BlitsMeClientAppContext appContext)
@@ -72,7 +72,7 @@ namespace BlitsMe.Agent.UI.WPF
             // Setup the various data contexts and sources
             DashboardData = new DashboardDataContext(this);
             DataContext = DashboardData;
-            DashboardData.DashboardStateManager.EnableDashboardState(DashboardState.Initializing);
+            DashboardData.LoginState = LoginState.Initializing;
             _appContext.CurrentUserManager.CurrentUserChanged += delegate { SetupCurrentUserListener(); };
             SetupEngagementWindows();
             appContext.LoginManager.LoggedOut += LoginManagerOnLoggedOut;
@@ -83,7 +83,6 @@ namespace BlitsMe.Agent.UI.WPF
             SetupPartner();
             Logger.Info("Dashboard setup completed");
             ((INotifyCollectionChanged)Notifications.Items).CollectionChanged += new NotifyCollectionChangedEventHandler(Notification_CollectionChanged);
-            DashboardData.DashboardStateManager.DisableDashboardState(DashboardState.Initializing);
         }
 
         private void SettingsOnPropertyChanged(object sender, PropertyChangedEventArgs propertyChangedEventArgs)
@@ -122,21 +121,21 @@ namespace BlitsMe.Agent.UI.WPF
         {
             if (!Dispatcher.CheckAccess())
             {
-                Dispatcher.Invoke((Action) (() => LoginFailed(passwordError)));
+                Dispatcher.Invoke((Action)(() => LoginFailed(passwordError)));
             }
             else
             {
                 if (passwordError)
                 {
                     DashboardData.LoginScreen.LoginFailed();
+                    Login();
                 }
-                DashboardData.DashboardStateManager.DisableDashboardState(DashboardState.LoggingIn);
             }
         }
 
         internal void Login()
         {
-            DashboardData.DashboardStateManager.EnableDashboardState(DashboardState.Login);
+            DashboardData.LoginState = LoginState.Login;
         }
 
         public void Alert(string message)
@@ -183,17 +182,17 @@ namespace BlitsMe.Agent.UI.WPF
 
         internal void LoggingIn()
         {
-            DashboardData.DashboardStateManager.EnableDashboardState(DashboardState.LoggingIn);
+            DashboardData.LoginState = LoginState.LoggingIn;
         }
 
         internal void LoggedIn()
         {
-            DashboardData.DashboardStateManager.DisableDashboardState(DashboardState.LoggingIn);
+            DashboardData.LoginState = LoginState.Ready;
         }
 
         public void SigningUp()
         {
-            DashboardData.DashboardStateManager.EnableDashboardState(DashboardState.SigningUp);
+            DashboardData.LoginState = LoginState.SigningUp;
         }
 
         internal void PromptSignup(DataSubmitErrorArgs dataSubmitErrorArgs = null)
@@ -202,12 +201,10 @@ namespace BlitsMe.Agent.UI.WPF
             {
                 DashboardData.SignUpScreen.SetErrors(dataSubmitErrorArgs);
             }
-            DashboardData.DashboardStateManager.EnableDashboardState(DashboardState.Signup);
+            DashboardData.LoginState = LoginState.Signup;
         }
 
         #endregion
-
-
 
         #region Current User interaction
 
@@ -793,9 +790,19 @@ namespace BlitsMe.Agent.UI.WPF
 
         private void ReportFaultButtonClick(object sender, System.Windows.RoutedEventArgs e)
         {
-            ThreadPool.QueueUserWorkItem(state =>  BlitsMeClientAppContext.CurrentAppContext.GenerateFaultReport());
+            ThreadPool.QueueUserWorkItem(state => BlitsMeClientAppContext.CurrentAppContext.GenerateFaultReport());
         }
 
+    }
+
+    public enum LoginState
+    {
+        LoggingIn,
+        Initializing,
+        Ready,
+        Login,
+        SigningUp,
+        Signup,
     }
 
 
@@ -811,6 +818,14 @@ namespace BlitsMe.Agent.UI.WPF
         private ElevateControl _elevateScreen;
         private AlertControl _alertScreen;
         private BlitsMeModalUserControl _faultReportPrompt;
+        private LoginState _loginState;
+
+        public LoginState LoginState
+        {
+            get { return _loginState; }
+            set { _loginState = value; OnPropertyChanged("LoginState");}
+        }
+
         public DashboardState DashboardState
         {
             get

@@ -9,18 +9,14 @@ using log4net.Repository.Hierarchy;
 
 namespace BlitsMe.Agent.UI.WPF
 {
+    
     public enum DashboardState
     {
-        LoggingIn,
-        Initializing,
         Default,
-        Login,
-        SigningUp,
-        Signup,
         Elevate,
         Alert,
         UserInputPrompt,
-        FaultReport
+        FaultReport,
     };
 
     public class DashboardStateManager : INotifyPropertyChanged

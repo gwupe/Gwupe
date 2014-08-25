@@ -267,37 +267,49 @@
                 </Grid.RowDefinitions>
 
                 <Border Grid.Row="0" Width="2" BorderBrush="#4A7EBB" BorderThickness="2" Grid.Column="0" HorizontalAlignment="Right"/>
-
+				<ContentControl x:Name="LoginIndicator" Grid.ColumnSpan="2">
+                    <ContentControl.Style>
+                        <Style TargetType="{x:Type ContentControl}">
+                            <Setter Property="ContentTemplate" Value="{x:Null}"/>
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding LoginState}" Value="{x:Static bm:LoginState.SigningUp}">
+                                    <Setter Property="ContentTemplate" Value="{StaticResource SigningUpWindow}" />
+                                    <Setter Property="Panel.ZIndex" Value="2" />
+                                </DataTrigger>
+                                <DataTrigger Binding="{Binding LoginState}" Value="{x:Static bm:LoginState.LoggingIn}">
+                                    <Setter Property="ContentTemplate" Value="{StaticResource LoggingInWindow}" />
+                                    <Setter Property="Panel.ZIndex" Value="2" />
+                                </DataTrigger>
+                                <DataTrigger Binding="{Binding LoginState}" Value="{x:Static bm:LoginState.Initializing}">
+                                    <Setter Property="ContentTemplate" Value="{StaticResource InitializingWindow}" />
+                                    <Setter Property="Panel.ZIndex" Value="2" />
+                                </DataTrigger>
+                                <DataTrigger Binding="{Binding LoginState}" Value="{x:Static bm:LoginState.Ready}">
+                                    <Setter Property="ContentTemplate" Value="{x:Null}" />
+                                    <Setter Property="Panel.ZIndex" Value="-2" />
+                                </DataTrigger>
+                                <DataTrigger Binding="{Binding LoginState}" Value="{x:Static bm:LoginState.Login}">
+                                    <Setter Property="ContentTemplate" Value="{x:Null}" />
+                                    <Setter Property="Content" Value="{Binding LoginScreen}" />
+                                    <Setter Property="Panel.ZIndex" Value="2" />
+                                </DataTrigger>
+                                <DataTrigger Binding="{Binding LoginState}" Value="{x:Static bm:LoginState.Signup}">
+                                    <Setter Property="ContentTemplate" Value="{x:Null}" />
+                                    <Setter Property="Content" Value="{Binding SignUpScreen}" />
+                                    <Setter Property="Panel.ZIndex" Value="2" />
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </ContentControl.Style>
+				</ContentControl>
                 <ContentControl x:Name="ModalPrompt" Grid.ColumnSpan="2">
                     <ContentControl.Style>
                         <Style TargetType="{x:Type ContentControl}">
                             <Setter Property="ContentTemplate" Value="{x:Null}"/>
                             <Style.Triggers>
-                                <DataTrigger Binding="{Binding DashboardStateManager.DashboardState}" Value="{x:Static bm:DashboardState.SigningUp}">
-                                    <Setter Property="ContentTemplate" Value="{StaticResource SigningUpWindow}" />
-                                    <Setter Property="Panel.ZIndex" Value="2" />
-                                </DataTrigger>
-                                <DataTrigger Binding="{Binding DashboardStateManager.DashboardState}" Value="{x:Static bm:DashboardState.LoggingIn}">
-                                    <Setter Property="ContentTemplate" Value="{StaticResource LoggingInWindow}" />
-                                    <Setter Property="Panel.ZIndex" Value="2" />
-                                </DataTrigger>
-                                <DataTrigger Binding="{Binding DashboardStateManager.DashboardState}" Value="{x:Static bm:DashboardState.Initializing}">
-                                    <Setter Property="ContentTemplate" Value="{StaticResource InitializingWindow}" />
-                                    <Setter Property="Panel.ZIndex" Value="2" />
-                                </DataTrigger>
                                 <DataTrigger Binding="{Binding DashboardStateManager.DashboardState}" Value="{x:Static bm:DashboardState.Default}">
                                     <Setter Property="ContentTemplate" Value="{x:Null}" />
                                     <Setter Property="Panel.ZIndex" Value="-2" />
-                                </DataTrigger>
-                                <DataTrigger Binding="{Binding DashboardStateManager.DashboardState}" Value="{x:Static bm:DashboardState.Login}">
-                                    <Setter Property="ContentTemplate" Value="{x:Null}" />
-                                    <Setter Property="Content" Value="{Binding LoginScreen}" />
-                                    <Setter Property="Panel.ZIndex" Value="2" />
-                                </DataTrigger>
-                                <DataTrigger Binding="{Binding DashboardStateManager.DashboardState}" Value="{x:Static bm:DashboardState.Signup}">
-                                    <Setter Property="ContentTemplate" Value="{x:Null}" />
-                                    <Setter Property="Content" Value="{Binding SignUpScreen}" />
-                                    <Setter Property="Panel.ZIndex" Value="2" />
                                 </DataTrigger>
                                 <DataTrigger Binding="{Binding DashboardStateManager.DashboardState}" Value="{x:Static bm:DashboardState.Elevate}">
                                     <Setter Property="ContentTemplate" Value="{x:Null}" />
