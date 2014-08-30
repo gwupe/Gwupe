@@ -8,6 +8,7 @@ namespace BlitsMe.Agent.Components
         public String PasswordHash { get; set; }
         public String Profile { get; set; }
         public String Workstation { get; set; }
-        public bool Ready { get { return !String.IsNullOrEmpty(Username) && !String.IsNullOrEmpty(PasswordHash); } }
+        public bool Ready { get { return (!String.IsNullOrEmpty(Username) && !String.IsNullOrEmpty(PasswordHash)) || LoginGuest; } }
+        public bool LoginGuest { get; set; }
     }
 }

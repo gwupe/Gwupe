@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Threading;
+using System.Windows.Forms;
 using BlitsMe.Agent.Components;
 using BlitsMe.Agent.Exceptions;
 using BlitsMe.Agent.Misc;
@@ -148,6 +149,10 @@ namespace BlitsMe.Agent.Managers
                     // now we can initiate a login
                     _loginDetailsReady.Set();
                 }
+            } else if (_reg.LoginAsGuest)
+            {
+                LoginDetails.LoginGuest = true;
+                _loginDetailsReady.Set();
             }
             _connectionReady = new AutoResetEvent(false);
             // Link into the connect and disconnect event handlers
@@ -274,7 +279,14 @@ namespace BlitsMe.Agent.Managers
                         if (e.AuthFailure)
                         {
                             LoginDetails.PasswordHash = "";
+                            LoginDetails.LoginGuest = false;
                             OnLoginFailed("PasswordHash", "INCORRECT");
+                        } else if (e.InvalidDetails)
+                        {
+                            LoginDetails.Username = "";
+                            LoginDetails.PasswordHash = "";
+                            LoginDetails.LoginGuest = false;
+                            OnLoginFailed(null, "INCOMPLETE");
                         }
                         else
                         {
@@ -303,6 +315,15 @@ namespace BlitsMe.Agent.Managers
         {
             LoginDetails.Username = username;
             LoginDetails.PasswordHash = Util.getSingleton().hashPassword(password);
+            LoginDetails.LoginGuest = false;
+            lock (LoginReadyLock) Monitor.PulseAll(LoginReadyLock);
+        }
+
+        internal void LoginGuest()
+        {
+            LoginDetails.Username = "";
+            LoginDetails.PasswordHash = "";
+            LoginDetails.LoginGuest = true;
             lock (LoginReadyLock) Monitor.PulseAll(LoginReadyLock);
         }
 
@@ -316,6 +337,7 @@ namespace BlitsMe.Agent.Managers
                     workstation = LoginDetails.Workstation,
                     version = _appContext.Version(2),
                     partnerCode = _appContext.Reg.getRegValue("PromoCode", true),
+                    loginGuest = LoginDetails.LoginGuest,
                 };
             LoginRs loginRs = null;
             try
@@ -351,9 +373,11 @@ namespace BlitsMe.Agent.Managers
             }
 
             // Exception not thrown, login success, save details
-            _reg.Username = LoginDetails.Username;
-            _reg.PasswordHash = LoginDetails.PasswordHash;
+            LoginDetails.Username = loginRs.userElement.user;
+            _reg.Username = loginRs.userElement.user;
+            _reg.PasswordHash = loginRq.loginGuest ? loginRs.guestSecretKey : LoginDetails.PasswordHash;
             _reg.Profile = LoginDetails.Profile = loginRs.profileId;
+            LoginDetails.LoginGuest = false;
             IsLoggedIn = true;
             // Notify all threads waiting for login
             lock (LoginOccurredLock)

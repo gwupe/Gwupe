@@ -117,17 +117,16 @@ namespace BlitsMe.Agent.UI.WPF
 
         #region Overlay Screen Management
 
-        internal void LoginFailed(bool passwordError = false)
+        internal void LoginFailed(DataSubmitErrorArgs dataSubmissionErrors)
         {
             if (!Dispatcher.CheckAccess())
             {
-                Dispatcher.Invoke((Action)(() => LoginFailed(passwordError)));
+                Dispatcher.Invoke((Action)(() => LoginFailed(dataSubmissionErrors)));
             }
             else
             {
-                if (passwordError)
+                if (DashboardData.LoginScreen.LoginFailed(dataSubmissionErrors))
                 {
-                    DashboardData.LoginScreen.LoginFailed();
                     Login();
                 }
             }

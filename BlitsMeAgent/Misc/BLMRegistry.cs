@@ -15,6 +15,7 @@ namespace BlitsMe.Agent.Misc
         public const String profileKey = "profile";
         public const String passwordHashKey = "password";
         public const String lastVersionKey = "lastVersion";
+        public const String loginAsGuestKey = "loginAsGuest";
 
         public string Username {
             get { return getRegValue(usernameKey); }
@@ -33,6 +34,13 @@ namespace BlitsMe.Agent.Misc
         {
             get { return getRegValue(lastVersionKey); }
             set { setRegValue(lastVersionKey, value);}
+        }
+
+        public bool LoginAsGuest
+        {
+            get
+            { return "yes".Equals(getRegValue(loginAsGuestKey)); }
+            set { setRegValue(loginAsGuestKey, value ? "yes" : "no" );}
         }
 
         public List<String> getServerIPs()

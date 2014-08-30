@@ -2,6 +2,7 @@
 using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Navigation;
+using BlitsMe.Agent.Components;
 using BlitsMe.Agent.UI.WPF.Utils;
 using log4net;
 using System.Windows.Media;
@@ -33,15 +34,22 @@ namespace BlitsMe.Agent.UI.WPF
             }
         }
 
-        public void LoginFailed()
+        public bool LoginFailed(DataSubmitErrorArgs dataSubmissionErrors)
         {
-            if (!Dispatcher.CheckAccess())
-                Dispatcher.Invoke(new Action(LoginFailed));
-            else
+            if (dataSubmissionErrors.HasErrorField("PasswordHash"))
             {
                 Password.Password = "";
-                _validator.ValidateFieldNonEmpty(Password, Password.Password, null, "");
+                Validate();
+                return true;
             }
+            else if (dataSubmissionErrors.HasError("INCOMPLETE"))
+            {
+                Password.Password = "";
+                Username.Text = "";
+                Validate();
+                return true;
+            }
+            return false;
         }
 
         private void password_KeyDown(object sender, KeyEventArgs e)
@@ -54,16 +62,21 @@ namespace BlitsMe.Agent.UI.WPF
 
         private void ProcessLogin()
         {
-            bool dataOK = true;
-            ResetStatus();
-            dataOK = _validator.ValidateFieldNonEmpty(Password, Password.Password, null, "") && dataOK;
-            dataOK = _validator.ValidateFieldNonEmpty(Username, Username.Text, null, "") && dataOK;
-            if (dataOK)
+            if (Validate())
             {
                 ClearBlurEffect(_dashboard);
                 Logger.Debug("Got username and password, submitting to login manager");
                 BlitsMeClientAppContext.CurrentAppContext.LoginManager.Login(Username.Text, Password.Password);
             }
+        }
+
+        private bool Validate()
+        {
+            bool dataOK = true;
+            ResetStatus();
+            dataOK = _validator.ValidateFieldNonEmpty(Password, Password.Password, null, "") && dataOK;
+            dataOK = _validator.ValidateFieldNonEmpty(Username, Username.Text, null, "") && dataOK;
+            return dataOK;
         }
 
         private void ResetStatus()
@@ -79,6 +92,14 @@ namespace BlitsMe.Agent.UI.WPF
         public void NewUserCreate(object sender, RequestNavigateEventArgs e)
         {
             BlitsMeClientAppContext.CurrentAppContext.UIManager.PromptSignup();
+        }
+
+        public void LoginGuestClick(object sender, RequestNavigateEventArgs e)
+        {
+            ResetStatus();
+            ClearBlurEffect(_dashboard);
+            Logger.Debug("Logging in as Guest");
+            BlitsMeClientAppContext.CurrentAppContext.LoginManager.LoginGuest();
         }
 
         private void ApplyBlurEffect(Dashboard dashboard)

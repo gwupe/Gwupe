@@ -5,14 +5,14 @@ using System.Text;
 
 namespace BlitsMe.Agent.Components
 {
-    internal class DataSubmitErrorArgs : EventArgs
+    public class DataSubmitErrorArgs : EventArgs
     {
         internal List<DataSubmitError> SubmitErrors = new List<DataSubmitError>();
 
-        public bool HasErrorField(string passwordHash)
+        public bool HasErrorField(string fieldName)
         {
-            if (String.IsNullOrEmpty(passwordHash)) return false;
-            return SubmitErrors.Any(dataSubmitError => passwordHash.Equals(dataSubmitError.FieldName));
+            if (String.IsNullOrEmpty(fieldName)) return false;
+            return SubmitErrors.Any(dataSubmitError => fieldName.Equals(dataSubmitError.FieldName));
         }
 
         public override string ToString()

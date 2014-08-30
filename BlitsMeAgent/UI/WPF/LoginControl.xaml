@@ -30,7 +30,10 @@
 				KeyDown="password_KeyDown" Width="164" Height="23"/>
 			<Button Content="Sign In" Margin="0,10,0,0" Width="Auto" VerticalAlignment="Top" x:Name="signin" Click="signin_click" 
 				HorizontalAlignment="Right"/>
-			<TextBlock HorizontalAlignment="Center" Margin="0,10,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Height="37.92" Width="85.61"><Hyperlink x:Name="NewUser" RequestNavigate="NewUserCreate" NavigateUri="" ><Run Text="I am a new user"/></Hyperlink><LineBreak/></TextBlock>
+			<TextBlock HorizontalAlignment="Center" Margin="0,10,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Height="37.92" Width="120">
+				<Hyperlink x:Name="NewUser" RequestNavigate="NewUserCreate" NavigateUri="" ><Run Text="I am a new user"/></Hyperlink><LineBreak/>
+				<Hyperlink x:Name="LoginGuest" RequestNavigate="LoginGuestClick" NavigateUri="" ><Run Text="Log me in as a guest"/></Hyperlink><LineBreak/>
+			</TextBlock>
 		</StackPanel>
 	</Grid>
 </UserControl>

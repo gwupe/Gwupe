@@ -218,7 +218,7 @@ namespace BlitsMe.Agent.Managers
         {
             if (BlitsMeClientAppContext.CurrentAppContext.IsShuttingDown) return;
             Logger.Debug("Received a login error " + dataSubmitErrorArgs);
-            dashBoard.LoginFailed(dataSubmitErrorArgs.HasErrorField("PasswordHash"));
+            dashBoard.LoginFailed(dataSubmitErrorArgs);
         }
 
         private void LoginManagerOnLoggingIn(object sender, LoginEventArgs loginEventArgs)
