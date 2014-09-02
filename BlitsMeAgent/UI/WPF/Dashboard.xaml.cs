@@ -24,6 +24,7 @@ using BlitsMe.Agent.UI.WPF.Roster;
 using BlitsMe.Agent.UI.WPF.Search;
 using log4net;
 using Panel = System.Windows.Controls.Panel;
+using SelectionMode = System.Windows.Controls.SelectionMode;
 using Timer = System.Timers.Timer;
 
 namespace BlitsMe.Agent.UI.WPF
@@ -80,9 +81,24 @@ namespace BlitsMe.Agent.UI.WPF
             activateEngagementChecker.Elapsed += CheckActiveEngagements;
             activateEngagementChecker.Start();
             appContext.SettingsManager.PropertyChanged += SettingsOnPropertyChanged;
+            SearchBoxMenu.SelectionChanged += SearchBoxMenuOnSelectionChanged;
+            SearchBoxMenu.SelectionMode = SelectionMode.Single;
             SetupPartner();
             Logger.Info("Dashboard setup completed");
             ((INotifyCollectionChanged)Notifications.Items).CollectionChanged += new NotifyCollectionChangedEventHandler(Notification_CollectionChanged);
+        }
+
+        private void SearchBoxMenuOnSelectionChanged(object sender, SelectionChangedEventArgs selectionChangedEventArgs)
+        {
+            if (SearchBoxMenu.SelectedIndex == 0)
+            {
+                DashboardData.SearchBoxVisibility = Visibility.Visible;
+            }
+            else if(SearchBoxMenu.SelectedIndex == 1)
+            {
+                DashboardData.SearchBoxVisibility = Visibility.Collapsed;
+            }
+            DashboardData.SearchMenuVisibility = Visibility.Hidden;
         }
 
         private void SettingsOnPropertyChanged(object sender, PropertyChangedEventArgs propertyChangedEventArgs)
@@ -214,14 +230,21 @@ namespace BlitsMe.Agent.UI.WPF
         {
             Logger.Debug("Setting up new listener for " + _appContext.CurrentUserManager.CurrentUser.Name);
             _appContext.CurrentUserManager.CurrentUser.PropertyChanged += CurrentUserOnPropertyChanged;
-            if (Dispatcher.CheckAccess())
+            SetTitle();
+        }
+
+        private void SetTitle()
+        {
+            if (!Dispatcher.CheckAccess())
             {
-                DashboardData.Title = _appContext.CurrentUserManager.CurrentUser.Name;
+                Dispatcher.Invoke(new Action(SetTitle));
             }
             else
             {
-                Dispatcher.Invoke(
-                    new Action(() => { DashboardData.Title = _appContext.CurrentUserManager.CurrentUser.Name; }));
+                Logger.Debug("Name has changed : " + _appContext.CurrentUserManager.CurrentUser.Name);
+                DashboardData.Title = _appContext.CurrentUserManager.CurrentUser.Guest ?
+                    "Remote Access Id '" + _appContext.CurrentUserManager.ActiveShortCode + "'" :
+                    _appContext.CurrentUserManager.CurrentUser.Name;
             }
         }
 
@@ -234,16 +257,10 @@ namespace BlitsMe.Agent.UI.WPF
         {
             if (_appContext.IsShuttingDown)
                 return;
-            if (Dispatcher.CheckAccess())
+            if (propertyChangedEventArgs.PropertyName.Equals("Name"))
             {
-                if (propertyChangedEventArgs.PropertyName.Equals("Name"))
-                {
-                    Logger.Debug("Name has changed : " + _appContext.CurrentUserManager.CurrentUser.Name);
-                    DashboardData.Title = _appContext.CurrentUserManager.CurrentUser.Name;
-                }
+                SetTitle();
             }
-            else
-                Dispatcher.Invoke(new Action(() => CurrentUserOnPropertyChanged(sender, propertyChangedEventArgs)));
         }
 
 
@@ -792,6 +809,13 @@ namespace BlitsMe.Agent.UI.WPF
             ThreadPool.QueueUserWorkItem(state => BlitsMeClientAppContext.CurrentAppContext.GenerateFaultReport());
         }
 
+        private void SearchMenuClick(object sender, System.Windows.RoutedEventArgs e)
+        {
+            DashboardData.SearchMenuVisibility = DashboardData.SearchMenuVisibility == Visibility.Hidden
+                ? Visibility.Visible
+                : Visibility.Hidden;
+        }
+
     }
 
     public enum LoginState
@@ -810,6 +834,13 @@ namespace BlitsMe.Agent.UI.WPF
 
         private static readonly ILog Logger = LogManager.GetLogger(typeof(DashboardDataContext));
 
+        public String ShortCode
+        {
+            get
+            {
+                return BlitsMeClientAppContext.CurrentAppContext.CurrentUserManager.ActiveShortCode;
+            }
+        }
         private readonly Dashboard _dashboard;
         private string _customTitle;
         private LoginControl _loginScreen;
@@ -818,11 +849,13 @@ namespace BlitsMe.Agent.UI.WPF
         private AlertControl _alertScreen;
         private BlitsMeModalUserControl _faultReportPrompt;
         private LoginState _loginState;
+        private Visibility _searchMenuVisibility = Visibility.Hidden;
+        private Visibility _searchBoxVisibility;
 
         public LoginState LoginState
         {
             get { return _loginState; }
-            set { _loginState = value; OnPropertyChanged("LoginState");}
+            set { _loginState = value; OnPropertyChanged("LoginState"); }
         }
 
         public DashboardState DashboardState
@@ -864,6 +897,8 @@ namespace BlitsMe.Agent.UI.WPF
         public DashboardDataContext(Dashboard dashboard)
         {
             _dashboard = dashboard;
+            BlitsMeClientAppContext.CurrentAppContext.CurrentUserManager.PropertyChanged +=
+                (sender, args) => { if (args.PropertyName.Equals("ActiveShoreCode")) OnPropertyChanged("ShortCode"); };
             DashboardStateManager = new DashboardStateManager();
             DashboardStateManager.PropertyChanged += (sender, args) =>
             {
@@ -898,6 +933,23 @@ namespace BlitsMe.Agent.UI.WPF
                     ? Visibility.Visible
                     : Visibility.Collapsed;
             }
+        }
+
+        public Visibility SearchMenuVisibility
+        {
+            get { return _searchMenuVisibility; }
+            set { _searchMenuVisibility = value; OnPropertyChanged("SearchMenuVisibility"); }
+        }
+
+        public Visibility SearchBoxVisibility
+        {
+            get { return _searchBoxVisibility; }
+            set { _searchBoxVisibility = value; OnPropertyChanged("SearchBoxVisibility"); OnPropertyChanged("RemoteIdBoxVisibility"); }
+        }
+
+        public Visibility RemoteIdBoxVisibility
+        {
+            get { return _searchBoxVisibility == Visibility.Collapsed ? Visibility.Visible : Visibility.Collapsed; }
         }
     }
 

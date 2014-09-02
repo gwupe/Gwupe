@@ -12,11 +12,11 @@
 	Title="{Binding Title, FallbackValue=BlitsMe}"
 	WindowStartupLocation="CenterScreen" 
 	Closing="HideIfClosing" StateChanged="WindowStateChanged" MinWidth="870" MinHeight="600">
-	<mahappsControls:MetroWindow.RightWindowCommands>
-		<mahappsControls:WindowCommands>
-			<Button Content="Report Problem" Click="ReportFaultButtonClick" />
-		</mahappsControls:WindowCommands>
-	</mahappsControls:MetroWindow.RightWindowCommands>
+    <mahappsControls:MetroWindow.RightWindowCommands>
+        <mahappsControls:WindowCommands>
+            <Button Content="Report Problem" Click="ReportFaultButtonClick" />
+        </mahappsControls:WindowCommands>
+    </mahappsControls:MetroWindow.RightWindowCommands>
     <mahappsControls:MetroWindow.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
@@ -245,14 +245,14 @@
         <DockPanel LastChildFill="True">
             <Grid Name="PartnerBanner" DockPanel.Dock="Bottom" Visibility="Visible">
                 <Border BorderThickness="0,1,0,0" BorderBrush="#4A7EBB"   >
-                    <StackPanel Height="20" Orientation="Horizontal">
-                        <Image Source="{Binding Path=Logo}" Height="20"></Image>
-                        <TextBlock Text="{Binding Path=Name, FallbackValue=Promo Company}" VerticalAlignment="Center" Margin="5,0,0,0" FontWeight="Bold" />
-                        <TextBlock Text="{Binding Path=Text, FallbackValue=A Little about the company.}" VerticalAlignment="Center" Margin="5,0,0,0" />
-                        <TextBlock VerticalAlignment="Center" Margin="5,0,0,0" >
+                    <DockPanel Height="20" LastChildFill="True">
+                        <Image Source="{Binding Path=Logo}" Height="20" DockPanel.Dock="Left"/>
+                        <TextBlock Text="{Binding Path=Name, FallbackValue=Promo Company}" VerticalAlignment="Center" Margin="5,0,0,0" FontWeight="Bold" DockPanel.Dock="Left"/>
+                        <TextBlock Text="{Binding Path=Text, FallbackValue=A Little about the company.}" VerticalAlignment="Center" Margin="5,0,0,0" DockPanel.Dock="Left"/>
+                        <TextBlock VerticalAlignment="Center" Margin="5,0,0,0" DockPanel.Dock="Left">
 				            <Hyperlink RequestNavigate="NavigateToUrl" NavigateUri="{Binding Path=Website, FallbackValue=http://path.to.url/}"><TextBlock Text="{Binding Path=LinkText, FallbackValue=Click Here.}" /></Hyperlink>
 			            </TextBlock>
-                    </StackPanel>
+                    </DockPanel>
                 </Border>
             </Grid>
 
@@ -267,7 +267,7 @@
                 </Grid.RowDefinitions>
 
                 <Border Grid.Row="0" Width="2" BorderBrush="#4A7EBB" BorderThickness="2" Grid.Column="0" HorizontalAlignment="Right"/>
-				<ContentControl x:Name="LoginIndicator" Grid.ColumnSpan="2">
+                <ContentControl x:Name="LoginIndicator" Grid.ColumnSpan="2">
                     <ContentControl.Style>
                         <Style TargetType="{x:Type ContentControl}">
                             <Setter Property="ContentTemplate" Value="{x:Null}"/>
@@ -301,7 +301,7 @@
                             </Style.Triggers>
                         </Style>
                     </ContentControl.Style>
-				</ContentControl>
+                </ContentControl>
                 <ContentControl x:Name="ModalPrompt" Grid.ColumnSpan="2">
                     <ContentControl.Style>
                         <Style TargetType="{x:Type ContentControl}">
@@ -330,7 +330,27 @@
                         </Style>
                     </ContentControl.Style>
                 </ContentControl>
-
+				
+                <Grid Height="52" VerticalAlignment="Top" Margin="9,92,0,0" HorizontalAlignment="Left" Width="191" Panel.ZIndex="1" 
+				Visibility="{Binding Path=SearchMenuVisibility, FallbackValue=Hidden}">
+                    <Border BorderThickness="1,1,1,1" BorderBrush="#4A7EBB" Margin="0,0,0,0">
+                        <ListBox Background="#FFB9CDE5" Name="SearchBoxMenu" >
+                            <ListBoxItem>
+                                <StackPanel Orientation="Horizontal" Margin="4,0,0,0">
+                                    <Image Margin="0,0,5,0" Source="Images/1375406488_Cute Ball - Search.png" Height="13" Width="13" />
+                                    <TextBlock>Search</TextBlock>
+                                </StackPanel>
+                            </ListBoxItem>
+                            <ListBoxItem>
+                                <StackPanel Orientation="Horizontal" Margin="4,0,0,0">
+                                    <Image Margin="0,0,5,0" Source="Images/connect_adhoc.png" Height="13" Width="13" />
+                                    <TextBlock>Connect to Remote Access ID</TextBlock>
+                                </StackPanel>
+                            </ListBoxItem>
+                        </ListBox>
+                    </Border>
+                </Grid>
+				
                 <Grid Grid.Column="0">
                     <Grid.RowDefinitions>
                         <RowDefinition Height="Auto"/>
@@ -367,14 +387,38 @@
                     </StackPanel>
 
                     <Border BorderThickness="0,1,0,0" Width="190" BorderBrush="#4A7EBB"
-					Margin="0,10,0,0" MinHeight="22" Grid.Row="1">
+					Margin="0,10,0,0" MinHeight="22" Grid.Row="1" Height="25">
                         <StackPanel Orientation="Horizontal" HorizontalAlignment="Left" VerticalAlignment="Top">
-                            <Image Margin="5,0,0,0" Source="Images/1375406488_Cute Ball - Search.png" Height="13" Width="13"/>
-                            <TextBox x:Name="SearchBox" mahappsControls:TextboxHelper.Watermark="Search..." Margin="10,0,0,0"
-							TextChanged="Search_TextChanged"  VerticalContentAlignment="Center" VerticalAlignment="Top"
-							GotFocus="SearchBox_GotFocus" HorizontalAlignment="Center"  
-							LostFocus="SearchBox_LostFocus" Background="Transparent" TextWrapping="Wrap" Width="140" 
-							Height="20" BorderThickness="0" BorderBrush="Transparent" />
+							<Image Name="SearchIcon" Margin="0,0,0,0" Source="Images/1375406488_Cute Ball - Search.png" Height="13" Width="13" Visibility="{Binding SearchBoxVisibility, FallbackValue=Visible}" />
+							<!--
+	                        <Grid Width="23">
+								<Button Template="{DynamicResource TransparentButtonProgressCloseStyle}" Click="SearchMenuClick" >
+                                <StackPanel Orientation="Horizontal">
+                                    <Image Source="Images/icon-arrow-down-b-20.png" Width="8" />
+                                    <StackPanel Orientation="Horizontal">
+                                        <Image Name="SearchIcon" Margin="0,0,0,0" Source="Images/1375406488_Cute Ball - Search.png" Height="13" Width="13" Visibility="{Binding SearchBoxVisibility, FallbackValue=Visible}" />
+                                        <Image Name="RemoteId" Margin="0,0,0,0" Source="Images/connect_adhoc.png" Visibility="{Binding RemoteIdBoxVisibility, FallbackValue=Collapsed}" Height="13" Width="13" />
+                                    </StackPanel>
+                                </StackPanel>
+                            </Button>
+							</Grid>
+							-->
+                            <Grid Visibility="{Binding SearchBoxVisibility, FallbackValue=Visible}">
+                                <TextBox x:Name="SearchBox" mahappsControls:TextboxHelper.Watermark="Search..." Margin="-2,0,0,0"
+									TextChanged="Search_TextChanged"  VerticalContentAlignment="Center" VerticalAlignment="Top"
+									GotFocus="SearchBox_GotFocus" HorizontalAlignment="Left" 
+									LostFocus="SearchBox_LostFocus" Background="Transparent" TextWrapping="Wrap" Width="162" 
+									Height="20" BorderThickness="0" BorderBrush="Transparent" />
+                                <MediaElement Visibility="{Binding Path=Searching, FallbackValue=Hidden}" Margin="131.333,0,0,0"  x:Name="SearchMedia" Source="Images/loading-side.gif" UnloadedBehavior="Manual" LoadedBehavior="Play" Stretch="None"/>
+                            </Grid>
+                            <Grid  Visibility="{Binding RemoteIdBoxVisibility, FallbackValue=Collapsed}" Width="168.807">
+                                <TextBox x:Name="RemoteIdBox" mahappsControls:TextboxHelper.Watermark="Remote Access ID" Margin="-2,0,0,-2"
+									VerticalContentAlignment="Center" VerticalAlignment="Top"
+									HorizontalAlignment="Left"  
+									Background="Transparent" TextWrapping="Wrap" Width="117.277" 
+									Height="20" BorderThickness="0" BorderBrush="Transparent"/>
+                                <Button Template="{DynamicResource TransparentButtonProgressCloseStyle}" Content="Chat" Margin="127.277,1.33,0,-2.33" />
+                            </Grid>
                         </StackPanel>
                     </Border>
 

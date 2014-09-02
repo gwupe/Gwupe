@@ -25,5 +25,7 @@ namespace BlitsMe.Cloud.Messaging.Response
         public UserElement userElement { get; set; }
         [DataMember]
         public PartnerElement partnerElement { get; set; }
+        [DataMember]
+        public String guestSecretKey { get; set; }
     }
 }

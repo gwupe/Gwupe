@@ -48,6 +48,11 @@ namespace BlitsMe.Agent.UI.WPF
                 Username.Text = "";
                 Validate();
                 return true;
+            } else if (dataSubmissionErrors.HasError("STARTUP"))
+            {
+                Password.Password = "";
+                Username.Text = "";
+                return true;
             }
             return false;
         }

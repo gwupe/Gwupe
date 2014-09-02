@@ -248,7 +248,7 @@ namespace BlitsMe.Agent.Managers
                 Logger.Error("Failed to get the hardware id : " + e.Message);
             }
             if (!LoginDetails.Ready)
-                OnLoginFailed(null, "INCOMPLETE");
+                OnLoginFailed(null, "STARTUP");
             // Main logging in thread
             while (true)
             {
@@ -270,6 +270,7 @@ namespace BlitsMe.Agent.Managers
                     try
                     {
                         // Attempt a login
+                        Logger.Debug("Attempting to login");
                         ProcessLogin();
                     }
                     catch (LoginException e)
@@ -313,6 +314,7 @@ namespace BlitsMe.Agent.Managers
 
         internal void Login(String username, String password)
         {
+            Logger.Debug("Logging in as " + username);
             LoginDetails.Username = username;
             LoginDetails.PasswordHash = Util.getSingleton().hashPassword(password);
             LoginDetails.LoginGuest = false;
@@ -321,6 +323,7 @@ namespace BlitsMe.Agent.Managers
 
         internal void LoginGuest()
         {
+            Logger.Debug("Logging in as a guest");
             LoginDetails.Username = "";
             LoginDetails.PasswordHash = "";
             LoginDetails.LoginGuest = true;

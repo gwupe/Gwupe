@@ -18,6 +18,13 @@ namespace BlitsMe.Agent.Components.Person
             set { _firstname = value; OnPropertyChanged("Firstname"); }
         }
 
+        private bool _guest;
+        public bool Guest
+        {
+            set { _guest = value; OnPropertyChanged("Guest"); }
+            get { return _guest; }
+        }
+
         private string _lastname;
         public String Lastname
         {
@@ -99,8 +106,8 @@ namespace BlitsMe.Agent.Components.Person
 
 
 
-        private bool _supporter;
 
+        private bool _supporter;
         public bool Supporter
         {
             get { return _supporter; }
@@ -136,6 +143,7 @@ namespace BlitsMe.Agent.Components.Person
             Firstname = userElement.firstname;
             Lastname = userElement.lastname;
             Description = userElement.description;
+            Guest = userElement.guest;
             if (!String.IsNullOrWhiteSpace(userElement.avatarData))
             {
                 try

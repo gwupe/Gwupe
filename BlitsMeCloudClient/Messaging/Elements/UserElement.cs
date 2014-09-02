@@ -37,5 +37,7 @@ namespace BlitsMe.Cloud.Messaging.Elements
         public bool hasAvatar;
         [DataMember] 
         public bool supporter;
+        [DataMember]
+        public bool guest;
     }
 }

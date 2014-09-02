@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
 using System.Text;
+using BlitsMe.Agent.Annotations;
 using BlitsMe.Agent.Components;
 using BlitsMe.Agent.Components.Person;
 using BlitsMe.Agent.Components.Person.Presence;
@@ -13,23 +14,32 @@ using log4net;
 
 namespace BlitsMe.Agent.Managers
 {
-    internal class CurrentUserManager
+    internal class CurrentUserManager : INotifyPropertyChanged
     {
         private static readonly ILog Logger = LogManager.GetLogger(typeof (CurrentUserManager));
         private readonly BlitsMeClientAppContext _appContext;
         private Person _currentUser;
         private Presence _currentUserPresence;
-        public String ActiveShortCode;
+        private string _activeShortCode;
+
+        public String ActiveShortCode
+        {
+            get { return _activeShortCode; }
+            set { _activeShortCode = value; OnPropertyChanged("ActiveShortCode"); }
+        }
+
         public event EventHandler CurrentUserChanged;
 
         public Person CurrentUser
         {
             get { return _currentUser; }
+            private set { _currentUser = value; OnPropertyChanged("CurrentUser"); }
         }
 
         public Presence CurrentUserPresence
         {
             get { return _currentUserPresence; }
+            private set { _currentUserPresence = value; OnPropertyChanged("CurrentUserPresence"); }
         }
 
         internal CurrentUserManager()
@@ -41,11 +51,11 @@ namespace BlitsMe.Agent.Managers
 
         internal void SetUser(UserElement userElement, String shortCode)
         {
-            _currentUser = new Person(userElement);
+            CurrentUser = new Person(userElement);
             ActiveShortCode = shortCode;
             if(CurrentUserPresence == null)
             {
-                _currentUserPresence = new Presence();
+                CurrentUserPresence = new Presence();
             }
             CurrentUserPresence.SetIdleState(_appContext.IdleState);
             UpdatePresence(true);
@@ -145,6 +155,15 @@ namespace BlitsMe.Agent.Managers
             Logger.Debug("Resetting Current User Manager, clearing current user and presence");
             _currentUser = null;
             _currentUserPresence = null;
+        }
+
+        public event PropertyChangedEventHandler PropertyChanged;
+
+        [NotifyPropertyChangedInvocator]
+        protected virtual void OnPropertyChanged(string propertyName)
+        {
+            PropertyChangedEventHandler handler = PropertyChanged;
+            if (handler != null) handler(this, new PropertyChangedEventArgs(propertyName));
         }
     }
 }

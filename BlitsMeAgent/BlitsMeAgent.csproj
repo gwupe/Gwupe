@@ -672,6 +672,9 @@
     <Content Include="Resources\Entypo-license.txt" />
     <Content Include="Resources\WindowsIcons-license.txt" />
     <Content Include="SuggestedTests.txt" />
+    <Resource Include="UI\WPF\Images\connect_adhoc.png" />
+    <Resource Include="UI\WPF\Images\icon-arrow-down-b-20.png" />
+    <Content Include="UI\WPF\Images\loading-side.gif" />
     <Content Include="UI\WPF\Images\Search.png" />
     <Resource Include="UI\WPF\Images\Settings.png" />
     <Content Include="UI\WPF\Images\Time.png" />
