@@ -51,27 +51,27 @@ namespace BlitsMe.Agent.UI
             };
             // Set the event handlers
             notifyIcon.ContextMenuStrip.Opening += ContextMenuStrip_Opening;
-            notifyIcon.Click += launchDashboardLeftClick;
-            notifyIcon.DoubleClick += _appContext.OnIconClickLaunchDashboard;
+            notifyIcon.Click += LaunchDashboardLeftClick;
+            notifyIcon.DoubleClick += (sender, args) => BlitsMeClientAppContext.CurrentAppContext.UIManager.Show();
             //notifyIcon.MouseUp += notifyIcon_MouseUp;
         }
 
         public void Start()
         {
             linkDownIconBlinker = new Timer();
-            linkDownIconBlinker.Tick += offlineSearch;
+            linkDownIconBlinker.Tick += OfflineSearch;
             linkDownIconBlinker.Interval = 100;
             linkDownIconBlinker.Start();
         }
 
-        public void launchDashboardLeftClick(object sender, EventArgs e)
+        private void LaunchDashboardLeftClick(object sender, EventArgs e)
         {
             if(((MouseEventArgs)e).Button.Equals(MouseButtons.Left)) {
-                _appContext.OnIconClickLaunchDashboard(sender, e);
+                BlitsMeClientAppContext.CurrentAppContext.UIManager.Show();
             }
         }
 
-        public Icon pulseIcon() {
+        private Icon PulseIcon() {
             if (pulseUp)
             {
                 if (pulseLocation == IconSearchingList.Length - 1)
@@ -97,14 +97,14 @@ namespace BlitsMe.Agent.UI
             return IconSearchingList[pulseLocation];
         }
 
-        public void offlineSearch(object sender, EventArgs e)
+        private void OfflineSearch(object sender, EventArgs e)
         {
             if (_appContext.ConnectionManager.IsOnline())
             {
                 if (!notifyIcon.Icon.Equals(IconConnected))
                 {
                     notifyIcon.Icon = IconConnected;
-                    notifyIcon.Text = "BlitsMe" + Program.BuildMarker + " (Online)";
+                    notifyIcon.Text = "BlitsMe" + Program.BuildMarker + " [" + _appContext.CurrentUserManager.ActiveShortCode.Substring(0, 3) + " " + _appContext.CurrentUserManager.ActiveShortCode.Substring(3, 4) + "]";
                 }
             }
             else
@@ -112,11 +112,11 @@ namespace BlitsMe.Agent.UI
                 if (_appContext.ConnectionManager.Connection.isEstablished())
                 {
                     notifyIcon.Text = "BlitsMe" + Program.BuildMarker + " (Logging In)";
-                    notifyIcon.Icon = pulseIcon();
+                    notifyIcon.Icon = PulseIcon();
                 } else
                 {
                     notifyIcon.Text = "BlitsMe" + Program.BuildMarker + " (Connecting)";
-                    notifyIcon.Icon = pulseIcon();
+                    notifyIcon.Icon = PulseIcon();
                 }
             }
         }
@@ -131,7 +131,9 @@ namespace BlitsMe.Agent.UI
         {
             e.Cancel = false;
             notifyIcon.ContextMenuStrip.Items.Clear();
-            notifyIcon.ContextMenuStrip.Items.Add(Utils.generateItem("&Exit", exitItem_Click));
+            notifyIcon.ContextMenuStrip.Items.Add(Utils.GenerateItem("&Open",
+                (o, args) => BlitsMeClientAppContext.CurrentAppContext.UIManager.Show()));
+            notifyIcon.ContextMenuStrip.Items.Add(Utils.GenerateItem("&Exit", exitItem_Click));
         }
 
         public void Close()

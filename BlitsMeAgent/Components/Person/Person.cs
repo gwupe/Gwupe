@@ -131,8 +131,8 @@ namespace BlitsMe.Agent.Components.Person
 
         public void InitPerson(UserElement userElement)
         {
-            Name = userElement.name;
             Username = userElement.user.Split(new char[] { '@' })[0];
+            Name = userElement.name;
             Email = userElement.email;
             Location = userElement.location;
             Rating = userElement.rating;

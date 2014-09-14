@@ -8,17 +8,18 @@
 	x:Name="UserControl"
 	d:DesignWidth="640" d:DesignHeight="480">
     <UserControl.Resources>
-        <!--<ResourceDictionary>
+        <ResourceDictionary>
 			<ResourceDictionary.MergedDictionaries>
 				<ResourceDictionary Source="../Style/SearchStyle.xaml"/>
 				<ResourceDictionary Source="../Style/RosterStyle.xaml"/>
+				<ResourceDictionary Source="../Skins/Skin.xaml"/>
 				<ResourceDictionary Source="pack://application:,,,/MahApps.Metro;component/Styles/Colors.xaml" />
 				<ResourceDictionary Source="pack://application:,,,/MahApps.Metro;component/Styles/Fonts.xaml" />
 				<ResourceDictionary Source="pack://application:,,,/MahApps.Metro;component/Styles/Controls.xaml" />
 				<ResourceDictionary Source="pack://application:,,,/MahApps.Metro;component/Styles/Accents/BaseLight.xaml" />
 				<ResourceDictionary Source="../Style/Theme.xaml" />
 			</ResourceDictionary.MergedDictionaries>
-		</ResourceDictionary>-->
+		</ResourceDictionary>
     </UserControl.Resources>
 
     <Grid x:Name="LayoutRoot">
@@ -30,7 +31,7 @@
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="*"/>
         </Grid.ColumnDefinitions>
-
+		<ContentPresenter Name="Disabler" ContentTemplate="{StaticResource SearchingWindow}" Content="{Binding}" Panel.ZIndex="5" Visibility="{Binding SearchingVisibility, FallbackValue=Hidden}" Grid.RowSpan="3" />
         <TextBlock Text="Search Results" Style="{DynamicResource TextblockHeaderActiveStyle}" Grid.Column="0"
                        VerticalAlignment="Center" Grid.Row="0" Margin="0,10,10,0" HorizontalAlignment="Right"/>
         <Border MinWidth="640" Height="1" BorderThickness="1" BorderBrush="#4A7EBB" Grid.Row="1"

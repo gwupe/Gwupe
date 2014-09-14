@@ -9,6 +9,8 @@ namespace BlitsMe.Agent.Components.Person
         private bool _iHaveUnattendedAccess;
         private bool _theyHaveUnattendedAccess;
 
+        public static Relationship NoRelationship { get { return new Relationship() { _iHaveUnattendedAccess = false, _theyHaveUnattendedAccess = false }; } }
+
         public Relationship(RelationshipElement relationshipElement)
         {
             InitRelationship(relationshipElement);

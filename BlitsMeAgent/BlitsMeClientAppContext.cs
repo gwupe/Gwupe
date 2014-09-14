@@ -177,11 +177,6 @@ namespace BlitsMe.Agent
             set { _idleState = value; OnIdleChanged(EventArgs.Empty); }
         }
 
-        public void OnIconClickLaunchDashboard(object sender, EventArgs e)
-        {
-            UIManager.Show();
-        }
-
         public void Alert(String message)
         {
             UIManager.Alert(message);
@@ -197,7 +192,7 @@ namespace BlitsMe.Agent
             }
         }
 
-        private void SubmitFaultReport(FaultReport report)
+        public void SubmitFaultReport(FaultReport report)
         {
             // get the log file data
             var rootAppender = ((Hierarchy)LogManager.GetRepository()).Root.Appenders.OfType<FileAppender>().FirstOrDefault();
@@ -213,9 +208,7 @@ namespace BlitsMe.Agent
                     byte[] buffer = new byte[toRead];
                     var read = stream.Read(buffer, 0, (int)toRead);
                     stream.Close();
-                    Logger.Debug("Read " + read + " bytes");
                     byte[] zippedLog = Common.Misc.Instance().Zip(buffer);
-                    Logger.Debug("Zipped to " + zippedLog.Length);
                     var request = new FaultReportRq
                     {
                         log = Convert.ToBase64String(zippedLog),

@@ -113,7 +113,7 @@ namespace BlitsMe.Agent.Components
         internal bool Active
         {
             get { return _active; }
-            private set
+            set
             {
                 if (_active != value)
                 {
@@ -121,13 +121,10 @@ namespace BlitsMe.Agent.Components
                     Logger.Debug("Engagement with " + SecondParty.Person.Username + " has become " + (_active ? "active" : "inactive"));
                     if (_active)
                     {
-                        //SetupOutgoingTunnel();
                         OnActivate(EventArgs.Empty);
                     }
                     else
                     {
-                        Logger.Debug("Shutting down outgoing tunnel to " + SecondParty.Person.Username + ", deactivating engagement.");
-                        //DisconnectOutgoingTunnel();
                         OnDeactivate(EventArgs.Empty);
                     }
                     OnPropertyChanged("Active");
@@ -419,7 +416,6 @@ namespace BlitsMe.Agent.Components
             _closing = true;
             Interactions.Close();
             Functions.Values.ToList().ForEach(function => function.Close());
-            //DisconnectTunnels();
         }
 
         public void SetRating(string interactionId, string ratingName, int rating)
@@ -451,7 +447,6 @@ namespace BlitsMe.Agent.Components
         public void ActivityOccured(EngagementActivity args)
         {
             IsUnread = true;
-            //SetupOutgoingTunnel();
             Interactions.CurrentOrNewInteraction.RecordActivity(args);
         }
     }

@@ -280,15 +280,14 @@ namespace BlitsMe.Agent.Components.Functions.RemoteDesktop
             };
             try
             {
-                // Print in chat that we sent the second party a rdp request
-                IChatMessage chatElement =
-                    Chat.LogSystemMessage("You sent " + _engagement.SecondParty.Person.Firstname +
-                    " a request to control their desktop." + (tokenId == null ? "" : "  You have unattended access to their desktop, you will be granted access automatically after 10 seconds."));
                 // Actually send the message asynchronously
                 //_appContext.ConnectionManager.Connection.RequestAsync<RDPRequestRq, RDPRequestRs>(request, (req, res, ex) => ProcessRequestRDPSessionResponse(req, res, ex, chatElement));
                 try
                 {
                     var response = _appContext.ConnectionManager.Connection.Request<RDPRequestRq, RDPRequestRs>(request);
+                    // Print in chat that we sent the second party a rdp request
+                    IChatMessage chatElement = Chat.LogSystemMessage("You sent " + _engagement.SecondParty.Person.Firstname +
+                        " a request to control their desktop." + (tokenId == null ? "" : "  You have unattended access to their desktop, you will be granted access automatically after 10 seconds."));
                     // The message was delivered
                     IsActive = true;
                     // Raise an activity that we managed to send a rdp request to second party successfully.
@@ -300,6 +299,9 @@ namespace BlitsMe.Agent.Components.Functions.RemoteDesktop
                     {
                         // need elevation
                         ElevatedRequestRdpSession();
+                    } else if ("WILL_NOT_PROCESS_AUTH".Equals(e.ErrorCode))
+                    {
+                        Chat.LogErrorMessage("Sorry, you entered your password incorrectly.  Please try again.");
                     }
                     else
                     {
@@ -310,7 +312,7 @@ namespace BlitsMe.Agent.Components.Functions.RemoteDesktop
             catch (Exception ex)
             {
                 Logger.Error("Error during request for RDP Session : " + ex.Message, ex);
-                Chat.LogSystemMessage("An error occured trying to send " + _engagement.SecondParty.Person.Firstname + " a request to control their desktop.");
+                Chat.LogErrorMessage("An error occured trying to send " + _engagement.SecondParty.Person.Firstname + " a request to control their desktop.");
             }
         }
 

@@ -20,7 +20,7 @@ namespace BlitsMe.Agent.Components.Processors
         public Response process(Request req)
         {
             var request = (UserToUserRequest)req;
-            Engagement engagement = _appContext.EngagementManager.GetNewEngagement(request.username);
+            Engagement engagement = _appContext.EngagementManager.GetNewEngagement(request.username, request.shortCode);
             String requestTypeName = request.GetType().ToString();
             Type responseType = Type.GetType((requestTypeName.Substring(0, requestTypeName.Length - 2) + "Rs").Replace(".Request.", ".Response.") + ", BlitsMe.Cloud");
             UserToUserResponse response = null;

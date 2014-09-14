@@ -3,13 +3,17 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
 using System.Text;
+using log4net;
+using log4net.Repository.Hierarchy;
 
 namespace BlitsMe.Agent.Components.Person.Presence
 {
     class MultiPresence : IPresence
     {
+        private static readonly ILog Logger = LogManager.GetLogger(typeof(MultiPresence));
         private readonly Dictionary<String, IPresence> _presences = new Dictionary<string, IPresence>();
         private readonly object _presenceLock = new Object();
+        private IPresence _currentHighestPresence;
 
         public String ShortCode { get { return UnderlyingPresenceCount > 0 ? GetHighestPriorityPresence().ShortCode : null; } }
         public PresenceMode Mode { get { return UnderlyingPresenceCount > 0 ? GetHighestPriorityPresence().Mode : PresenceMode.available; } }
@@ -39,6 +43,10 @@ namespace BlitsMe.Agent.Components.Person.Presence
                 {
                     _presences.Add(presence.Resource, presence);
                 }
+                _currentHighestPresence = null;
+                // cache the result
+                GetHighestPriorityPresence();
+                // Notify
                 OnPropertyChanged("Mode");
                 OnPropertyChanged("Status");
                 OnPropertyChanged("Type");
@@ -51,16 +59,50 @@ namespace BlitsMe.Agent.Components.Person.Presence
         {
             lock (_presenceLock)
             {
-                if (_presences.Count > 0)
+                if (_currentHighestPresence == null)
                 {
-                    var presences = new List<IPresence>(_presences.Values);
-                    presences.Sort();
-                    return presences[0];
+                    Logger.Debug("Calculating highest priority presence from " + String.Join(" | ", _presences));
+                    if (_presences.Count > 0)
+                    {
+                        var presences = new List<IPresence>(_presences.Values);
+                        // This causes an exception sometimes, we need to capture and send a fault report, so we can try figure it out
+                        try
+                        {
+                            presences.Sort();
+                        }
+                        catch (Exception e)
+                        {
+                            try
+                            {
+                                Logger.Error(
+                                    "Caught the multi presence exception we are attempting to understand, logging fault report",
+                                    e);
+                                BlitsMeClientAppContext.CurrentAppContext.SubmitFaultReport(new FaultReport()
+                                {
+                                    UserReport = "MultiPresence error " + String.Join(" | ", _presences.Values)
+                                });
+                            }
+                            catch (Exception ex)
+                            {
+                                Logger.Error("Failed to generate fault report for multi presence error",ex);
+                                // throw original exception
+                                throw e;
+                            }
+                        }
+                        _currentHighestPresence = presences[0];
+                    }
                 }
+                else
+                {
+                    Logger.Debug("Using cached highest priority presence");
+                }
+                Logger.Debug("Returning highest priority presence " + _currentHighestPresence);
+                return _currentHighestPresence;
             }
             return null;
         }
 
+        /*
         public IPresence GetPresence(String resource)
         {
             lock (_presenceLock)
@@ -73,6 +115,7 @@ namespace BlitsMe.Agent.Components.Person.Presence
                 return presence;
             }
         }
+        */
 
         public int CompareTo(IPresence other)
         {
@@ -81,7 +124,7 @@ namespace BlitsMe.Agent.Components.Person.Presence
 
         public int UnderlyingPresenceCount
         {
-            get { lock(_presenceLock) { return _presences.Count; } }
+            get { lock (_presenceLock) { return _presences.Count; } }
         }
 
         public override string ToString()

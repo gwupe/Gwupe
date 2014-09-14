@@ -2,9 +2,10 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
-using System.Text;
 using BlitsMe.Agent.Components;
 using BlitsMe.Agent.Components.Person;
+using BlitsMe.Cloud.Messaging.Request;
+using BlitsMe.Cloud.Messaging.Response;
 using log4net;
 
 namespace BlitsMe.Agent.Managers
@@ -32,7 +33,7 @@ namespace BlitsMe.Agent.Managers
         // Gets an engagement, null if not there
         public Engagement GetEngagement(String username)
         {
-            if(_engagementLookup.ContainsKey(username.ToLower()))
+            if (_engagementLookup.ContainsKey(username.ToLower()))
             {
                 return _engagementLookup[username.ToLower()];
             }
@@ -40,7 +41,7 @@ namespace BlitsMe.Agent.Managers
         }
 
         // Gets an engagement, creates it if its not there
-        public Engagement GetNewEngagement(String username)
+        public Engagement GetNewEngagement(String username, String shortCode = null)
         {
             lock (_engagementLookupLock)
             {
@@ -50,6 +51,12 @@ namespace BlitsMe.Agent.Managers
                 }
 
                 Attendance servicePersonAttendance = _appContext.RosterManager.GetServicePersonAttendance(username.ToLower());
+                if (servicePersonAttendance == null && shortCode != null)
+                {
+                    // add them temporarily
+                    _appContext.RosterManager.AddAdHocPerson(username, shortCode);
+                    servicePersonAttendance = _appContext.RosterManager.GetServicePersonAttendance(username.ToLower());
+                }
                 if (servicePersonAttendance == null)
                 {
                     throw new Exception("Unable to find service person [" + username + "]");
@@ -97,5 +104,25 @@ namespace BlitsMe.Agent.Managers
             }
         }
 
+        public String EngageRemoteAccessId(string shortCode)
+        {
+            LookupUserRq request = new LookupUserRq() { shortCode = shortCode };
+            try
+            {
+                var response = _appContext.ConnectionManager.Connection.Request<LookupUserRq, LookupUserRs>(request);
+                Logger.Debug("Got user " + response.userElement.user + " for shortcode " + shortCode);
+                if (_appContext.RosterManager.GetServicePersonAttendance(response.userElement.user.ToLower()) == null)
+                {
+                    // we aren't subscribed to this user, we will need to add a temporary link
+                    _appContext.RosterManager.AddAdHocPerson(response.userElement, shortCode);
+                }
+                return response.userElement.user;
+            }
+            catch (Exception e)
+            {
+                Logger.Error("Failed to execute", e);
+            }
+            return null;
+        }
     }
 }

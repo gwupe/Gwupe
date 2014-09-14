@@ -5,13 +5,16 @@ using System.Collections.Specialized;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.Linq;
+using System.Text.RegularExpressions;
 using System.Threading;
 using System.Timers;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
 using System.Windows.Forms;
+using System.Windows.Input;
 using System.Windows.Interop;
+using System.Windows.Media;
 using System.Windows.Navigation;
 using BlitsMe.Agent.Components;
 using BlitsMe.Agent.Components.Alert;
@@ -81,11 +84,25 @@ namespace BlitsMe.Agent.UI.WPF
             activateEngagementChecker.Elapsed += CheckActiveEngagements;
             activateEngagementChecker.Start();
             appContext.SettingsManager.PropertyChanged += SettingsOnPropertyChanged;
-            SearchBoxMenu.SelectionChanged += SearchBoxMenuOnSelectionChanged;
-            SearchBoxMenu.SelectionMode = SelectionMode.Single;
+            SetupSearch();
             SetupPartner();
+            EventManager.RegisterClassHandler(typeof(Window), Window.PreviewMouseUpEvent, new MouseButtonEventHandler(OnPreviewMouseUp));
             Logger.Info("Dashboard setup completed");
             ((INotifyCollectionChanged)Notifications.Items).CollectionChanged += new NotifyCollectionChangedEventHandler(Notification_CollectionChanged);
+        }
+
+        private void SetupSearch()
+        {
+            SearchBoxMenu.SelectionChanged += SearchBoxMenuOnSelectionChanged;
+            SearchBoxMenu.SelectionMode = SelectionMode.Single;
+        }
+
+        private void OnPreviewMouseUp(object sender, MouseButtonEventArgs e)
+        {
+            if (DashboardData.SearchMenuVisibility == Visibility.Visible)
+            {
+                DashboardData.SearchMenuVisibility = Visibility.Hidden;
+            }
         }
 
         private void SearchBoxMenuOnSelectionChanged(object sender, SelectionChangedEventArgs selectionChangedEventArgs)
@@ -93,12 +110,15 @@ namespace BlitsMe.Agent.UI.WPF
             if (SearchBoxMenu.SelectedIndex == 0)
             {
                 DashboardData.SearchBoxVisibility = Visibility.Visible;
+                DashboardData.SearchMenuVisibility = Visibility.Hidden;
+                SearchBoxMenu.UnselectAll();
             }
             else if(SearchBoxMenu.SelectedIndex == 1)
             {
                 DashboardData.SearchBoxVisibility = Visibility.Collapsed;
+                DashboardData.SearchMenuVisibility = Visibility.Hidden;
+                SearchBoxMenu.UnselectAll();
             }
-            DashboardData.SearchMenuVisibility = Visibility.Hidden;
         }
 
         private void SettingsOnPropertyChanged(object sender, PropertyChangedEventArgs propertyChangedEventArgs)
@@ -230,6 +250,7 @@ namespace BlitsMe.Agent.UI.WPF
         {
             Logger.Debug("Setting up new listener for " + _appContext.CurrentUserManager.CurrentUser.Name);
             _appContext.CurrentUserManager.CurrentUser.PropertyChanged += CurrentUserOnPropertyChanged;
+            _appContext.LoginManager.LoggedOut += (sender, args) => DashboardData.Title = "";
             SetTitle();
         }
 
@@ -242,9 +263,7 @@ namespace BlitsMe.Agent.UI.WPF
             else
             {
                 Logger.Debug("Name has changed : " + _appContext.CurrentUserManager.CurrentUser.Name);
-                DashboardData.Title = _appContext.CurrentUserManager.CurrentUser.Guest ?
-                    "Remote Access Id '" + _appContext.CurrentUserManager.ActiveShortCode + "'" :
-                    _appContext.CurrentUserManager.CurrentUser.Name;
+                DashboardData.Title = _appContext.CurrentUserManager.CurrentUser.Name + " [ Remote Access Id '" + _appContext.CurrentUserManager.ActiveShortCode.Substring(0, 3) + " " + _appContext.CurrentUserManager.ActiveShortCode.Substring(3, 4) + "' ]";
             }
         }
 
@@ -590,35 +609,24 @@ namespace BlitsMe.Agent.UI.WPF
 
         private void ShowEngagement(Attendance attendance)
         {
-            /*
-            if (_Attendance != null)
+            if (!Dispatcher.CheckAccess())
             {
-                _Attendance.IsRemoteActive = _Attendance.Engagement.IsRemoteControlActive;
-            }
-            _Attendance = attendance;
-             */
-            EngagementWindow egw = _engagementWindows.GetEngagementWindow(attendance);
-            if (egw != null)
-            {
-                //attendance.IsRemoteActive = attendance.Engagement.IsRemoteControlActive;
-                attendance.IsCurrentlyEngaged = true;
-                ActiveContent.Content = egw;
-                egw.SetAsMain(this);
-                egw.ShowChat();
-                /*
-                if (!attendance.Engagement.IsRemoteControlActive)
-                {
-                    egw.RemoteTerminateButton.Visibility = Visibility.Collapsed;
-                }
-                else
-                {
-                    egw.RemoteTerminateButton.Visibility = Visibility.Visible;
-                }
-                 * */
+                Dispatcher.Invoke(new Action(() => ShowEngagement(attendance)));
             }
             else
             {
-                Logger.Error("Failed to find an engagement window for " + attendance.Person);
+                EngagementWindow egw = _engagementWindows.GetEngagementWindow(attendance);
+                if (egw != null)
+                {
+                    attendance.IsCurrentlyEngaged = true;
+                    ActiveContent.Content = egw;
+                    egw.SetAsMain(this);
+                    egw.ShowChat();
+                }
+                else
+                {
+                    Logger.Error("Failed to find an engagement window for " + attendance.Person);
+                }
             }
         }
 
@@ -816,6 +824,93 @@ namespace BlitsMe.Agent.UI.WPF
                 : Visibility.Hidden;
         }
 
+        private void ChatRemoteAccessId_Click(object sender, RoutedEventArgs e)
+        {
+            if (!String.IsNullOrWhiteSpace(RemoteIdBox.Text))
+            {
+                ResetRemoteIdBox();
+                var shortCode = Regex.Replace(RemoteIdBox.Text, @"\s","").ToLower();
+                SearchRemoteId(true);
+                ThreadPool.QueueUserWorkItem(state =>
+                {
+                    String username = _appContext.EngagementManager.EngageRemoteAccessId(shortCode);
+                    if (username != null)
+                    {
+                        Attendance attendance = _appContext.RosterManager.GetServicePersonAttendance(username);
+                        if (attendance != null)
+                        {
+                            ShowEngagement(attendance);
+                            attendance.Engagement.Active = true;
+                            attendance.Engagement.Interactions.StartInteraction();
+                            RefreshRosters();
+                        }
+                    }
+                    else
+                    {
+                        ErrorRemoteIdBox();
+                    }
+                    SearchRemoteId(false);
+                });
+            }
+            else
+            {
+                ErrorRemoteIdBox();
+            }
+        }
+
+        private void SearchRemoteId(bool searching)
+        {
+            if (!Dispatcher.CheckAccess())
+            {
+                Dispatcher.Invoke(new Action(() => SearchRemoteId(searching)));
+            }
+            else
+            {
+                if (searching)
+                {
+                    RemoteIdBox.IsEnabled = false;
+                    RemoteIdButton.IsEnabled = false;
+                }
+                else
+                {
+                    RemoteIdBox.IsEnabled = true;
+                    RemoteIdButton.IsEnabled = true;
+                }
+            }
+        }
+
+        private void ResetRemoteIdBox()
+        {
+            if (!Dispatcher.CheckAccess())
+            {
+                Dispatcher.Invoke(new Action(ResetRemoteIdBox));
+            }
+            else
+            {
+                RemoteIdFields.Background = new SolidColorBrush(Colors.White);
+            }
+        }
+
+        private void ErrorRemoteIdBox()
+        {
+            if (!Dispatcher.CheckAccess())
+            {
+                Dispatcher.Invoke(new Action(ErrorRemoteIdBox));
+            }
+            else
+            {
+                RemoteIdFields.Background = new SolidColorBrush(Colors.MistyRose);
+            }
+        }
+
+        private void RemoteIdKeyDown(object sender, System.Windows.Input.KeyEventArgs e)
+        {
+            if (e.Key == Key.Return)
+            {
+                ChatRemoteAccessId_Click(sender,new RoutedEventArgs());
+            }
+        }
+
     }
 
     public enum LoginState
@@ -911,7 +1006,7 @@ namespace BlitsMe.Agent.UI.WPF
 
         public String Title
         {
-            get { return "BlitsMe" + Program.BuildMarker + " - " + _customTitle; }
+            get { return "BlitsMe" + Program.BuildMarker + " : " + _customTitle; }
             set { _customTitle = value; OnPropertyChanged("Title"); }
         }
 

@@ -52,10 +52,14 @@ namespace BlitsMe.Agent.Components.Person
             this._presence = new MultiPresence();
         }
 
-        internal Attendance(UserElement element, RelationshipElement relationshipElement)
+        internal Attendance(UserElement element, RelationshipElement relationshipElement) : this(new Person(element), new Relationship(relationshipElement))
         {
-            Person = new Person(element);
-            Relationship = new Relationship(relationshipElement);
+        }
+
+        internal Attendance(Person person, Relationship relationship)
+        {
+            Person = person;
+            Relationship = relationship;
             this._presence = new MultiPresence();
         }
 

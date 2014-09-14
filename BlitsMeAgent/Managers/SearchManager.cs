@@ -20,6 +20,21 @@ namespace BlitsMe.Agent.Managers
         internal ObservableCollection<SearchResult> SearchResults;
         private readonly Object _listWriteLock = new object();
         internal bool IsClosed { get; private set; }
+        public event EventHandler SearchStart;
+
+        protected virtual void OnSearchStart()
+        {
+            EventHandler handler = SearchStart;
+            if (handler != null) handler(this, EventArgs.Empty);
+        }
+
+        public event EventHandler SearchStop;
+
+        protected virtual void OnSearchStop()
+        {
+            EventHandler handler = SearchStop;
+            if (handler != null) handler(this, EventArgs.Empty);
+        }
 
         public SearchManager()
         {
@@ -33,6 +48,7 @@ namespace BlitsMe.Agent.Managers
             SearchRq request = new SearchRq() { query = search, pageSize = 20 };
             if (_appContext.ConnectionManager.IsOnline())
             {
+                OnSearchStart();
                 _appContext.ConnectionManager.Connection.RequestAsync<SearchRq,SearchRs>(request, SearchResponseHandler);
             } else
             {
@@ -42,6 +58,7 @@ namespace BlitsMe.Agent.Managers
 
         private void SearchResponseHandler(SearchRq request, SearchRs response, Exception e)
         {
+            OnSearchStop();
             if (e == null)
             {
                 // populate the list

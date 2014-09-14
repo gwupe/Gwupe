@@ -13,6 +13,14 @@ namespace BlitsMe.Agent.Components.Person.Presence
         private string _shortCode;
         private string _status;
 
+        public static Presence AlwaysOn
+        {
+            get
+            {
+                return new Presence() {_mode = PresenceMode.available, _priority = 5, _type = PresenceType.available};
+            }
+        }
+
         public PresenceMode Mode
         {
             get { return _mode; }
@@ -46,7 +54,7 @@ namespace BlitsMe.Agent.Components.Person.Presence
         public string Resource
         {
             get { return _resource; }
-            private set { _resource = value; OnPropertyChanged("Resource"); }
+            set { _resource = value; OnPropertyChanged("Resource"); }
         }
 
         public Boolean IsOnline
@@ -128,7 +136,7 @@ namespace BlitsMe.Agent.Components.Person.Presence
 
         public override String ToString()
         {
-            return Type + "/" + Mode;
+            return Resource + ", " + Type + "/" + Mode + ", (NB "+ Priority + ")";
         }
 
         public event PropertyChangedEventHandler PropertyChanged;

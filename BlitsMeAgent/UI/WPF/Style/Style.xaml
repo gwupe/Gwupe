@@ -98,4 +98,11 @@
 			<TextBlock Name="DisableText" Text="{Binding Path=DisableMessage, FallbackValue=Whirring}" HorizontalAlignment="Center" VerticalAlignment="Center" FontWeight="Bold" Foreground="#FF2B519B" FontSize="14.667" />
 		</Grid>
 	</DataTemplate>
+		<DataTemplate x:Key="SearchingWindow">
+		<Grid>
+			<Grid Background="White" Opacity="0.55"></Grid>
+			<mahappsControls:ProgressRing Name="SignupProgress" IsActive="True" Margin="0,0,0,0" Height="150" Width="150" HorizontalAlignment="Center" VerticalAlignment="Center" />
+			<TextBlock Name="DisableText" Text="Searching" HorizontalAlignment="Center" VerticalAlignment="Center" FontWeight="Bold" Foreground="#FF2B519B" FontSize="23" />
+		</Grid>
+	</DataTemplate>
 </ResourceDictionary>

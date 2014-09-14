@@ -389,8 +389,7 @@
                     <Border BorderThickness="0,1,0,0" Width="190" BorderBrush="#4A7EBB"
 					Margin="0,10,0,0" MinHeight="22" Grid.Row="1" Height="25">
                         <StackPanel Orientation="Horizontal" HorizontalAlignment="Left" VerticalAlignment="Top">
-							<Image Name="SearchIcon" Margin="0,0,0,0" Source="Images/1375406488_Cute Ball - Search.png" Height="13" Width="13" Visibility="{Binding SearchBoxVisibility, FallbackValue=Visible}" />
-							<!--
+							<!-- <Image Name="SearchIcon" Margin="0,0,0,0" Source="Images/1375406488_Cute Ball - Search.png" Height="13" Width="13" Visibility="{Binding SearchBoxVisibility, FallbackValue=Visible}" /> -->
 	                        <Grid Width="23">
 								<Button Template="{DynamicResource TransparentButtonProgressCloseStyle}" Click="SearchMenuClick" >
                                 <StackPanel Orientation="Horizontal">
@@ -402,22 +401,20 @@
                                 </StackPanel>
                             </Button>
 							</Grid>
-							-->
-                            <Grid Visibility="{Binding SearchBoxVisibility, FallbackValue=Visible}">
-                                <TextBox x:Name="SearchBox" mahappsControls:TextboxHelper.Watermark="Search..." Margin="-2,0,0,0"
+                            <Grid Visibility="{Binding SearchBoxVisibility, FallbackValue=Visible}" Width="166.583">
+                                <TextBox x:Name="SearchBox" mahappsControls:TextboxHelper.Watermark="Search..." Margin="-2,0,0,-2"
 									TextChanged="Search_TextChanged"  VerticalContentAlignment="Center" VerticalAlignment="Top"
-									GotFocus="SearchBox_GotFocus" HorizontalAlignment="Left" 
-									LostFocus="SearchBox_LostFocus" Background="Transparent" TextWrapping="Wrap" Width="162" 
+									GotFocus="SearchBox_GotFocus" 
+									LostFocus="SearchBox_LostFocus" Background="Transparent" TextWrapping="Wrap" 
 									Height="20" BorderThickness="0" BorderBrush="Transparent" />
-                                <MediaElement Visibility="{Binding Path=Searching, FallbackValue=Hidden}" Margin="131.333,0,0,0"  x:Name="SearchMedia" Source="Images/loading-side.gif" UnloadedBehavior="Manual" LoadedBehavior="Play" Stretch="None"/>
                             </Grid>
-                            <Grid  Visibility="{Binding RemoteIdBoxVisibility, FallbackValue=Collapsed}" Width="168.807">
+                            <Grid  Visibility="{Binding RemoteIdBoxVisibility, FallbackValue=Collapsed}" Width="168.807" Name="RemoteIdFields">
                                 <TextBox x:Name="RemoteIdBox" mahappsControls:TextboxHelper.Watermark="Remote Access ID" Margin="-2,0,0,-2"
 									VerticalContentAlignment="Center" VerticalAlignment="Top"
 									HorizontalAlignment="Left"  
 									Background="Transparent" TextWrapping="Wrap" Width="117.277" 
-									Height="20" BorderThickness="0" BorderBrush="Transparent"/>
-                                <Button Template="{DynamicResource TransparentButtonProgressCloseStyle}" Content="Chat" Margin="127.277,1.33,0,-2.33" />
+									Height="20" BorderThickness="0" BorderBrush="Transparent" KeyDown="RemoteIdKeyDown"/>
+                                <Button Name="RemoteIdButton" Template="{DynamicResource TransparentButtonProgressCloseStyle}" Content="Chat" Margin="127.277,1.33,0,-2.33" Click="ChatRemoteAccessId_Click" />
                             </Grid>
                         </StackPanel>
                     </Border>

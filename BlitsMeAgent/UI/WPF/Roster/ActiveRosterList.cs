@@ -1,18 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.Collections.Specialized;
+﻿using System.Collections.ObjectModel;
 using System.ComponentModel;
-using System.Diagnostics;
-using System.Linq;
-using System.Text;
-using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
-using System.Windows.Media.Animation;
-using System.Windows.Threading;
 using BlitsMe.Agent.Components.Person;
-using BlitsMe.Agent.UI.WPF.Utils;
 using log4net;
 
 namespace BlitsMe.Agent.UI.WPF.Roster
@@ -30,6 +20,7 @@ namespace BlitsMe.Agent.UI.WPF.Roster
         protected override void FilterEventHandler(object sender, FilterEventArgs filterEventArgs)
         {
             Attendance attendance = filterEventArgs.Item as Attendance;
+            Logger.Debug("Checking status of " + attendance.Person + " " + attendance.IsActive);
             if (attendance != null && attendance.IsActive)
             {
                 filterEventArgs.Accepted = true;

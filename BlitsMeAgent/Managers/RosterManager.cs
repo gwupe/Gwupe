@@ -3,12 +3,9 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
-using System.Linq.Expressions;
-using System.Runtime.Serialization;
 using System.Threading;
 using BlitsMe.Agent.Components.Person;
 using BlitsMe.Agent.Components.Person.Presence;
-using BlitsMe.Cloud.Messaging.API;
 using BlitsMe.Cloud.Messaging.Elements;
 using BlitsMe.Cloud.Messaging.Request;
 using BlitsMe.Cloud.Messaging.Response;
@@ -257,6 +254,32 @@ namespace BlitsMe.Agent.Managers
             }
         }
 
+        public void AddAdHocPerson(String username, String shortCode)
+        {
+            VCardRq request = new VCardRq(username);
+            try
+            {
+                var response = _appContext.ConnectionManager.Connection.Request<VCardRq, VCardRs>(request);
+                AddAdHocPerson(response.userElement, shortCode);
+            }
+            catch (Exception e)
+            {
+                Logger.Error("Failed to add adhoc person " + username,e);
+            }
+        }
+
+        public void AddAdHocPerson(UserElement userElement, String shortCode)
+        {
+            Attendance attendance = new Attendance(new Person(userElement),Relationship.NoRelationship);
+            var presence = Presence.AlwaysOn;
+            presence.Resource = "_blitsme-" + shortCode;
+            presence.ShortCode = shortCode;
+            attendance.PropertyChanged += MarkUnmarkCurrentlyEngaged;
+            attendance.SetPresence(presence);
+            ServicePersonAttendanceList.Add(attendance);
+            ServicePersonAttendanceLookup[attendance.Person.Username] = attendance;
+        }
+
         internal void UpdateRelationship(String contactUsername, Relationship relationship, String tokenId, String securityKey)
         {
             var response = _appContext.ConnectionManager.Connection
@@ -325,5 +348,6 @@ namespace BlitsMe.Agent.Managers
                 Logger.Error("Failed to update contact " + vCardRq.username, exception);
             }
         }
+
     }
 }

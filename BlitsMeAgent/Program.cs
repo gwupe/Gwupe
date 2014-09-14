@@ -70,6 +70,8 @@ namespace BlitsMe.Agent
                             options.Add(BlitsMeOption.Minimize);
                         }
                     }
+                    Application.ThreadException += Application_ThreadException;
+                    AppDomain.CurrentDomain.UnhandledException += CurrentDomain_UnhandledException;
                     Application.Run(new BlitsMeClientAppContext(options));
                 }
 
@@ -83,6 +85,31 @@ namespace BlitsMe.Agent
                                     MessageBoxButtons.OK, MessageBoxIcon.Error);
                 }
             }
+        }
+
+        static void Application_ThreadException(object sender, ThreadExceptionEventArgs e)
+        {
+            LogFaultReportOnUnhandledExceptions(e.Exception);
+        }
+
+        private static void LogFaultReportOnUnhandledExceptions(Exception ex)
+        {
+            try
+            {
+                if (BlitsMeClientAppContext.CurrentAppContext != null)
+                {
+                    BlitsMeClientAppContext.CurrentAppContext.SubmitFaultReport(new FaultReport() {UserReport = ex.ToString()});
+                }
+            }
+            catch
+            {
+                throw ex;
+            }
+        }
+
+        static void CurrentDomain_UnhandledException(object sender, UnhandledExceptionEventArgs e)
+        {
+            LogFaultReportOnUnhandledExceptions((Exception)e.ExceptionObject);
         }
 
         private static Assembly EmbeddedAssemblyResolver(object sender, ResolveEventArgs args)

@@ -220,7 +220,7 @@
                 <ContentPresenter ContentTemplate="{StaticResource PersonIcon}" />
             </StackPanel>
 
-            <Grid Margin="2,0,0,0" VerticalAlignment="Center" Height="Auto" Width="125" HorizontalAlignment="Left">
+            <Grid Margin="5,0,0,0" VerticalAlignment="Center" Height="Auto" Width="125" HorizontalAlignment="Left">
                 <Grid.RowDefinitions>
                     <RowDefinition Height="Auto"/>
                     <RowDefinition Height="Auto"/>
@@ -228,13 +228,13 @@
                 </Grid.RowDefinitions>
                 <TextBlock Text="{Binding Path=Person.Name, FallbackValue=FirstName LastName}" Width="110" 
                            Grid.Row="0" FontSize="13" FontWeight="ExtraBlack" HorizontalAlignment="Left"
-                           Margin="10,0,0,0"/>
+                           Margin="0,0,0,0"/>
 
                 <TextBlock  Text="{Binding Path=Person.Location, FallbackValue=Planet Earth}" Grid.Row="1" 
-                           Width="110" HorizontalAlignment="Left" Margin="10,0,0,0"/>
+                           Width="110" HorizontalAlignment="Left" Margin="0,0,0,0"/>
 
                 <!--<Engage:GetContactListRating Grid.Row="2" HorizontalAlignment="Left" Margin="10,0,0,0"/>-->
-                <ContentControl Content="{Binding Person.Rating}" HorizontalAlignment="Left" Grid.Row="2" Margin="10,0,0,0">
+                <ContentControl Content="{Binding Person.Rating}" HorizontalAlignment="Left" Grid.Row="2" Margin="0,0,0,0">
                     <ContentControl.Style>
                         <Style TargetType="{x:Type ContentControl}">
                             <Setter Property="ContentTemplate" Value="{StaticResource Rating}" />
@@ -247,12 +247,13 @@
                     </ContentControl.Style>
                 </ContentControl>
             </Grid>
+			<!--
             <Button Height="18" Width="18"
                     HorizontalAlignment="Left" VerticalAlignment="Center" Margin="0,0,5,0"
                     Template="{DynamicResource TransparentButtonTerminateRDP}"
                     Visibility="{Binding IsRemoteActive,Converter={StaticResource BoolToVisibilityConverter},Mode=TwoWay,UpdateSourceTrigger=PropertyChanged}" >
                 <Image Source="/BlitsMe.Agent;component/UI/WPF/Images/close.png" Height="12" Width="12" />
-            </Button>
+            </Button> -->
         </StackPanel>
     </DataTemplate>
     
@@ -263,20 +264,20 @@
                 <ContentPresenter ContentTemplate="{StaticResource PersonIcon}" />
             </StackPanel>
 
-            <Grid Margin="2,0,0,0" VerticalAlignment="Center" Height="Auto" Width="110" HorizontalAlignment="Left">
+            <Grid Margin="5,0,0,0" VerticalAlignment="Center" Height="Auto" Width="110" HorizontalAlignment="Left">
                 <Grid.RowDefinitions>
                     <RowDefinition Height="Auto"/>
                     <RowDefinition Height="Auto"/>
                     <RowDefinition Height="Auto"/>
                 </Grid.RowDefinitions>
-                <TextBlock Text="{Binding Path=Person.Name, FallbackValue=FirstName LastName}" Width="90" Grid.Row="0" 
-                           FontSize="13" FontWeight="ExtraBlack" HorizontalAlignment="Left" Margin="10,0,0,0"/>
+                <TextBlock Text="{Binding Path=Person.Name, FallbackValue=FirstName LastName}" Grid.Row="0" 
+                           FontSize="13" FontWeight="ExtraBlack" HorizontalAlignment="Left" Margin="0,0,0,0"/>
 
                 <TextBlock  Text="{Binding Path=Person.Location, FallbackValue=Planet Earth}" Grid.Row="1" 
-                           Width="110" HorizontalAlignment="Left" Margin="10,0,0,0"/>
+                           Width="110" HorizontalAlignment="Left" Margin="0,0,0,0"/>
 
                 <!-- <Engage:GetContactListRating Grid.Row="2" HorizontalAlignment="Left" Margin="10,0,0,0"/>-->
-                <ContentControl Content="{Binding Person.Rating}" HorizontalAlignment="Left" Grid.Row="2" Margin="10,0,0,0">
+                <ContentControl Content="{Binding Person.Rating}" HorizontalAlignment="Left" Grid.Row="2" Margin="0,0,0,0">
                     <ContentControl.Style>
                         <Style TargetType="{x:Type ContentControl}">
                             <Setter Property="ContentTemplate" Value="{StaticResource Rating}" />
@@ -301,22 +302,22 @@
             <StackPanel Orientation="Vertical" Margin="5,3,0,0" HorizontalAlignment="Left">
                 <ContentPresenter ContentTemplate="{StaticResource PersonIcon}" />
             </StackPanel>
-            <Grid Margin="2,0,0,0" VerticalAlignment="Center" Height="Auto" Width="130" HorizontalAlignment="Left">
+            <Grid Margin="5,0,0,0" VerticalAlignment="Center" Height="Auto" Width="130" HorizontalAlignment="Left">
                 <Grid.RowDefinitions>
                     <RowDefinition Height="Auto"/>
                     <RowDefinition Height="Auto"/>
                     <RowDefinition Height="Auto"/>
                 </Grid.RowDefinitions>
-                <TextBlock Text="{Binding Path=Person.Name, FallbackValue=FirstName LastName}" Width="110" 
-                           Grid.Row="0" HorizontalAlignment="Left" Margin="10,0,0,0"
+                <TextBlock Text="{Binding Path=Person.Name, FallbackValue=FirstName LastName}"  
+                           Grid.Row="0" HorizontalAlignment="Left" Margin="0,0,0,0"
                            FontSize="13" FontWeight="ExtraBlack"/>
 
                 <TextBlock Text="{Binding Path=Person.Location, FallbackValue=Planet Earth}" Grid.Row="1" 
-                           Width="110" HorizontalAlignment="Left" Margin="10,0,0,0"/>
+                           Width="110" HorizontalAlignment="Left" Margin="0,0,0,0"/>
 
                 <!--<Engage:GetContactListRating Grid.Row="2" HorizontalAlignment="Left" Margin="10,0,0,0"/> -->
 
-                <ContentControl Content="{Binding Person.Rating}" HorizontalAlignment="Left" Grid.Row="2" Margin="10,0,0,0">
+                <ContentControl Content="{Binding Person.Rating}" HorizontalAlignment="Left" Grid.Row="2" Margin="0,0,0,0">
                     <ContentControl.Style>
                         <Style TargetType="{x:Type ContentControl}">
                             <Setter Property="ContentTemplate" Value="{StaticResource Rating}" />
