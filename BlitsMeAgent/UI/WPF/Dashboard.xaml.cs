@@ -5,6 +5,7 @@ using System.Collections.Specialized;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.Linq;
+using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading;
 using System.Timers;
@@ -113,7 +114,7 @@ namespace BlitsMe.Agent.UI.WPF
                 DashboardData.SearchMenuVisibility = Visibility.Hidden;
                 SearchBoxMenu.UnselectAll();
             }
-            else if(SearchBoxMenu.SelectedIndex == 1)
+            else if (SearchBoxMenu.SelectedIndex == 1)
             {
                 DashboardData.SearchBoxVisibility = Visibility.Collapsed;
                 DashboardData.SearchMenuVisibility = Visibility.Hidden;
@@ -232,11 +233,26 @@ namespace BlitsMe.Agent.UI.WPF
 
         internal void PromptSignup(DataSubmitErrorArgs dataSubmitErrorArgs = null)
         {
+            ClearCurrentEngagement();
             if (dataSubmitErrorArgs != null)
             {
                 DashboardData.SignUpScreen.SetErrors(dataSubmitErrorArgs);
             }
             DashboardData.LoginState = LoginState.Signup;
+        }
+
+        private void ClearCurrentEngagement()
+        {
+            if (Dispatcher.CheckAccess())
+            {
+                var currentEngaged = _appContext.RosterManager.CurrentlyEngaged;
+                if (currentEngaged != null) currentEngaged.IsCurrentlyEngaged = false;
+                ActiveContent.Content = null;
+            }
+            else
+            {
+                Dispatcher.Invoke(new Action(ClearCurrentEngagement));
+            }
         }
 
         #endregion
@@ -287,16 +303,23 @@ namespace BlitsMe.Agent.UI.WPF
         {
             if (_appContext.ConnectionManager.IsOnline())
             {
-                if (_userInfoWindow == null)
+                if (_appContext.CurrentUserManager.CurrentUser.Guest)
                 {
-                    _userInfoWindow = new UserInfoWindow(_appContext);
+                    ThreadPool.QueueUserWorkItem(state => _appContext.UIManager.PromptGuestSignup());
                 }
-                // Clear currently engaged
-                var currentEngaged = _appContext.RosterManager.CurrentlyEngaged;
-                if (currentEngaged != null) currentEngaged.IsCurrentlyEngaged = false;
-                // Set main active window
-                ActiveContent.Content = _userInfoWindow;
-                _userInfoWindow.SetAsMain(this);
+                else
+                {
+                    if (_userInfoWindow == null)
+                    {
+                        _userInfoWindow = new UserInfoWindow(_appContext);
+                    }
+                    // Clear currently engaged
+                    var currentEngaged = _appContext.RosterManager.CurrentlyEngaged;
+                    if (currentEngaged != null) currentEngaged.IsCurrentlyEngaged = false;
+                    // Set main active window
+                    ActiveContent.Content = _userInfoWindow;
+                    _userInfoWindow.SetAsMain(this);
+                }
             }
         }
 
@@ -658,13 +681,14 @@ namespace BlitsMe.Agent.UI.WPF
         private void SearchBox_GotFocus(object sender, System.Windows.RoutedEventArgs e)
         {
             Searching = true;
-            DashboardData.SearchContactsVisibility = 0;
             if (_searchWindow == null)
             {
                 _searchWindow = new SearchWindow(_appContext);
                 _searchCountDown = new Timer(500) { AutoReset = false };
-                _searchCountDown.Elapsed += ProcessSearch;
+                _searchCountDown.Elapsed += (o, args) => ProcessSearch();
             }
+            SearchRosterList.ContactsView.View.Refresh();
+            DashboardData.SearchContactsVisibility = 0;
             ActiveContent.Content = _searchWindow;
             _searchWindow.SetAsMain(this);
         }
@@ -675,44 +699,45 @@ namespace BlitsMe.Agent.UI.WPF
             DashboardData.SearchContactsVisibility = 0;
         }
 
-        private void ProcessSearch(object sender, ElapsedEventArgs elapsedEventArgs)
+        private void ProcessSearch()
         {
             Logger.Debug("Processing Search Request");
             lock (_searchLock)
             {
+                String searchQuery = "";
                 // once again, just to notify
                 if (Dispatcher.CheckAccess())
                 {
+                    searchQuery = SearchBox.Text;
                     SearchRosterList.ContactsView.View.Refresh();
                     DashboardData.SearchContactsVisibility = 0;
+                    ActiveContent.Content = _searchWindow;
+                    _searchWindow.SetAsMain(this);
                 }
                 else
                 {
                     Dispatcher.Invoke(new Action(() =>
                     {
+                        searchQuery = SearchBox.Text;
                         SearchRosterList.ContactsView.View.Refresh();
                         DashboardData.SearchContactsVisibility = 0;
+                        ActiveContent.Content = _searchWindow;
+                        _searchWindow.SetAsMain(this);
                     }));
                 }
-                try
+                if (!String.IsNullOrWhiteSpace(searchQuery))
                 {
-                    String searchQuery = "";
-                    if (Dispatcher.CheckAccess())
+                    ThreadPool.QueueUserWorkItem(state =>
                     {
-                        searchQuery = SearchBox.Text;
-                    }
-                    else
-                    {
-                        Dispatcher.Invoke(new Action(delegate { searchQuery = SearchBox.Text; }));
-                    }
-                    if (!String.IsNullOrWhiteSpace(searchQuery))
-                    {
-                        _appContext.SearchManager.Search(searchQuery);
-                    }
-                }
-                catch (Exception e)
-                {
-                    Logger.Error("Failed to perform search : " + e.Message, e);
+                        try
+                        {
+                            _appContext.SearchManager.Search(searchQuery);
+                        }
+                        catch (Exception e)
+                        {
+                            Logger.Error("Failed to perform search : " + e.Message, e);
+                        }
+                    });
                 }
             }
         }
@@ -749,8 +774,13 @@ namespace BlitsMe.Agent.UI.WPF
         /// <param name="e"></param>
         private void ExitApplication(object sender, RoutedEventArgs e)
         {
-            Thread shutdownThread = new Thread(_appContext.Shutdown) { IsBackground = true, Name = "shutdownByUserThread" };
-            shutdownThread.Start();
+            ThreadPool.QueueUserWorkItem(state =>
+            {
+                Hide();
+                _appContext.Shutdown();
+            });
+            //            Thread shutdownThread = new Thread(_appContext.Shutdown) { IsBackground = true, Name = "shutdownByUserThread" };
+            //            shutdownThread.Start();
         }
 
         public new void Close()
@@ -829,7 +859,7 @@ namespace BlitsMe.Agent.UI.WPF
             if (!String.IsNullOrWhiteSpace(RemoteIdBox.Text))
             {
                 ResetRemoteIdBox();
-                var shortCode = Regex.Replace(RemoteIdBox.Text, @"\s","").ToLower();
+                var shortCode = Regex.Replace(RemoteIdBox.Text, @"\s", "").ToLower();
                 SearchRemoteId(true);
                 ThreadPool.QueueUserWorkItem(state =>
                 {
@@ -907,7 +937,7 @@ namespace BlitsMe.Agent.UI.WPF
         {
             if (e.Key == Key.Return)
             {
-                ChatRemoteAccessId_Click(sender,new RoutedEventArgs());
+                ChatRemoteAccessId_Click(sender, new RoutedEventArgs());
             }
         }
 
@@ -936,6 +966,8 @@ namespace BlitsMe.Agent.UI.WPF
                 return BlitsMeClientAppContext.CurrentAppContext.CurrentUserManager.ActiveShortCode;
             }
         }
+        public String Version { get { return BlitsMeClientAppContext.CurrentAppContext.Version(2); }}
+
         private readonly Dashboard _dashboard;
         private string _customTitle;
         private LoginControl _loginScreen;

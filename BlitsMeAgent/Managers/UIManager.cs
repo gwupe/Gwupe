@@ -147,6 +147,11 @@ namespace BlitsMe.Agent.Managers
 
         #region events
 
+        public void ClearDashboardState()
+        {
+            dashBoard.LoggedIn();
+        }
+
         public void PromptSignup(DataSubmitErrorArgs dataSubmitErrorArgs = null)
         {
             dashBoard.PromptSignup(dataSubmitErrorArgs);
@@ -173,8 +178,8 @@ namespace BlitsMe.Agent.Managers
             switch (Flag)
             {
                 case "ReceiveFileRequest":
-                    _chat.LogFileSendRequest(message);
-                    break;
+                    _chat
+         * '. 
                 case "RDPRequest":
                     _chat.LogRdpRequest(message);
                     break;
@@ -270,6 +275,12 @@ namespace BlitsMe.Agent.Managers
         public FaultReport GenerateFaultReport()
         {
             return dashBoard.GenerateFaultReport();
+        }
+
+        public void PromptGuestSignup()
+        {
+            Alert("Please note, for security reasons, this functionality is restricted to logged in users.  But don't worry, sign up for a FREE account to get access right now.");
+            PromptSignup();
         }
     }
 }

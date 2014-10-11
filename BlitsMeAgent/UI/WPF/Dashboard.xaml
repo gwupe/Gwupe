@@ -12,11 +12,14 @@
 	Title="{Binding Title, FallbackValue=BlitsMe}"
 	WindowStartupLocation="CenterScreen" 
 	Closing="HideIfClosing" StateChanged="WindowStateChanged" MinWidth="870" MinHeight="600">
+	<!-- This doesn't show up on XP and some Win7, so dropping it for now -->
+    <!-- 
     <mahappsControls:MetroWindow.RightWindowCommands>
         <mahappsControls:WindowCommands>
-            <Button Content="Report Problem" Click="ReportFaultButtonClick" />
+			<Button Content="Report Problem" Click="ReportFaultButtonClick" /> 
         </mahappsControls:WindowCommands>
     </mahappsControls:MetroWindow.RightWindowCommands>
+	-->
     <mahappsControls:MetroWindow.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
@@ -243,18 +246,24 @@
 
     <Border BorderBrush="#4A7EBB" BorderThickness="2,2,2,2">
         <DockPanel LastChildFill="True">
-            <Grid Name="PartnerBanner" DockPanel.Dock="Bottom" Visibility="Visible">
-                <Border BorderThickness="0,1,0,0" BorderBrush="#4A7EBB"   >
-                    <DockPanel Height="20" LastChildFill="True">
-                        <Image Source="{Binding Path=Logo}" Height="20" DockPanel.Dock="Left"/>
-                        <TextBlock Text="{Binding Path=Name, FallbackValue=Promo Company}" VerticalAlignment="Center" Margin="5,0,0,0" FontWeight="Bold" DockPanel.Dock="Left"/>
-                        <TextBlock Text="{Binding Path=Text, FallbackValue=A Little about the company.}" VerticalAlignment="Center" Margin="5,0,0,0" DockPanel.Dock="Left"/>
-                        <TextBlock VerticalAlignment="Center" Margin="5,0,0,0" DockPanel.Dock="Left">
-				            <Hyperlink RequestNavigate="NavigateToUrl" NavigateUri="{Binding Path=Website, FallbackValue=http://path.to.url/}"><TextBlock Text="{Binding Path=LinkText, FallbackValue=Click Here.}" /></Hyperlink>
-			            </TextBlock>
-                    </DockPanel>
-                </Border>
-            </Grid>
+            <Border BorderThickness="0,1,0,0" BorderBrush="#4A7EBB"  DockPanel.Dock="Bottom" Visibility="Visible" >
+	            <Grid Name="Status" >
+		            <Grid Name="PartnerBanner" Visibility="Visible" Margin="0,0,140,0">
+						<DockPanel Height="20" LastChildFill="True">
+							<Image Source="{Binding Path=Logo}" Height="20" DockPanel.Dock="Left"/>
+							<TextBlock Text="{Binding Path=Name, FallbackValue=Promo Company}" VerticalAlignment="Center" Margin="5,0,0,0" FontWeight="Bold" DockPanel.Dock="Left"/>
+							<TextBlock Text="{Binding Path=Text, FallbackValue=A Little about the company.}" VerticalAlignment="Center" Margin="5,0,0,0" DockPanel.Dock="Left"/>
+							<TextBlock VerticalAlignment="Center" Margin="5,0,0,0" DockPanel.Dock="Left">
+								<Hyperlink RequestNavigate="NavigateToUrl" NavigateUri="{Binding Path=Website, FallbackValue=http://path.to.url/}"><TextBlock Text="{Binding Path=LinkText, FallbackValue=Click Here.}" /></Hyperlink>
+							</TextBlock>
+						</DockPanel>
+					</Grid>
+					<Grid Margin="0,2,105,0" HorizontalAlignment="Right"><TextBlock Text="{Binding Path=Version, FallbackValue=0.0.00}" /></Grid>
+					<Grid Height="20" HorizontalAlignment="Right">
+						<Button Content="Report Problem" Click="ReportFaultButtonClick" Width="100" Height="15" HorizontalAlignment="Right" FontSize="10" VerticalAlignment="Center"/>
+					</Grid>
+				</Grid>
+            </Border>
 
             <Grid >
                 <Grid.ColumnDefinitions>

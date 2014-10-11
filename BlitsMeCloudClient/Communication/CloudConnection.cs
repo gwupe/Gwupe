@@ -126,18 +126,18 @@ namespace BlitsMe.Cloud.Communication
                             Logger.Error("Assigned response handler threw an exception : " + e.Message, e);
                         }
                     }
-                    catch (MessageException<TRs> e)
+                    catch (Exception e)
                     {
-                        if ("WILL_NOT_PROCESS_INVALID_SESSION".Equals(e.ErrorCode))
+                        if (e is MessageException<TRs> && "WILL_NOT_PROCESS_INVALID_SESSION".Equals(((MessageException<TRs>)e).ErrorCode))
                         {
                             // something broke server side, cut the connection
                             _connectionMaintainer.ManualBreak("Invalid session, will reconnect.");
                         }
-                    }
-                    catch (Exception e)
-                    {
-                        Logger.Error("Request failed", e);
-                        responseHandler(req, null, e);
+                        else
+                        {
+                            Logger.Error("Request failed", e);
+                            responseHandler(req, null, e);
+                        }
                     }
                 });
             asyncThread.IsBackground = true;

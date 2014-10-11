@@ -15,6 +15,7 @@ using BlitsMe.Agent.Components;
 using BlitsMe.Agent.Components.Alert;
 using BlitsMe.Agent.Components.Notification;
 using BlitsMe.Agent.Components.Person;
+using BlitsMe.Agent.Managers;
 using BlitsMe.Agent.UI.WPF.API;
 using BlitsMe.Communication.P2P.RUDP.Tunnel.API;
 using Microsoft.Win32;
@@ -195,7 +196,8 @@ namespace BlitsMe.Agent.UI.WPF.Engage
             if (result == true)
             {
                 string filename = fileDialog.FileName;
-                ((Components.Functions.FileSend.Function)Engagement.GetFunction("FileSend")).RequestFileSend(filename);
+                ((Components.Functions.FileSend.Function)Engagement.GetFunction("FileSend")).RequestFileSend(
+                    filename);
             }
         }
 
@@ -203,15 +205,25 @@ namespace BlitsMe.Agent.UI.WPF.Engage
         {
             ThreadPool.QueueUserWorkItem(state =>
             {
-                try
+                if (_appContext.CurrentUserManager.CurrentUser.Guest)
                 {
-                    ((Components.Functions.RemoteDesktop.Function)Engagement.GetFunction("RemoteDesktop")).RequestRdpSession();
+                    _appContext.UIManager.PromptGuestSignup();
                 }
-                catch (Exception ex)
+                else
                 {
-                    Logger.Warn("Failed to get the client : " + ex.Message, ex);
+
+                    try
+                    {
+                        ((Components.Functions.RemoteDesktop.Function)Engagement.GetFunction("RemoteDesktop"))
+                            .RequestRdpSession();
+                    }
+                    catch (Exception ex)
+                    {
+                        Logger.Warn("Failed to get the client : " + ex.Message, ex);
+                    }
                 }
             });
+
         }
 
         private void HistoryButtonClick(object sender, RoutedEventArgs e)
@@ -279,21 +291,32 @@ namespace BlitsMe.Agent.UI.WPF.Engage
 
         private void ContactSettings_Click(object sender, RoutedEventArgs e)
         {
-            if (_ewDataContext.ContactSettings == null)
+            if (_appContext.CurrentUserManager.CurrentUser.Guest)
             {
-                _ewDataContext.ContactSettings = new ContactSettings(_ewDataContext);
+                ThreadPool.QueueUserWorkItem(state => _appContext.UIManager.PromptGuestSignup());
             }
-            ThreadPool.QueueUserWorkItem(state =>
+            else if (Engagement.SecondParty.Person.Guest)
             {
-                if (_ewDataContext.ContactSettings.PresentModal())
+                ThreadPool.QueueUserWorkItem(state => _appContext.UIManager.Alert("This user is a guest, for to get unattended access to their desktop and for other features, they need to be logged in."));
+            } else
+            {
+                if (_ewDataContext.ContactSettings == null)
                 {
+                    _ewDataContext.ContactSettings = new ContactSettings(_ewDataContext);
+                }
+                ThreadPool.QueueUserWorkItem(state =>
+                {
+                    if (_ewDataContext.ContactSettings.PresentModal())
+                    {
 
-                }/*
-                if (_appContext.ConnectionManager.IsOnline())
-                {
-                    _ewDataContext.ContactSettingsEnabled = true;
-                }*/
-            });
+                    } /*
+                    if (_appContext.ConnectionManager.IsOnline())
+                    {
+                        _ewDataContext.ContactSettingsEnabled = true;
+                    }*/
+
+                });
+            }
         }
 
     }

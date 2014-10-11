@@ -118,10 +118,17 @@ namespace BlitsMe.Agent.UI.WPF
                 }
             }
         }
-            
-        public void ShowLogin(object sender, RequestNavigateEventArgs e)
+
+        private void cancel_click(object sender, RoutedEventArgs e)
         {
-            BlitsMeClientAppContext.CurrentAppContext.UIManager.PromptLogin();
+            if (_appContext.LoginManager.IsLoggedIn)
+            {
+                BlitsMeClientAppContext.CurrentAppContext.UIManager.ClearDashboardState();
+            }
+            else
+            {
+                BlitsMeClientAppContext.CurrentAppContext.UIManager.PromptLogin();
+            }
         }
 
         private void ClearBlurEffect(Dashboard dashboard)

@@ -21,6 +21,7 @@ namespace BlitsMe.Agent.Managers
         private readonly Object _listWriteLock = new object();
         internal bool IsClosed { get; private set; }
         public event EventHandler SearchStart;
+        private String currentSearchId;
 
         protected virtual void OnSearchStart()
         {
@@ -45,53 +46,78 @@ namespace BlitsMe.Agent.Managers
 
         internal void Search(String search)
         {
-            SearchRq request = new SearchRq() { query = search, pageSize = 20 };
             if (_appContext.ConnectionManager.IsOnline())
             {
-                OnSearchStart();
-                _appContext.ConnectionManager.Connection.RequestAsync<SearchRq,SearchRs>(request, SearchResponseHandler);
+                SearchRq request = new SearchRq() { query = search, pageSize = 20 };
+                Logger.Debug("Searching for " + search + " with id " + request.id);
+                try
+                {
+                    OnSearchStart();
+                    currentSearchId = request.id;
+                    SearchRs response = _appContext.ConnectionManager.Connection.Request<SearchRq, SearchRs>(request);
+                    // only process results if we are the current search
+                    if (currentSearchId == request.id)
+                    {
+                        OnSearchStop();
+                        Logger.Debug("Processing search results for " + search + " with id " + request.id);
+                        // populate the list
+                        lock (_listWriteLock)
+                        {
+                            SearchResults.Clear();
+                            if (response.results != null)
+                            {
+                                foreach (var resultElement in response.results)
+                                {
+                                    var searchResult = new SearchResult(resultElement);
+                                    SearchResults.Add(searchResult);
+                                    if (resultElement.user.hasAvatar)
+                                    {
+                                        try
+                                        {
+                                            _appContext.ConnectionManager.Connection.RequestAsync<VCardRq, VCardRs>(
+                                                new VCardRq(resultElement.user.user),
+                                                delegate(VCardRq rq, VCardRs rs, Exception arg3)
+                                                {
+                                                    ResponseHandler(rq, rs, arg3, searchResult);
+                                                });
+                                        }
+                                        catch (Exception ex)
+                                        {
+                                            Logger.Error("Failed to get the vcard for " + resultElement.user.user, ex);
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                    else
+                    {
+                        Logger.Debug("Will not process search results, a search has superceded my search for " + search);
+                    }
+                }
+                catch (Exception e)
+                {
+                    if (currentSearchId == request.id)
+                    {
+                        OnSearchStop();
+                    }
+                    Logger.Error("Search for " + search + " [id=" + request.id + "] returned an error : " + e.Message, e);
+                }
+                finally
+                {
+                    if (currentSearchId == request.id)
+                    {
+                        currentSearchId = null;
+                    }
+                }
             } else
             {
-                Logger.Warn("Cannot search, not online");
+                Logger.Warn("Cannot search for " + search + ", not online");
             }
         }
 
         private void SearchResponseHandler(SearchRq request, SearchRs response, Exception e)
         {
-            OnSearchStop();
-            if (e == null)
-            {
-                // populate the list
-                lock (_listWriteLock)
-                {
-                    SearchResults.Clear();
-                    if(response.results != null)
-                    {
-                        foreach (var resultElement in response.results)
-                        {
-                            var searchResult = new SearchResult(resultElement);
-                            SearchResults.Add(searchResult);
-                            if (resultElement.user.hasAvatar)
-                            {
-                                try
-                                {
-                                    _appContext.ConnectionManager.Connection.RequestAsync<VCardRq, VCardRs>(
-                                        new VCardRq(resultElement.user.user),
-                                        delegate(VCardRq rq, VCardRs rs, Exception arg3)
-                                            { ResponseHandler(rq, rs, arg3, searchResult); });
-                                }
-                                catch (Exception ex)
-                                {
-                                    Logger.Error("Failed to get the vcard for " + resultElement.user.user, ex);
-                                }
-                            }
-                        }
-                    }
-                }
-            } else
-            {
-                Logger.Error("Search returned an error : " + e.Message,e);
-            }
         }
 
         private void ResponseHandler(VCardRq vCardRq, VCardRs vCardRs, Exception e, SearchResult searchResult)

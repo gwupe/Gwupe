@@ -148,9 +148,7 @@ namespace BlitsMe.Cloud.Communication
                 long startTime = Environment.TickCount;
                 WebSocketClient.SendRequest<PingRq, PingRs>(new PingRq());
                 LastPing = Environment.TickCount - startTime;
-#if DEBUG
                 Logger.Debug("Ping to blitsme [" + _connection.Client.Client.RemoteEndPoint + "] succeeded, round trip " + LastPing + " ms");
-#endif
                 return true;
             }
             catch (Exception e)

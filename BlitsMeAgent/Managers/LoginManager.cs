@@ -409,6 +409,11 @@ namespace BlitsMe.Agent.Managers
             try
             {
                 _appContext.ConnectionManager.Connection.Request<SignupRq, SignupRs>(request);
+                // we might be logged in as a guest
+                if (IsLoggedIn)
+                {
+                    Logout();
+                }
                 Login(request.username, request.password);
             }
             catch (MessageException<SignupRs> ex)

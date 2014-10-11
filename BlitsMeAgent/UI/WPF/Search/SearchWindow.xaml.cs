@@ -5,6 +5,7 @@ using System.Windows.Controls;
 using BlitsMe.Agent.Annotations;
 using BlitsMe.Agent.UI.WPF.API;
 using log4net;
+using log4net.Repository.Hierarchy;
 
 namespace BlitsMe.Agent.UI.WPF.Search
 {
@@ -44,6 +45,7 @@ namespace BlitsMe.Agent.UI.WPF.Search
 
     public class SearchWindowDataContext : INotifyPropertyChanged
     {
+        private static readonly ILog Logger = LogManager.GetLogger(typeof (SearchWindowDataContext));
         private Visibility _searchingVisibility = Visibility.Hidden;
 
         public Visibility SearchingVisibility
@@ -55,9 +57,21 @@ namespace BlitsMe.Agent.UI.WPF.Search
         public SearchWindowDataContext()
         {
             BlitsMeClientAppContext.CurrentAppContext.SearchManager.SearchStart +=
-                (sender, args) => { SearchingVisibility = Visibility.Visible; };
+                OnSearchManagerOnSearchStart;
             BlitsMeClientAppContext.CurrentAppContext.SearchManager.SearchStop +=
-                (sender, args) => { SearchingVisibility = Visibility.Hidden; };
+                OnSearchManagerOnSearchStop;
+        }
+
+        private void OnSearchManagerOnSearchStop(object sender, EventArgs args)
+        {
+            Logger.Debug("Showing not searching");
+            SearchingVisibility = Visibility.Hidden;
+        }
+
+        private void OnSearchManagerOnSearchStart(object sender, EventArgs args)
+        {
+            Logger.Debug("Showing searching");
+            SearchingVisibility = Visibility.Visible;
         }
 
         public event PropertyChangedEventHandler PropertyChanged;

@@ -284,10 +284,14 @@ namespace BlitsMe.Agent.Components.Functions.RemoteDesktop
                 //_appContext.ConnectionManager.Connection.RequestAsync<RDPRequestRq, RDPRequestRs>(request, (req, res, ex) => ProcessRequestRDPSessionResponse(req, res, ex, chatElement));
                 try
                 {
-                    var response = _appContext.ConnectionManager.Connection.Request<RDPRequestRq, RDPRequestRs>(request);
                     // Print in chat that we sent the second party a rdp request
-                    IChatMessage chatElement = Chat.LogSystemMessage("You sent " + _engagement.SecondParty.Person.Firstname +
-                        " a request to control their desktop." + (tokenId == null ? "" : "  You have unattended access to their desktop, you will be granted access automatically after 10 seconds."));
+                    Chat.LogSystemMessage("You sent " + _engagement.SecondParty.Person.Firstname + " a request to control their desktop.");
+                    var response = _appContext.ConnectionManager.Connection.Request<RDPRequestRq, RDPRequestRs>(request);
+                    // if its unattended, indicate this
+                    if (tokenId != null)
+                    {
+                        Chat.LogSystemMessage("You have unattended access to their desktop, you will be granted access automatically after 10 seconds.");
+                    }
                     // The message was delivered
                     IsActive = true;
                     // Raise an activity that we managed to send a rdp request to second party successfully.

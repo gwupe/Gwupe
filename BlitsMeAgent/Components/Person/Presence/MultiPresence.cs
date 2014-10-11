@@ -94,9 +94,9 @@ namespace BlitsMe.Agent.Components.Person.Presence
                 }
                 else
                 {
-                    Logger.Debug("Using cached highest priority presence");
+                   // Logger.Debug("Using cached highest priority presence");
                 }
-                Logger.Debug("Returning highest priority presence " + _currentHighestPresence);
+                //Logger.Debug("Returning highest priority presence " + _currentHighestPresence);
                 return _currentHighestPresence;
             }
             return null;

@@ -17,5 +17,6 @@ namespace BlitsMe.Cloud.Messaging.Response
         }
 
         [DataMember] public UserElement userElement;
+        [DataMember] public List<String> validationErrors;
     }
 }

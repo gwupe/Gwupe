@@ -125,7 +125,11 @@
       <Private>False</Private>
     </Reference>
     <Reference Include="MahApps.Metro">
-      <HintPath>..\packages\MahApps.Metro.0.13.1.0\lib\net40\MahApps.Metro.dll</HintPath>
+      <HintPath>..\packages\MahApps.Metro.0.14.0.0\lib\net40\MahApps.Metro.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="ManyConsole">
+      <HintPath>..\packages\ManyConsole.0.4.2.17\lib\ManyConsole.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="Microsoft.Expression.Drawing">
@@ -146,7 +150,7 @@
     <Reference Include="System.ServiceModel" />
     <Reference Include="System.ServiceProcess" />
     <Reference Include="System.Windows.Interactivity, Version=4.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-      <HintPath>..\packages\MahApps.Metro.0.13.1.0\lib\net40\System.Windows.Interactivity.dll</HintPath>
+      <HintPath>..\packages\MahApps.Metro.0.14.0.0\lib\net40\System.Windows.Interactivity.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="System.Xaml" />
@@ -687,8 +691,8 @@
     <EmbeddedResource Include="..\library\log4net.dll" />
     <EmbeddedResource Include="..\BlitsMeP2PConnection\UdtProtocol.dll" />
     <EmbeddedResource Include="..\WebSocketLib\bin\$(Configuration)\Bauglir.Ex.dll" />
-    <EmbeddedResource Include="..\packages\MahApps.Metro.0.13.1.0\lib\net40\MahApps.Metro.dll" />
-    <EmbeddedResource Include="..\packages\MahApps.Metro.0.13.1.0\lib\net40\System.Windows.Interactivity.dll" />
+    <EmbeddedResource Include="..\packages\MahApps.Metro.0.14.0.0\lib\net40\MahApps.Metro.dll" />
+    <EmbeddedResource Include="..\packages\MahApps.Metro.0.14.0.0\lib\net40\System.Windows.Interactivity.dll" />
     <EmbeddedResource Include="..\library\Microsoft.Expression.Drawing.dll" />
     <EmbeddedResource Include="..\library\Microsoft.Expression.Effects.dll" />
     <EmbeddedResource Include="changelog.txt" />

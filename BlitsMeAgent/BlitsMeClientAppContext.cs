@@ -177,11 +177,6 @@ namespace BlitsMe.Agent
             set { _idleState = value; OnIdleChanged(EventArgs.Empty); }
         }
 
-        public void Alert(String message)
-        {
-            UIManager.Alert(message);
-        }
-
         public void GenerateFaultReport()
         {
             FaultReport report = UIManager.GenerateFaultReport();

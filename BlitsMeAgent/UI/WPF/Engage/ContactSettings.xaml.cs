@@ -36,7 +36,7 @@ namespace BlitsMe.Agent.UI.WPF.Engage
         {
             if (UnattendedAccessCheckbox.IsChecked == true)
             {
-                ThreadPool.QueueUserWorkItem(state => BlitsMeClientAppContext.CurrentAppContext.Alert(
+                ThreadPool.QueueUserWorkItem(state => BlitsMeClientAppContext.CurrentAppContext.UIManager.Alert(
                     "Please note, that by checking this box, you are allowing " +
                     _dataContext.Engagement.SecondParty.Person.Name +
                     " to access your desktop without prompting you for authorization. This is a potential security risk, please click OK to indicate you understand and accept the risks associated with this setting."));

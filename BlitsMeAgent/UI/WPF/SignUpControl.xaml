@@ -41,14 +41,19 @@
                      Background="White" Width="164" Height="23" TextWrapping="Wrap" HorizontalAlignment="Center"/>
             <CheckBox x:Name="Supporter" Content="I offer IT support" HorizontalAlignment="Left" Margin="20,10,0,0" 
                       VerticalAlignment="Top" Foreground="#4D86CF"/>
+					  <!--
             <TextBlock HorizontalAlignment="Left" Margin="20,10,0,0" TextWrapping="Wrap" VerticalAlignment="Top" 
                        Height="37.92">
 				<Hyperlink Name="NewUser" RequestNavigate="ShowLogin" NavigateUri="" >
 					Already have an account ?
 				</Hyperlink><LineBreak/>
-            </TextBlock>
-            <Button Content="Sign Up" Margin="0,0,20,0" VerticalAlignment="Top" x:Name="Signin" Click="signin_click" 
-                    HorizontalAlignment="Right" Width="Auto" />
+            </TextBlock> -->
+			<StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,5,0,0">
+	            <Button Content="Cancel" Margin="0,0,15,0" VerticalAlignment="Top" x:Name="Cancel" Click="cancel_click" 
+						HorizontalAlignment="Right" Width="Auto" />
+	            <Button Content="Sign Up" Margin="15,0,0,0" VerticalAlignment="Top" x:Name="Signin" Click="signin_click" 
+						HorizontalAlignment="Right" Width="Auto" />
+			</StackPanel>
         </StackPanel>
     </Grid>
 </UserControl>
