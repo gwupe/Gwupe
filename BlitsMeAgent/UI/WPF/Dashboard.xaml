@@ -258,9 +258,9 @@
 							</TextBlock>
 						</DockPanel>
 					</Grid>
-					<Grid Margin="0,2,105,0" HorizontalAlignment="Right"><TextBlock Text="{Binding Path=Version, FallbackValue=0.0.00}" /></Grid>
+					<Grid Margin="0,2,120,0" HorizontalAlignment="Right"><TextBlock Text="{Binding Path=Version, FallbackValue=0.0.00}" /></Grid>
 					<Grid Height="20" HorizontalAlignment="Right">
-						<Button Content="Report Problem" Click="ReportFaultButtonClick" Width="100" Height="15" HorizontalAlignment="Right" FontSize="10" VerticalAlignment="Center"/>
+						<Button Content="Report BlitsMe Bug" Click="ReportFaultButtonClick" Width="115" Height="15" HorizontalAlignment="Right" FontSize="10" VerticalAlignment="Center"/>
 					</Grid>
 				</Grid>
             </Border>

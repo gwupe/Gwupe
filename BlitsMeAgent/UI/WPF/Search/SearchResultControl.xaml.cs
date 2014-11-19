@@ -23,14 +23,17 @@ namespace BlitsMe.Agent.UI.WPF.Search
             _appContext = appContext;
             SearchResult = sourceObject;
             DataContext = SearchResult;
-            GetRating getRating = new GetRating(SearchResult.Person.Rating);
-            RatingPanel.Children.Add(getRating);
             AddPersonButton.Command = new AddPerson(_appContext, SearchResult.Person);
+        }
+
+        private void MessagePersonButton_Click(object sender, System.Windows.RoutedEventArgs e)
+        {
+            
         }
 
         private void ChatPersonButton_Click(object sender, System.Windows.RoutedEventArgs e)
         {
-        	_appContext.EngagementManager.GetNewEngagement(SearchResult.Username);
+            BlitsMeClientAppContext.CurrentAppContext.UIManager.Dashboard.ActivateEngagement(SearchResult.Username);
         }
     }
 

@@ -77,6 +77,7 @@ namespace BlitsMe.Agent.UI.WPF.Roster
         {
             Attendance attendance = eventArgs.Item as Attendance;
             if (attendance != null && attendance.Presence != null && attendance.Presence.IsOnline && !attendance.IsActive && !attendance.IsUnread && !attendance.Person.Guest)
+            //if (attendance != null && attendance.Presence != null && attendance.Presence.IsOnline && !attendance.Person.Guest)
             {
                 eventArgs.Accepted = true;
             }

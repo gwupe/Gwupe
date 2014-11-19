@@ -182,24 +182,51 @@ namespace BlitsMe.Cloud.Communication
             _connection.ConnectionOpen += delegate { OnConnect(EventArgs.Empty); };
             // we no longer do it this way, but process it via a called function on full text being read
             //_connection.ConnectionRead += _wsMessageHandler.onMessage;
-            try
+
+            // this whole starting of another thread to run the connection is because sometimes the connection hangs. We have set the read timeout
+            // on the connection to 5 mins, but lets watch it here as well to make sure that the whole connection system doesn't hang.
+            bool connected = false;
+            Thread startThread = new Thread(() =>
             {
-                if (!_connection.Start(uri.Host, uri.Port.ToString(), uri.PathAndQuery, true, "", Protocol))
+                try
                 {
-                    throw new IOException("Unknown error connecting to " + uri.ToString());
+                    if (!_connection.Start(uri.Host, uri.Port.ToString(), uri.PathAndQuery, true, "", Protocol))
+                    {
+                        throw new IOException("Unknown error connecting to " + uri.ToString());
+                    }
+                    connected = true;
                 }
-            }
-            catch (Exception e)
+                catch (Exception e)
+                {
+                    Logger.Error("Failed to connect to server [" + uri + "] : " + e.Message);
+                }
+            }) { Name = "ConnectionStarter" };
+            startThread.Start();
+            if (!startThread.Join(360000))// 6 minute timeout
             {
-                Logger.Error("Failed to connect to server [" + uri + "] : " + e.Message);
-                throw new IOException("Failed to connect to server [" + uri + "] : " + e.Message, e);
+                startThread.Abort();
+                // connect didn't come back within the timeout period
+                throw new Exception("Failed to start connection within timeout");
             }
+            if (!connected)
+            {
+                throw new IOException("Failed to connect to server [" + uri + "]");
+            }
+            Logger.Debug("Connection Complete");
             //OnConnect(new EventArgs());
         }
 
         private bool IsConnected()
         {
-            return !(_connection == null || _connection.Closed || _connection.Closing);
+            try
+            {
+                // this can sometimes throw a null pointer
+                return !(_connection == null || _connection.Closed || _connection.Closing);
+            }
+            catch (Exception e)
+            {
+                return false;
+            }
         }
 
 
@@ -214,7 +241,7 @@ namespace BlitsMe.Cloud.Communication
 
         public void ManualBreak(string reason)
         {
-            CloseConnection(WebSocketCloseCode.DataError,reason);
+            CloseConnection(WebSocketCloseCode.DataError, reason);
         }
     }
 }

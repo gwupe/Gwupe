@@ -47,7 +47,7 @@
         </Style.Triggers>
         <Setter Property="Visibility" Value="Collapsed" />
     </Style>
-    <Style x:Key="TeamList" TargetType="ListBox">
+    <Style x:Key="TeamList" TargetType="ItemsControl">
         <Setter Property="HorizontalContentAlignment" Value="Stretch" />
         <Setter Property="Margin" Value="0,5,0,5" />
         <Setter Property="Background" Value="{x:Null}" />
@@ -210,12 +210,23 @@
             </Rectangle.Fill>
         </Rectangle>
     </DataTemplate>
+
+	<Style x:Key="StarStyle" TargetType="{x:Type ContentControl}">
+                            <Setter Property="ContentTemplate" Value="{StaticResource Rating}" />
+							<Setter Property="HorizontalAlignment" Value="Left" />
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding Person.Rating}" Value="0">
+                                    <Setter Property="ContentTemplate" Value="{StaticResource Unrated}" />
+                                </DataTrigger>
+                            </Style.Triggers>
+	</Style>
+
     
     <Convertors:BoolToVisibilityConverter x:Key="BoolToVisibilityConverter"/>
     <Convertors:BoolToStringConverter x:Key="BoolToStringConverter"/>
     <DataTemplate x:Key="Contact">
         <StackPanel Orientation="Horizontal" Style="{StaticResource TeamMemberInActiveBase}" 
-                   Height="Auto" ToolTip="{Binding Path=Person.Name}" Width="190" HorizontalAlignment="Left">
+                   Height="Auto" Width="190" HorizontalAlignment="Left">
             <StackPanel Orientation="Vertical" Margin="5,3,0,0">
                 <ContentPresenter ContentTemplate="{StaticResource PersonIcon}" />
             </StackPanel>
@@ -234,17 +245,7 @@
                            Width="110" HorizontalAlignment="Left" Margin="0,0,0,0"/>
 
                 <!--<Engage:GetContactListRating Grid.Row="2" HorizontalAlignment="Left" Margin="10,0,0,0"/>-->
-                <ContentControl Content="{Binding Person.Rating}" HorizontalAlignment="Left" Grid.Row="2" Margin="0,0,0,0">
-                    <ContentControl.Style>
-                        <Style TargetType="{x:Type ContentControl}">
-                            <Setter Property="ContentTemplate" Value="{StaticResource Rating}" />
-                            <Style.Triggers>
-                                <DataTrigger Binding="{Binding Person.Rating}" Value="0">
-                                    <Setter Property="ContentTemplate" Value="{StaticResource Unrated}" />
-                                </DataTrigger>
-                            </Style.Triggers>
-                        </Style>
-                    </ContentControl.Style>
+                <ContentControl Content="{Binding Person.Rating}" Grid.Row="3" Style="{StaticResource StarStyle}">
                 </ContentControl>
             </Grid>
 			<!--
@@ -259,7 +260,7 @@
     
     <DataTemplate x:Key="ContactActive">
         <StackPanel Orientation="Horizontal" Style="{StaticResource TeamMemberActiveBase}" Height="Auto"
-                    ToolTip="{Binding Path=Person.Name}" Width="213" HorizontalAlignment="Left">
+                    Width="213" HorizontalAlignment="Left">
             <StackPanel Orientation="Vertical" Margin="5,3,0,0" HorizontalAlignment="Left">
                 <ContentPresenter ContentTemplate="{StaticResource PersonIcon}" />
             </StackPanel>

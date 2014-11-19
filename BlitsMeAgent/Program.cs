@@ -128,6 +128,7 @@ namespace BlitsMe.Agent
                         {
                             String tempFile = Path.GetTempFileName();
                             File.WriteAllBytes(tempFile, assemblyData);
+                            Console.WriteLine("[" + Thread.CurrentThread.ManagedThreadId + "-" + Thread.CurrentThread.Name + "] Loading assembly " + assemblyName.Name + " from " + tempFile);
                             return Assembly.LoadFile(tempFile);
                         }
                         else

@@ -22,12 +22,12 @@ namespace BlitsMe.Agent.Managers
         internal UpdateNotification UpdateNotification;
         internal Dashboard Dashboard { get { return dashBoard; } }
         internal bool IsClosed { get; private set; }
-        private Engagement _engagement;
-        private Engagement _remoteEngagement;
-        private Function _chat;
-        private EngagementWindow _engagementWindow;
+        //private Engagement _engagement;
+        //private Engagement _remoteEngagement;
+        //private Function _chat;
+        //private EngagementWindow _engagementWindow;
         private readonly SystemTray _systray;
-        private int _contactsRating;
+        //private int _contactsRating;
         
         internal UIManager()
         {
@@ -167,10 +167,10 @@ namespace BlitsMe.Agent.Managers
             dashBoard.Login();
         }
 
-        public void GetFunctionChat(Function chat)
-        {
-            _chat = chat;
-        }
+        //public void GetFunctionChat(Function chat)
+        //{
+        //    _chat = chat;
+        //}
 
         /*
         public void ReceiveNotificationChat(String message,string Flag)
@@ -188,22 +188,22 @@ namespace BlitsMe.Agent.Managers
         }*/
          
 
-        public void GetEngagement(Engagement engagement, EngagementWindow engagementWindow)
-        {
-            _engagement = engagement;
-            _engagementWindow = engagementWindow;
-        }
+        //public void GetEngagement(Engagement engagement, EngagementWindow engagementWindow)
+        //{
+        //    _engagement = engagement;
+        //    _engagementWindow = engagementWindow;
+       // }
 
         //public void ShowRDPTerminateButton()
         //{
         //    _engagementWindow.TerminateButtonVisibility = Visibility.Visible;
         //}
 
-        public void GetRemoteEngagement(Engagement engagement)
-        {
-            _remoteEngagement = engagement;
-        }
-
+        //public void GetRemoteEngagement(Engagement engagement)
+        //{
+        //    _remoteEngagement = engagement;
+        //}
+        /*
         public void GetContactRating(int ContactsRating)
         {
             _contactsRating = ContactsRating;
@@ -212,12 +212,12 @@ namespace BlitsMe.Agent.Managers
         public int SetContactRating()
         {
             return _contactsRating;
-        }
+        }*/
 
-        public Engagement GetSourceObject()
-        {
-            return _engagement;
-        }
+        //public Engagement GetSourceObject()
+        //{
+        //    return _engagement;
+        //}
 
         private void LoginManagerOnLoginFailed(object sender, DataSubmitErrorArgs dataSubmitErrorArgs)
         {
@@ -259,11 +259,11 @@ namespace BlitsMe.Agent.Managers
             dashBoard.PromptSignup(dataSubmitErrorArgs);
         }
 
-        public void StopRemoteConnection()
-        {
-            Thread thread = new Thread(((Components.Functions.RemoteDesktop.Function)_remoteEngagement.GetFunction("RemoteDesktop")).Server.Close) { IsBackground = true };
-            thread.Start();
-        }
+        //public void StopRemoteConnection()
+        //{
+        //    Thread thread = new Thread(((Components.Functions.RemoteDesktop.Function)_remoteEngagement.GetFunction("RemoteDesktop")).Server.Close) { IsBackground = true };
+        //    thread.Start();
+        //}
 
         #endregion
 

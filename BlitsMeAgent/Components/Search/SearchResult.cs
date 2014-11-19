@@ -22,7 +22,9 @@ namespace BlitsMe.Agent.Components.Search
         {
             if("SubscriptionStatus".Equals(propertyChangedEventArgs.PropertyName))
             {
-                OnPropertyChanged("CanAdd");
+                OnPropertyChanged("IsContact");
+                OnPropertyChanged("IsNotKnown");
+                OnPropertyChanged("IsPendingContact");
                 OnPropertyChanged("AddText");
             }
         }
@@ -37,24 +39,34 @@ namespace BlitsMe.Agent.Components.Search
             get { return _person.Username; }
         }
 
-        public bool CanAdd
+        public bool IsContact
         {
-            get { return "ADD".Equals(AddText); }
+            get { return "both".Equals(_person.SubscriptionType); }
+        }
+
+        public bool IsPendingContact
+        {
+            get { return "subscribe".Equals(_person.SubscriptionStatus); }
+        }
+
+        public bool IsNotKnown
+        {
+            get { return !IsPendingContact && !IsContact; }
         }
 
         public String AddText
         {
             get
             {
-                if ("subscribe".Equals(_person.SubscriptionStatus))
+                if (IsPendingContact)
                 {
-                    return "PENDING ADD";
+                    return "Pending Add";
                 }
-                if ("both".Equals(_person.SubscriptionType))
+                if (IsContact)
                 {
-                    return "ADDED";
+                    return "Added";
                 }
-                return "ADD";
+                return "Add";
             }
         }
 

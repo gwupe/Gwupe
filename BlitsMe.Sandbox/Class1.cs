@@ -1,227 +1,128 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.IO;
-using System.Linq;
-using System.Management;
 using System.Net;
-using System.Net.NetworkInformation;
 using System.Net.Sockets;
-using System.Runtime.InteropServices;
-using System.Text;
-using System.Text.RegularExpressions;
+using System.Reflection;
 using System.Threading;
-using System.Threading.Tasks;
 using System.Windows.Forms;
-using BlitsMe.Common;
-using BlitsMe.Common.Security;
-using BlitsMe.Communication.P2P.RUDP.Packet;
-using BlitsMe.Communication.P2P.RUDP.Utils;
+using BlitsMe.Communication.P2P.P2P.Socket;
+using BlitsMe.Communication.P2P.P2P.Tunnel;
+using log4net;
+using log4net.Config;
 
 namespace BlitsMe.Sandbox
 {
     class Class1 : ApplicationContext
     {
-
-        private ushort me = ushort.MaxValue - 10;
-        private Queue<byte> validate;
-        private bool run = true;
+        private static readonly ILog Logger = LogManager.GetLogger(typeof(Class1));
+        private String path = @"e:\infile";
+        private String path2 = @"e:\tmp\outfile";
 
         public Class1()
         {
-            string[] first = new string[]
+            XmlConfigurator.Configure(Assembly.GetExecutingAssembly().GetManifestResourceStream("BlitsMe.Sandbox.log4net.xml"));
+            BmUdtSocket sendSocket = new BmUdtSocket();
+            BmUdtSocket receiveSocket = new BmUdtSocket();
+            var ip =Dns.GetHostAddresses("i.dev.blits.me")[0];
+            Logger.Debug("Starting Sandbox");
+            var sendPeer = sendSocket.Wave(new IPEndPoint(ip, 11230));
+            var receivePeer = receiveSocket.Wave(new IPEndPoint(ip, 11230));
+            ThreadPool.QueueUserWorkItem(state => ReceiveBmUdtFile(receiveSocket, sendPeer));
+            SendBmUdtFile(sendSocket,receivePeer);
+        }
+
+        private void SendBmUdtFile(BmUdtSocket socket, PeerInfo receivePeer)
+        {
+            socket.Sync(receivePeer, "TEST", new List<SyncType>() { SyncType.All });
+            socket.Connect();
+            FileStream fs = new FileStream(path, FileMode.Open);
+            var buffer = new byte[1024];
+            int count = 0;
+            int sum = 0;
+            do
             {
-                "mo ",
-                "hello world ",
-                "this is my world ",
-                "and I will use it how I like ",
-                "but don't be mistaken about how I like to do things ",
-                "because its hairy"
-            };
-            MemoryStream stream = new MemoryStream();
-            AesCryptoPacketUtil util = new AesCryptoPacketUtil(Encoding.UTF8.GetBytes("1234567890ABCDEF"));
-            byte[] encodedBytes;
-            byte[] packetBytes;
-            foreach (var stringer in first)
+                count = fs.Read(buffer, 0, 1024);
+                sum += count;
+                socket.Send(buffer, count);
+            } while (sum < fs.Length);
+            socket.Close();
+        }
+
+        private void ReceiveBmUdtFile(BmUdtSocket socket, PeerInfo sendPeer)
+        {
+            socket.WaitForSync(sendPeer, "TEST", new List<SyncType>() { SyncType.All });
+            socket.ListenOnce();
+            FileStream fs = new FileStream(path2, FileMode.OpenOrCreate);
+
+            var buffer2 = new byte[1024];
+            do
             {
-                encodedBytes = Encoding.UTF8.GetBytes(stringer);
-                packetBytes = util.EncryptData(encodedBytes, encodedBytes.Length);
-                stream.Write(packetBytes, 0, packetBytes.Length);
-                Console.WriteLine(stringer);
-                Console.Write(" = ");
-                foreach (var encodedByte in encodedBytes)
+                try
                 {
-                    Console.Write(encodedByte + ",");
+                    int count = socket.Read(buffer2, 1024);
+                    fs.Write(buffer2,0,count);
                 }
-                Console.WriteLine();
-                Console.Write(" = ");
-                foreach (var encodedByte in packetBytes)
+                catch
                 {
-                    Console.Write(encodedByte + ",");
+                    Logger.Debug("Read threw exception, closing socket.");
+                    socket.Close();
+                    break;
                 }
-                Console.WriteLine("");
-            }
-            var allBytes = stream.ToArray();
-            byte[] data = new byte[allBytes.Length];
-            Array.Copy(allBytes, 0, data, 0, allBytes.Length);
-            int length = allBytes.Length;
-            string outputString = "";
-            var rand = new Random();
-            int chunkSize;
-            while (length > 0)
+            } while (true);
+            fs.Close();
+        }
+
+        private void ReceiveFile()
+        {
+            using (Udt.Socket socket = new Udt.Socket(AddressFamily.InterNetwork, SocketType.Stream))
             {
-                chunkSize = rand.Next(97) + 1;
-                byte[] outBytes = util.DecryptData(data, chunkSize < length ? chunkSize : length);
-                if (outBytes != null)
+                socket.Bind(IPAddress.Loopback, 10000);
+                socket.Listen(10);
+
+                using (Udt.Socket client = socket.Accept())
                 {
-                    Console.Write(" = ");
-                    foreach (var outByte in outBytes)
+                    // Receive the file length, in bytes
+                    byte[] buffer = new byte[8];
+                    client.Receive(buffer, 0, sizeof(long));
+
+                    // Receive the file contents (path is where to store the file)
+                    var buffer2 = new byte[1024];
+                    do
                     {
-                        Console.Write(outByte + ",");
-                    }
-                    Console.WriteLine();
-                    Console.WriteLine(" = " + Encoding.UTF8.GetString(outBytes));
-                }
-                length -= chunkSize;
-                if (length > 0)
-                {
-                    var newData = new byte[length];
-                    Array.Copy(data, chunkSize, newData, 0, length);
-                    data = newData;
-                }
-            }
-        }
-
-        private static void OpenExistingWindow()
-        {
-            OpenExistingWindow();
-            OsUtils.PostMessage((IntPtr)OsUtils.HWND_BROADCAST, OsUtils.WM_SHOWBM, IntPtr.Zero, IntPtr.Zero);
-            Console.WriteLine("Sent Show message");
-            OsUtils.PostMessage((IntPtr)OsUtils.HWND_BROADCAST, OsUtils.WM_UPGRADEBM, IntPtr.Zero, IntPtr.Zero);
-            Console.WriteLine("Sent Upgrade message");
-            OsUtils.PostMessage((IntPtr)OsUtils.HWND_BROADCAST, OsUtils.WM_SHUTDOWNBM, IntPtr.Zero, IntPtr.Zero);
-            Console.WriteLine("Sent Shutdown message");
-        }
-
-        private void TestWaver()
-        {
-            //Guess2();
-            //GuessLocalIps();
-        }
-
-        private void RunBufferTest()
-        {
-            validate = new Queue<byte>();
-            CircularBuffer<byte> buffer = new CircularBuffer<byte>(1);
-
-            Thread getter = new Thread(() => runGetter(buffer)) { IsBackground = true };
-            getter.Start();
-            runAdder(buffer);
-            run = false;
-            ExitThread();
-        }
-
-        private void runGetter(CircularBuffer<byte> buffer)
-        {
-            Random rand = new Random();
-            byte[] otherBuff = new byte[20];
-            while (run || buffer.Count > 0)
-            {
-                byte[] get = buffer.Get(rand.Next(19) + 1, 1000);
-                foreach (var b in get)
-                {
-                    validateGet(b);
-                }
-                int count = buffer.Get(otherBuff, 1000);
-                for (int i = 0; i < count; i++)
-                {
-                    validateGet(otherBuff[i]);
-                }
-            }
-            if (validate.Count > 0)
-            {
-                throw new Exception("Oops, " + validate.Count + " still left in the queue.");
-            }
-            Console.WriteLine("Completed");
-        }
-
-        private void validateGet(byte b)
-        {
-            byte val = validate.Dequeue();
-            if (b != val)
-                throw new Exception("Got " + val + ", expected " + b);
-            Console.WriteLine("Got " + b + ", it matches expected");
-        }
-
-        private void runAdder(CircularBuffer<byte> buffer)
-        {
-            byte[] input;
-            Random rand = new Random();
-            for (int i = 0; i < 100; i++)
-            {
-                input = new byte[rand.Next(19) + 1];
-                rand.NextBytes(input);
-                AddToBuffer(input, buffer);
-                if (input.Length > 20)
-                {
-                    Thread.Sleep(20);
-                }
-            }
-        }
-
-        private void AddToBuffer(byte[] input, CircularBuffer<byte> buffer)
-        {
-            Console.WriteLine("Adding " + input.Length + " values.");
-            foreach (var b in input)
-            {
-                Console.WriteLine("Added " + b);
-                validate.Enqueue(b);
-            }
-            buffer.Add(input, 1000);
-        }
-
-        private List<IPAddress> GetLocalIps()
-        {
-            var ips = new List<IPAddress>();
-            NetworkInterface[] adapters = NetworkInterface.GetAllNetworkInterfaces();
-            foreach (NetworkInterface nic in adapters)
-            {
-                if (nic.OperationalStatus == OperationalStatus.Up &&
-                    (nic.NetworkInterfaceType == NetworkInterfaceType.Ethernet3Megabit ||
-                    nic.NetworkInterfaceType == NetworkInterfaceType.Ethernet ||
-                    nic.NetworkInterfaceType == NetworkInterfaceType.FastEthernetT ||
-                    nic.NetworkInterfaceType == NetworkInterfaceType.Wireless80211 ||
-                    nic.NetworkInterfaceType == NetworkInterfaceType.GigabitEthernet ||
-                    nic.NetworkInterfaceType == NetworkInterfaceType.FastEthernetFx))
-                {
-                    foreach (UnicastIPAddressInformation ipInfo in nic.GetIPProperties().UnicastAddresses)
-                    {
-                        byte[] address = ipInfo.Address.GetAddressBytes();
-                        if (address.Length == 4)
+                        try
                         {
-                            if ((address[0] == 172 && address[1] >= 16 && address[1] <= 31)
-                                || (address[0] == 10)
-                                || (address[0] == 192 && address[1] == 168))
-                                Console.WriteLine(ipInfo.Address);
-                            ips.Add(ipInfo.Address);
+                            client.Receive(buffer2, 0, 1024);
                         }
-                    }
+                        catch
+                        {
+                            break;
+                        }
+                    } while (true);
+                    //client.ReceiveFile(path2, BitConverter.ToInt64(buffer, 0));
                 }
             }
-            return ips;
         }
 
-        private void Guess2()
+        private void SendFile()
         {
-            var scope = new ManagementScope(@"\\localhost\root\cimv2");
-            scope.Connect();
-            var query = new ObjectQuery(@"SELECT * FROM Win32_NetworkAdapter where NetConnectionStatus = 2");
-            var searcher = new ManagementObjectSearcher(scope, query);
-
-            var networkInterfaces = searcher.Get();
-            foreach (var networkInterface in networkInterfaces)
+            using (Udt.Socket socket = new Udt.Socket(AddressFamily.InterNetwork, SocketType.Stream))
+            using (Udt.StdFileStream fs = new Udt.StdFileStream(path, FileMode.Open))
             {
-                Console.WriteLine(string.Format("{0} - {1}", networkInterface["MACAddress"], networkInterface["Name"]));
+                socket.Connect(IPAddress.Loopback, 10000);
+
+                // Send the file length, in bytes
+                socket.Send(BitConverter.GetBytes(fs.Length), 0, sizeof (long));
+                var buffer = new byte[1024];
+                int count = 0;
+                int sum = 0;
+                do
+                {
+                    count = fs.Read(buffer, 0, 1024);
+                    sum += count;
+                    socket.Send(buffer, 0, count);
+                } while (sum < fs.Length);
+                //socket.Close();
             }
         }
     }

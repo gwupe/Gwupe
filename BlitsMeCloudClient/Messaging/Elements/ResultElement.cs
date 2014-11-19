@@ -6,5 +6,6 @@ namespace BlitsMe.Cloud.Messaging.Elements
     public class ResultElement
     {
         [DataMember] public UserElement user;
+        [DataMember] public bool online;
     }
 }

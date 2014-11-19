@@ -6,7 +6,7 @@ using System.Windows.Input;
 
 namespace BlitsMe.Agent.Components.Functions.Chat.ChatElement
 {
-    public abstract class TrueFalseChatElement : ChatElement
+    public abstract class TrueFalseChatElement : BaseChatElement
     {
         public bool Answered
         {

@@ -25,6 +25,9 @@ namespace BlitsMe.Communication.P2P.P2P.Tunnel
         private readonly AutoResetEvent _syncRqEvent = new AutoResetEvent(false);
         public String Id { get; private set; }
 
+        private readonly int internalAttempts = 5;
+        private readonly int externalAttempts = 15;
+
         private PeerInfo _expectedPeer;
         private IPEndPoint _lastSyncPacketIp;
         private IPEndPoint _lastSyncRqPacketIp;
@@ -49,41 +52,35 @@ namespace BlitsMe.Communication.P2P.P2P.Tunnel
             _syncEvent.Reset();
             _udpClient = udpClient;
             InitReceiverThread();
+            int attempts = 0;
             do
             {
-                byte[] syncBytes = syncRq.getBytes();
-                // attempt to sync with all endpoints, external is done first
-                if (_syncTypes.Contains(SyncType.All))
-                {
-                    foreach (var endPoint in peer.EndPoints)
-                    {
-                        udpClient.Send(syncBytes, syncBytes.Length, endPoint);
-                    }
-                }
-                else
-                {
-                    if (_syncTypes.Contains(SyncType.Internal))
-                    {
-                        foreach (var endPoint in peer.InternalEndPoints)
-                        {
-                            udpClient.Send(syncBytes, syncBytes.Length, endPoint);
-                        }
-                    }
-                    if (_syncTypes.Contains(SyncType.External))
-                    {
-                        udpClient.Send(syncBytes, syncBytes.Length, peer.ExternalEndPoint);
-                    }
-                    if (_syncTypes.Contains(SyncType.Facilitator))
-                    {
-                        udpClient.Send(syncBytes, syncBytes.Length, peer.FacilitatorRepeatedEndPoint);
-                    }
-                }
                 if (DateTime.Now.Ticks - startTime > waitTime)
                 {
                     Logger.Debug("Tunnel " + Id + ", sync Timeout : " + (DateTime.Now.Ticks - startTime));
                     throw new TimeoutException("Tunnel " + Id + ", timeout occured while attempting sync with peer " + peer);
                 }
-                Logger.Debug("Tunnel " + Id + ", sent requests, waiting for sync response from " + peer);
+                byte[] syncBytes = syncRq.getBytes();
+                if ((_syncTypes.Contains(SyncType.All) || _syncTypes.Contains(SyncType.Internal)))
+                {
+                    Logger.Debug("Tunnel " + Id + ", sent requests, waiting for sync response from internal of " + peer);
+                    foreach (var endPoint in peer.InternalEndPoints)
+                    {
+                        udpClient.Send(syncBytes, syncBytes.Length, endPoint);
+                    }
+                }
+                if (attempts > internalAttempts && (_syncTypes.Contains(SyncType.All) || _syncTypes.Contains(SyncType.External)))
+                {
+                    Logger.Debug("Tunnel " + Id + ", sent requests, waiting for sync response from external of " + peer);
+                    udpClient.Send(syncBytes, syncBytes.Length, peer.ExternalEndPoint);
+                }
+                // Faciliatator is our last choice, only send here after 3 attempts at the other ones
+                if (attempts >= externalAttempts && (_syncTypes.Contains(SyncType.All) || _syncTypes.Contains(SyncType.Facilitator)))
+                {
+                    Logger.Debug("Tunnel " + Id + ", sent requests, waiting for sync response from facilitator of " + peer);
+                    udpClient.Send(syncBytes, syncBytes.Length, peer.FacilitatorRepeatedEndPoint);
+                }
+                attempts++;
             } while (!_syncEvent.WaitOne(1000));
             var activeIp = _lastSyncPacketIp;
 
@@ -243,41 +240,35 @@ namespace BlitsMe.Communication.P2P.P2P.Tunnel
             _syncEvent.Reset();
             _udpClient = udpClient;
             InitReceiverThread();
+            int attempts = 0;
             do
             {
-                byte[] nopBytes = nop.getBytes();
-                // attempt to open comms with all endpoints, external is done first
-                if (_syncTypes.Contains(SyncType.All))
-                {
-                    foreach (var endPoint in peer.EndPoints)
-                    {
-                        udpClient.Send(nopBytes, nopBytes.Length, endPoint);
-                    }
-                }
-                else
-                {
-                    if (_syncTypes.Contains(SyncType.Internal))
-                    {
-                        foreach (var endPoint in peer.InternalEndPoints)
-                        {
-                            udpClient.Send(nopBytes, nopBytes.Length, endPoint);
-                        }
-                    }
-                    if (_syncTypes.Contains(SyncType.External))
-                    {
-                        udpClient.Send(nopBytes, nopBytes.Length, peer.ExternalEndPoint);
-                    }
-                    if (_syncTypes.Contains(SyncType.Facilitator))
-                    {
-                        udpClient.Send(nopBytes, nopBytes.Length, peer.FacilitatorRepeatedEndPoint);
-                    }
-                }
                 if (DateTime.Now.Ticks - startTime > waitTime)
                 {
                     Logger.Debug("Tunnel " + Id + ", sync Timeout : " + (DateTime.Now.Ticks - startTime));
                     throw new TimeoutException("Tunnel " + Id + ", timeout occured while waiting for sync from peer " + peer);
                 }
-                Logger.Debug("Tunnel " + Id + ", sent nops, now waiting for sync request from " + peer);
+                byte[] nopBytes = nop.getBytes();
+                if ((_syncTypes.Contains(SyncType.All) || _syncTypes.Contains(SyncType.Internal)))
+                {
+                    Logger.Debug("Tunnel " + Id + ", sent nops, now waiting for sync request from internal of " + peer);
+                    foreach (var endPoint in peer.InternalEndPoints)
+                    {
+                        udpClient.Send(nopBytes, nopBytes.Length, endPoint);
+                    }
+                }
+                if (attempts > internalAttempts && (_syncTypes.Contains(SyncType.All) || _syncTypes.Contains(SyncType.External)))
+                {
+                    Logger.Debug("Tunnel " + Id + ", sent nops, now waiting for sync request from external of " + peer);
+                    udpClient.Send(nopBytes, nopBytes.Length, peer.ExternalEndPoint);
+                }
+                // Facilitator is our last choice, only send here after 3 attempts at the other ones
+                if (attempts >= externalAttempts && (_syncTypes.Contains(SyncType.All) || _syncTypes.Contains(SyncType.Facilitator)))
+                {
+                    Logger.Debug("Tunnel " + Id + ", sent nops, now waiting for sync request from facilitator of " + peer);
+                    udpClient.Send(nopBytes, nopBytes.Length, peer.FacilitatorRepeatedEndPoint);
+                }
+                attempts++;
             } while (!_syncRqEvent.WaitOne(1000));
             var activeIp = _lastSyncRqPacketIp;
 

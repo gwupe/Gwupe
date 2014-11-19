@@ -125,6 +125,10 @@
       <Component Id="BlitsMeUpgradeAgent">
         <File Id="BlitsMe.Agent.Upgrade.exe" Source="$(var.BlitsMeUpgradeAgent.TargetPath)" KeyPath="yes" />
       </Component>
+      <!-- the blits me service restarter -->
+      <Component Id="BlitsMeRestartService">
+        <File Id="BlitsMeRestartService.exe" Source="$(var.BlitsMeRestartService.TargetPath)" KeyPath="yes" />
+      </Component>
       <!-- this installs the vnc client -->
       <Component Id="BlitsMeAgentSupportScreen">
         <File Source="$(var.BlitsMeAgent.TargetDir)\\bmss.exe" KeyPath="yes" />

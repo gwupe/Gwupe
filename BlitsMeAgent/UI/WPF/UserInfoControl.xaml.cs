@@ -21,13 +21,13 @@ namespace BlitsMe.Agent.UI.WPF
     /// <summary>
     /// Interaction logic for UserInfo.xaml
     /// </summary>
-    public partial class UserInfoWindow : IDashboardContentControl, IBlitsMeUserControl
+    public partial class UserInfoControl : IDashboardContentControl, IBlitsMeUserControl
     {
-        private static readonly ILog Logger = LogManager.GetLogger(typeof(UserInfoWindow));
+        private static readonly ILog Logger = LogManager.GetLogger(typeof(UserInfoControl));
         private readonly BlitsMeClientAppContext _appContext;
         private readonly UiHelper _uiHelper;
 
-        public UserInfoWindow(BlitsMeClientAppContext appContext)
+        public UserInfoControl(BlitsMeClientAppContext appContext)
         {
             this.InitializeComponent();
             _uiHelper = new UiHelper(Dispatcher, Disabler, StatusText, ErrorText);
@@ -189,13 +189,13 @@ namespace BlitsMe.Agent.UI.WPF
             ClearBlurEffect(UserControl);
         }
 
-        private void ClearBlurEffect(UserInfoWindow userControl)
+        private void ClearBlurEffect(UserInfoControl userControl)
         {
             userControl.Background = new SolidColorBrush(Colors.Transparent);
             userControl.UserControl.Opacity = 100;
         }
 
-        private void ApplyBlurEffect(UserInfoWindow userControl)
+        private void ApplyBlurEffect(UserInfoControl userControl)
         {
             userControl.Background = new SolidColorBrush(Colors.Gray);
             userControl.UserControl.Opacity = 0.4;

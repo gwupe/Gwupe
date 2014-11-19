@@ -158,6 +158,61 @@ namespace BlitsMe.Agent
                         : "");
         }
 
+        public bool RestartBlitsMeService()
+        {
+            Process restartProcess = null;
+            try
+            {
+                restartProcess = new Process
+                {
+                    StartInfo = new ProcessStartInfo
+                    {
+                        UseShellExecute = true,
+                        CreateNoWindow = true,
+                        WindowStyle = ProcessWindowStyle.Hidden,
+                        Verb = "runas",
+                        FileName = Path.GetDirectoryName(Environment.GetCommandLineArgs()[0]) +
+                                   "\\BlitsMeRestartService.exe"
+                    }
+                };
+                restartProcess.Start();
+                restartProcess.WaitForExit();
+
+                if (restartProcess.ExitCode != 0)
+                {
+                    Logger.Error("Failed to restart BlitsMeService");
+                    ThreadPool.QueueUserWorkItem(state =>
+                        SubmitFaultReport(new FaultReport()
+                        {
+                            UserReport = "Failed to restart BlitsMeService manually"
+                        }));
+                    return false;
+                }
+                else
+                {
+                    Logger.Info("Restarted BlitsMe Service");
+                    return true;
+                }
+            }
+            catch (Exception e)
+            {
+                Logger.Error("Attempt to call BlitsMe Service Restarter failed", e);
+                ThreadPool.QueueUserWorkItem(state =>
+                    SubmitFaultReport(new FaultReport()
+                    {
+                        UserReport = "Attempt to call BlitsMe Service Restarter failed : " + e
+                    }));
+                return false;
+            }
+            finally
+            {
+                if (restartProcess != null)
+                {
+                    restartProcess.Close();
+                }
+            }
+        }
+
         public BlitsMeServiceProxy BlitsMeService
         {
             get { return BlitsMeServiceProxy; }

@@ -15,7 +15,7 @@
     <Style x:Key="NotificationActionButton" TargetType="{x:Type Button}">
         <Setter Property="Background" Value="White" />
         <Setter Property="HorizontalAlignment" Value="Right" />
-        
+
     </Style>
     <Style x:Key="DeleteButtonStyle" TargetType="{x:Type Button}" BasedOn="{StaticResource NotificationActionButton}">
         <Setter Property="Width" Value="20" />
@@ -100,7 +100,7 @@
         <Setter Property="Margin" Value="0,0,0,0" />
     </Style>
 
-    <Style x:Key="MessageTextbox" TargetType="TextBlock">
+    <Style x:Key="MessageTextbox" TargetType="TextBox">
         <Setter Property="FontFamily" Value="Segoe UI" />
         <Setter Property="FontSize" Value="13" />
         <Setter Property="Background" Value="Transparent" />
@@ -127,7 +127,7 @@
 			        Tag="{Binding Message, FallbackValue=Waiting}" Foreground="Black" 
                          Style="{DynamicResource MyProgressBarStyle}" FontFamily="Segoe UI" FontWeight="SemiBold"
                          FontSize="11" Margin="5,0,5,0"
-						 /> 
+						 />
             <Button Style="{DynamicResource CancelButtonStyle}" Template="{DynamicResource TransparentButtonDeleteStyle}" Height="15" Width="14" Margin="0,0,15,0"/>
         </Grid>
     </DataTemplate>
@@ -172,7 +172,7 @@
             <Button Style="{DynamicResource DenyButtonStyle}" Margin="15,0,10,0" Template="{DynamicResource TransparentButtonFileSendCloseStyle}"/>
         </StackPanel>
     </DataTemplate>
-    
+
     <DataTemplate x:Key="RDPRequestNotification" DataType="{x:Type rdpNotification:RDPNotification}">
         <Grid>
             <Grid.ColumnDefinitions>
@@ -190,13 +190,13 @@
                         <ColumnDefinition Width="Auto"/>
                     </Grid.ColumnDefinitions>
 
-                    <engage:UserImageOthers Grid.Column="0"/>
-                    
+                    <!--<engage:UserImageOthers Grid.Column="0"/>-->
+
                     <TextBlock  Style="{DynamicResource MessageTimeStyle}" Grid.Column="1"
 							Text="{Binding SpeakTime, Converter={StaticResource relativeMessageTimeConverter}, FallbackValue=Yesterday 8:49}"
                                 VerticalAlignment="Center"/>
 
-                    <TextBlock Margin="30,10,0,0" Style="{DynamicResource MessageTextbox}" VerticalAlignment="Center"
+                    <TextBox Margin="30,10,0,0" Style="{DynamicResource MessageTextbox}" VerticalAlignment="Center"
                        Text="{Binding Path=Message, FallbackValue=A message from them}" Grid.Column="2"
                                Foreground="Gray" FontSize="12"/>
 
@@ -246,13 +246,13 @@
                         <ColumnDefinition Width="Auto"/>
                     </Grid.ColumnDefinitions>
 
-                    <engage:UserImageOthers Grid.Column="0"/>
-                    
+                    <!--<engage:UserImageOthers Grid.Column="0"/> -->
+
                     <TextBlock  Style="{DynamicResource MessageTimeStyle}" Grid.Column="1"
 							Text="{Binding SpeakTime, Converter={StaticResource relativeMessageTimeConverter}, FallbackValue=Yesterday 8:49}"
                                 VerticalAlignment="Center"/>
 
-                    <TextBlock Margin="30,10,0,0" Style="{DynamicResource MessageTextbox}" VerticalAlignment="Center"
+                    <TextBox Margin="30,10,0,0" Style="{DynamicResource MessageTextbox}" VerticalAlignment="Center"
                        Text="{Binding Path=Message, FallbackValue=A message from them}" Grid.Column="2"
                                Foreground="Gray" FontSize="12"/>
 
@@ -289,13 +289,13 @@
                             <ColumnDefinition Width="Auto"/>
                         </Grid.ColumnDefinitions>
 
-                        <engage:UserImageOthers Grid.Column="0"/>
+                        <!-- <engage:UserImageOthers Grid.Column="0"/> -->
 
                         <TextBlock  Style="{DynamicResource MessageTimeStyle}" Grid.Column="1"
 							Text="{Binding SpeakTime, Converter={StaticResource relativeMessageTimeConverter}, FallbackValue=Yesterday 8:49}"
                                 VerticalAlignment="Center"/>
 
-                        <TextBlock Margin="30,10,0,0" Style="{DynamicResource MessageTextbox}" VerticalAlignment="Center"
+                        <TextBox Margin="30,10,0,0" Style="{DynamicResource MessageTextbox}" VerticalAlignment="Center"
                        Text="{Binding Path=Message, FallbackValue=A message from them}" Grid.Column="2"
                                Foreground="Gray" FontSize="12"/>
 
@@ -369,7 +369,11 @@
     </DataTemplate>
     <DataTemplate DataType="{x:Type alert:Alert}">
         <DockPanel HorizontalAlignment="Stretch" LastChildFill="true" Background="#4A7EBB" Margin="0,1,0,0">
-            <TextBlock HorizontalAlignment="Stretch" Margin="3" Text="{Binding Message, FallbackValue=Unknown Alert}" Foreground="White" FontWeight="Bold" Background="#4A7EBB" TextAlignment="Center" DockPanel.Dock="Left"/>
+            <TextBlock HorizontalAlignment="Stretch" Margin="3" Text="{Binding Message, FallbackValue=Unknown Alert}" Foreground="White" FontWeight="Bold" Background="#4A7EBB" TextAlignment="Center" DockPanel.Dock="Left">
+				<TextBlock.InputBindings>
+					<MouseBinding Command="{Binding Command}" MouseAction="LeftClick" />
+				</TextBlock.InputBindings>
+			</TextBlock>
         </DockPanel>
     </DataTemplate>
     <!-- for a nice progress bar -->

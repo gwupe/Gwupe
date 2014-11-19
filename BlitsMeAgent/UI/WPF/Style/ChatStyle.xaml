@@ -16,899 +16,380 @@
         <ResourceDictionary Source="RosterStyle.xaml" />
         <ResourceDictionary Source="Style.xaml" />
         <ResourceDictionary Source="Theme.xaml" />
-		<ResourceDictionary Source="../Skins/Skin.xaml" />
         <ResourceDictionary Source="pack://application:,,,/MahApps.Metro;component/Styles/Colors.xaml" />
         <ResourceDictionary Source="pack://application:,,,/MahApps.Metro;component/Styles/Fonts.xaml" />
         <ResourceDictionary Source="pack://application:,,,/MahApps.Metro;component/Styles/Controls.xaml" />
         <ResourceDictionary Source="pack://application:,,,/MahApps.Metro;component/Styles/Accents/BaseLight.xaml" />
     </ResourceDictionary.MergedDictionaries>
-    <DataTemplate x:Key="FailedImage">
-        <Image Source="/BlitsMe.Agent;component/UI/WPF/Images/1364864637_alert.png" Width="20" Margin="0,0,0,0" HorizontalAlignment="Left"></Image>
-    </DataTemplate>
 
+    <!-- this is our start of the clean up -->
+
+    <!-- Helper Objects -->
+    <!-- Reads a binary stream and builds an image -->
     <Utils:ImageStreamReader x:Key="imageStreamReader" />
+    <!-- Makes a date/time human friendly -->
+    <Utils:RelativeMessageTimeConverter x:Key="relativeMessageTimeConverter" />
+    <!-- Converts boolean to a visibility true=>Visible false=>Collapsed -->
+    <Utils:BoolToVisibilityConverter x:Key="BoolToVisConverter" />
+    <!-- Converts boolean to a visibility true=>Visible false=>Collapsed -->
+    <Utils:BoolToInvisibilityConverter x:Key="BoolToInvisConverter" />
 
-    <Style x:Key="NotificationActionButton" TargetType="{x:Type Button}">
-        <Setter Property="Background" Value="White" />
-        <Setter Property="HorizontalAlignment" Value="Right" />
-    </Style>
 
-    <DataTemplate x:Key="AcceptButtonTemplate">
-        <Image Source="/BlitsMe.Agent;component/UI/WPF/Images/Check.png" Width="13"/>
-    </DataTemplate>
-    <DataTemplate x:Key="DenyButtonTemplate">
-        <Image Source="/BlitsMe.Agent;component/UI/WPF/Images/close.png"/>
-    </DataTemplate>
+    <!-- Core Styles -->
 
-    <DataTemplate x:Key="TryingImage">
-        <!--<DataTemplate.Resources>
-            <Storyboard x:Key="Spin" RepeatBehavior="Forever">
-                <DoubleAnimationUsingKeyFrames BeginTime="00:00:00" Storyboard.TargetName="ellipse" Storyboard.TargetProperty="(UIElement.RenderTransform).(TransformGroup.Children)[2].(RotateTransform.Angle)">
-                    <SplineDoubleKeyFrame KeyTime="00:00:02" Value="360"/>
-                </DoubleAnimationUsingKeyFrames>
-            </Storyboard>
-        </DataTemplate.Resources>
-        <DataTemplate.Triggers>
-            <EventTrigger RoutedEvent="FrameworkElement.Loaded">
-                <BeginStoryboard Storyboard="{StaticResource Spin}"/>
-            </EventTrigger>
-        </DataTemplate.Triggers>
-        <Ellipse x:Name="ellipse" Margin="0" StrokeThickness="20" RenderTransformOrigin="0.5,0.5">
-            <Ellipse.RenderTransform>
-                <TransformGroup>
-                    <ScaleTransform/>
-                    <SkewTransform/>
-                    <RotateTransform/>
-                </TransformGroup>
-            </Ellipse.RenderTransform>
-            <Ellipse.Stroke>
-                <LinearGradientBrush EndPoint="0.445,0.997" StartPoint="0.555,0.003">
-                    <GradientStop Color="White" Offset="0"/>
-                    <GradientStop Color="#FF0052FF" Offset="1"/>
-                </LinearGradientBrush>
-            </Ellipse.Stroke>
-        </Ellipse>-->
-    </DataTemplate>
-    <DataTemplate x:Key="DeliveredImage">
-        <!--<Image Source="/BlitsMe.Agent;component/UI/WPF/Images/Check.png" Width="20" Margin="0,0,0,0" HorizontalAlignment="Left"></Image>-->
-    </DataTemplate>
-    <DataTemplate x:Key="NoImage">
-    </DataTemplate>
-    <Style x:Key="ChatBubble">
-        <Setter Property="RichTextBox.Padding" Value="5" />
-        <Setter Property="Control.Template">
-            <Setter.Value>
-                <ControlTemplate TargetType="{x:Type RichTextBox}">
-                    <Border Background="{TemplateBinding Background}" x:Name="Bd" BorderBrush="Black"
-			            BorderThickness="0" CornerRadius="5"  Padding="0" Margin="0">
-                        <Grid>
-                            <Border HorizontalAlignment="Right" Margin="0,0,20,0" Height="30" Width="30" 
-                                   VerticalAlignment="Center" BorderThickness="1" BorderBrush="White">
-                                <Image Stretch="Uniform" Source="{Binding Path=Person.Avatar, Converter={StaticResource imageStreamReader}}" Width="30" Height="30" />
-                            </Border>
-                            <ScrollViewer x:Name="PART_ContentHost"/>
-                        </Grid>
-                    </Border>
-                    <ControlTemplate.Triggers>
-                        <Trigger Property="Width" Value="Auto">
-                            <Setter Property="MinWidth" Value="100"/>
-                        </Trigger>
-                        <Trigger Property="Height" Value="Auto">
-                            <Setter Property="MinHeight" Value="40"/>
-                        </Trigger>
-                    </ControlTemplate.Triggers>
-                </ControlTemplate>
-            </Setter.Value>
-        </Setter>
-        <Setter Property="RichTextBox.HorizontalAlignment" Value="Stretch" />
-    </Style>
-
-    <Style x:Key="ChatBubbleOthersImage">
-        <Setter Property="RichTextBox.Padding" Value="5" />
-        <Setter Property="Control.Template">
-            <Setter.Value>
-                <ControlTemplate TargetType="{x:Type RichTextBox}">
-                    <Border Background="{TemplateBinding Background}" x:Name="Bd" BorderBrush="Black"
-			            BorderThickness="0" CornerRadius="5"  Padding="0" Margin="0">
-                        <Grid>
-                            <Border HorizontalAlignment="Left" Margin="20,0,0,0" Height="30" Width="30" 
-                                   VerticalAlignment="Center" BorderThickness="1" BorderBrush="White">
-                                <Image Stretch="Uniform" Source="{Binding Path=Person.Avatar, Converter={StaticResource imageStreamReader}}" Width="30" Height="30" />
-                            </Border>
-                            <ScrollViewer x:Name="PART_ContentHost"/>
-                        </Grid>
-                    </Border>
-                    <ControlTemplate.Triggers>
-                        <Trigger Property="Width" Value="Auto">
-                            <Setter Property="MinWidth" Value="100"/>
-                        </Trigger>
-                        <Trigger Property="Height" Value="Auto">
-                            <Setter Property="MinHeight" Value="40"/>
-                        </Trigger>
-                    </ControlTemplate.Triggers>
-                </ControlTemplate>
-            </Setter.Value>
-        </Setter>
-        <Setter Property="RichTextBox.HorizontalAlignment" Value="Stretch" />
-    </Style>
-
-    <Style x:Key="ChatBubbleMe" BasedOn="{StaticResource ChatBubble}" TargetType="RichTextBox">
-        <Setter Property="FontFamily" Value="Calibri" />
-        <Setter Property="FontSize" Value="12pt" />
-        <Setter Property="HorizontalAlignment" Value="Right" />
-        <Setter Property="Background" Value="#C6D9F1" />
-        <Setter Property="Margin" Value="0,0,0,0" />
-        <!--<Setter Property="Effect" >
-            <Setter.Value>
-                <DropShadowEffect ShadowDepth="5" />
-            </Setter.Value>
-        </Setter>-->
-    </Style>
-
-    <Style x:Key="ChatBubbleMeNew" TargetType="Grid">
-        <Setter Property="MinHeight" Value="40" />
-        <Setter Property="Background" Value="#C6D9F1" />
-        <Setter Property="Margin" Value="0,0,0,0" />
-    </Style>
-
-    <Style x:Key="ChatBubbleSystem" BasedOn="{StaticResource ChatBubble}" TargetType="RichTextBox">
-        <Setter Property="FontFamily" Value="Calibri" />
-        <Setter Property="FontSize" Value="12pt" />
-        <Setter Property="HorizontalAlignment" Value="Center" />
-        <Setter Property="Background" Value="#A9DA74" />
-        <Setter Property="Margin" Value="30,0,30,0" />
-        <Setter Property="Effect" >
-            <Setter.Value>
-                <DropShadowEffect ShadowDepth="5" />
-            </Setter.Value>
-        </Setter>
-        <Setter Property="Foreground" Value="Black"/>
-    </Style>
-
-    <Style x:Key="ChatBubbleSystemNew" TargetType="Grid">
-        <Setter Property="MinHeight" Value="40" />
-        <Setter Property="Background" Value="#A9DA74" />
-        <Setter Property="Margin" Value="0,0,0,0" />
-    </Style>
-
-    <Style x:Key="ChatBubbleOther" BasedOn="{StaticResource ChatBubble}" TargetType="RichTextBox">
-        <Setter Property="FontFamily" Value="Calibri" />
-        <Setter Property="FontSize" Value="12pt" />
-        <Setter Property="HorizontalAlignment" Value="Right" />
-        <Setter Property="Background" Value="#D7E4BD" />
-        <Setter Property="Margin" Value="0,0,0,0" />
-    </Style>
-
-    <Style x:Key="ChatBubbleOthersNew" TargetType="Grid">
-        <!--<Setter Property="FontFamily" Value="Calibri" />
-        <Setter Property="FontSize" Value="12pt" />-->
-        <!--<Setter Property="HorizontalAlignment" Value="Right" />-->
-        <Setter Property="MinHeight" Value="40" />
-        <Setter Property="Background" Value="#D7E4BD" />
-        <Setter Property="Margin" Value="0,0,0,0" />
-    </Style>
-
-    <Style x:Key="ChatBubblePoint" TargetType="Image">
-        <Setter Property="Height" Value="22" />
-        <Setter Property="Width" Value="22" />
-        <Setter Property="HorizontalAlignment" Value="Stretch" />
-        <Setter Property="Effect">
-            <Setter.Value>
-                <DropShadowEffect ShadowDepth="5" />
-            </Setter.Value>
-        </Setter>
-    </Style>
-
-    <Style x:Key="MessageTextbox" TargetType="TextBlock">
-        <Setter Property="FontFamily" Value="Segoe UI" />
-        <Setter Property="FontSize" Value="13" />
-        <Setter Property="Background" Value="Transparent" />
-        <!--<Setter Property="BorderBrush" Value="Transparent" />-->
-        <Setter Property="MinHeight" Value="30" />
-        <Setter Property="TextWrapping" Value="Wrap" />
-    </Style>
-
-    <Style x:Key="ChatBubblePointMe" TargetType="Image">
-        <Setter Property="HorizontalAlignment" Value="Left" />
-        <Setter Property="Margin" Value="0,10,0,0" />
-        <Setter Property="Source" Value="/BlitsMe.Agent;component/UI/WPF/Images/Speech Down.png" />
-        <Setter Property="VerticalAlignment" Value="Top" />
-    </Style>
-
-    <Style x:Key="ChatBubblePointOther" TargetType="Image">
-        <Setter Property="HorizontalAlignment" Value="Right" />
-        <Setter Property="Margin" Value="0,10,0,0" />
-        <Setter Property="Source" Value="/BlitsMe.Agent;component/UI/WPF/Images/Speech Left.png" />
-        <Setter Property="VerticalAlignment" Value="Top" />
-    </Style>
-
-    <Style x:Key="BubbleGrid" TargetType="Grid">
-        <Setter Property="Margin" Value="0,4,0,4" />
-    </Style>
-
-    <Style x:Key="ChatBubbleJoin" TargetType="Image">
-        <Setter Property="Height" Value="10" />
-        <Setter Property="Width" Value="30" />
-        <!--<Setter Property="Effect">
-            <Setter.Value>
-                <DropShadowEffect ShadowDepth="5" />
-            </Setter.Value>
-        </Setter>-->
-    </Style>
-
-    <Style x:Key="ChatBubbleJoinMe" TargetType="Image" BasedOn="{StaticResource ChatBubbleJoin}">
-        <Setter Property="Source" Value="/BlitsMe.Agent;component/UI/WPF/Images/Speech Bubble Join Me.png" />
-        <Setter Property="HorizontalAlignment" Value="Left" />
-        <Setter Property="Margin" Value="23,0,0,0" />
-        <Setter Property="VerticalAlignment" Value="Bottom" />
-    </Style>
-
-    <Style x:Key="ChatBubbleJoinOther" TargetType="Image" BasedOn="{StaticResource ChatBubbleJoin}">
-        <Setter Property="Source" Value="/BlitsMe.Agent;component/UI/WPF/Images/Speech Bubble Join Other.png" />
-        <Setter Property="HorizontalAlignment" Value="Left" />
-        <Setter Property="Margin" Value="23,0,0,20" />
-        <Setter Property="VerticalAlignment" Value="Bottom" />
-    </Style>
-
-    <Style x:Key="ChatItemContainerStyle" TargetType="{x:Type TabItem}">
-        <Setter Property="BorderThickness" Value="0" />
-        <Setter Property="RenderTransformOrigin" Value="0.5,0.5" />
-        <Setter Property="Background" Value="#FF2B519B" />
-        <Setter Property="Margin" Value="-2,0,0.166,0" />
-        <Setter Property="Visibility" Value="Collapsed" />
-    </Style>
-
+    <!-- The style for a timestamp on a message -->
     <Style x:Key="MessageTimeStyle" TargetType="{x:Type TextBlock}">
         <Setter Property="Height" Value="14" />
         <Setter Property="FontStyle" Value="Italic" />
         <Setter Property="Foreground" Value="#FF858282" />
         <Setter Property="FontFamily" Value="Calibri" />
-        <Setter Property="VerticalAlignment" Value="Top" />
+        <Setter Property="VerticalAlignment" Value="Center" />
     </Style>
 
-    <Utils:RelativeMessageTimeConverter x:Key="relativeMessageTimeConverter" />
-    <DataTemplate x:Key="DeliveryNotification">
-        <!--<ContentControl Name="DeliveryStatImage" ContentTemplate="{DynamicResource TryingImage}" />
-        <DataTemplate.Triggers>
-            <DataTrigger Binding="{Binding DeliveryState}">
-                <DataTrigger.Value>
-                    <chat:ChatDeliveryState>Delivered</chat:ChatDeliveryState>
-                </DataTrigger.Value>
-                <Setter TargetName="DeliveryStatImage" Property="ContentTemplate" Value="{DynamicResource DeliveredImage}" />
-            </DataTrigger>
-            <DataTrigger Binding="{Binding DeliveryState}">
-                <DataTrigger.Value>
-                    <chat:ChatDeliveryState>NotAttempted</chat:ChatDeliveryState>
-                </DataTrigger.Value>
-                <Setter TargetName="DeliveryStatImage" Property="ContentTemplate" Value="{DynamicResource TryingImage}" />
-            </DataTrigger>
-            <DataTrigger Binding="{Binding DeliveryState}">
-                <DataTrigger.Value>
-                    <chat:ChatDeliveryState>Trying</chat:ChatDeliveryState>
-                </DataTrigger.Value>
-                <Setter TargetName="DeliveryStatImage" Property="ContentTemplate" Value="{DynamicResource TryingImage}" />
-            </DataTrigger>
-            <DataTrigger Binding="{Binding DeliveryState}">
-                <DataTrigger.Value>
-                    <chat:ChatDeliveryState>Failed</chat:ChatDeliveryState>
-                </DataTrigger.Value>
-                <Setter TargetName="DeliveryStatImage" Property="ContentTemplate" Value="{DynamicResource FailedImage}" />
-            </DataTrigger>
-            <DataTrigger Binding="{Binding DeliveryState}">
-                <DataTrigger.Value>
-                    <chat:ChatDeliveryState>FailedTrying</chat:ChatDeliveryState>
-                </DataTrigger.Value>
-                <Setter TargetName="DeliveryStatImage" Property="ContentTemplate" Value="{DynamicResource FailedImage}" />
-            </DataTrigger>
-        </DataTemplate.Triggers>-->
-    </DataTemplate>
+    <!-- Selectable Text for use in chat messages (must be referenced as a StaticResource) -->
+    <Style x:Key="MessageTextbox" TargetType="TextBox">
+        <Setter Property="FontFamily" Value="Segoe UI" />
+        <Setter Property="FontSize" Value="13" />
+        <Setter Property="Background" Value="Transparent" />
+        <Setter Property="TextWrapping" Value="Wrap" />
+        <Setter Property="BorderBrush" Value="{x:Null}" />
+        <Setter Property="IsReadOnly" Value="True" />
+        <Setter Property="VerticalAlignment" Value="Center" />
+        <Setter Property="HorizontalAlignment" Value="Left" />
+        <Setter Property="MinWidth" Value="100" />
+        <!-- This prevents the border from being drawn -->
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate>
+                    <Border x:Name="PART_ContentHost" />
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
 
-    <DataTemplate x:Key="ChatOtherGroup" >
-        <Grid>
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="Auto"/>
-                <ColumnDefinition Width="*"/>
-            </Grid.ColumnDefinitions>
-            <Image Style="{DynamicResource ChatBubblePointMe}" Grid.Column="0"/>
-            <StackPanel Orientation="Vertical" Margin="0,5,0,-5" Grid.Column="1" >
-                <Border Background="#C6D9F1" CornerRadius="5" MinHeight="40" Height="Auto" Width="Auto" >
-                    <Grid Style="{DynamicResource ChatBubbleMeNew}" Background="Transparent">
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="Auto"/>
-                            <ColumnDefinition Width="10"/>
-                            <ColumnDefinition Width="Auto"/>
-                            <ColumnDefinition Width="30"/>
-                            <ColumnDefinition Width="*"/>
-                            <ColumnDefinition Width="15"/>
-                        </Grid.ColumnDefinitions>
-                        <Border HorizontalAlignment="Left" Margin="10,5,0,0" Height="30" Width="30" VerticalAlignment="Top" 
-                            BorderThickness="1" BorderBrush="White" Grid.Column="0">
-                            <engage:UserImageOthers/>
-                        </Border>
-                        <TextBlock  Style="{DynamicResource MessageTimeStyle}"
-							HorizontalAlignment="Right" Margin="0,15,0,0" Grid.Column="2" 
-							Text="{Binding SpeakTime, Converter={StaticResource relativeMessageTimeConverter}, FallbackValue=Yesterday 8:49}"
-						/>
-                        <TextBlock Margin="0,5,0,5" Style="{DynamicResource MessageTextbox}" VerticalAlignment="Top"
-                                Text="{Binding Path=Message, FallbackValue=A message from us}" Grid.Column="4"
-                               HorizontalAlignment="Left"/>
-                    </Grid>
-                </Border>
-                <Image Style="{DynamicResource ChatBubbleJoinMe}" />
-            </StackPanel>
-        </Grid>
-    </DataTemplate>
+    <!-- Base style for the border which shapes the message bubble -->
+    <Style TargetType="Border" x:Key="BaseMessageBorderStyle">
+        <Setter Property="CornerRadius" Value="15" />
+        <Setter Property="MinHeight" Value="40" />
+        <Setter Property="Height" Value="Auto" />
+        <Setter Property="Width" Value="Auto" />
+    </Style>
 
-    <DataTemplate  DataType="{x:Type chat:TargetChatElement}">
-        <Grid>
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="Auto"/>
-                <ColumnDefinition Width="*"/>
-            </Grid.ColumnDefinitions>
-            <Image Style="{DynamicResource ChatBubblePointMe}" Grid.Column="0"/>
-            <Border Background="#C6D9F1" CornerRadius="5" Grid.Column="1" MinHeight="40" Height="Auto" Width="Auto" 
-                    Margin="0,5,0,0" >
-                <Grid Style="{DynamicResource ChatBubbleMeNew}" Background="Transparent">
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="Auto"/>
-                        <ColumnDefinition Width="10"/>
-                        <ColumnDefinition Width="Auto"/>
-                        <ColumnDefinition Width="30"/>
-                        <ColumnDefinition Width="*"/>
-                        <ColumnDefinition Width="15"/>
-                    </Grid.ColumnDefinitions>
-                    <Border HorizontalAlignment="Left" Margin="10,5,0,0" Height="30" Width="30" VerticalAlignment="Top" 
-                            BorderThickness="1" BorderBrush="White" Grid.Column="0">
-                        <engage:UserImageOthers/>
-                    </Border>
-                    <TextBlock  Style="{DynamicResource MessageTimeStyle}"
-							HorizontalAlignment="Right" Margin="0,15,0,0" Grid.Column="2" 
-							Text="{Binding SpeakTime, Converter={StaticResource relativeMessageTimeConverter}, FallbackValue=Yesterday 8:49}"
-						/>
-                    <TextBlock Margin="0,5,0,5" Style="{DynamicResource MessageTextbox}" VerticalAlignment="Top"
-                                Text="{Binding Path=Message, FallbackValue=A message from us}" Grid.Column="4"
-                               HorizontalAlignment="Left"/>
-                </Grid>
-            </Border>
-        </Grid>
-    </DataTemplate>
+    <!-- Self border style for a message bubble from me -->
+    <Style TargetType="Border" x:Key="SelfMessageBorderStyle" BasedOn="{StaticResource BaseMessageBorderStyle}">
+        <Setter Property="Background" Value="#b6d973" />
+        <Setter Property="Margin" Value="30,0,8.3,5" />
+    </Style>
 
-    <DataTemplate x:Key="ChatMeGroup">
-        <Grid>
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="*"/>
-                <ColumnDefinition Width="Auto"/>
-            </Grid.ColumnDefinitions>
-            <StackPanel Orientation="Vertical" Margin="0,5,0,-5" Grid.Column="0">
-                <Border Background="#D7E4BD" CornerRadius="5" MinHeight="40">
-                    <Grid Style="{DynamicResource ChatBubbleOthersNew}" Background="Transparent">
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="15"/>
-                            <ColumnDefinition Width="*"/>
-                            <ColumnDefinition Width="10"/>
-                            <ColumnDefinition Width="Auto"/>
-                            <ColumnDefinition Width="10"/>
-                            <ColumnDefinition Width="Auto"/>
-                            <ColumnDefinition Width="10"/>
-                        </Grid.ColumnDefinitions>
-                        <TextBlock Margin="0,5,0,5" Style="{DynamicResource MessageTextbox}" VerticalAlignment="Top"
-                       Text="{Binding Path=Message, FallbackValue=A message from them}" Grid.Column="1"
-                               HorizontalAlignment="Left"/>
+    <!-- Self border style for a message bubble from me -->
+    <Style TargetType="Border" x:Key="TargetMessageBorderStyle" BasedOn="{StaticResource BaseMessageBorderStyle}">
+        <Setter Property="Background" Value="#FF7CB0EE" />
+        <Setter Property="Margin" Value="8.3,0,30,5" />
+    </Style>
 
-                        <TextBlock  Style="{DynamicResource MessageTimeStyle}" Margin="0,15,0,0" Grid.Column="3"
-							Text="{Binding SpeakTime, Converter={StaticResource relativeMessageTimeConverter}, FallbackValue=Yesterday 8:49}"
-						/>
+    <!-- System border style for a message bubble from system -->
+    <Style TargetType="Border" x:Key="SystemMessageBorderStyle" BasedOn="{StaticResource BaseMessageBorderStyle}">
+        <Setter Property="Background" Value="#C6D9F1" />
+        <Setter Property="Margin" Value="40,0,40,5" />
+    </Style>
 
-                        <Border Margin="0,5,0,0" Height="30" Width="30" VerticalAlignment="Top" 
-                            BorderThickness="1" BorderBrush="White" Grid.Column="5">
-                            <engage:UserImage />
-                        </Border>
-                    </Grid>
-                </Border>
-                <Image Style="{DynamicResource ChatBubbleJoinOther}" HorizontalAlignment="Right" Margin="0,0,23,0"/>
-            </StackPanel>
-            <Image Style="{DynamicResource ChatBubblePointOther}" Grid.Column="1"/>
-        </Grid>
-    </DataTemplate>
+    <!-- System border style for a error message bubble from system -->
+    <Style TargetType="Border" x:Key="ErrorMessageBorderStyle" BasedOn="{StaticResource BaseMessageBorderStyle}">
+        <Setter Property="Background" Value="#FFFF5050" />
+        <Setter Property="Margin" Value="40,0,40,5" />
+    </Style>
 
-    <DataTemplate DataType="{x:Type chat:SelfChatElement}" >
-        <Grid>
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="*"/>
-                <ColumnDefinition Width="Auto"/>
-            </Grid.ColumnDefinitions>
-            <Border Background="#D7E4BD" CornerRadius="5" Grid.Column="0" MinHeight="40" Height="Auto" Width="Auto" 
-                    Margin="0,5,0,0" >
-                <Grid Style="{DynamicResource ChatBubbleOthersNew}" Background="Transparent">
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="15"/>
-                        <ColumnDefinition Width="*"/>
-                        <ColumnDefinition Width="10"/>
-                        <ColumnDefinition Width="Auto"/>
-                        <ColumnDefinition Width="10"/>
-                        <ColumnDefinition Width="Auto"/>
-                        <ColumnDefinition Width="10"/>
-                    </Grid.ColumnDefinitions>
-                    <TextBlock Margin="0,5,0,5" Style="{DynamicResource MessageTextbox}" VerticalAlignment="Top"
-                       Text="{Binding Path=Message, FallbackValue=A message from them}" Grid.Column="1"
-                               HorizontalAlignment="Left"/>
+    <!-- Border for Images in a message bubble -->
+    <Style TargetType="Border" x:Key="AvatarBorderStyle">
+        <Setter Property="Height" Value="30" />
+        <Setter Property="Width" Value="30" />
+        <Setter Property="VerticalAlignment" Value="Center" />
+        <Setter Property="BorderThickness" Value="1" />
+        <Setter Property="BorderBrush" Value="White" />
+    </Style>
 
-                    <TextBlock  Style="{DynamicResource MessageTimeStyle}" Margin="0,15,0,0" Grid.Column="3"
-							Text="{Binding SpeakTime, Converter={StaticResource relativeMessageTimeConverter}, FallbackValue=Yesterday 8:49}"
-						/>
+    <!-- Style for a Generic Yes/No Button -->
+    <Style TargetType="{x:Type Button}" x:Key="YesNoButtonStyle">
+        <Setter Property="Height" Value="18" />
+        <Setter Property="Width" Value="18" />
+        <Setter Property="HorizontalAlignment" Value="Center" />
+        <Setter Property="VerticalAlignment" Value="Center" />
+        <Setter Property="BorderBrush" Value="Transparent" />
+        <!-- This part makes it have no border -->
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="{x:Type Button}" >
+                    <ContentPresenter />
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
 
-                    <Border Margin="0,5,0,0" Height="30" Width="30" VerticalAlignment="Top" 
-                            BorderThickness="1" BorderBrush="White" Grid.Column="5">
-                        <engage:UserImage />
-                    </Border>
-                </Grid>
-            </Border>
-            <Image Style="{DynamicResource ChatBubblePointOther}" Grid.Column="1"/>
-        </Grid>
-    </DataTemplate>
+    <!-- Base Style for Image Buttons -->
+    <Style x:Key="NotificationActionButton" TargetType="{x:Type Button}">
+        <Setter Property="Background" Value="White" />
+        <Setter Property="HorizontalAlignment" Value="Right" />
+    </Style>
 
-    <DataTemplate DataType="{x:Type chat:SystemChatElement}">
-        <Grid>
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="12"/>
-                <ColumnDefinition Width="*"/>
-            </Grid.ColumnDefinitions>
-            <!--<Image Style="{DynamicResource ChatBubblePointMe}" Grid.Column="0"/>-->
-            <Border Background="#C6D9F1" CornerRadius="5" Grid.Column="1" MinHeight="40" Margin="0,5,0,0" >
-                <Grid Style="{DynamicResource ChatBubbleMeNew}" Background="Transparent">
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="Auto"/>
-                        <ColumnDefinition Width="10"/>
-                        <ColumnDefinition Width="Auto"/>
-                        <ColumnDefinition Width="30"/>
-                        <ColumnDefinition Width="*"/>
-                        <ColumnDefinition Width="15"/>
-                    </Grid.ColumnDefinitions>
-
-                    <Border HorizontalAlignment="Right" Margin="10,5,0,0" Height="30" Width="30" Grid.Column="0"
-                                   VerticalAlignment="Top" BorderThickness="1" BorderBrush="Transparent">
-                        <!--<Image Stretch="Uniform" Source="{Binding Path=Person.Avatar, Converter={StaticResource imageStreamReader}}" Width="30" Height="30" />-->
-                        <engage:UserImage />
-                    </Border>
-
-                    <TextBlock  Style="{DynamicResource MessageTimeStyle}" Grid.Column="2"
-							HorizontalAlignment="Right"
-							Margin="0,15,0,0"
-							Text="{Binding SpeakTime, Converter={StaticResource relativeMessageTimeConverter}, FallbackValue=Yesterday 8:49}"
-						/>
-
-                    <TextBlock Margin="0,10,0,0" HorizontalAlignment="Left" Style="{DynamicResource MessageTextbox}" Grid.Column="4"
-                       Text="{Binding Path=Message, FallbackValue=A message from the system}" TextAlignment="Left"/>
-                </Grid>
-            </Border>
-        </Grid>
-    </DataTemplate>
-
-    <DataTemplate DataType="{x:Type chat:TargetSystemChatElement}">
-        <Grid>
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="12"/>
-                <ColumnDefinition Width="*"/>
-            </Grid.ColumnDefinitions>
-            <!--<Image Style="{DynamicResource ChatBubblePointMe}" Grid.Column="0"/>-->
-            <Border Background="#C6D9F1" CornerRadius="5" Grid.Column="1" MinHeight="40" Margin="0,5,0,0" >
-                <Grid Style="{DynamicResource ChatBubbleMeNew}" Background="Transparent">
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="Auto"/>
-                        <ColumnDefinition Width="10"/>
-                        <ColumnDefinition Width="Auto"/>
-                        <ColumnDefinition Width="30"/>
-                        <ColumnDefinition Width="*"/>
-                        <ColumnDefinition Width="15"/>
-                    </Grid.ColumnDefinitions>
-
-                    <Border HorizontalAlignment="Right" Margin="10,5,0,0" Height="30" Width="30" Grid.Column="0"
-                                   VerticalAlignment="Top" BorderThickness="1" BorderBrush="Transparent">
-                        <!--<Image Stretch="Uniform" Source="{Binding Path=Person.Avatar, Converter={StaticResource imageStreamReader}}" Width="30" Height="30" />-->
-                        <engage:UserImageOthers />
-                    </Border>
-
-                    <TextBlock  Style="{DynamicResource MessageTimeStyle}" Grid.Column="2"
-							HorizontalAlignment="Right"
-							Margin="0,15,0,0"
-							Text="{Binding SpeakTime, Converter={StaticResource relativeMessageTimeConverter}, FallbackValue=Yesterday 8:49}"
-						/>
-
-                    <TextBlock Margin="0,10,0,0" HorizontalAlignment="Left" Style="{DynamicResource MessageTextbox}" Grid.Column="4"
-                       Text="{Binding Path=Message, FallbackValue=A message from the system}" TextAlignment="Left"/>
-                </Grid>
-            </Border>
-        </Grid>
-    </DataTemplate>
-	<!--
-    <DataTemplate x:Key="ChatNotification" DataType="{x:Type filesend:FileSendRequestChatElement}" >
-        <Grid>
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="12"/>
-                <ColumnDefinition Width="*"/>
-            </Grid.ColumnDefinitions>
-            <Border Background="#C6D9F1" CornerRadius="5" Grid.Column="1" MinHeight="40" Height="Auto" Width="Auto" 
-                    Margin="0,5,0,0" >
-                <Grid Style="{DynamicResource ChatBubbleMeNew}" Background="Transparent">
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="45"/>
-                        <ColumnDefinition Width="Auto"/>
-                        <ColumnDefinition Width="Auto"/>
-                        <ColumnDefinition Width="*"/>
-                        <ColumnDefinition Width="Auto"/>
-                    </Grid.ColumnDefinitions>
-
-                    <engage:UserImageOthers Grid.Column="0"/>
-
-                    <TextBlock  Style="{DynamicResource MessageTimeStyle}" Grid.Column="1"
-							Text="{Binding SpeakTime, Converter={StaticResource relativeMessageTimeConverter}, FallbackValue=Yesterday 8:49}"
-                                VerticalAlignment="Center"/>
-
-                    <Image Height="30" Width="30" VerticalAlignment="Center" Grid.Column="2" Margin="30,0,0,0"
-                           Source="../Images/1375404724_tune.png"/>
-
-                    <TextBlock Margin="20,10,0,0" Style="{DynamicResource MessageTextbox}" VerticalAlignment="Center"
-                       Text="{Binding Path=Message, FallbackValue=A message from them}" Grid.Column="3"
-                               Foreground="Gray" FontSize="12"/>
-                    <ContentControl Grid.Column="4" DataContext="{Binding Path=.}">
-                        <ContentControl.Style>
-                            <Style TargetType="ContentControl">
-                                <Setter Property="ContentTemplate" Value="{DynamicResource AnswerYesNoButtons}" />
-                                <Style.Triggers>
-                                    <DataTrigger Binding="{Binding Answered}" Value="True">
-                                        <Setter Property="ContentTemplate" Value="{x:Null}" />
-                                    </DataTrigger>
-                                </Style.Triggers>
-                            </Style>
-                        </ContentControl.Style>
-                    </ContentControl>
-                </Grid>
-            </Border>
-        </Grid>
-    </DataTemplate>
-
-    <DataTemplate x:Key="ChatNotificationGroup" DataType="{x:Type filesend:FileSendRequestChatElement}" >
-        <Grid>
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="12"/>
-                <ColumnDefinition Width="*"/>
-            </Grid.ColumnDefinitions>
-            <StackPanel Orientation="Vertical"  Grid.Column="1" Margin="0,5,0,-5">
-                <Border Background="#C6D9F1" CornerRadius="5" Grid.Column="1" MinHeight="40" Height="Auto" 
-                        Width="Auto" >
-                    <Grid Style="{DynamicResource ChatBubbleMeNew}" Background="Transparent">
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="45"/>
-                            <ColumnDefinition Width="Auto"/>
-                            <ColumnDefinition Width="Auto"/>
-                            <ColumnDefinition Width="*"/>
-                            <ColumnDefinition Width="Auto"/>
-                        </Grid.ColumnDefinitions>
-
-                        <engage:UserImageOthers Grid.Column="0"/>
-                        
-                        <TextBlock  Style="{DynamicResource MessageTimeStyle}" Grid.Column="1"
-							Text="{Binding SpeakTime, Converter={StaticResource relativeMessageTimeConverter}, FallbackValue=Yesterday 8:49}"
-                                VerticalAlignment="Center"/>
-
-                        <Image Height="30" Width="30" VerticalAlignment="Center" Grid.Column="2" Margin="30,0,0,0"
-                           Source="../Images/1375404724_tune.png"/>
-
-                        <TextBlock Margin="20,10,0,0" Style="{DynamicResource MessageTextbox}" VerticalAlignment="Center"
-                       Text="{Binding Path=Message, FallbackValue=A message from them}" Grid.Column="3"
-                               Foreground="Gray" FontSize="12"/>
-                        <ContentControl Grid.Column="4" DataContext="{Binding Path=.}">
-                            <ContentControl.Style>
-                                <Style TargetType="ContentControl">
-                                    <Setter Property="ContentTemplate" Value="{DynamicResource AnswerYesNoButtons}" />
-                                    <Style.Triggers>
-                                        <DataTrigger Binding="{Binding Answered}" Value="True">
-                                            <Setter Property="ContentTemplate" Value="{x:Null}" />
-                                        </DataTrigger>
-                                    </Style.Triggers>
-                                </Style>
-                            </ContentControl.Style>
-                        </ContentControl>
-                    </Grid>
-                </Border>
-                <Image Style="{DynamicResource ChatBubbleJoinMe}" />
-            </StackPanel>
-        </Grid>
-    </DataTemplate>
-	-->
-    <DataTemplate x:Key="ChatSystemGroup">
-        <Grid>
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="12"/>
-                <ColumnDefinition Width="*"/>
-            </Grid.ColumnDefinitions>
-            <!--<Image Style="{DynamicResource ChatBubblePointMe}" Grid.Column="0"/>-->
-            <StackPanel Orientation="Vertical" Margin="0,5,0,-5" Grid.Column="1">
-                <Border Background="#C6D9F1" CornerRadius="5" MinHeight="40">
-                    <Grid Style="{DynamicResource ChatBubbleMeNew}" Background="Transparent">
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="Auto"/>
-                            <ColumnDefinition Width="10"/>
-                            <ColumnDefinition Width="Auto"/>
-                            <ColumnDefinition Width="30"/>
-                            <ColumnDefinition Width="*"/>
-                            <ColumnDefinition Width="15"/>
-                        </Grid.ColumnDefinitions>
-
-                        <Border HorizontalAlignment="Right" Margin="10,5,0,0" Height="30" Width="30" Grid.Column="0"
-                                   VerticalAlignment="Top" BorderThickness="1" BorderBrush="Transparent">
-                            <!--<Image Stretch="Uniform" Source="{Binding Path=Person.Avatar, Converter={StaticResource imageStreamReader}}" Width="30" Height="30" />-->
-                            <engage:UserImage />
-                        </Border>
-
-                        <TextBlock  Style="{DynamicResource MessageTimeStyle}" Grid.Column="2"
-							HorizontalAlignment="Right"
-							Margin="0,15,0,0"
-							Text="{Binding SpeakTime, Converter={StaticResource relativeMessageTimeConverter}, FallbackValue=Yesterday 8:49}"
-						/>
-
-                        <TextBlock Margin="0,10,0,0" HorizontalAlignment="Left" Style="{DynamicResource MessageTextbox}" Grid.Column="4"
-                       Text="{Binding Path=Message, FallbackValue=A message from the system}" TextAlignment="Left"/>
-                    </Grid>
-                </Border>
-                <Image Style="{DynamicResource ChatBubbleJoinMe}" />
-            </StackPanel>
-        </Grid>
-    </DataTemplate>
-
-    <DataTemplate DataType="{x:Type chat:SystemErrorElement}">
-        <Grid>
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="*"/>
-            </Grid.ColumnDefinitions>
-            <Border Background="#C6D9F1" CornerRadius="5" Grid.Column="1" MinHeight="40" Margin="12,5,0,0" >
-                <Grid Style="{DynamicResource ChatBubbleMeNew}" Background="Transparent">
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="Auto"/>
-                        <ColumnDefinition Width="10"/>
-                        <ColumnDefinition Width="Auto"/>
-                        <ColumnDefinition Width="30"/>
-                        <ColumnDefinition Width="*"/>
-                        <ColumnDefinition Width="15"/>
-                    </Grid.ColumnDefinitions>
-
-                    <Border HorizontalAlignment="Right" Margin="10,5,0,0" Height="30" Width="30" Grid.Column="0"
-                                   VerticalAlignment="Top" BorderThickness="1" BorderBrush="Transparent">
-                        <!--<Image Stretch="Uniform" Source="{Binding Path=Person.Avatar, Converter={StaticResource imageStreamReader}}" Width="30" Height="30" />-->
-                        <engage:UserImage />
-                    </Border>
-
-                    <TextBlock  Style="{DynamicResource MessageTimeStyle}" Grid.Column="2"
-							HorizontalAlignment="Right"
-							Margin="0,15,0,0"
-							Text="{Binding SpeakTime, Converter={StaticResource relativeMessageTimeConverter}, FallbackValue=Yesterday 8:49}"
-						/>
-
-                    <TextBlock Margin="0,10,0,0" HorizontalAlignment="Left" Style="{DynamicResource MessageTextbox}" Grid.Column="4"
-                       Text="{Binding Path=Message, FallbackValue=A message from the system}" TextAlignment="Left"/>
-                </Grid>
-            </Border>
-        </Grid>
-    </DataTemplate>
-
-    <DataTemplate DataType="{x:Type filesend:FileSendRequestChatElement}">
-        <Grid>
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="Auto"/>
-                <ColumnDefinition Width="*"/>
-            </Grid.ColumnDefinitions>
-            <Border Background="#C6D9F1" CornerRadius="5" Grid.Column="1" MinHeight="40" Height="Auto" Width="Auto" 
-                    Margin="0,5,0,0" >
-                <Grid Style="{DynamicResource ChatBubbleMeNew}" Background="Transparent">
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="45"/>
-                        <ColumnDefinition Width="Auto"/>
-                        <ColumnDefinition Width="Auto"/>
-                        <ColumnDefinition Width="*"/>
-                        <ColumnDefinition Width="Auto"/>
-                    </Grid.ColumnDefinitions>
-
-                    <TextBlock  Style="{DynamicResource MessageTimeStyle}" Grid.Column="1"
-							Text="{Binding SpeakTime, Converter={StaticResource relativeMessageTimeConverter}, FallbackValue=Yesterday 8:49}"
-                                VerticalAlignment="Center"/>
-
-                    <Image Height="30" Width="30" VerticalAlignment="Center" Grid.Column="2" Margin="30,0,0,0"
-                           Source="../Images/1375404724_tune.png"/>
-
-                    <TextBlock Margin="20,0,0,0" Style="{DynamicResource MessageTextbox}" VerticalAlignment="Center"
-                       Text="{Binding Path=Message, FallbackValue=A message from them}" Grid.Column="3"
-                               Foreground="Gray" FontSize="12"/>
-                    <ContentControl Grid.Column="4" DataContext="{Binding Path=.}">
-                        <ContentControl.Style>
-                            <Style TargetType="ContentControl">
-                                <Setter Property="ContentTemplate" Value="{DynamicResource AnswerYesNoButtons}" />
-                                <Style.Triggers>
-                                    <DataTrigger Binding="{Binding Answered}" Value="True">
-                                        <Setter Property="ContentTemplate" Value="{x:Null}" />
-                                    </DataTrigger>
-                                </Style.Triggers>
-                            </Style>
-                        </ContentControl.Style>
-                    </ContentControl>
-                </Grid>
-            </Border>
-        </Grid>
-    </DataTemplate>
-
-    <DataTemplate x:Key="AnswerYesNoButtons">
-        <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Margin="5,0,10,0" Grid.Column="4">
-            <Button Style="{DynamicResource AcceptButtonStyle}" Template="{DynamicResource TransparentButtonFileSendAcceptStyle}"/>
-            <Button Style="{DynamicResource DenyButtonStyle}" Margin="15,0,10,0" Template="{DynamicResource TransparentButtonFileSendCloseStyle}"/>
-        </StackPanel>
-    </DataTemplate>
-	
-	<DataTemplate x:Key="RdpRequestUnattendedChatElement" DataType="{x:Type rdp:RdpRequestUnattendedChatElement}">
-        <Grid>
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="Auto"/>
-                <ColumnDefinition Width="*"/>
-            </Grid.ColumnDefinitions>
-            <Border Background="#C6D9F1" CornerRadius="5" Grid.Column="1" MinHeight="40" Height="Auto" Width="Auto" 
-                    Margin="0,5,0,0" >
-                <Grid Style="{DynamicResource ChatBubbleMeNew}" Background="Transparent">
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="45"/>
-                        <ColumnDefinition Width="Auto"/>
-                        <ColumnDefinition Width="*"/>
-                        <ColumnDefinition Width="Auto"/>
-                    </Grid.ColumnDefinitions>
-                   
-                    <TextBlock  Style="{DynamicResource MessageTimeStyle}" Grid.Column="1"
-							Text="{Binding SpeakTime, Converter={StaticResource relativeMessageTimeConverter}, FallbackValue=Yesterday 8:49}"
-                                VerticalAlignment="Center"/>
-
-                    <TextBlock Margin="20,10,0,0" Style="{DynamicResource MessageTextbox}" VerticalAlignment="Center"
-                       Text="{Binding Path=Message, FallbackValue=A message from them}" Grid.Column="2"
-                               Foreground="Black" FontSize="12"/>
-							   
-				   <Grid VerticalAlignment="Stretch" Margin="5,0,10,0" Grid.Column="3" Width="30">
-                        <Button Style="{DynamicResource AcceptButtonStyle}" Template="{DynamicResource TransparentButtonFileSendAcceptStyle}" Margin="0,0,17,0"/>
-						<TextBlock Text="{Binding Path=Timeout, FallbackValue=30}" Margin="1.5,25,0,0" HorizontalAlignment="Left" FontSize="10" Height="15" VerticalAlignment="Top" />
-                        <Button Style="{DynamicResource DenyButtonStyle}" Margin="0" Template="{DynamicResource TransparentButtonFileSendCloseStyle}"/>
-					</Grid>
-                </Grid>
-            </Border>
-        </Grid>
-    </DataTemplate>
-
-	<!--
-    <DataTemplate DataType="{x:Type rdp:RdpRequestChatElement}">
-        <Grid>
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="Auto"/>
-                <ColumnDefinition Width="*"/>
-            </Grid.ColumnDefinitions>
-            <Border Background="#C6D9F1" CornerRadius="5" Grid.Column="1" MinHeight="40" Height="Auto" Width="Auto" 
-                    Margin="0,5,0,0" >
-                <Grid Style="{DynamicResource ChatBubbleMeNew}" Background="Transparent">
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="45"/>
-                        <ColumnDefinition Width="Auto"/>
-                        <ColumnDefinition Width="*"/>
-                        <ColumnDefinition Width="Auto"/>
-                    </Grid.ColumnDefinitions>
-                   
-                    <TextBlock  Style="{DynamicResource MessageTimeStyle}" Grid.Column="1"
-							Text="{Binding SpeakTime, Converter={StaticResource relativeMessageTimeConverter}, FallbackValue=Yesterday 8:49}"
-                                VerticalAlignment="Center"/>
-
-                    <TextBlock Margin="20,10,0,0" Style="{DynamicResource MessageTextbox}" VerticalAlignment="Center"
-                       Text="{Binding Path=Message, FallbackValue=A message from them}" Grid.Column="2"
-                               Foreground="Black" FontSize="12"/>
-
-                    <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Margin="5,0,10,0" Grid.Column="3">
-                        <Button Style="{DynamicResource AcceptButtonStyle}" Template="{DynamicResource TransparentButtonFileSendAcceptStyle}"/>
-                        <Button Style="{DynamicResource DenyButtonStyle}" Margin="5,0,0,0" Template="{DynamicResource TransparentButtonFileSendCloseStyle}"/>
-                    </StackPanel>
-                </Grid>
-            </Border>
-        </Grid>
-    </DataTemplate>-->
-
-    <Style x:Key="AcceptButtonStyle" TargetType="{x:Type Button}" BasedOn="{StaticResource NotificationActionButton}">
+    <!-- Style for the Tick Yes Button -->
+    <Style x:Key="AcceptButtonStyle" TargetType="{x:Type Button}" BasedOn="{StaticResource YesNoButtonStyle}">
         <Setter Property="Command" Value="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type Grid}}, Path=DataContext.AnswerTrueFalse}" />
         <Setter Property="CommandParameter">
             <Setter.Value>
                 <s:Boolean>True</s:Boolean>
             </Setter.Value>
         </Setter>
-        <Setter Property="ContentTemplate" Value="{DynamicResource AcceptButtonTemplate}" />
+        <Setter Property="ContentTemplate" Value="{DynamicResource ChatAcceptButtonTemplate}" />
         <Setter Property="ToolTip" Value="Accept" />
-        
     </Style>
 
-    <Style x:Key="DenyButtonStyle" TargetType="{x:Type Button}" BasedOn="{StaticResource NotificationActionButton}">
+    <!-- Style for the Cross No Button -->
+    <Style x:Key="CancelButtonStyle" TargetType="{x:Type Button}" BasedOn="{StaticResource YesNoButtonStyle}">
         <Setter Property="Command" Value="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type Grid}}, Path=DataContext.AnswerTrueFalse}" />
         <Setter Property="CommandParameter">
             <Setter.Value>
                 <s:Boolean>False</s:Boolean>
             </Setter.Value>
         </Setter>
-        <Setter Property="ContentTemplate" Value="{DynamicResource DenyButtonTemplate}" />
+        <Setter Property="ContentTemplate" Value="{DynamicResource ChatCancelButtonTemplate}" />
         <Setter Property="ToolTip" Value="Deny" />
     </Style>
 
-    <Style x:Key="MessageBorder" TargetType="Border">
-        <Setter Property="CornerRadius" Value="5" />
-        <Setter Property="Background" Value="#C6D9F1" />
-        <Setter Property="BorderThickness" Value="0"  />
-        <Setter Property="Padding" Value="5" />
-        <Setter Property="Margin" Value="0" />
-        <!--<Setter Property="Effect">
-            <Setter.Value>
-                <DropShadowEffect ShadowDepth="5" />
-            </Setter.Value>
-        </Setter>-->
+    <!-- Style to make a button border transparent and mouseover raise -->
+    <Style TargetType="{x:Type Border}" x:Key="TransparentButtonBorderStyle">
+        <Setter Property="Background" Value="Transparent" />
+        <Style.Triggers>
+            <Trigger Property="IsMouseOver" Value="True">
+                <Setter Property="Background" Value="Transparent" />
+                <Setter Property="BorderBrush" Value="Gray" />
+                <Setter Property="BorderThickness" Value="1" />
+            </Trigger>
+        </Style.Triggers>
     </Style>
 
-    <Style x:Key="ServiceCompleteRichText" TargetType="RichTextBox">
-        <Setter Property="FontFamily" Value="Calibri" />
-        <Setter Property="FontSize" Value="12pt" />
-        <Setter Property="HorizontalAlignment" Value="Left" />
-        <Setter Property="Foreground" Value="Black"/>
-        <Setter Property="Background" Value="#C6D9F1" />
-        <Setter Property="Margin" Value="0,0,0,0" />
-        <Setter Property="BorderThickness" Value="0" />
-    </Style>
-
+	<!-- Style for the text associated with service items -->
     <Style x:Key="ServiceCompleteText" TargetType="TextBlock">
         <Setter Property="FontFamily" Value="Segoe UI" />
         <Setter Property="FontSize" Value="13" />
         <Setter Property="HorizontalAlignment" Value="Left" />
     </Style>
 
-    <DataTemplate DataType="{x:Type rdp:ServiceCompleteChatElement}">
-        <StackPanel Margin="12,5,0,0">
-            <Border Style="{DynamicResource MessageBorder}">
-                <StackPanel Orientation="Horizontal">
-                    <!--<Image Margin="5,5,0,0" Source="/BlitsMe.Agent;component/UI/WPF/Images/arrow.png" Width="40" Height="40" VerticalAlignment="Top" />-->
-                    <TextBlock  Style="{DynamicResource MessageTimeStyle}" HorizontalAlignment="Left" Margin="50,15,0,0"
-        			        Text="{Binding SpeakTime, Converter={StaticResource relativeMessageTimeConverter}, FallbackValue=Yesterday 8:49}"/>
+	<!-- Style for the rich text on the thank you for supporting page -->
+    <Style x:Key="ServiceCompleteRichText" TargetType="RichTextBox">
+        <Setter Property="FontFamily" Value="Segoe UI" />
+        <Setter Property="FontSize" Value="13" />
+        <Setter Property="HorizontalAlignment" Value="Left" />
+        <Setter Property="Foreground" Value="Black"/>
+        <Setter Property="Margin" Value="0,0,0,0" />
+        <Setter Property="BorderThickness" Value="0" />
+    </Style>
 
-                    <StackPanel Margin="20,0,0,0">
-                        <RichTextBox Width="Auto" MinWidth="400" Style="{DynamicResource ServiceCompleteRichText}" HorizontalAlignment="Stretch" Margin="0,0,10,0">
-                            <FlowDocument>
-                                <Paragraph>
-                                    <Run Text="{Binding Message, FallbackValue=You were just helped by Joe Bloggs please rate his service below.}" />
-                                </Paragraph>
-                            </FlowDocument>
-                        </RichTextBox>
-                        <Grid Width="Auto"  >
-                            <TextBlock Style="{DynamicResource ServiceCompleteText}" Margin="6.75,4,0,0" VerticalAlignment="Top"><Run Text="Knowledge"/></TextBlock>
-                            <engage:RatingControl Name="KnowledgeRating" Margin="83,6,0,0" HorizontalAlignment="Left" Width="75" Height="15" VerticalAlignment="Top" />
-                            <!--
-                                <Grid Margin="90,4,0,0" Height="18" HorizontalAlignment="Left" VerticalAlignment="Top">
-                                    <ed:RegularPolygon Name="Knowledge1" Style="{DynamicResource ScorecardStarEmpty}" Margin="0,0,0,0" />
-                                    <ed:RegularPolygon Name="Knowledge2" Style="{DynamicResource ScorecardStarEmpty}" Margin="15,0,0,0" />
-                                    <ed:RegularPolygon Name="Knowledge3" Style="{DynamicResource ScorecardStarEmpty}" Margin="30,0,0,0" />
-                                    <ed:RegularPolygon Name="Knowledge4" Style="{DynamicResource ScorecardStarEmpty}" Margin="45,0,0,0" />
-                                    <ed:RegularPolygon Name="Knowledge5" Style="{DynamicResource ScorecardStarEmpty}" Margin="60,0,0,0" />
-                                </Grid>
-								-->
-                            <TextBlock Style="{DynamicResource ServiceCompleteText}" VerticalAlignment="Top" HorizontalAlignment="Left" Margin="6.75,23,0,0"><Run Text="Service"/></TextBlock>
-                            <engage:RatingControl Name="ServiceRating" Margin="83,25,0,0" HorizontalAlignment="Left" Width="75" Height="15" VerticalAlignment="Top" />
-                            <!--
-                                <Grid Margin="90,23,0,0" Height="18" HorizontalAlignment="Left" VerticalAlignment="Top">
-                                    <ed:RegularPolygon Style="{DynamicResource ScorecardStarEmpty}" Margin="0,0,0,0" />
-                                    <ed:RegularPolygon Style="{DynamicResource ScorecardStarEmpty}" Margin="15,0,0,0" />
-                                    <ed:RegularPolygon Style="{DynamicResource ScorecardStarEmpty}" Margin="30,0,0,0" />
-                                    <ed:RegularPolygon Style="{DynamicResource ScorecardStarEmpty}" Margin="45,0,0,0" />
-                                    <ed:RegularPolygon Style="{DynamicResource ScorecardStarEmpty}" Margin="60,0,0,0" />
-                                </Grid>
-								-->
-                            <!--
-                                <Image Source="/BlitsMe.Agent;component/UI/WPF/Images/facebook-like.png" Width="59" HorizontalAlignment="Left" Margin="176,8.333,0,0" VerticalAlignment="Top"/>
-                                <Image Source="/BlitsMe.Agent;component/UI/WPF/Images/tweet.png" Width="61" HorizontalAlignment="Left" Margin="240,12.083,0,0" VerticalAlignment="Top" Height="Auto"/>
-								-->
-                        </Grid>
-                    </StackPanel>
-                </StackPanel>
-            </Border>
-        </StackPanel>
+	<!-- Style for displaying a chat icon -->
+	<Style x:Key="ChatPersonIconStyle" TargetType="Rectangle">
+		<Setter Property="Width" Value="30" />
+		<Setter Property="Height" Value="30" />
+		<Setter Property="StrokeThickness" Value="0" />
+		<Setter Property="VerticalAlignment" Value="center" />
+		<Setter Property="HorizontalAlignment" Value="Left" />
+		<Setter Property="Margin" Value="0" />
+		<Setter Property="Fill">
+			<Setter.Value>
+				<ImageBrush Stretch="Uniform" ImageSource="{Binding Path=Avatar, Converter={StaticResource imageStreamReader}}" />
+			</Setter.Value>
+		</Setter>
+	</Style>
+
+    <!-- Data Templates for Elements -->
+
+    <!-- Template for Showing the time of a message -->
+    <DataTemplate x:Key="ChatDateTime">
+        <TextBlock Style="{DynamicResource MessageTimeStyle}" 
+			Text="{Binding SpeakTime, Converter={StaticResource relativeMessageTimeConverter}, FallbackValue=Yesterday 8:49}"
+		 />
     </DataTemplate>
+
+    <!-- Template for the actual message -->
+    <DataTemplate x:Key="ChatMessage">
+        <TextBox Style="{StaticResource MessageTextbox}" 
+             Text="{Binding Path=Message, Mode=OneWay}">
+        </TextBox>
+    </DataTemplate>
+
+    <!-- Template used for displaying a message from me -->
+    <DataTemplate DataType="{x:Type chat:SelfChatElement}" >
+        <Grid>
+            <Border Style="{StaticResource SelfMessageBorderStyle}">
+                <DockPanel Background="Transparent" LastChildFill="True"  >
+                    <Rectangle Margin="5,0,10,0" DockPanel.Dock="Right" Style="{StaticResource ChatPersonIconStyle}"/>
+                    <ContentPresenter Margin="10,0,0,0" DockPanel.Dock="Right" ContentTemplate="{StaticResource ChatDateTime}" DataContext="{Binding}" />
+                    <ContentPresenter Margin="10,5,0,7" DockPanel.Dock="Left" ContentTemplate="{StaticResource ChatMessage}" DataContext="{Binding}" />
+                </DockPanel>
+            </Border>
+            <Image Visibility="{Binding Path=LastWord, Converter={StaticResource BoolToVisConverter}}" Panel.ZIndex="-1" Source="../Images/GreenSpeech.png" HorizontalAlignment="Right" VerticalAlignment="Bottom" Width="15" Margin="0,0,0,2.5"  />
+            <Image Visibility="{Binding Path=LastWord, Converter={StaticResource BoolToInvisConverter}}" Source="../Images/GreenJoin.png" VerticalAlignment="Bottom" HorizontalAlignment="Right" Height="5" Margin="0,0,25,0" />
+        </Grid>
+    </DataTemplate>
+
+    <!-- Template for the chat bubble from the second party -->
+    <DataTemplate  DataType="{x:Type chat:TargetChatElement}">
+        <Grid>
+            <Border Style="{StaticResource TargetMessageBorderStyle}">
+                <DockPanel Background="Transparent" LastChildFill="True"  >
+                    <Rectangle Margin="10,0,5,0" DockPanel.Dock="Left" Style="{StaticResource ChatPersonIconStyle}"/>
+                    <ContentPresenter Margin="0,0,10,0" DockPanel.Dock="Left" ContentTemplate="{StaticResource ChatDateTime}" DataContext="{Binding}" />
+                    <ContentPresenter Margin="0,5,10,7" DockPanel.Dock="Right" ContentTemplate="{StaticResource ChatMessage}" DataContext="{Binding}" />
+                </DockPanel>
+            </Border>
+            <Image Visibility="{Binding Path=LastWord, Converter={StaticResource BoolToVisConverter}}" Panel.ZIndex="-1" Source="../Images/BlueSpeech.png" Width="15" HorizontalAlignment="Left" VerticalAlignment="Bottom" Margin="0,0,0,2.25" />
+            <Image Visibility="{Binding Path=LastWord, Converter={StaticResource BoolToInvisConverter}}" Source="../Images/BlueJoin.png" VerticalAlignment="Bottom" HorizontalAlignment="Left" Height="5" Margin="25,0,0,0" />
+        </Grid>
+    </DataTemplate>
+
+    <!-- Template used for displaying a message from system theirs or ours -->
+    <DataTemplate x:Key="GenericSystemChatElementTemplate" >
+        <Grid>
+            <Border Style="{StaticResource SystemMessageBorderStyle}">
+                <DockPanel Background="Transparent" LastChildFill="True"  >
+                    <ContentPresenter Margin="10,0,10,0" DockPanel.Dock="Right" ContentTemplate="{StaticResource ChatDateTime}" DataContext="{Binding}" />
+                    <ContentPresenter Margin="10,5,0,7" DockPanel.Dock="Left" ContentTemplate="{StaticResource ChatMessage}" DataContext="{Binding}" />
+                </DockPanel>
+            </Border>
+        </Grid>
+    </DataTemplate>
+
+    <!-- Template used for displaying a message from system -->
+    <DataTemplate DataType="{x:Type chat:SystemChatElement}">
+        <ContentPresenter ContentTemplate="{StaticResource GenericSystemChatElementTemplate}" />
+    </DataTemplate>
+
+    <!-- Template used for displaying a message from their system -->
+    <DataTemplate DataType="{x:Type chat:TargetSystemChatElement}">
+        <ContentPresenter ContentTemplate="{StaticResource GenericSystemChatElementTemplate}" />
+    </DataTemplate>
+
+    <!-- Template used for displaying error message in chat -->
+    <DataTemplate DataType="{x:Type chat:SystemErrorElement}">
+        <Grid>
+            <Border Style="{StaticResource ErrorMessageBorderStyle}">
+                <DockPanel Background="Transparent" LastChildFill="True"  >
+                    <ContentPresenter Margin="10,0,10,0" DockPanel.Dock="Right" ContentTemplate="{StaticResource ChatDateTime}" DataContext="{Binding}" />
+                    <ContentPresenter Margin="10,5,0,7" DockPanel.Dock="Left" ContentTemplate="{StaticResource ChatMessage}" DataContext="{Binding}" />
+                </DockPanel>
+            </Border>
+        </Grid>
+    </DataTemplate>
+
+    <!-- the Template containing the image we use for cancel -->
+    <DataTemplate x:Key="CancelButtonImage">
+        <Image Source="/BlitsMe.Agent;component/UI/WPF/Images/smallcross.png" Width="16" Height="16" />
+    </DataTemplate>
+
+    <!-- the Template containing the image we use for accept -->
+    <DataTemplate x:Key="AcceptButtonImage">
+        <Image Source="/BlitsMe.Agent;component/UI/WPF/Images/smalltick.png" Width="16" Height="16" />
+    </DataTemplate>
+
+    <!-- Template for a cancel button -->
+    <DataTemplate x:Key="ChatCancelButtonTemplate">
+        <Grid HorizontalAlignment="Center" VerticalAlignment="Center">
+            <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Center">
+                <Border CornerRadius="3" Style="{StaticResource TransparentButtonBorderStyle}" >
+                    <ContentPresenter ContentTemplate="{StaticResource CancelButtonImage}" />
+                </Border>
+            </StackPanel>
+        </Grid>
+    </DataTemplate>
+
+    <!-- Template for a Accept button -->
+    <DataTemplate x:Key="ChatAcceptButtonTemplate">
+        <Grid HorizontalAlignment="Center" VerticalAlignment="Center">
+            <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Center">
+                <Border CornerRadius="3" Style="{StaticResource TransparentButtonBorderStyle}" >
+                    <ContentPresenter ContentTemplate="{StaticResource AcceptButtonImage}" />
+                </Border>
+            </StackPanel>
+        </Grid>
+    </DataTemplate>
+
+    <!-- Template used for displaying a unattended rdp request -->
+    <DataTemplate DataType="{x:Type rdp:RdpRequestUnattendedChatElement}" >
+        <Grid>
+            <Border Style="{StaticResource SystemMessageBorderStyle}">
+                <DockPanel Background="Transparent" LastChildFill="True"  >
+                    <ContentPresenter Margin="10,0,10,0" DockPanel.Dock="Right" ContentTemplate="{StaticResource ChatDateTime}" DataContext="{Binding}" />
+                    <StackPanel Margin="10,0,0,0" DockPanel.Dock="Right" Orientation="Horizontal" Visibility="{Binding Answered, Converter={StaticResource BoolToInvisConverter}}">
+                        <StackPanel Orientation="Vertical" VerticalAlignment="Bottom">
+                            <Button Style="{StaticResource AcceptButtonStyle}" />
+                            <!-- <Button Style="{DynamicResource AcceptButtonStyle}" Template="{DynamicResource TransparentButtonFileSendAcceptStyle}" /> -->
+                            <TextBlock Text="{Binding Timeout, FallbackValue=30}"  HorizontalAlignment="Center" FontSize="10" Height="14" VerticalAlignment="Top" />
+                        </StackPanel>
+                        <StackPanel Orientation="Vertical" VerticalAlignment="Bottom">
+							<Button Style="{StaticResource CancelButtonStyle}" />
+                            <!-- <ContentPresenter ContentTemplate="{StaticResource CancelButton}" /> -->
+                            <TextBlock Text=""  HorizontalAlignment="Center" FontSize="10" Height="14" VerticalAlignment="Top" />
+                        </StackPanel>
+                    </StackPanel>
+                    <ContentPresenter Margin="10,5,0,7" DockPanel.Dock="Left" ContentTemplate="{StaticResource ChatMessage}" DataContext="{Binding}" />
+                </DockPanel>
+            </Border>
+        </Grid>
+    </DataTemplate>
+
+    <!-- Template used for displaying a rdp request -->
+    <DataTemplate DataType="{x:Type rdp:RdpRequestChatElement}" >
+        <Grid>
+            <Border Style="{StaticResource SystemMessageBorderStyle}">
+                <DockPanel Background="Transparent" LastChildFill="True"  >
+                    <ContentPresenter Margin="10,0,10,0" DockPanel.Dock="Right" ContentTemplate="{StaticResource ChatDateTime}" DataContext="{Binding}" />
+                    <StackPanel Margin="10,0,0,0" DockPanel.Dock="Right" Orientation="Horizontal" Visibility="{Binding Answered, Converter={StaticResource BoolToInvisConverter}}">
+                        <Button Style="{StaticResource AcceptButtonStyle}" />
+						<Button Style="{StaticResource CancelButtonStyle}" />
+                    </StackPanel>
+                    <ContentPresenter Margin="10,5,0,7" DockPanel.Dock="Left" ContentTemplate="{StaticResource ChatMessage}" DataContext="{Binding}" />
+                </DockPanel>
+            </Border>
+        </Grid>
+	</DataTemplate>
+
+	<!-- Template for showing a file send request -->
+    <DataTemplate DataType="{x:Type filesend:FileSendRequestChatElement}">
+        <Grid>
+            <Border Style="{StaticResource SystemMessageBorderStyle}">
+                <DockPanel Background="Transparent" LastChildFill="True"  >
+                    <ContentPresenter Margin="10,0,10,0" DockPanel.Dock="Right" ContentTemplate="{StaticResource ChatDateTime}" DataContext="{Binding}" />
+                    <StackPanel Margin="10,0,0,0" DockPanel.Dock="Right" Orientation="Horizontal" Visibility="{Binding Answered, Converter={StaticResource BoolToInvisConverter}}">
+                        <Button Style="{StaticResource AcceptButtonStyle}" />
+						<Button Style="{StaticResource CancelButtonStyle}" />
+                    </StackPanel>
+                    <ContentPresenter Margin="10,5,0,7" DockPanel.Dock="Left" ContentTemplate="{StaticResource ChatMessage}" DataContext="{Binding}" />
+                </DockPanel>
+            </Border>
+        </Grid>
+	</DataTemplate>
+
+	<!-- Template for rating after support -->
+    <DataTemplate DataType="{x:Type rdp:ServiceCompleteChatElement}">
+        <Grid>
+            <Border Style="{StaticResource SystemMessageBorderStyle}">
+                <DockPanel Background="Transparent" LastChildFill="True"  >
+                    <Rectangle Margin="10,0,0,0" DockPanel.Dock="Left" Height="50" Width="50" Style="{StaticResource ChatPersonIconStyle}"/>
+                    <ContentPresenter Margin="10,0,10,0" DockPanel.Dock="Right" ContentTemplate="{StaticResource ChatDateTime}" DataContext="{Binding}" />
+                    <StackPanel Margin="10,0,0,0" DockPanel.Dock="Right">
+						<ContentPresenter Margin="0,5,0,0" DockPanel.Dock="Left" ContentTemplate="{StaticResource ChatMessage}" DataContext="{Binding}" />
+                        <StackPanel Margin="0,5,0,5" Orientation="Vertical">
+							<StackPanel Orientation="Horizontal">
+								<TextBlock Style="{DynamicResource ServiceCompleteText}" VerticalAlignment="Top" Width="65"><Run Text="Knowledge"/></TextBlock>
+								<engage:RatingControl Name="KnowledgeRating" Margin="10,0,0,0" HorizontalAlignment="Left" Width="75" Height="15" VerticalAlignment="Top" />
+							</StackPanel>
+							<StackPanel Orientation="Horizontal">
+		                        <TextBlock Style="{DynamicResource ServiceCompleteText}" VerticalAlignment="Top" Width="65" HorizontalAlignment="Left" Margin="0,0,0,0"><Run Text="Service"/></TextBlock>
+								<engage:RatingControl Name="ServiceRating" Margin="10,0,0,0" HorizontalAlignment="Left" Width="75" Height="15" VerticalAlignment="Top" />
+	                        </StackPanel>
+                        </StackPanel>
+                    </StackPanel>
+				</DockPanel>
+			</Border>
+		</Grid>
+    </DataTemplate>
+
 </ResourceDictionary>

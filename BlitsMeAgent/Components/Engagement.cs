@@ -2,19 +2,12 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
-using System.Net;
-using System.Threading;
 using BlitsMe.Agent.Components.Functions.API;
-using BlitsMe.Agent.Components.Functions.Chat;
 using BlitsMe.Agent.Components.Person;
 using BlitsMe.Agent.Managers;
 using BlitsMe.Cloud.Messaging.API;
 using BlitsMe.Cloud.Messaging.Request;
 using BlitsMe.Cloud.Messaging.Response;
-using BlitsMe.Communication.P2P.P2P.Tunnel;
-using BlitsMe.Communication.P2P.RUDP.Tunnel;
-using BlitsMe.Communication.P2P.RUDP.Tunnel.API;
-using BlitsMe.Communication.P2P.RUDP.Utils;
 using log4net;
 using Timer = System.Timers.Timer;
 
@@ -22,6 +15,7 @@ namespace BlitsMe.Agent.Components
 {
 
     /* This class is all about interaction with a user, their chat, their billing, their everything */
+
     internal class Engagement : INotifyPropertyChanged
     {
         // Our app context
@@ -44,7 +38,7 @@ namespace BlitsMe.Agent.Components
 
         internal readonly Dictionary<String, IFunction> Functions;
 
-        public Engagement(BlitsMeClientAppContext appContext, Attendance personAttendance)
+        internal Engagement(BlitsMeClientAppContext appContext, Attendance personAttendance)
         {
             this._appContext = appContext;
             Interactions = new Interactions(this);

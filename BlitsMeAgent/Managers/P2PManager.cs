@@ -39,9 +39,11 @@ namespace BlitsMe.Agent.Managers
             if (self.ExternalEndPoint == null)
             {
                 Logger.Warn("Failed to get external endpoint : " + self);
+                ThreadPool.QueueUserWorkItem(m => BlitsMeClientAppContext.CurrentAppContext.SubmitFaultReport(new FaultReport() { UserReport = "INTERNAL : Failed to get external endpoint : " + self }));
             }
             if (self.EndPoints.Count == 0)
             {
+                ThreadPool.QueueUserWorkItem(m => BlitsMeClientAppContext.CurrentAppContext.SubmitFaultReport(new FaultReport() { UserReport = "INTERNAL : Failed to get external endpoint : " + self }));
                 throw new Exception("Failed to determine any local endpoints : " + self.ToString());
             }
 
@@ -74,12 +76,14 @@ namespace BlitsMe.Agent.Managers
                 catch (Exception e)
                 {
                     Logger.Error("Failed to sync with peer : " + e.Message, e);
+                    ThreadPool.QueueUserWorkItem(m => BlitsMeClientAppContext.CurrentAppContext.SubmitFaultReport(new FaultReport() { UserReport = "INTERNAL : Failed to sync with peer : " + e.Message }));
                     throw new Exception("Failed to sync with peer : " + e.Message, e);
                 }
             }
             catch (Exception e)
             {
                 Logger.Error("Failed to setup P2P Connection : " + e.Message, e);
+                ThreadPool.QueueUserWorkItem(m => BlitsMeClientAppContext.CurrentAppContext.SubmitFaultReport(new FaultReport() { UserReport = "INTERNAL : Failed to setup p2p connection : " + e.Message }));
                 throw new Exception("Failed to setup P2P Connection : " + e.Message, e);
             }
             return pendingTunnel.TunnelEndpoint;
@@ -158,6 +162,7 @@ namespace BlitsMe.Agent.Managers
             }
             catch (Exception ex)
             {
+                ThreadPool.QueueUserWorkItem(m => BlitsMeClientAppContext.CurrentAppContext.SubmitFaultReport(new FaultReport() { UserReport = "INTERNAL : Failed to sync with peer : " + ex.Message }));
                 Logger.Error("Failed to sync with peer [" + peer + "] for connection " + connectionId, ex);
             }
         }

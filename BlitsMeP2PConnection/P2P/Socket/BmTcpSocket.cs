@@ -2,11 +2,14 @@
 using System.Net;
 using System.Net.Sockets;
 using BlitsMe.Communication.P2P.P2P.Socket.API;
+using log4net;
+using log4net.Repository.Hierarchy;
 
 namespace BlitsMe.Communication.P2P.P2P.Socket
 {
     public class BmTcpSocket : ISocket
     {
+        private static readonly ILog Logger = LogManager.GetLogger(typeof (BmTcpSocket));
         private readonly IPEndPoint _bindLocalEndPoint;
         private String _toString;
         private TcpListener _listener;
@@ -46,12 +49,14 @@ namespace BlitsMe.Communication.P2P.P2P.Socket
                     if (_listener == null) { BindListen(); }
                     Listening = true;
                     _toString = "BmTcpSocket(Listen " + _listener.LocalEndpoint + ")";
+                    Logger.Debug("Waiting for tcp connection " + this);
                     _client = _listener.AcceptTcpClient();
                     Connected = true;
                     _listener.Stop();
                     Listening = false;
                     _toString = "BmTcpSocket(Connected " + ((IPEndPoint)_client.Client.RemoteEndPoint).Address + ":" +
                                 ((IPEndPoint)_client.Client.RemoteEndPoint).Port + ")";
+                    Logger.Debug("Connected " + this);
                 }
             }
             finally

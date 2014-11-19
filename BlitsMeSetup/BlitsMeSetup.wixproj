@@ -38,6 +38,14 @@
       <RefProjectOutputGroups>Binaries;Content;Satellites</RefProjectOutputGroups>
       <RefTargetDir>INSTALLFOLDER</RefTargetDir>
     </ProjectReference>
+    <ProjectReference Include="..\BlitsMeRestartService\BlitsMeRestartService.csproj">
+      <Name>BlitsMeRestartService</Name>
+      <Project>{74cde8f8-2f3c-400a-852a-7b195d3cda30}</Project>
+      <Private>True</Private>
+      <DoNotHarvest>True</DoNotHarvest>
+      <RefProjectOutputGroups>Binaries;Content;Satellites</RefProjectOutputGroups>
+      <RefTargetDir>INSTALLFOLDER</RefTargetDir>
+    </ProjectReference>
     <ProjectReference Include="..\BlitsMeService\BlitsMeService.csproj">
       <Name>BlitsMeService</Name>
       <Project>{90b503c9-7032-4a9c-9d1a-b1187cdb56a8}</Project>

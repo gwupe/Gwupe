@@ -37,7 +37,7 @@ namespace BlitsMe.Agent.UI.WPF.Engage
         internal Engagement Engagement { get; set; }
         private readonly BlitsMeClientAppContext _appContext;
         private ChatWindow _chatWindow;
-        private ContactInfoWindow _contactInfoWindow;
+        //private ContactInfoControl _contactInfoControl;
         private static readonly ILog Logger = LogManager.GetLogger(typeof(EngagementWindow));
         private readonly CollectionViewSource _notificationView;
         private readonly EngagementWindowDataContext _ewDataContext;
@@ -94,7 +94,9 @@ namespace BlitsMe.Agent.UI.WPF.Engage
 
         private void EngagementOnRDPConnectionAccepted(object sender, EventArgs eventArgs)
         {
-            _thisAlert = new Alert() { Message = Engagement.SecondParty.Person.Firstname + " is Connected" };
+            _thisAlert = new Alert() { Message = Engagement.SecondParty.Person.Firstname + " is Connected", ClickCommand =
+                () => _appContext.UIManager.Dashboard.ActivateEngagement(Engagement.SecondParty)
+            };
             _appContext.NotificationManager.AddAlert(_thisAlert);
             if (Dispatcher.CheckAccess())
             {
@@ -173,22 +175,6 @@ namespace BlitsMe.Agent.UI.WPF.Engage
             }
         }
 
-        private void ChatButtonClick(object sender, RoutedEventArgs e)
-        {
-            ShowChat();
-        }
-
-        private void ScorecardButtonClick(object sender, RoutedEventArgs e)
-        {
-            if (_contactInfoWindow == null)
-            {
-                _contactInfoWindow = new ContactInfoWindow();
-                _contactInfoWindow.DataContext = Engagement.SecondParty;
-            }
-            EngagementContent.Content = _contactInfoWindow;
-            EngagementVisibleContent = EngagementVisibleContent.Scorecard;
-        }
-
         private void SendFileButtonClick(object sender, RoutedEventArgs e)
         {
             var fileDialog = new OpenFileDialog();
@@ -233,7 +219,7 @@ namespace BlitsMe.Agent.UI.WPF.Engage
 
         internal void ShowChat()
         {
-            BlitsMeClientAppContext.CurrentAppContext.UIManager.GetEngagement(Engagement, this);
+            //BlitsMeClientAppContext.CurrentAppContext.UIManager.GetEngagement(Engagement, this);
             _chatWindow = _chatWindow ?? new ChatWindow(_appContext, this) { Notifications = { ItemsSource = _notificationView.View } };
             EngagementContent.Content = _chatWindow;
             Engagement.IsUnread = false;

@@ -45,8 +45,8 @@ namespace BlitsMe.Communication.P2P.P2P.Connector
                 // listen for incoming connection
                 if (!instream.Connected)
                 {
-                    Logger.Debug("Listening for incoming connections");
                     readyToConnect.Set();
+                    Logger.Debug("Listening for incoming connections");
                     instream.ListenOnce();
                     Logger.Debug("Connected incoming");
                 }

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Threading;
 using System.Windows.Documents;
@@ -118,13 +119,13 @@ namespace BlitsMe.Agent.Components.Functions.Chat
 
         internal void ReceiveChatMessage(String message, String chatId, String interactionId, String shortCode, string userName)
         {
-            ChatElement.ChatElement newMessage = new TargetChatElement()
+            BaseChatElement newMessage = new TargetChatElement()
             {
                 Message = message,
                 Speaker = _to,
                 SpeakTime = DateTime.Now,
-                UserName = userName
-
+                UserName = userName,
+                Avatar = _engagement.SecondParty.Person.Avatar,
             };
             Conversation.AddMessage(newMessage);
             if (chatId != null)
@@ -142,9 +143,9 @@ namespace BlitsMe.Agent.Components.Functions.Chat
             OnDeactivate(EventArgs.Empty);
         }
 
-        internal ChatElement.ChatElement LogSystemMessage(String message)
+        internal ChatElement.BaseChatElement LogSystemMessage(String message)
         {
-            ChatElement.ChatElement chatElement = new SystemChatElement()
+            ChatElement.BaseChatElement chatElement = new SystemChatElement()
             {
                 Message = message,
                 SpeakTime = DateTime.Now
@@ -160,9 +161,9 @@ namespace BlitsMe.Agent.Components.Functions.Chat
             return chatElement;
         }
 
-        internal ChatElement.ChatElement LogSecondPartySystemMessage(String message)
+        internal ChatElement.BaseChatElement LogSecondPartySystemMessage(String message)
         {
-            ChatElement.ChatElement chatElement = new TargetSystemChatElement()
+            ChatElement.BaseChatElement chatElement = new TargetSystemChatElement()
             {
                 Message = message,
                 SpeakTime = DateTime.Now
@@ -212,7 +213,12 @@ namespace BlitsMe.Agent.Components.Functions.Chat
             OnActivate(EventArgs.Empty);
             try
             {
-                var chatElement = new SelfChatElement() { Message = message, SpeakTime = DateTime.Now };
+                var chatElement = new SelfChatElement()
+                {
+                    Message = message,
+                    SpeakTime = DateTime.Now,
+                    Avatar = BlitsMeClientAppContext.CurrentAppContext.CurrentUserManager.CurrentUser.Avatar,
+                };
                 lock (_chatQueue)
                 {
                     _chatQueue.Enqueue(chatElement);
@@ -240,7 +246,7 @@ namespace BlitsMe.Agent.Components.Functions.Chat
 
 
 
-        public ChatElement.ChatElement LogErrorMessage(string message)
+        public ChatElement.BaseChatElement LogErrorMessage(string message)
         {
             var chatElement = new SystemErrorElement()
             {
@@ -300,13 +306,30 @@ namespace BlitsMe.Agent.Components.Functions.Chat
             {
                 {BlitsMeCommand.Debug, DebugCommand},
                 {BlitsMeCommand.P2P, P2PCommand},
-                {BlitsMeCommand.ReportFault, ReportFault}
+                {BlitsMeCommand.ReportFault, ReportFault},
+                {BlitsMeCommand.RestartService, RestartService},
             };
         }
 
         private bool ReportFault(List<string> arg)
         {
             ThreadPool.QueueUserWorkItem(state => BlitsMeClientAppContext.CurrentAppContext.GenerateFaultReport());
+            return true;
+        }
+
+        private bool RestartService(List<string> arg)
+        {
+            ThreadPool.QueueUserWorkItem(state =>
+            {
+                if (BlitsMeClientAppContext.CurrentAppContext.RestartBlitsMeService())
+                {
+                    LogSystemMessage("BlitsMe Service restarted");
+                }
+                else
+                {
+                    LogErrorMessage("BlitsMe Service failed to restart");
+                }
+            });
             return true;
         }
 
@@ -339,7 +362,8 @@ namespace BlitsMe.Agent.Components.Functions.Chat
     {
         Debug,
         P2P,
-        ReportFault
+        ReportFault,
+        RestartService
     };
 
     internal class ChatActivity : EngagementActivity

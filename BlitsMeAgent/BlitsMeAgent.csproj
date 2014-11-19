@@ -179,7 +179,7 @@
     <Compile Include="Components\Functions\API\IFunction.cs" />
     <Compile Include="Components\Functions\API\ServerImpl.cs" />
     <Compile Include="Components\Functions\Chat\AnswerTrueFalseCommand.cs" />
-    <Compile Include="Components\Functions\Chat\ChatElement\ChatElement.cs" />
+    <Compile Include="Components\Functions\Chat\ChatElement\BaseChatElement.cs" />
     <Compile Include="Components\Functions\Chat\ChatElement\DeliverableChatElement.cs" />
     <Compile Include="Components\Functions\Chat\ChatElement\SystemErrorElement.cs" />
     <Compile Include="Components\Functions\Chat\ChatElement\TargetSystemChatElement.cs" />
@@ -289,9 +289,6 @@
     <Compile Include="UI\WPF\ConfirmPasswordWindow.xaml.cs">
       <DependentUpon>ConfirmPasswordWindow.xaml</DependentUpon>
     </Compile>
-    <Compile Include="UI\WPF\ContactInfoWindow.xaml.cs">
-      <DependentUpon>ContactInfoWindow.xaml</DependentUpon>
-    </Compile>
     <Compile Include="UI\WPF\DashboardStateManager.cs" />
     <Compile Include="UI\WPF\FaultReportControl.xaml.cs">
       <DependentUpon>FaultReportControl.xaml</DependentUpon>
@@ -338,10 +335,6 @@
       <SubType>Designer</SubType>
     </Page>
     <Page Include="UI\WPF\ConfirmPasswordWindow.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-    </Page>
-    <Page Include="UI\WPF\ContactInfoWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
@@ -473,12 +466,15 @@
     <Compile Include="UI\WPF\UpdateNotification.xaml.cs">
       <DependentUpon>UpdateNotification.xaml</DependentUpon>
     </Compile>
-    <Compile Include="UI\WPF\UserInfoWindow.xaml.cs">
-      <DependentUpon>UserInfoWindow.xaml</DependentUpon>
+    <Compile Include="UI\WPF\UserInfoControl.xaml.cs">
+      <DependentUpon>UserInfoControl.xaml</DependentUpon>
     </Compile>
+    <Compile Include="UI\WPF\Utils\BoolToInvisibilityConverter.cs" />
+    <Compile Include="UI\WPF\Utils\BoolToStringConverter.cs" />
     <Compile Include="UI\WPF\Utils\BoolToVisibilityConverter.cs" />
     <Compile Include="UI\WPF\Utils\ImageStreamReader.cs" />
     <Compile Include="UI\WPF\Utils\InputValidator.cs" />
+    <Compile Include="UI\WPF\Utils\InvertBoolConverter.cs" />
     <Compile Include="UI\WPF\Utils\RectConverter.cs" />
     <Compile Include="UI\WPF\Utils\RelativeMessageTimeConverter.cs" />
     <Compile Include="UI\WPF\Roster\MainRosterList.cs" />
@@ -525,7 +521,7 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Page Include="UI\WPF\UserInfoWindow.xaml">
+    <Page Include="UI\WPF\UserInfoControl.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
@@ -678,9 +674,15 @@
     <Content Include="SuggestedTests.txt" />
     <Resource Include="UI\WPF\Images\connect_adhoc.png" />
     <Resource Include="UI\WPF\Images\icon-arrow-down-b-20.png" />
+    <Resource Include="UI\WPF\Images\GreenSpeech.png" />
+    <Resource Include="UI\WPF\Images\BlueJoin.png" />
+    <Resource Include="UI\WPF\Images\BlueSpeech.png" />
+    <Resource Include="UI\WPF\Images\GreenJoin.png" />
     <Content Include="UI\WPF\Images\loading-side.gif" />
     <Content Include="UI\WPF\Images\Search.png" />
     <Resource Include="UI\WPF\Images\Settings.png" />
+    <Resource Include="UI\WPF\Images\smallcross.png" />
+    <Resource Include="UI\WPF\Images\smalltick.png" />
     <Content Include="UI\WPF\Images\Time.png" />
     <Resource Include="UI\WPF\Images\Blitsmewording200.png" />
     <EmbeddedResource Include="..\BlitsMeCommon\bin\$(Configuration)\BlitsMe.Common.dll" />

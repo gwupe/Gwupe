@@ -36,7 +36,7 @@ namespace BlitsMe.Agent.Managers
                 {
                     if (notification.Message == "TerminateRDP")
                     {
-                        BlitsMeClientAppContext.CurrentAppContext.UIManager.StopRemoteConnection();
+                        //BlitsMeClientAppContext.CurrentAppContext.UIManager.StopRemoteConnection();
                     }
                     if (Notifications.Remove(notification))
                     {

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Net;
+using System.Threading;
 using BlitsMe.Agent.Components.Functions.API;
 using BlitsMe.Agent.Components.Person;
 using BlitsMe.Communication.P2P.P2P.Connector;
@@ -30,6 +31,7 @@ namespace BlitsMe.Agent.Components.Functions.RemoteDesktop
             Socket.ConnectionOpened += (sender, args) => { Closed = false; };
             Socket.ConnectionClosed += (sender, args) => Close();
             _proxy.Start();
+            Thread.Sleep(5000); // sometimes we connect before the listener has started listening, pause here.
             LocalEndPoint = tcpSocket.LocalEndPoint;
             return tcpSocket.LocalEndPoint.Port;
         }

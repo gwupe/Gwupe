@@ -27,8 +27,8 @@ namespace BlitsMe.Agent.Components.Functions.RemoteDesktop.ChatElement
         {
             AnsweredFalse += OnAnswered;
             AnsweredTrue += OnAnswered;
-            _timeToOverride = timeToOverride;
-            Timeout = _timeToOverride;
+            _timeToOverride = timeToOverride * 1000;
+            Timeout = timeToOverride;
             _startTime = Environment.TickCount;
             _timer = new Timer {AutoReset = true, Interval = 1000};
             _timer.Elapsed += OnCountdown;
@@ -38,14 +38,14 @@ namespace BlitsMe.Agent.Components.Functions.RemoteDesktop.ChatElement
         private void OnCountdown(object sender, ElapsedEventArgs elapsedEventArgs)
         {
             var timed = Environment.TickCount - _startTime;
-            if (timed > (_timeToOverride * 1000))
+            if (timed > (_timeToOverride))
             {
                 Timeout = 0;
                 Answer = true;
             }
             else
             {
-                Timeout = (_timeToOverride*1000) - timed;
+                Timeout = ((_timeToOverride) - timed)/1000;
             }
 
         }

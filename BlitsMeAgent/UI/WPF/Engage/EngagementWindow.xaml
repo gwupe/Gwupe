@@ -79,7 +79,8 @@
                     <Image Source="..\Images\close.png"/>
                 </Button>
             </StackPanel>
-			<Grid Grid.Column="1" Margin="0,0,0,0" HorizontalAlignment="Right">
+			<TextBlock Style="{DynamicResource TextblockHeaderActiveStyle}" Text="{Binding Path=Name, FallbackValue=Joe Bloggs}" Grid.Column="1" HorizontalAlignment="Right" Margin="0,-3,10,0" />
+			<Grid Grid.Column="2" Margin="0,0,0,0" HorizontalAlignment="Right">
                 <Button x:Name="ContactSettings" ToolTip="Contact Settings" 
                         Margin="0,0,0,0" Template="{DynamicResource TransparentButtonStyle}" 
 						Visibility="Visible" Click="ContactSettings_Click">

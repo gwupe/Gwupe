@@ -9,12 +9,14 @@ namespace BlitsMe.Agent.Components.Functions.Chat.ChatElement
 
 
 
-    public abstract class ChatElement : INotifyPropertyChanged, IChatMessage
+    public abstract class BaseChatElement : INotifyPropertyChanged, IChatMessage
     {
-        private static readonly ILog Logger = LogManager.GetLogger(typeof(ChatElement));
+        private static readonly ILog Logger = LogManager.GetLogger(typeof(BaseChatElement));
         //public ChatElementManager Manager { get; set; }
         private String _message;
         public abstract string Speaker { get; set; }
+
+        //internal Engagement Engagement { get; set; }
 
         public String Message
         {
@@ -29,7 +31,7 @@ namespace BlitsMe.Agent.Components.Functions.Chat.ChatElement
         public bool LastWord
         {
             get { return _lastWord; }
-            set { _lastWord = value; OnPropertyChanged("ChatType"); }
+            set { _lastWord = value; OnPropertyChanged("LastWord"); }
         }
 
         public string UserName
@@ -38,6 +40,7 @@ namespace BlitsMe.Agent.Components.Functions.Chat.ChatElement
             set { _userName = value; OnPropertyChanged("UserName"); }
         }
 
+        /*
         public String ChatType
         {
             get
@@ -117,6 +120,7 @@ namespace BlitsMe.Agent.Components.Functions.Chat.ChatElement
                 }
             }
         }
+         */
 
         public event PropertyChangedEventHandler PropertyChanged;
 
@@ -141,10 +145,12 @@ namespace BlitsMe.Agent.Components.Functions.Chat.ChatElement
         internal String Id { get; set; }
         public readonly long NotifyTime;
         */
+        /*
         private byte[] _person;
         private string _name;
         private string _location;
         private string _flag;
+         */
         /*
                 public void OnProcessDeleteCommand(EventArgs e)
                 {

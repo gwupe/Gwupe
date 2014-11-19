@@ -30,7 +30,7 @@ namespace BlitsMe.Agent.UI.WPF.Engage
         {
             InitializeComponent();
             BlitsMeClientAppContext appContext = BlitsMeClientAppContext.CurrentAppContext.UIManager.GetAppcontext();
-            Engagement engagement = BlitsMeClientAppContext.CurrentAppContext.UIManager.GetSourceObject();
+            Engagement engagement = null;//BlitsMeClientAppContext.CurrentAppContext.UIManager.GetSourceObject();
             DataContext = new ChatWindowDataContext(appContext,engagement);
         }
 

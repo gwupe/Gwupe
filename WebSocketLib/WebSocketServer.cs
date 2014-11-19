@@ -1103,7 +1103,7 @@ namespace Bauglir.Ex
                 {
                     Logger.Warn("Failed to connect to host, attempting to find a proxy");
                     var proxy = WebRequest.DefaultWebProxy.GetProxy(new Uri("https://" + aHost + ":" + aPort));
-                    if (proxy != null)
+                    if (proxy != null && !aHost.Equals(proxy.Host))
                     {
                         Logger.Debug("Found a web proxy at " + proxy);
                         fClient = new TcpClient(proxy.Host, proxy.Port);
@@ -1134,6 +1134,8 @@ namespace Bauglir.Ex
                         throw e;
                     }
                 }
+
+                fClient.ReceiveTimeout = 300000; // if we don't read anything for 5 minutes
 
                 if (fSsl)
                 {
@@ -1216,6 +1218,7 @@ namespace Bauglir.Ex
                             {
                                 fHandshake = true;
                                 StartRead();
+                                Logger.Debug("Upgrade succceeded, connection complete.");
                                 return true;
                             }
                         }

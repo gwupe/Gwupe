@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Net;
 using System.Net.Sockets;
+using System.Threading;
 using BlitsMe.Communication.P2P.P2P.Socket.API;
 using BlitsMe.Communication.P2P.P2P.Tunnel;
 using log4net;
@@ -16,6 +17,7 @@ namespace BlitsMe.Communication.P2P.P2P.Socket
         private static readonly ILog Logger = LogManager.GetLogger(typeof(BmUdtSocket));
         private const byte PACKET_CONNECTION_RQ_TYPE = 9;
         protected Udt.Socket UdtConnection;
+        private Udt.Socket ListeningSocket;
         private readonly String _toString;
 
         private bool _closed;
@@ -51,11 +53,11 @@ namespace BlitsMe.Communication.P2P.P2P.Socket
         public IPEndPoint WaitForSync(PeerInfo peer, String syncId, List<SyncType> syncTypes = null)
         {
             var syncer = new Syncer(syncId, syncTypes);
-            var activeIp = syncer.WaitForSyncFromPeer(peer, 10000, _udpClient);
-            var udtSocket = SetupUdtSocket();
-            udtSocket.Bind(_udpClient.Client);
-            udtSocket.Listen(10);
-            Udt.Socket udtClient = udtSocket.Accept();
+            var activeIp = syncer.WaitForSyncFromPeer(peer, 60000, _udpClient);
+            ListeningSocket = SetupUdtSocket();
+            ListeningSocket.Bind(_udpClient.Client);
+            ListeningSocket.Listen(10);
+            Udt.Socket udtClient = ListeningSocket.Accept();
             UdtConnection = udtClient;
             UdtConnection.BlockingReceive = true;
             Logger.Debug("Successfully completed incoming tunnel with " + activeIp + "-" + syncId);
@@ -64,6 +66,7 @@ namespace BlitsMe.Communication.P2P.P2P.Socket
 
         private Udt.Socket SetupUdtSocket()
         {
+            Logger.Debug("[" + Thread.CurrentThread.ManagedThreadId + "] Setting up new UDT socket");
             var udtSocket = new Udt.Socket(AddressFamily.InterNetwork, SocketType.Stream);
             udtSocket.SetSocketOption(Udt.SocketOptionName.SendBuffer, 16384);
             udtSocket.SetSocketOption(Udt.SocketOptionName.ReceiveBuffer, 16384);
@@ -73,13 +76,13 @@ namespace BlitsMe.Communication.P2P.P2P.Socket
         public IPEndPoint Sync(PeerInfo peer, string syncId, List<SyncType> syncTypes = null)
         {
             var syncer = new Syncer(syncId, syncTypes);
-            var activeIp = syncer.SyncWithPeer(peer, 10000, _udpClient);
+            var activeIp = syncer.SyncWithPeer(peer, 60000, _udpClient);
             var udtSocket = SetupUdtSocket();
             udtSocket.Bind(_udpClient.Client);
             udtSocket.Connect(activeIp.Address, activeIp.Port);
             UdtConnection = udtSocket;
             UdtConnection.BlockingReceive = true;
-            Logger.Debug("Successfully completed outgoing tunnel with " + activeIp + "-" + syncId);
+            Logger.Debug("[" + Thread.CurrentThread.ManagedThreadId + "] Successfully completed outgoing tunnel with " + activeIp + "-" + syncId);
             return activeIp;
         }
 
@@ -91,7 +94,7 @@ namespace BlitsMe.Communication.P2P.P2P.Socket
             int read = UdtConnection.Receive(readBuffer, 0, 1);
             if (read == 1 && readBuffer[0] == PACKET_CONNECTION_RQ_TYPE)
             {
-                Logger.Debug("Received a connection from " + UdtConnection.RemoteEndPoint.Address);
+                Logger.Debug("[" + Thread.CurrentThread.ManagedThreadId + "] Received a connection from " + UdtConnection.RemoteEndPoint.Address);
             }
             else
             {
@@ -111,7 +114,7 @@ namespace BlitsMe.Communication.P2P.P2P.Socket
         {
 
 #if DEBUG
-            //Logger.Debug("Writing " + length + " bytes to the udt stream");
+            //Logger.Debug("[" + Thread.CurrentThread.ManagedThreadId + "] Writing " + length + " bytes to the udt stream");
 #endif
             UdtConnection.Send(data, 0, length);
             BufferedData += length;
@@ -119,7 +122,11 @@ namespace BlitsMe.Communication.P2P.P2P.Socket
 
         public int Read(byte[] data, int maxRead)
         {
-            return UdtConnection.Receive(data, 0, maxRead);
+            int read = UdtConnection.Receive(data, 0, maxRead);
+#if DEBUG
+            //Logger.Debug("[" + Thread.CurrentThread.ManagedThreadId + "] Read " + read + " bytes from the UDT output stream");
+#endif
+            return read;
         }
 
         public int SendTimeout
@@ -148,7 +155,22 @@ namespace BlitsMe.Communication.P2P.P2P.Socket
             if (!Closed && !Closing)
             {
                 Closing = true;
-                UdtConnection.Close();
+                try
+                {
+                    if (UdtConnection != null && !UdtConnection.IsDisposed)
+                    {
+                        UdtConnection.Close();
+                    }
+                    if (ListeningSocket != null && !ListeningSocket.IsDisposed)
+                    {
+                        ListeningSocket.Close();
+                        ListeningSocket = null;
+                    }
+                }
+                catch (Exception e)
+                {
+                    Logger.Error("Failed to close socket",e);
+                }
                 Closing = false;
                 Closed = true;
                 Connected = false;

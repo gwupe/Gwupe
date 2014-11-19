@@ -196,7 +196,6 @@ namespace BlitsMe.Agent
 
         public bool Remove(TItem item)
         {
-
             if (!Dispatcher.CheckAccess())
             {
                 return (bool)Dispatcher.Invoke(DispatcherPriority.Send, new RemoveHandler(Remove), item);

@@ -13,7 +13,7 @@ namespace BlitsMe.Agent.Components.Functions.Chat.ChatElement
             get { return "_SELF"; }
             set {  }
         }
-
+        public byte[] Avatar { get; set; }
 
     }
 }

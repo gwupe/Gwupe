@@ -57,7 +57,7 @@ namespace BlitsMe.Agent.UI.WPF
         internal DispatchingCollection<ObservableCollection<Notification>, Notification> NotificationList { get; set; }
         internal DispatchingCollection<ObservableCollection<Alert>, Alert> AlertList { get; set; }
         private SearchWindow _searchWindow;
-        private UserInfoWindow _userInfoWindow;
+        private UserInfoControl _userInfoControl;
         private Timer _searchCountDown;
         private readonly Object _searchLock = new Object();
         internal DashboardDataContext DashboardData;
@@ -309,16 +309,16 @@ namespace BlitsMe.Agent.UI.WPF
                 }
                 else
                 {
-                    if (_userInfoWindow == null)
+                    if (_userInfoControl == null)
                     {
-                        _userInfoWindow = new UserInfoWindow(_appContext);
+                        _userInfoControl = new UserInfoControl(_appContext);
                     }
                     // Clear currently engaged
                     var currentEngaged = _appContext.RosterManager.CurrentlyEngaged;
                     if (currentEngaged != null) currentEngaged.IsCurrentlyEngaged = false;
                     // Set main active window
-                    ActiveContent.Content = _userInfoWindow;
-                    _userInfoWindow.SetAsMain(this);
+                    ActiveContent.Content = _userInfoControl;
+                    _userInfoControl.SetAsMain(this);
                 }
             }
         }
@@ -524,6 +524,7 @@ namespace BlitsMe.Agent.UI.WPF
             if (item != null)
             {
                 ShowEngagement(item.DataContext as Attendance);
+                //ActivateEngagement(item.DataContext as Attendance);
             }
         }
 
@@ -564,14 +565,7 @@ namespace BlitsMe.Agent.UI.WPF
                 }
                 else if (propertyChangedEventArgs.PropertyName.Equals("Active"))
                 {
-                    if (Dispatcher.CheckAccess())
-                    {
-                        RefreshRosters();
-                    }
-                    else
-                    {
-                        Dispatcher.Invoke(new Action(RefreshRosters));
-                    }
+                    RefreshRosters();
                 }
             }
         }
@@ -618,16 +612,10 @@ namespace BlitsMe.Agent.UI.WPF
             RefreshRosters();
         }
 
-        private void RefreshRosters()
+        internal void RefreshRosters()
         {
-            if (!Dispatcher.CheckAccess())
-                Dispatcher.Invoke(new Action(RefreshRosters));
-            else
-            {
-                Logger.Debug("Refreshing Rosters");
-                ActiveRosterList.ContactsView.View.Refresh();
-                AllRosterList.ContactsView.View.Refresh();
-            }
+            ActiveRosterList.RefreshRoster();
+            AllRosterList.RefreshRoster();
         }
 
         private void ShowEngagement(Attendance attendance)
@@ -681,10 +669,18 @@ namespace BlitsMe.Agent.UI.WPF
         private void SearchBox_GotFocus(object sender, System.Windows.RoutedEventArgs e)
         {
             Searching = true;
+            ActivateSearchUi();
+        }
+
+        private void ActivateSearchUi()
+        {
             if (_searchWindow == null)
             {
                 _searchWindow = new SearchWindow(_appContext);
-                _searchCountDown = new Timer(500) { AutoReset = false };
+            }
+            if (_searchCountDown == null)
+            {
+                _searchCountDown = new Timer(500) {AutoReset = false};
                 _searchCountDown.Elapsed += (o, args) => ProcessSearch();
             }
             SearchRosterList.ContactsView.View.Refresh();
@@ -709,20 +705,14 @@ namespace BlitsMe.Agent.UI.WPF
                 if (Dispatcher.CheckAccess())
                 {
                     searchQuery = SearchBox.Text;
-                    SearchRosterList.ContactsView.View.Refresh();
-                    DashboardData.SearchContactsVisibility = 0;
-                    ActiveContent.Content = _searchWindow;
-                    _searchWindow.SetAsMain(this);
+                    ActivateSearchUi();
                 }
                 else
                 {
                     Dispatcher.Invoke(new Action(() =>
                     {
                         searchQuery = SearchBox.Text;
-                        SearchRosterList.ContactsView.View.Refresh();
-                        DashboardData.SearchContactsVisibility = 0;
-                        ActiveContent.Content = _searchWindow;
-                        _searchWindow.SetAsMain(this);
+                        ActivateSearchUi();
                     }));
                 }
                 if (!String.IsNullOrWhiteSpace(searchQuery))
@@ -854,6 +844,8 @@ namespace BlitsMe.Agent.UI.WPF
                 : Visibility.Hidden;
         }
 
+
+
         private void ChatRemoteAccessId_Click(object sender, RoutedEventArgs e)
         {
             if (!String.IsNullOrWhiteSpace(RemoteIdBox.Text))
@@ -866,14 +858,7 @@ namespace BlitsMe.Agent.UI.WPF
                     String username = _appContext.EngagementManager.EngageRemoteAccessId(shortCode);
                     if (username != null)
                     {
-                        Attendance attendance = _appContext.RosterManager.GetServicePersonAttendance(username);
-                        if (attendance != null)
-                        {
-                            ShowEngagement(attendance);
-                            attendance.Engagement.Active = true;
-                            attendance.Engagement.Interactions.StartInteraction();
-                            RefreshRosters();
-                        }
+                        ActivateEngagement(username);
                     }
                     else
                     {
@@ -885,6 +870,26 @@ namespace BlitsMe.Agent.UI.WPF
             else
             {
                 ErrorRemoteIdBox();
+            }
+        }
+
+        internal void ActivateEngagement(string username)
+        {
+            Attendance attendance = _appContext.RosterManager.GetServicePersonAttendance(username);
+            ActivateEngagement(attendance);
+        }
+
+        internal void ActivateEngagement(Attendance attendance)
+        {
+            if (attendance != null)
+            {
+                ShowEngagement(attendance);
+                if (!attendance.Engagement.Active)
+                {
+                    attendance.Engagement.Active = true;
+                    attendance.Engagement.Interactions.StartInteraction();
+                    RefreshRosters();
+                }
             }
         }
 
@@ -966,7 +971,7 @@ namespace BlitsMe.Agent.UI.WPF
                 return BlitsMeClientAppContext.CurrentAppContext.CurrentUserManager.ActiveShortCode;
             }
         }
-        public String Version { get { return BlitsMeClientAppContext.CurrentAppContext.Version(2); }}
+        public String Version { get { return BlitsMeClientAppContext.CurrentAppContext.Version(2); } }
 
         private readonly Dashboard _dashboard;
         private string _customTitle;

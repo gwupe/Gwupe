@@ -14,7 +14,7 @@ namespace BlitsMe.Agent.Components.Functions.Chat.ChatElement
         Failed
     };
 
-    public abstract class DeliverableChatElement : ChatElement
+    public abstract class DeliverableChatElement : BaseChatElement
     {
         private DateTime _deliveryTime;
         public DateTime DeliveryTime

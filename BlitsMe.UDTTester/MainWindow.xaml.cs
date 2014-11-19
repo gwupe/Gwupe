@@ -15,7 +15,9 @@ using BlitsMe.Communication.P2P.RUDP.Connector;
 using BlitsMe.Communication.P2P.RUDP.Packet;
 using BlitsMe.Communication.P2P.RUDP.Socket;
 using BlitsMe.Communication.P2P.RUDP.Utils;
+using log4net;
 using log4net.Config;
+using log4net.Repository.Hierarchy;
 using Microsoft.Win32;
 using Socket = Udt.Socket;
 
@@ -29,6 +31,7 @@ namespace BlitsMe.UDTTester
         //private UdpClient _udpClient;
         //private Socket _udtSocket;
         //private Socket _udtConnection;
+        private static readonly ILog Logger = LogManager.GetLogger(typeof (MainWindow));
         private BmUdtSocket _socket;
 
         public MainWindow()
@@ -40,6 +43,19 @@ namespace BlitsMe.UDTTester
 
         private void ResetSockets()
         {
+            
+            try
+            {
+                if (_socket != null)
+                {
+                    _socket.Close();
+                }
+            }
+            catch (Exception ex)
+            {
+                Logger.Error("Failed to close sockets");
+            }
+            //_socket = new BmUdtSocket();
             var aes = new AesCryptoPacketUtil(Encoding.UTF8.GetBytes("0123456789ABCDEF"));
             _socket = new BmUdtEncryptedSocket() { EncryptData = aes.EncryptData, DecryptData = aes.DecryptData };
             //IPEndPoint endPoint = new IPEndPoint(IPAddress.Any, 0);

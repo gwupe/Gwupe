@@ -1,13 +1,8 @@
 ﻿using System;
 using System.Diagnostics;
-using System.Threading;
 using BlitsMe.Agent.Components.Functions.API;
 using BlitsMe.Agent.Components.Functions.Chat;
-using BlitsMe.Agent.Components.Functions.Chat.ChatElement;
 using BlitsMe.Agent.Components.Functions.RemoteDesktop.ChatElement;
-using BlitsMe.Agent.Components.Functions.RemoteDesktop.Notification;
-using BlitsMe.Agent.Components.Notification;
-using BlitsMe.Agent.UI.WPF.Engage;
 using BlitsMe.Cloud.Exceptions;
 using BlitsMe.Cloud.Messaging.Request;
 using BlitsMe.Cloud.Messaging.Response;
@@ -139,6 +134,15 @@ namespace BlitsMe.Agent.Components.Functions.RemoteDesktop
                 Chat.LogSystemMessage("You accepted the desktop assistance request from " + _engagement.SecondParty.Person.Firstname);
                 try
                 {
+                    // this will restart the service if its offline
+                    try
+                    {
+                        _appContext.BlitsMeServiceProxy.Ping();
+                    }
+                    catch
+                    {
+                        _appContext.RestartBlitsMeService();
+                    }
                     // Startup the underlying VNC service
                     if (_appContext.BlitsMeServiceProxy.VNCStartService())
                     {
@@ -253,6 +257,9 @@ namespace BlitsMe.Agent.Components.Functions.RemoteDesktop
 
         internal void RequestRdpSession()
         {
+            //BlitsMeClientAppContext.CurrentAppContext.UIManager.GetRemoteEngagement(_engagement);
+            // all these checks are to make sure that we aren't currently accessing second partys desktop
+            if (CheckRdpActive()) return;
             if (_engagement.SecondParty.Relationship.IHaveUnattendedAccess)
             {
                 ElevatedRequestRdpSession();
@@ -266,9 +273,6 @@ namespace BlitsMe.Agent.Components.Functions.RemoteDesktop
         // Called When this user send a rdp request to the second party
         private void RequestRdpSession(string tokenId, string securityKey)
         {
-            //BlitsMeClientAppContext.CurrentAppContext.UIManager.GetRemoteEngagement(_engagement);
-            // all these checks are to make sure that we aren't currently accessing second partys desktop
-            if (CheckRdpActive()) return;
             // now we compile the request to second party to control his desktop
             RDPRequestRq request = new RDPRequestRq()
             {
@@ -419,7 +423,7 @@ namespace BlitsMe.Agent.Components.Functions.RemoteDesktop
                 {
                     int port = Client.Start(request.connectionId);
                     String viewerExe = System.IO.Path.GetDirectoryName(Environment.GetCommandLineArgs()[0]) + "\\bmss.exe";
-                    var parameters = "-username=\"" + _engagement.SecondParty.Person.Name + "\" -copyrect=yes -encoding=tight -compressionlevel=9 -jpegimagequality=3 -scale=auto -host=127.0.0.1 -port=" + port;
+                    var parameters = "-username=\"" + _engagement.SecondParty.Person.Name + "\" -copyrect=yes -encoding=tight -compressionlevel=9 -jpegimagequality=3 -scale=auto -host=localhost -port=" + port;
                     Logger.Debug("Running " + viewerExe + " " + parameters);
                     _bmssHandle = Process.Start(viewerExe, parameters);
 

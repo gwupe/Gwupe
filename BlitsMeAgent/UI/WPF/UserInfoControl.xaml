@@ -5,7 +5,7 @@
 	xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
 	xmlns:mahappsControls="clr-namespace:MahApps.Metro.Controls;assembly=MahApps.Metro"
 	mc:Ignorable="d"
-	x:Class="BlitsMe.Agent.UI.WPF.UserInfoWindow"
+	x:Class="BlitsMe.Agent.UI.WPF.UserInfoControl"
 	x:Name="UserControl"
 	d:DesignWidth="640" d:DesignHeight="460">
     <UserControl.Resources>

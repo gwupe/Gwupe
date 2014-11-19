@@ -20,7 +20,7 @@ namespace BlitsMe.Agent.UI.WPF.Roster
         protected override void FilterEventHandler(object sender, FilterEventArgs filterEventArgs)
         {
             Attendance attendance = filterEventArgs.Item as Attendance;
-            Logger.Debug("Checking status of " + attendance.Person + " " + attendance.IsActive);
+            //Logger.Debug("Checking status of " + attendance.Person + " " + attendance.IsActive);
             if (attendance != null && attendance.IsActive)
             {
                 filterEventArgs.Accepted = true;
