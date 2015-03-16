@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
-using BlitsMe.Common.Security;
+using Gwupe.Common.Security;
 using log4net;
 
-namespace BlitsMe.Agent.Components
+namespace Gwupe.Agent.Components
 {
     internal class Interaction
     {

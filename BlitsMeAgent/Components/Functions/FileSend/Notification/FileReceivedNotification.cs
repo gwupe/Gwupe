@@ -4,10 +4,10 @@ using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Windows.Input;
-using BlitsMe.Agent.Managers;
+using Gwupe.Agent.Managers;
 using log4net;
 
-namespace BlitsMe.Agent.Components.Functions.FileSend.Notification
+namespace Gwupe.Agent.Components.Functions.FileSend.Notification
 {
     class FileReceivedNotification : Components.Notification.Notification
     {

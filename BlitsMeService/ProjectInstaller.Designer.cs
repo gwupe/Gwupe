@@ -1,4 +1,4 @@
-﻿namespace BlitsMe.Service
+﻿namespace Gwupe.Service
 {
     partial class ProjectInstaller
     {

@@ -1,10 +1,10 @@
 using System;
 using System.Collections.Generic;
-using BlitsMe.Common.Security;
+using Gwupe.Common.Security;
 using Microsoft.Win32;
 using log4net;
 
-namespace BlitsMe.Agent.Misc
+namespace Gwupe.Agent.Misc
 {
     public class BLMRegistry
     {

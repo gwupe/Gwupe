@@ -11,11 +11,11 @@ using System.Windows.Controls;
 using System.Windows.Data;
 using System.Windows.Media.Animation;
 using System.Windows.Threading;
-using BlitsMe.Agent.Components.Person;
-using BlitsMe.Agent.UI.WPF.Utils;
+using Gwupe.Agent.Components.Person;
+using Gwupe.Agent.UI.WPF.Utils;
 using log4net;
 
-namespace BlitsMe.Agent.UI.WPF.Roster
+namespace Gwupe.Agent.UI.WPF.Roster
 {
     abstract class RosterList
     {
@@ -46,7 +46,7 @@ namespace BlitsMe.Agent.UI.WPF.Roster
                             foreach (Attendance newItem in eventArgs.NewItems)
                             {
                                 newItem.PropertyChanged += OnAttendancePropertyChange;
-                                //BlitsMeClientAppContext.CurrentAppContext.UIManager.GetContactRating(newItem.Person.Rating);
+                                //GwupeClientAppContext.CurrentAppContext.UIManager.GetContactRating(newItem.Person.Rating);
                             }
                         }
                     }

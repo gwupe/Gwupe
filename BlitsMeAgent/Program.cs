@@ -1,16 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.IO;
 using System.Linq;
-using System.Management;
 using System.Reflection;
-using System.Runtime.InteropServices;
-using System.Text.RegularExpressions;
 using System.Threading;
 using System.Windows.Forms;
 
-namespace BlitsMe.Agent
+namespace Gwupe.Agent
 {
     static class Program
     {
@@ -19,7 +15,7 @@ namespace BlitsMe.Agent
 #else
         public const String BuildMarker = "";
 #endif
-        private const string AppGuid = "BlitsMe.Agent" + BuildMarker + ".Application";
+        private const string AppGuid = "Gwupe.Agent" + BuildMarker + ".Application";
 
         // unmanaged code doesn't like to be loaded via byte arrays, only via files, so we need to write them out and load them back in
         static private readonly String[] UnmanagedAssemblies = { "UdtProtocol" };
@@ -41,15 +37,15 @@ namespace BlitsMe.Agent
                     {
                         var outcome = Common.OsUtils.PostMessage((IntPtr)Common.OsUtils.HWND_BROADCAST, Common.OsUtils.WM_SHOWBM,
 #if DEBUG
- IntPtr.Zero,
+                            IntPtr.Zero,
 #else
                             new IntPtr(1), 
 #endif
- IntPtr.Zero);
+                            IntPtr.Zero);
                     }
                     else
                     {
-                        MessageBox.Show("BlitsMe" + BuildMarker + " Is already running.");
+                        MessageBox.Show("Gwupe" + BuildMarker + " Is already running.");
                     }
                     return;
                 }
@@ -62,17 +58,17 @@ namespace BlitsMe.Agent
                     Thread.CurrentThread.Name = "MAIN";
                     Application.EnableVisualStyles();
                     Application.SetCompatibleTextRenderingDefault(false);
-                    var options = new List<BlitsMeOption>();
+                    var options = new List<GwupeOption>();
                     foreach (string argument in args)
                     {
                         if (argument.ToLower().Equals("/minimize"))
                         {
-                            options.Add(BlitsMeOption.Minimize);
+                            options.Add(GwupeOption.Minimize);
                         }
                     }
                     Application.ThreadException += Application_ThreadException;
                     AppDomain.CurrentDomain.UnhandledException += CurrentDomain_UnhandledException;
-                    Application.Run(new BlitsMeClientAppContext(options));
+                    Application.Run(new GwupeClientAppContext(options));
                 }
 
                 catch
@@ -96,9 +92,9 @@ namespace BlitsMe.Agent
         {
             try
             {
-                if (BlitsMeClientAppContext.CurrentAppContext != null)
+                if (GwupeClientAppContext.CurrentAppContext != null)
                 {
-                    BlitsMeClientAppContext.CurrentAppContext.SubmitFaultReport(new FaultReport() {UserReport = ex.ToString()});
+                    GwupeClientAppContext.CurrentAppContext.SubmitFaultReport(new FaultReport() {UserReport = ex.ToString()});
                 }
             }
             catch

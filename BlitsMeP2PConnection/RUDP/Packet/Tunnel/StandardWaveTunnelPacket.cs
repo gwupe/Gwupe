@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Net;
 
-namespace BlitsMe.Communication.P2P.RUDP.Packet.Tunnel
+namespace Gwupe.Communication.P2P.RUDP.Packet.Tunnel
 {
     public abstract class StandardWaveTunnelPacket : BasicTunnelPacket
     {

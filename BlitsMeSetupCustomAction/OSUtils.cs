@@ -5,7 +5,7 @@ using System.Management;
 using System.Runtime.InteropServices;
 using System.Text.RegularExpressions;
 
-namespace BlitsMe.Common
+namespace GwupeSetupCustomAction
 {
     public static class OsUtils
     {

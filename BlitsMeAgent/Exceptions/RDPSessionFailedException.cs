@@ -1,6 +1,6 @@
 using System;
 
-namespace BlitsMe.Agent.Exceptions
+namespace Gwupe.Agent.Exceptions
 {
     internal class RDPSessionFailedException : Exception
     {

@@ -4,9 +4,9 @@ using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Windows.Input;
-using BlitsMe.Agent.Components.Functions.Chat.ChatElement;
+using Gwupe.Agent.Components.Functions.Chat.ChatElement;
 
-namespace BlitsMe.Agent.Components.Functions.Chat
+namespace Gwupe.Agent.Components.Functions.Chat
 {
     class AnswerTrueFalseCommand : ICommand
     {

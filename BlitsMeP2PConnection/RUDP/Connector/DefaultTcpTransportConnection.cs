@@ -1,8 +1,8 @@
 using System;
-using BlitsMe.Communication.P2P.RUDP.Connector.API;
-using BlitsMe.Communication.P2P.RUDP.Socket.API;
+using Gwupe.Communication.P2P.RUDP.Connector.API;
+using Gwupe.Communication.P2P.RUDP.Socket.API;
 
-namespace BlitsMe.Communication.P2P.RUDP.Connector
+namespace Gwupe.Communication.P2P.RUDP.Connector
 {
     public delegate bool ProcessTransportRead(byte[] data, int length, TcpTransportConnection connection);
 

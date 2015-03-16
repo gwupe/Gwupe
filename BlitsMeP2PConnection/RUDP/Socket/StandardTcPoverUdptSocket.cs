@@ -2,16 +2,16 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using BlitsMe.Communication.P2P.RUDP.Socket.API;
-using BlitsMe.Common;
-using BlitsMe.Communication.P2P.RUDP.Tunnel.API;
-using BlitsMe.Communication.P2P.RUDP.Tunnel;
+using Gwupe.Communication.P2P.RUDP.Socket.API;
+using Gwupe.Common;
+using Gwupe.Communication.P2P.RUDP.Tunnel.API;
+using Gwupe.Communication.P2P.RUDP.Tunnel;
 using System.IO;
 using System.Threading;
-using BlitsMe.Communication.P2P.Exceptions;
+using Gwupe.Communication.P2P.Exceptions;
 using log4net;
 
-namespace BlitsMe.Communication.P2P.RUDP.Socket
+namespace Gwupe.Communication.P2P.RUDP.Socket
 {
     public class StandardTcpOverUdptSocket : IInternalTcpOverUdptSocket
     {

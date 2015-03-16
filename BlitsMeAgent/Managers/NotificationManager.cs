@@ -1,14 +1,14 @@
 using System;
 using System.Collections.ObjectModel;
 using System.Timers;
-using BlitsMe.Agent.Components;
-using BlitsMe.Agent.Components.Alert;
-using BlitsMe.Agent.Components.Functions.RemoteDesktop;
-using BlitsMe.Agent.Components.Notification;
-using BlitsMe.Agent.UI.WPF.Engage;
+using Gwupe.Agent.Components;
+using Gwupe.Agent.Components.Alert;
+using Gwupe.Agent.Components.Functions.RemoteDesktop;
+using Gwupe.Agent.Components.Notification;
+using Gwupe.Agent.UI.WPF.Engage;
 using log4net;
 
-namespace BlitsMe.Agent.Managers
+namespace Gwupe.Agent.Managers
 {
     class NotificationManager
     {
@@ -25,7 +25,7 @@ namespace BlitsMe.Agent.Managers
             _removerTimer.Elapsed += RemoveAfterTimeoutRunner;
             _removerTimer.Start();
             Alerts = new ObservableCollection<Alert>();
-            BlitsMeClientAppContext.CurrentAppContext.LoginManager.LoggedOut += (sender, args) => Reset();
+            GwupeClientAppContext.CurrentAppContext.LoginManager.LoggedOut += (sender, args) => Reset();
         }
 
         internal void DeleteNotification(Notification notification)

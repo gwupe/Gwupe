@@ -2,17 +2,17 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using BlitsMe.Communication.P2P.RUDP.Packet.API;
-using BlitsMe.Communication.P2P.RUDP.Packet.TCP;
-using BlitsMe.Communication.P2P.RUDP.Socket.API;
-using BlitsMe.Communication.P2P.RUDP.Socket;
-using BlitsMe.Communication.P2P.RUDP.Tunnel.API;
+using Gwupe.Communication.P2P.RUDP.Packet.API;
+using Gwupe.Communication.P2P.RUDP.Packet.TCP;
+using Gwupe.Communication.P2P.RUDP.Socket.API;
+using Gwupe.Communication.P2P.RUDP.Socket;
+using Gwupe.Communication.P2P.RUDP.Tunnel.API;
 using System.Threading;
-using BlitsMe.Communication.P2P.RUDP.Tunnel.Transport;
+using Gwupe.Communication.P2P.RUDP.Tunnel.Transport;
 using log4net;
-using BlitsMe.Communication.P2P.Exceptions;
+using Gwupe.Communication.P2P.Exceptions;
 
-namespace BlitsMe.Communication.P2P.RUDP.Tunnel
+namespace Gwupe.Communication.P2P.RUDP.Tunnel
 {
     public class TcpTransportLayerOne4One : TcpTransportLayer
     {

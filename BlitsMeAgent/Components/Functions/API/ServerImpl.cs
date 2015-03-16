@@ -2,9 +2,9 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using BlitsMe.Communication.P2P.P2P.Socket.API;
+using Gwupe.Communication.P2P.P2P.Socket.API;
 
-namespace BlitsMe.Agent.Components.Functions.API
+namespace Gwupe.Agent.Components.Functions.API
 {
     internal abstract class ServerImpl
     {

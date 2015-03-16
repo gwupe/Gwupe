@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace BlitsMe.Agent.Components.Functions.Chat.ChatElement
+namespace Gwupe.Agent.Components.Functions.Chat.ChatElement
 {
     public enum ChatDeliveryState
     {

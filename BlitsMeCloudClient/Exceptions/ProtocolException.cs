@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace BlitsMe.Cloud.Exceptions
+namespace Gwupe.Cloud.Exceptions
 {
     public class ProtocolException : Exception
     {

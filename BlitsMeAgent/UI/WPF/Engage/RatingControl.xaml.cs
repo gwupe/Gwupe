@@ -5,7 +5,7 @@ using System.Windows.Controls;
 using log4net;
 using System;
 
-namespace BlitsMe.Agent.UI.WPF.Engage
+namespace Gwupe.Agent.UI.WPF.Engage
 {
     /// <summary>
     /// Interaction logic for RatingControl.xaml

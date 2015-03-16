@@ -1,9 +1,9 @@
-﻿using BlitsMe.Agent.Components;
-using BlitsMe.Agent.Components.Functions.Chat;
-using BlitsMe.Agent.Components.Person;
-using BlitsMe.Agent.Components.Search;
-using BlitsMe.Agent.UI.WPF.Search;
-using BlitsMe.Cloud.Messaging.Elements;
+﻿using Gwupe.Agent.Components;
+using Gwupe.Agent.Components.Functions.Chat;
+using Gwupe.Agent.Components.Person;
+using Gwupe.Agent.Components.Search;
+using Gwupe.Agent.UI.WPF.Search;
+using Gwupe.Cloud.Messaging.Elements;
 using log4net;
 using System;
 using System.Collections.Generic;
@@ -19,7 +19,7 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 
-namespace BlitsMe.Agent.UI.WPF.Engage
+namespace Gwupe.Agent.UI.WPF.Engage
 {
     /// <summary>
     /// Interaction logic for UserImageOthers.xaml
@@ -29,8 +29,8 @@ namespace BlitsMe.Agent.UI.WPF.Engage
         public UserImageOthers()
         {
             InitializeComponent();
-            BlitsMeClientAppContext appContext = BlitsMeClientAppContext.CurrentAppContext.UIManager.GetAppcontext();
-            Engagement engagement = null;//BlitsMeClientAppContext.CurrentAppContext.UIManager.GetSourceObject();
+            GwupeClientAppContext appContext = GwupeClientAppContext.CurrentAppContext.UIManager.GetAppcontext();
+            Engagement engagement = null;//GwupeClientAppContext.CurrentAppContext.UIManager.GetSourceObject();
             DataContext = new ChatWindowDataContext(appContext,engagement);
         }
 
@@ -38,12 +38,12 @@ namespace BlitsMe.Agent.UI.WPF.Engage
         class ChatWindowDataContext
         {
             private SendMessageCommand _sendMessage;
-            private readonly BlitsMeClientAppContext _appContext;
+            private readonly GwupeClientAppContext _appContext;
             //private readonly ChatWindow _chatWindow;
             public Person Self { get; private set; }
             //public DispatchingCollection<ObservableCollection<ChatElement>, ChatElement> Exchange { get; private set; }
 
-            public ChatWindowDataContext(BlitsMeClientAppContext appContext, Engagement engagement)
+            public ChatWindowDataContext(GwupeClientAppContext appContext, Engagement engagement)
             {
                 this._appContext = appContext;
                 //this._chatWindow = chatWindow;
@@ -67,11 +67,11 @@ namespace BlitsMe.Agent.UI.WPF.Engage
         public class SendMessageCommand : ICommand
         {
             private static readonly ILog Logger = LogManager.GetLogger(typeof(SendMessageCommand));
-            private readonly BlitsMeClientAppContext _appContext;
+            private readonly GwupeClientAppContext _appContext;
             private readonly Function _chat;
             private readonly TextBox _textBox;
 
-            internal SendMessageCommand(BlitsMeClientAppContext appContext, Function chat, TextBox textBox)
+            internal SendMessageCommand(GwupeClientAppContext appContext, Function chat, TextBox textBox)
             {
                 this._appContext = appContext;
                 this._chat = chat;

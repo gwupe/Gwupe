@@ -1,4 +1,4 @@
-﻿namespace BlitsMe.Communication.P2P.RUDP.Packet.Tunnel
+﻿namespace Gwupe.Communication.P2P.RUDP.Packet.Tunnel
 {
     public class StandardSyncRqTunnelPacket : BasicTunnelPacket
     {

@@ -1,6 +1,6 @@
 ﻿using System.Runtime.Serialization;
 
-namespace BlitsMe.Cloud.Messaging.Elements
+namespace Gwupe.Cloud.Messaging.Elements
 {
     [DataContract]
     public class RelationshipElement

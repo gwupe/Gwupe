@@ -1,8 +1,8 @@
 ﻿using System;
 using System.ComponentModel;
-using BlitsMe.Agent.Annotations;
+using Gwupe.Agent.Annotations;
 
-namespace BlitsMe.Agent.Components
+namespace Gwupe.Agent.Components
 {
     internal class Partner : INotifyPropertyChanged
     {

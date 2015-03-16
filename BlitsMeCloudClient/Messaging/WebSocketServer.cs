@@ -1,11 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Threading;
-using BlitsMe.Cloud.Messaging.API;
-using BlitsMe.Cloud.Messaging.Response;
+using Gwupe.Cloud.Messaging.API;
+using Gwupe.Cloud.Messaging.Response;
 using log4net;
 
-namespace BlitsMe.Cloud.Messaging
+namespace Gwupe.Cloud.Messaging
 {
     public delegate TRs ProcessRequest<in TRq, out TRs>(TRq request) where TRq : API.Request where TRs : API.Response;
 
@@ -77,7 +77,7 @@ namespace BlitsMe.Cloud.Messaging
                 Logger.Error("Failed to process message with processor " + processor.GetType() + " : " + e.Message, e);
                 try
                 {
-                    Type responseType = Type.GetType("BlitsMe.Cloud.Messaging.Response." + processorName + "Rs");
+                    Type responseType = Type.GetType("Gwupe.Cloud.Messaging.Response." + processorName + "Rs");
                     response = (API.Response) responseType.GetConstructor(Type.EmptyTypes).Invoke(new object[] {});
                     response.error = "UNKNOWN_ERROR";
                     response.errorMessage = e.Message;

@@ -4,25 +4,25 @@ using System.Linq;
 using System.Text;
 using System.Windows.Controls;
 using System.Windows.Threading;
-using BlitsMe.Agent.UI.WPF.API;
-using BlitsMe.Agent.UI.WPF.Utils;
+using Gwupe.Agent.UI.WPF.API;
+using Gwupe.Agent.UI.WPF.Utils;
 using log4net;
 
-namespace BlitsMe.Agent.UI.WPF
+namespace Gwupe.Agent.UI.WPF
 {
     public class UiHelper
     {
         private static readonly ILog Logger = LogManager.GetLogger(typeof (UiHelper));
         private readonly Dispatcher _dispatcher;
-        private readonly BlitsMeDisablerContext _disabler;
+        private readonly GwupeDisablerContext _disabler;
         private readonly InputValidator _validator;
         public InputValidator Validator { get { return _validator; }}
-        public BlitsMeDisablerContext Disabler { get { return _disabler; } }
+        public GwupeDisablerContext Disabler { get { return _disabler; } }
 
         public UiHelper(Dispatcher dispatcher, ContentPresenter disabler, TextBlock statusText, TextBlock errorText)
         {
             _dispatcher = dispatcher;
-            _disabler = new BlitsMeDisablerContext(dispatcher,disabler);
+            _disabler = new GwupeDisablerContext(dispatcher,disabler);
             _validator = new InputValidator(statusText,errorText,dispatcher);
         }
 
@@ -33,7 +33,7 @@ namespace BlitsMe.Agent.UI.WPF
                 _disabler.DisableInputs(true, disablerMessage);
                 String tokenId;
                 String securityKey;
-                if (BlitsMeClientAppContext.CurrentAppContext.Elevate(out tokenId, out securityKey))
+                if (GwupeClientAppContext.CurrentAppContext.Elevate(out tokenId, out securityKey))
                 {
                     successMethod(tokenId, securityKey);
                 }

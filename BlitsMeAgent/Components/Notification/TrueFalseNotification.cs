@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Windows.Input;
 
-namespace BlitsMe.Agent.Components.Notification
+namespace Gwupe.Agent.Components.Notification
 {
     class TrueFalseNotification : Notification
     {

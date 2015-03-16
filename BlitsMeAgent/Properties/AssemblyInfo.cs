@@ -6,12 +6,12 @@ using System.Resources;
 // General Information about an assembly is controlled through the following 
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
-[assembly: AssemblyTitle("BlitsMeAgent")]
-[assembly: AssemblyDescription("BlitsMe Remote Cloud Services")]
+[assembly: AssemblyTitle("Gwupe")]
+[assembly: AssemblyDescription("Gwupe Remote Cloud Services")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("BlitsMe")]
-[assembly: AssemblyProduct("BlitsMeAgent")]
-[assembly: AssemblyCopyright("Copyright ©  2011-2014")]
+[assembly: AssemblyCompany("Gwupe")]
+[assembly: AssemblyProduct("Gwupe")]
+[assembly: AssemblyCopyright("Copyright ©  2011-2015")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 
@@ -33,5 +33,5 @@ using System.Resources;
 // You can specify all the values or you can default the Build and Revision Numbers 
 // by using the '*' as shown below:
 // [assembly: AssemblyVersion("1.0.*")]
-[assembly: AssemblyVersion("0.4.46.*")]
+[assembly: AssemblyVersion("1.0.5.*")]
 [assembly: NeutralResourcesLanguageAttribute("en-ZA")]

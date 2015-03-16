@@ -1,11 +1,11 @@
 using System;
 using System.Collections.Generic;
-using BlitsMe.Communication.P2P.Exceptions;
-using BlitsMe.Communication.P2P.RUDP.Socket.API;
-using BlitsMe.Communication.P2P.RUDP.Tunnel.API;
+using Gwupe.Communication.P2P.Exceptions;
+using Gwupe.Communication.P2P.RUDP.Socket.API;
+using Gwupe.Communication.P2P.RUDP.Tunnel.API;
 using log4net;
 
-namespace BlitsMe.Communication.P2P.RUDP.Connector.API
+namespace Gwupe.Communication.P2P.RUDP.Connector.API
 {
     //public delegate TcpTransportConnection ProcessConnect(ITcpOverUdptSocket socket);
 

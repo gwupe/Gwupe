@@ -3,16 +3,16 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
-using BlitsMe.Agent.Components.Functions.Chat;
-using BlitsMe.Agent.Components.RepeatedConnection;
-using BlitsMe.Cloud.Communication;
-using BlitsMe.Cloud.Messaging.Request;
-using BlitsMe.Cloud.Messaging.Response;
-using BlitsMe.Cloud.Repeater;
+using Gwupe.Agent.Components.Functions.Chat;
+using Gwupe.Agent.Components.RepeatedConnection;
+using Gwupe.Cloud.Communication;
+using Gwupe.Cloud.Messaging.Request;
+using Gwupe.Cloud.Messaging.Response;
+using Gwupe.Cloud.Repeater;
 using log4net;
 using log4net.Repository.Hierarchy;
 
-namespace BlitsMe.Agent.Managers
+namespace Gwupe.Agent.Managers
 {
 
     internal class RepeaterManager
@@ -36,7 +36,7 @@ namespace BlitsMe.Agent.Managers
             WaitingRepeatedConnection pendingConnection;
             if (_waitingConnections.TryGetValue(repeatId, out pendingConnection))
             {
-                var coupledConnection = BlitsMeClientAppContext.CurrentAppContext.ConnectionManager.StartRepeatedConnection(repeatId,
+                var coupledConnection = GwupeClientAppContext.CurrentAppContext.ConnectionManager.StartRepeatedConnection(repeatId,
                     pendingConnection.ReadDataCallback);
                 pendingConnection.ConnectionEstablishedCallback(repeatId, coupledConnection);
                 return coupledConnection;
@@ -50,7 +50,7 @@ namespace BlitsMe.Agent.Managers
             try
             {
                 InitRepeatedConnectionRs response =
-                    BlitsMeClientAppContext.CurrentAppContext.ConnectionManager.Connection
+                    GwupeClientAppContext.CurrentAppContext.ConnectionManager.Connection
                         .Request<InitRepeatedConnectionRq, InitRepeatedConnectionRs>(request);
 
             }

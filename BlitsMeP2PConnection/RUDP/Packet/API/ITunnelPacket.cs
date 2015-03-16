@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Net;
 
-namespace BlitsMe.Communication.P2P.RUDP.Packet.API
+namespace Gwupe.Communication.P2P.RUDP.Packet.API
 {
     internal interface ITunnelPacket
     {

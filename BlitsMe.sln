@@ -1,37 +1,37 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 2012
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BlitsMeService", "BlitsMeService\BlitsMeService.csproj", "{90B503C9-7032-4A9C-9D1A-B1187CDB56A8}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GwupeService", "BlitsMeService\GwupeService.csproj", "{90B503C9-7032-4A9C-9D1A-B1187CDB56A8}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BlitsMeAgent", "BlitsMeAgent\BlitsMeAgent.csproj", "{211D2399-36E1-4E1E-BFC5-FE76F7A8EFCC}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Gwupe", "BlitsMeAgent\Gwupe.csproj", "{211D2399-36E1-4E1E-BFC5-FE76F7A8EFCC}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BlitsMeCloudClient", "BlitsMeCloudClient\BlitsMeCloudClient.csproj", "{751A6516-1FE8-47F4-A754-8AA5594FFB11}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GwupeCloudClient", "BlitsMeCloudClient\GwupeCloudClient.csproj", "{751A6516-1FE8-47F4-A754-8AA5594FFB11}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WebSocket", "WebSocketLib\WebSocket.csproj", "{18413B76-A1FD-450D-989C-30B9F448F966}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BlitsMeServiceHost", "BlitsMeServiceHost\BlitsMeServiceHost.csproj", "{3D791A7A-2044-42A0-902A-FC86EDE214D4}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GwupeServiceHost", "BlitsMeServiceHost\GwupeServiceHost.csproj", "{3D791A7A-2044-42A0-902A-FC86EDE214D4}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BlitsMeServiceProxy", "BlitsMeServiceProxy\BlitsMeServiceProxy.csproj", "{22BB8667-895C-449A-9DCC-90CB1900F8CB}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GwupeServiceProxy", "BlitsMeServiceProxy\GwupeServiceProxy.csproj", "{22BB8667-895C-449A-9DCC-90CB1900F8CB}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BlitsMeCommon", "BlitsMeCommon\BlitsMeCommon.csproj", "{1B355F1C-9D50-4BAB-8CEB-E6CA72E6DE69}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GwupeCommon", "BlitsMeCommon\GwupeCommon.csproj", "{1B355F1C-9D50-4BAB-8CEB-E6CA72E6DE69}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BlitsMeP2PConnection", "BlitsMeP2PConnection\BlitsMeP2PConnection.csproj", "{C8080119-3305-43B5-8944-592DBC960F12}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GwupeCommunicatonP2P", "BlitsMeP2PConnection\GwupeCommunicatonP2P.csproj", "{C8080119-3305-43B5-8944-592DBC960F12}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BlitsMe.Sandbox", "BlitsMe.Sandbox\BlitsMe.Sandbox.csproj", "{475011C7-1636-4C6F-BF65-37D03C9A8B41}"
 EndProject
-Project("{930C7802-8A8C-48F9-8165-68863BCCD9DD}") = "BlitsMeSetup", "BlitsMeSetup\BlitsMeSetup.wixproj", "{41B5AB51-8D24-4D3D-9448-6F3584A34C34}"
+Project("{930C7802-8A8C-48F9-8165-68863BCCD9DD}") = "GwupeSetup", "BlitsMeSetup\GwupeSetup.wixproj", "{41B5AB51-8D24-4D3D-9448-6F3584A34C34}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BlitsMeSetupCustomAction", "BlitsMeSetupCustomAction\BlitsMeSetupCustomAction.csproj", "{8266DA82-5594-4CEA-BF14-413BD5FA95E5}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GwupeSetupCustomAction", "BlitsMeSetupCustomAction\GwupeSetupCustomAction.csproj", "{8266DA82-5594-4CEA-BF14-413BD5FA95E5}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BlitsMeUpgradeAgent", "BlitsMeUpgradeAgent\BlitsMeUpgradeAgent.csproj", "{6702E385-F3B9-4B63-B094-70EEB5C6126B}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GwupeUpgradeAgent", "BlitsMeUpgradeAgent\GwupeUpgradeAgent.csproj", "{6702E385-F3B9-4B63-B094-70EEB5C6126B}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BlitsMe.TransportEmulator", "BlitsMe.TransportEmulator\BlitsMe.TransportEmulator.csproj", "{5D03D6CA-077B-4EF3-8937-8B05114B6A22}"
 EndProject
-Project("{930C7802-8A8C-48F9-8165-68863BCCD9DD}") = "BlitsMeSetupFull", "BlitsMeSetupFull\BlitsMeSetupFull.wixproj", "{E356991C-1A8C-4E27-B0D4-4447CA55BA45}"
+Project("{930C7802-8A8C-48F9-8165-68863BCCD9DD}") = "GwupeSetupFull", "BlitsMeSetupFull\GwupeSetupFull.wixproj", "{E356991C-1A8C-4E27-B0D4-4447CA55BA45}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BlitsMe.UDTTester", "BlitsMe.UDTTester\BlitsMe.UDTTester.csproj", "{9ABBAC87-D8F0-4808-8436-29FC20E3E8F7}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BlitsMeRestartService", "BlitsMeRestartService\BlitsMeRestartService.csproj", "{74CDE8F8-2F3C-400A-852A-7B195D3CDA30}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GwupeRestartService", "BlitsMeRestartService\GwupeRestartService.csproj", "{74CDE8F8-2F3C-400A-852A-7B195D3CDA30}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

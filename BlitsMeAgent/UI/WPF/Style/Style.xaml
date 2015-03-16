@@ -1,11 +1,11 @@
 ﻿<ResourceDictionary
 	xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" 
 	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-	xmlns:utils="clr-namespace:BlitsMe.Agent.UI.WPF.Utils"
+	xmlns:utils="clr-namespace:Gwupe.Agent.UI.WPF.Utils"
 	xmlns:mahappsControls="clr-namespace:MahApps.Metro.Controls;assembly=MahApps.Metro"
 	xmlns:ed="http://schemas.microsoft.com/expression/2010/drawing"
 	xmlns:diag="clr-namespace:System.Diagnostics;assembly=WindowsBase"
-	xmlns:wpf="clr-namespace:BlitsMe.Agent.UI.WPF">
+	xmlns:wpf="clr-namespace:Gwupe.Agent.UI.WPF">
     <ResourceDictionary.MergedDictionaries>
         <ResourceDictionary Source="pack://application:,,,/MahApps.Metro;component/Styles/Colors.xaml" />
         <ResourceDictionary Source="pack://application:,,,/MahApps.Metro;component/Styles/Fonts.xaml" />

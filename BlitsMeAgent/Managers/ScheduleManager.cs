@@ -8,12 +8,12 @@ using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading;
 using System.Timers;
-using BlitsMe.Agent.Components.Alert;
-using BlitsMe.Agent.Components.Schedule;
+using Gwupe.Agent.Components.Alert;
+using Gwupe.Agent.Components.Schedule;
 using log4net;
 using Timer = System.Timers.Timer;
 
-namespace BlitsMe.Agent.Managers
+namespace Gwupe.Agent.Managers
 {
     class ScheduleManager
     {

@@ -13,7 +13,7 @@ using System.Windows.Navigation;
 using System.Windows.Shapes;
 using log4net;
 
-namespace BlitsMe.Agent.UI.WPF.Engage
+namespace Gwupe.Agent.UI.WPF.Engage
 {
     /// <summary>
     /// Interaction logic for GetRating.xaml

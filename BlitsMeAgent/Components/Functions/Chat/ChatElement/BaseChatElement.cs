@@ -1,10 +1,10 @@
 using System;
 using System.ComponentModel;
 using System.Windows.Input;
-using BlitsMe.Common.Security;
+using Gwupe.Common.Security;
 using log4net;
 
-namespace BlitsMe.Agent.Components.Functions.Chat.ChatElement
+namespace Gwupe.Agent.Components.Functions.Chat.ChatElement
 {
 
 

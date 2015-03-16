@@ -4,10 +4,10 @@ using System.Linq;
 using System.Text;
 using System.Runtime.Serialization;
 
-namespace BlitsMe.Cloud.Messaging.Response
+namespace Gwupe.Cloud.Messaging.Response
 {
     [DataContract]
-    public class ListenHandshakeRs : BlitsMe.Cloud.Messaging.API.UserToUserResponse
+    public class ListenHandshakeRs : Gwupe.Cloud.Messaging.API.UserToUserResponse
     {
         public override String type
         {

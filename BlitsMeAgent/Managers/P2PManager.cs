@@ -4,18 +4,18 @@ using System.Net;
 using System.Net.Sockets;
 using System.Text;
 using System.Threading;
-using BlitsMe.Agent.Components.Person;
-using BlitsMe.Cloud.Messaging.Request;
-using BlitsMe.Cloud.Messaging.Response;
-using BlitsMe.Communication.P2P.P2P.Socket;
-using BlitsMe.Communication.P2P.P2P.Socket.API;
-using BlitsMe.Communication.P2P.P2P.Tunnel;
-using BlitsMe.Communication.P2P.RUDP.Packet;
+using Gwupe.Agent.Components.Person;
+using Gwupe.Cloud.Messaging.Request;
+using Gwupe.Cloud.Messaging.Response;
+using Gwupe.Communication.P2P.P2P.Socket;
+using Gwupe.Communication.P2P.P2P.Socket.API;
+using Gwupe.Communication.P2P.P2P.Tunnel;
+using Gwupe.Communication.P2P.RUDP.Packet;
 using log4net;
 using Udt;
 using Socket = Udt.Socket;
 
-namespace BlitsMe.Agent.Managers
+namespace Gwupe.Agent.Managers
 {
     internal class P2PManager
     {
@@ -27,7 +27,7 @@ namespace BlitsMe.Agent.Managers
         {
             _pendingTunnels = new Dictionary<string, TunnelEndpointContainer>();
             _awaitingConnections = new Dictionary<string, Action<ISocket>>();
-            BlitsMeClientAppContext.CurrentAppContext.LoginManager.LoggedOut += (sender, args) => Reset();
+            GwupeClientAppContext.CurrentAppContext.LoginManager.LoggedOut += (sender, args) => Reset();
         }
 
         // Called from RequestManager to establish a tunnel to a second party, its job is to wave and then save the result
@@ -39,11 +39,11 @@ namespace BlitsMe.Agent.Managers
             if (self.ExternalEndPoint == null)
             {
                 Logger.Warn("Failed to get external endpoint : " + self);
-                ThreadPool.QueueUserWorkItem(m => BlitsMeClientAppContext.CurrentAppContext.SubmitFaultReport(new FaultReport() { UserReport = "INTERNAL : Failed to get external endpoint : " + self }));
+                ThreadPool.QueueUserWorkItem(m => GwupeClientAppContext.CurrentAppContext.SubmitFaultReport(new FaultReport() { UserReport = "INTERNAL : Failed to get external endpoint : " + self }));
             }
             if (self.EndPoints.Count == 0)
             {
-                ThreadPool.QueueUserWorkItem(m => BlitsMeClientAppContext.CurrentAppContext.SubmitFaultReport(new FaultReport() { UserReport = "INTERNAL : Failed to get external endpoint : " + self }));
+                ThreadPool.QueueUserWorkItem(m => GwupeClientAppContext.CurrentAppContext.SubmitFaultReport(new FaultReport() { UserReport = "INTERNAL : Failed to get external endpoint : " + self }));
                 throw new Exception("Failed to determine any local endpoints : " + self.ToString());
             }
 
@@ -58,7 +58,7 @@ namespace BlitsMe.Agent.Managers
             TunnelEndpointContainer pendingTunnel;
             try
             {
-                var response = BlitsMeClientAppContext.CurrentAppContext.ConnectionManager.Connection.Request<InitP2PConnectionRq, InitP2PConnectionRs>(initRq);
+                var response = GwupeClientAppContext.CurrentAppContext.ConnectionManager.Connection.Request<InitP2PConnectionRq, InitP2PConnectionRs>(initRq);
                 // this will cause the server to initialise a tunnel endpoint and prepare it for connection
 #if DEBUG
                 Logger.Debug("Got response from p2p connection request");
@@ -70,20 +70,20 @@ namespace BlitsMe.Agent.Managers
                     // setup my peers endpoints
                     var peer = GetPeerInfoFromResponse(response);
                     peer.FacilitatorRepeatedEndPoint = pendingTunnel.FacilitatorEndPoint;
-                    pendingTunnel.TunnelEndpoint.Sync(peer, response.uniqueId, BlitsMeClientAppContext.CurrentAppContext.SettingsManager.SyncTypes);
+                    pendingTunnel.TunnelEndpoint.Sync(peer, response.uniqueId, GwupeClientAppContext.CurrentAppContext.SettingsManager.SyncTypes);
                     Logger.Info("Successfully completed outgoing tunnel with " + secondParty.Person.Username + "-" + secondParty.ActiveShortCode + " [" + response.uniqueId + "]");
                 }
                 catch (Exception e)
                 {
                     Logger.Error("Failed to sync with peer : " + e.Message, e);
-                    ThreadPool.QueueUserWorkItem(m => BlitsMeClientAppContext.CurrentAppContext.SubmitFaultReport(new FaultReport() { UserReport = "INTERNAL : Failed to sync with peer : " + e.Message }));
+                    ThreadPool.QueueUserWorkItem(m => GwupeClientAppContext.CurrentAppContext.SubmitFaultReport(new FaultReport() { UserReport = "INTERNAL : Failed to sync with peer : " + e.Message }));
                     throw new Exception("Failed to sync with peer : " + e.Message, e);
                 }
             }
             catch (Exception e)
             {
                 Logger.Error("Failed to setup P2P Connection : " + e.Message, e);
-                ThreadPool.QueueUserWorkItem(m => BlitsMeClientAppContext.CurrentAppContext.SubmitFaultReport(new FaultReport() { UserReport = "INTERNAL : Failed to setup p2p connection : " + e.Message }));
+                ThreadPool.QueueUserWorkItem(m => GwupeClientAppContext.CurrentAppContext.SubmitFaultReport(new FaultReport() { UserReport = "INTERNAL : Failed to setup p2p connection : " + e.Message }));
                 throw new Exception("Failed to setup P2P Connection : " + e.Message, e);
             }
             return pendingTunnel.TunnelEndpoint;
@@ -154,7 +154,7 @@ namespace BlitsMe.Agent.Managers
         {
             try
             {
-                var activeIp = pendingTunnel.WaitForSync(peer, connectionId, BlitsMeClientAppContext.CurrentAppContext.SettingsManager.SyncTypes);
+                var activeIp = pendingTunnel.WaitForSync(peer, connectionId, GwupeClientAppContext.CurrentAppContext.SettingsManager.SyncTypes);
                 Logger.Info("Successfully completed incoming tunnel with " + activeIp.Address + ":" + activeIp.Port + " [" + connectionId + "]");
                 // call the callback method
                 Logger.Debug("Handing over the the receiving method for this connection");
@@ -162,7 +162,7 @@ namespace BlitsMe.Agent.Managers
             }
             catch (Exception ex)
             {
-                ThreadPool.QueueUserWorkItem(m => BlitsMeClientAppContext.CurrentAppContext.SubmitFaultReport(new FaultReport() { UserReport = "INTERNAL : Failed to sync with peer : " + ex.Message }));
+                ThreadPool.QueueUserWorkItem(m => GwupeClientAppContext.CurrentAppContext.SubmitFaultReport(new FaultReport() { UserReport = "INTERNAL : Failed to sync with peer : " + ex.Message }));
                 Logger.Error("Failed to sync with peer [" + peer + "] for connection " + connectionId, ex);
             }
         }

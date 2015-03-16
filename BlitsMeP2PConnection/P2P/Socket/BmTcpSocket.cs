@@ -1,11 +1,11 @@
 ﻿using System;
 using System.Net;
 using System.Net.Sockets;
-using BlitsMe.Communication.P2P.P2P.Socket.API;
+using Gwupe.Communication.P2P.P2P.Socket.API;
 using log4net;
 using log4net.Repository.Hierarchy;
 
-namespace BlitsMe.Communication.P2P.P2P.Socket
+namespace Gwupe.Communication.P2P.P2P.Socket
 {
     public class BmTcpSocket : ISocket
     {

@@ -2,12 +2,12 @@
 	xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" 
 	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
 	xmlns:s="clr-namespace:System;assembly=mscorlib"
-	xmlns:notification="clr-namespace:BlitsMe.Agent.Components.Notification"
-	xmlns:alert="clr-namespace:BlitsMe.Agent.Components.Alert"
-	xmlns:fileSendNotification="clr-namespace:BlitsMe.Agent.Components.Functions.FileSend.Notification"
-	xmlns:rdpNotification="clr-namespace:BlitsMe.Agent.Components.Functions.RemoteDesktop.Notification"
-	xmlns:utils="clr-namespace:BlitsMe.Agent.UI.WPF.Utils" 
-    xmlns:engage="clr-namespace:BlitsMe.Agent.UI.WPF.Engage"
+	xmlns:notification="clr-namespace:Gwupe.Agent.Components.Notification"
+	xmlns:alert="clr-namespace:Gwupe.Agent.Components.Alert"
+	xmlns:fileSendNotification="clr-namespace:Gwupe.Agent.Components.Functions.FileSend.Notification"
+	xmlns:rdpNotification="clr-namespace:Gwupe.Agent.Components.Functions.RemoteDesktop.Notification"
+	xmlns:utils="clr-namespace:Gwupe.Agent.UI.WPF.Utils" 
+    xmlns:engage="clr-namespace:Gwupe.Agent.UI.WPF.Engage"
     >
 
     <utils:ImageStreamReader x:Key="imageStreamReader" />
@@ -502,13 +502,13 @@
         </Setter>
     </Style>
     <DataTemplate x:Key="CancelButtonTemplate">
-        <Image Source="/BlitsMe.Agent;component/UI/WPF/Images/close.png"/>
+        <Image Source="/Gwupe.Agent;component/UI/WPF/Images/close.png"/>
     </DataTemplate>
     <DataTemplate x:Key="AcceptButtonTemplate">
-        <Image Source="/BlitsMe.Agent;component/UI/WPF/Images/Check.png" Width="13"/>
+        <Image Source="/Gwupe.Agent;component/UI/WPF/Images/Check.png" Width="13"/>
     </DataTemplate>
     <DataTemplate x:Key="DenyButtonTemplate">
-        <Image Source="/BlitsMe.Agent;component/UI/WPF/Images/close.png"/>
+        <Image Source="/Gwupe.Agent;component/UI/WPF/Images/close.png"/>
     </DataTemplate>
 
 </ResourceDictionary>

@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Windows.Input;
-using BlitsMe.Agent.Components.Notification;
-using BlitsMe.Agent.Managers;
+using Gwupe.Agent.Components.Notification;
+using Gwupe.Agent.Managers;
 
-namespace BlitsMe.Agent.Components.Functions.FileSend.Notification
+namespace Gwupe.Agent.Components.Functions.FileSend.Notification
 {
     internal delegate void FileSendEventHandler(object sender, FileSendEventArgs args);
 

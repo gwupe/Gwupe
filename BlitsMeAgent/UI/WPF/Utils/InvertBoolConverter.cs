@@ -2,7 +2,7 @@
 using System.Globalization;
 using System.Windows.Data;
 
-namespace BlitsMe.Agent.UI.WPF.Utils
+namespace Gwupe.Agent.UI.WPF.Utils
 {
     [ValueConversion(typeof(bool), typeof(bool))]
     public class InvertBoolConverter : IValueConverter

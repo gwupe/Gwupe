@@ -4,16 +4,16 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Timers;
-using BlitsMe.Communication.P2P.Exceptions;
-using BlitsMe.Communication.P2P.RUDP.Packet;
-using BlitsMe.Communication.P2P.RUDP.Packet.API;
-using BlitsMe.Communication.P2P.RUDP.Packet.TCP;
-using BlitsMe.Communication.P2P.RUDP.Socket.API;
-using BlitsMe.Communication.P2P.RUDP.Tunnel.API;
-using BlitsMe.Communication.P2P.RUDP.Utils;
+using Gwupe.Communication.P2P.Exceptions;
+using Gwupe.Communication.P2P.RUDP.Packet;
+using Gwupe.Communication.P2P.RUDP.Packet.API;
+using Gwupe.Communication.P2P.RUDP.Packet.TCP;
+using Gwupe.Communication.P2P.RUDP.Socket.API;
+using Gwupe.Communication.P2P.RUDP.Tunnel.API;
+using Gwupe.Communication.P2P.RUDP.Utils;
 using log4net;
 
-namespace BlitsMe.Communication.P2P.RUDP.Tunnel.Transport
+namespace Gwupe.Communication.P2P.RUDP.Tunnel.Transport
 {
     public class TCPTransport : ITCPTransport
     {

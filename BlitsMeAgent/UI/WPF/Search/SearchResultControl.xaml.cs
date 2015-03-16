@@ -1,23 +1,23 @@
 ﻿using System;
 using System.Windows.Controls;
 using System.Windows.Input;
-using BlitsMe.Agent.Components.Person;
-using BlitsMe.Agent.Components.Search;
-using BlitsMe.Agent.Managers;
-using BlitsMe.Agent.UI.WPF.Engage;
+using Gwupe.Agent.Components.Person;
+using Gwupe.Agent.Components.Search;
+using Gwupe.Agent.Managers;
+using Gwupe.Agent.UI.WPF.Engage;
 using log4net;
 
-namespace BlitsMe.Agent.UI.WPF.Search
+namespace Gwupe.Agent.UI.WPF.Search
 {
     /// <summary>
     /// Interaction logic for SearchResultControl.xaml
     /// </summary>
     public partial class SearchResultControl : UserControl
     {
-        private readonly BlitsMeClientAppContext _appContext;
+        private readonly GwupeClientAppContext _appContext;
         private SearchResult SearchResult { get; set; }
 
-        public SearchResultControl(BlitsMeClientAppContext appContext, SearchResult sourceObject)
+        public SearchResultControl(GwupeClientAppContext appContext, SearchResult sourceObject)
         {
             InitializeComponent();
             _appContext = appContext;
@@ -33,7 +33,7 @@ namespace BlitsMe.Agent.UI.WPF.Search
 
         private void ChatPersonButton_Click(object sender, System.Windows.RoutedEventArgs e)
         {
-            BlitsMeClientAppContext.CurrentAppContext.UIManager.Dashboard.ActivateEngagement(SearchResult.Username);
+            GwupeClientAppContext.CurrentAppContext.UIManager.Dashboard.ActivateEngagement(SearchResult.Username);
         }
     }
 
@@ -41,10 +41,10 @@ namespace BlitsMe.Agent.UI.WPF.Search
     public class AddPerson : ICommand
     {
         private static readonly ILog Logger = LogManager.GetLogger(typeof(AddPerson));
-        private readonly BlitsMeClientAppContext _appContext;
+        private readonly GwupeClientAppContext _appContext;
         private readonly Person _person;
 
-        internal AddPerson(BlitsMeClientAppContext appContext, Person person)
+        internal AddPerson(GwupeClientAppContext appContext, Person person)
         {
             _appContext = appContext;
             _person = person;

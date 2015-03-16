@@ -8,8 +8,8 @@
     <ProjectGuid>{211D2399-36E1-4E1E-BFC5-FE76F7A8EFCC}</ProjectGuid>
     <OutputType>WinExe</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>BlitsMe.Agent</RootNamespace>
-    <AssemblyName>BlitsMe.Agent</AssemblyName>
+    <RootNamespace>Gwupe.Agent</RootNamespace>
+    <AssemblyName>Gwupe.Agent</AssemblyName>
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <TargetFrameworkProfile>Client</TargetFrameworkProfile>
     <FileAlignment>512</FileAlignment>
@@ -58,7 +58,7 @@
     <ApplicationIcon>Icons\icon-main.ico</ApplicationIcon>
   </PropertyGroup>
   <PropertyGroup>
-    <StartupObject>BlitsMe.Agent.Program</StartupObject>
+    <StartupObject>Gwupe.Agent.Program</StartupObject>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x64'">
     <DebugSymbols>true</DebugSymbols>
@@ -66,7 +66,7 @@
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <DebugType>full</DebugType>
     <PlatformTarget>x64</PlatformTarget>
-    <CodeAnalysisLogFile>bin\Debug\BlitsMe.Agent.exe.CodeAnalysisLog.xml</CodeAnalysisLogFile>
+    <CodeAnalysisLogFile>bin\Debug\Gwupe.Agent.exe.CodeAnalysisLog.xml</CodeAnalysisLogFile>
     <CodeAnalysisUseTypeNameInSuppression>true</CodeAnalysisUseTypeNameInSuppression>
     <CodeAnalysisModuleSuppressionsFile>GlobalSuppressions.cs</CodeAnalysisModuleSuppressionsFile>
     <ErrorReport>prompt</ErrorReport>
@@ -82,7 +82,7 @@
     <Optimize>true</Optimize>
     <DebugType>pdbonly</DebugType>
     <PlatformTarget>x64</PlatformTarget>
-    <CodeAnalysisLogFile>bin\Release\BlitsMe.Agent.exe.CodeAnalysisLog.xml</CodeAnalysisLogFile>
+    <CodeAnalysisLogFile>bin\Release\Gwupe.Agent.exe.CodeAnalysisLog.xml</CodeAnalysisLogFile>
     <CodeAnalysisUseTypeNameInSuppression>true</CodeAnalysisUseTypeNameInSuppression>
     <CodeAnalysisModuleSuppressionsFile>GlobalSuppressions.cs</CodeAnalysisModuleSuppressionsFile>
     <ErrorReport>prompt</ErrorReport>
@@ -96,7 +96,7 @@
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <DebugType>full</DebugType>
     <PlatformTarget>x86</PlatformTarget>
-    <CodeAnalysisLogFile>bin\Debug\BlitsMe.Agent.exe.CodeAnalysisLog.xml</CodeAnalysisLogFile>
+    <CodeAnalysisLogFile>bin\Debug\Gwupe.Agent.exe.CodeAnalysisLog.xml</CodeAnalysisLogFile>
     <CodeAnalysisUseTypeNameInSuppression>true</CodeAnalysisUseTypeNameInSuppression>
     <CodeAnalysisModuleSuppressionsFile>GlobalSuppressions.cs</CodeAnalysisModuleSuppressionsFile>
     <ErrorReport>prompt</ErrorReport>
@@ -110,7 +110,7 @@
     <Optimize>true</Optimize>
     <DebugType>pdbonly</DebugType>
     <PlatformTarget>x86</PlatformTarget>
-    <CodeAnalysisLogFile>bin\Release\BlitsMe.Agent.exe.CodeAnalysisLog.xml</CodeAnalysisLogFile>
+    <CodeAnalysisLogFile>bin\Release\Gwupe.Agent.exe.CodeAnalysisLog.xml</CodeAnalysisLogFile>
     <CodeAnalysisUseTypeNameInSuppression>true</CodeAnalysisUseTypeNameInSuppression>
     <CodeAnalysisModuleSuppressionsFile>GlobalSuppressions.cs</CodeAnalysisModuleSuppressionsFile>
     <ErrorReport>prompt</ErrorReport>
@@ -277,8 +277,8 @@
     <Compile Include="UI\WPF\AlertControl.xaml.cs">
       <DependentUpon>AlertControl.xaml</DependentUpon>
     </Compile>
-    <Compile Include="UI\WPF\API\BlitsMeModalUserControl.cs" />
-    <Compile Include="UI\WPF\API\IBlitsMeUserControl.cs" />
+    <Compile Include="UI\WPF\API\GwupeModalUserControl.cs" />
+    <Compile Include="UI\WPF\API\IGwupeUserControl.cs" />
     <Compile Include="UI\WPF\API\IDashboardContentControl.cs" />
     <Compile Include="UI\WPF\AvatarImageWindow.xaml.cs">
       <DependentUpon>AvatarImageWindow.xaml</DependentUpon>
@@ -491,7 +491,7 @@
       <DependentUpon>RosterElement.xaml</DependentUpon>
     </Compile>
     <Compile Include="Utils.cs" />
-    <Compile Include="BlitsMeClientAppContext.cs" />
+    <Compile Include="GwupeClientAppContext.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <EmbeddedResource Include="Properties\Resources.resx">
@@ -533,24 +533,24 @@
   </ItemGroup>
   <ItemGroup Condition=" '$(Configuration)' == 'Debug' ">
     <EmbeddedResource Include="env\Debug\cacert.pem">
-      <LogicalName>BlitsMe.Agent.cacert.pem</LogicalName>
+      <LogicalName>Gwupe.Agent.cacert.pem</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="env\Debug\log4net.xml">
-      <LogicalName>BlitsMe.Agent.log4net.xml</LogicalName>
+      <LogicalName>Gwupe.Agent.log4net.xml</LogicalName>
     </EmbeddedResource>
-    <RootContent Include="env\Debug\bmss.exe">
+    <RootContent Include="env\Debug\gwupess.exe">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </RootContent>
   </ItemGroup>
   <ItemGroup Condition=" '$(Configuration)' == 'Release' ">
     <EmbeddedResource Include="env\Release\log4net.xml">
-      <LogicalName>BlitsMe.Agent.log4net.xml</LogicalName>
+      <LogicalName>Gwupe.Agent.log4net.xml</LogicalName>
       <SubType>Designer</SubType>
     </EmbeddedResource>
     <EmbeddedResource Include="env\Release\cacert.pem">
-      <LogicalName>BlitsMe.Agent.cacert.pem</LogicalName>
+      <LogicalName>Gwupe.Agent.cacert.pem</LogicalName>
     </EmbeddedResource>
-    <RootContent Include="env\Release\bmss.exe">
+    <RootContent Include="env\Release\gwupess.exe">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </RootContent>
   </ItemGroup>
@@ -606,29 +606,29 @@
     <Resource Include="UI\WPF\Images\User.png" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\BlitsMeCloudClient\BlitsMeCloudClient.csproj">
+    <ProjectReference Include="..\BlitsMeCloudClient\GwupeCloudClient.csproj">
       <Project>{751a6516-1fe8-47f4-a754-8aa5594ffb11}</Project>
-      <Name>BlitsMeCloudClient</Name>
+      <Name>GwupeCloudClient</Name>
       <Private>False</Private>
     </ProjectReference>
-    <ProjectReference Include="..\BlitsMeCommon\BlitsMeCommon.csproj">
+    <ProjectReference Include="..\BlitsMeCommon\GwupeCommon.csproj">
       <Project>{1b355f1c-9d50-4bab-8ceb-e6ca72e6de69}</Project>
-      <Name>BlitsMeCommon</Name>
+      <Name>GwupeCommon</Name>
       <Private>False</Private>
     </ProjectReference>
-    <ProjectReference Include="..\BlitsMeP2PConnection\BlitsMeP2PConnection.csproj">
+    <ProjectReference Include="..\BlitsMeP2PConnection\GwupeCommunicatonP2P.csproj">
       <Project>{c8080119-3305-43b5-8944-592dbc960f12}</Project>
-      <Name>BlitsMeP2PConnection</Name>
+      <Name>GwupeCommunicatonP2P</Name>
       <Private>False</Private>
     </ProjectReference>
-    <ProjectReference Include="..\BlitsMeServiceHost\BlitsMeServiceHost.csproj">
+    <ProjectReference Include="..\BlitsMeServiceHost\GwupeServiceHost.csproj">
       <Project>{3D791A7A-2044-42A0-902A-FC86EDE214D4}</Project>
-      <Name>BlitsMeServiceHost</Name>
+      <Name>GwupeServiceHost</Name>
       <Private>False</Private>
     </ProjectReference>
-    <ProjectReference Include="..\BlitsMeServiceProxy\BlitsMeServiceProxy.csproj">
+    <ProjectReference Include="..\BlitsMeServiceProxy\GwupeServiceProxy.csproj">
       <Project>{22BB8667-895C-449A-9DCC-90CB1900F8CB}</Project>
-      <Name>BlitsMeServiceProxy</Name>
+      <Name>GwupeServiceProxy</Name>
       <Private>False</Private>
     </ProjectReference>
     <ProjectReference Include="..\WebSocketLib\WebSocket.csproj">
@@ -669,7 +669,9 @@
     <Resource Include="UI\WPF\Images\1401500204_519673-179_Upload.png" />
     <Resource Include="UI\WPF\Images\logo.jpg" />
     <Resource Include="UI\WPF\Images\baseline.png" />
+    <Resource Include="Icons\icon-disconnected.ico" />
     <Content Include="Resources\Entypo-license.txt" />
+    <None Include="Resources\icon_disconnected.ico" />
     <Content Include="Resources\WindowsIcons-license.txt" />
     <Content Include="SuggestedTests.txt" />
     <Resource Include="UI\WPF\Images\connect_adhoc.png" />
@@ -678,6 +680,7 @@
     <Resource Include="UI\WPF\Images\BlueJoin.png" />
     <Resource Include="UI\WPF\Images\BlueSpeech.png" />
     <Resource Include="UI\WPF\Images\GreenJoin.png" />
+    <Resource Include="UI\WPF\Images\Gwupe Logo No Text.png" />
     <Content Include="UI\WPF\Images\loading-side.gif" />
     <Content Include="UI\WPF\Images\Search.png" />
     <Resource Include="UI\WPF\Images\Settings.png" />
@@ -685,11 +688,11 @@
     <Resource Include="UI\WPF\Images\smalltick.png" />
     <Content Include="UI\WPF\Images\Time.png" />
     <Resource Include="UI\WPF\Images\Blitsmewording200.png" />
-    <EmbeddedResource Include="..\BlitsMeCommon\bin\$(Configuration)\BlitsMe.Common.dll" />
-    <EmbeddedResource Include="..\BlitsMeCloudClient\bin\$(Configuration)\BlitsMe.Cloud.dll" />
-    <EmbeddedResource Include="..\BlitsMeP2PConnection\bin\$(Configuration)\BlitsMe.Communication.P2P.dll" />
-    <EmbeddedResource Include="..\BlitsMeServiceHost\bin\$(Configuration)\BlitsMe.ServiceHost.dll" />
-    <EmbeddedResource Include="..\BlitsMeServiceProxy\bin\$(Configuration)\BlitsMe.ServiceProxy.dll" />
+    <EmbeddedResource Include="..\BlitsMeCommon\bin\$(Configuration)\Gwupe.Common.dll" />
+    <EmbeddedResource Include="..\BlitsMeCloudClient\bin\$(Configuration)\Gwupe.Cloud.dll" />
+    <EmbeddedResource Include="..\BlitsMeP2PConnection\bin\$(Configuration)\Gwupe.Communication.P2P.dll" />
+    <EmbeddedResource Include="..\BlitsMeServiceHost\bin\$(Configuration)\Gwupe.ServiceHost.dll" />
+    <EmbeddedResource Include="..\BlitsMeServiceProxy\bin\$(Configuration)\Gwupe.ServiceProxy.dll" />
     <EmbeddedResource Include="..\library\log4net.dll" />
     <EmbeddedResource Include="..\BlitsMeP2PConnection\UdtProtocol.dll" />
     <EmbeddedResource Include="..\WebSocketLib\bin\$(Configuration)\Bauglir.Ex.dll" />
@@ -725,9 +728,9 @@
     <Copy DestinationFolder="$(OutputPath)" SourceFiles="@(RootContent)" SkipUnchangedFiles="true" />
     <!-- 2013 Certificate
     <Exec Condition=" '$(Configuration)' == 'Release' " Command="&quot;C:\Program Files (x86)\Microsoft SDKs\Windows\v7.1A\Bin\Signtool.exe&quot; sign /d &quot;BlitsMe Agent Application&quot; /sha1 83e81a9d1d88fb8718fd1df07e89ef89b000ee64 &quot;$(TargetDir)BlitsMe.Agent.exe&quot;" />
-    <Exec Condition=" '$(Configuration)' == 'Release' " Command="&quot;C:\Program Files (x86)\Microsoft SDKs\Windows\v7.1A\Bin\Signtool.exe&quot; sign /d &quot;BlitsMe Support Screen&quot; /sha1 83e81a9d1d88fb8718fd1df07e89ef89b000ee64 &quot;$(TargetDir)bmss.exe&quot;" />
+    <Exec Condition=" '$(Configuration)' == 'Release' " Command="&quot;C:\Program Files (x86)\Microsoft SDKs\Windows\v7.1A\Bin\Signtool.exe&quot; sign /d &quot;BlitsMe Support Screen&quot; /sha1 83e81a9d1d88fb8718fd1df07e89ef89b000ee64 &quot;$(TargetDir)gwupess.exe&quot;" />
 -->
-    <Exec Condition=" '$(Configuration)' == 'Release' " Command="&quot;C:\Program Files (x86)\Microsoft SDKs\Windows\v7.1A\Bin\Signtool.exe&quot; sign /d &quot;BlitsMe Agent Application&quot; /sha1 ab9772b33b05e157f66d29ba9c29ee8ed66688e7 &quot;$(TargetDir)BlitsMe.Agent.exe&quot;" />
-    <Exec Condition=" '$(Configuration)' == 'Release' " Command="&quot;C:\Program Files (x86)\Microsoft SDKs\Windows\v7.1A\Bin\Signtool.exe&quot; sign /d &quot;BlitsMe Support Screen&quot; /sha1 ab9772b33b05e157f66d29ba9c29ee8ed66688e7 &quot;$(TargetDir)bmss.exe&quot;" />
+    <Exec Condition=" '$(Configuration)' == 'Release' " Command="&quot;C:\Program Files (x86)\Microsoft SDKs\Windows\v7.1A\Bin\Signtool.exe&quot; sign /d &quot;Gwupe Application&quot; /sha1 ab9772b33b05e157f66d29ba9c29ee8ed66688e7 &quot;$(TargetDir)Gwupe.Agent.exe&quot;" />
+    <Exec Condition=" '$(Configuration)' == 'Release' " Command="&quot;C:\Program Files (x86)\Microsoft SDKs\Windows\v7.1A\Bin\Signtool.exe&quot; sign /d &quot;Gwupe Support Screen&quot; /sha1 ab9772b33b05e157f66d29ba9c29ee8ed66688e7 &quot;$(TargetDir)gwupess.exe&quot;" />
   </Target>
 </Project>

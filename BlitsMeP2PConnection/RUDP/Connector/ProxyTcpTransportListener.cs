@@ -2,15 +2,15 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using BlitsMe.Communication.P2P.Exceptions;
-using BlitsMe.Communication.P2P.RUDP.Connector.API;
-using BlitsMe.Communication.P2P.RUDP.Socket.API;
+using Gwupe.Communication.P2P.Exceptions;
+using Gwupe.Communication.P2P.RUDP.Connector.API;
+using Gwupe.Communication.P2P.RUDP.Socket.API;
 using System.Net;
 using System.Net.Sockets;
 using log4net;
-using BlitsMe.Communication.P2P.RUDP.Tunnel.API;
+using Gwupe.Communication.P2P.RUDP.Tunnel.API;
 
-namespace BlitsMe.Communication.P2P.RUDP.Connector
+namespace Gwupe.Communication.P2P.RUDP.Connector
 {
     public class ProxyTcpTransportListener : TcpTransportListener
     {

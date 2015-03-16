@@ -1,4 +1,4 @@
-﻿namespace BlitsMe.Agent
+﻿namespace Gwupe.Agent
 {
     public class FaultReport
     {

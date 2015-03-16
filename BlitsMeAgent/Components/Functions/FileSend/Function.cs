@@ -2,28 +2,25 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Security;
 using System.Threading;
-using BlitsMe.Agent.Components.Functions.API;
-using BlitsMe.Agent.Components.Functions.Chat;
-using BlitsMe.Agent.Components.Functions.FileSend.ChatElement;
-using BlitsMe.Agent.Components.Functions.FileSend.Notification;
-using BlitsMe.Agent.Components.Functions.RemoteDesktop;
-using BlitsMe.Agent.Components.Notification;
-using BlitsMe.Agent.Managers;
-using BlitsMe.Cloud.Messaging.Request;
-using BlitsMe.Cloud.Messaging.Response;
-using BlitsMe.Common;
-using BlitsMe.Common.Security;
+using Gwupe.Agent.Components.Functions.API;
+using Gwupe.Agent.Components.Functions.Chat;
+using Gwupe.Agent.Components.Functions.FileSend.ChatElement;
+using Gwupe.Agent.Components.Functions.FileSend.Notification;
+using Gwupe.Agent.Components.Notification;
+using Gwupe.Cloud.Messaging.Request;
+using Gwupe.Cloud.Messaging.Response;
+using Gwupe.Common;
+using Gwupe.Common.Security;
 using log4net;
 
-namespace BlitsMe.Agent.Components.Functions.FileSend
+namespace Gwupe.Agent.Components.Functions.FileSend
 {
     //internal delegate void FileSendRequestEvent(object sender, FileSendRequest args);
 
     class Function : FunctionImpl
     {
-        private readonly BlitsMeClientAppContext _appContext;
+        private readonly GwupeClientAppContext _appContext;
         private readonly Engagement _engagement;
         private Chat.Function Chat { get { return _engagement.Functions["Chat"] as Chat.Function; } }
         private readonly Dictionary<String, FileSendInfo> _pendingFileSends = new Dictionary<string, FileSendInfo>();
@@ -32,7 +29,7 @@ namespace BlitsMe.Agent.Components.Functions.FileSend
 
         private static readonly ILog Logger = LogManager.GetLogger(typeof(Function));
 
-        internal Function(BlitsMeClientAppContext appContext, Engagement engagement)
+        internal Function(GwupeClientAppContext appContext, Engagement engagement)
         {
             _appContext = appContext;
             _engagement = engagement;

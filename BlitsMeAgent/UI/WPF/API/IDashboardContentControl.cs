@@ -2,7 +2,7 @@
 using System.Linq;
 using System.Text;
 
-namespace BlitsMe.Agent.UI.WPF.API
+namespace Gwupe.Agent.UI.WPF.API
 {
     interface IDashboardContentControl
     {

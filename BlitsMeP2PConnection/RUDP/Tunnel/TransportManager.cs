@@ -1,12 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Net;
-using BlitsMe.Communication.P2P.RUDP.Packet.API;
-using BlitsMe.Communication.P2P.RUDP.Tunnel.API;
-using BlitsMe.Communication.P2P.RUDP.Tunnel.Transport;
+using Gwupe.Communication.P2P.RUDP.Packet.API;
+using Gwupe.Communication.P2P.RUDP.Tunnel.API;
+using Gwupe.Communication.P2P.RUDP.Tunnel.Transport;
 using log4net;
 
-namespace BlitsMe.Communication.P2P.RUDP.Tunnel
+namespace Gwupe.Communication.P2P.RUDP.Tunnel
 {
     /* By adding headers to the packets destined for the UDP endPointManager, we can run multiple end to end connections across
      * the single endPointManager.  This class manages that multiplexing allowing named connections incoming and outgoing, adding, stripping and

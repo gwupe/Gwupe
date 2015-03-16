@@ -1,4 +1,4 @@
-﻿namespace BlitsMe.Cloud.Messaging.Request
+﻿namespace Gwupe.Cloud.Messaging.Request
 {
     public class CurrentUserRq : API.Request
     {

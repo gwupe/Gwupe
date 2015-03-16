@@ -6,7 +6,7 @@
 	xmlns:mahappsControls="clr-namespace:MahApps.Metro.Controls;assembly=MahApps.Metro"
 	xmlns:Anno="http://schemas.microsoft.com/expression/blend/extensions/annotations/2008"
 	mc:Ignorable="d Anno"
-	x:Class="BlitsMe.Agent.UI.WPF.LoginControl">
+	x:Class="Gwupe.Agent.UI.WPF.LoginControl">
     <UserControl.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>

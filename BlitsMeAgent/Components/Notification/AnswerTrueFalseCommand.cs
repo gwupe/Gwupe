@@ -4,9 +4,9 @@ using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Windows.Input;
-using BlitsMe.Agent.Managers;
+using Gwupe.Agent.Managers;
 
-namespace BlitsMe.Agent.Components.Notification
+namespace Gwupe.Agent.Components.Notification
 {
     class AnswerTrueFalseCommand : ICommand
     {

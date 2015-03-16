@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace BlitsMe.Cloud.Exceptions
+namespace Gwupe.Cloud.Exceptions
 {
     // This gets thrown if there was an exception on the remote side causing the message to 
     // not be processed correctly (so an appropriate response cannot be sent back)

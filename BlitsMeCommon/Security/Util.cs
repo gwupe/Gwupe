@@ -6,7 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Security.Cryptography;
 
-namespace BlitsMe.Common.Security
+namespace Gwupe.Common.Security
 {
     public class Util
     {

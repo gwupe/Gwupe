@@ -1,18 +1,18 @@
 using System;
 using System.Reflection;
-using BlitsMe.Cloud.Messaging.API;
-using BlitsMe.Cloud.Messaging.Response;
+using Gwupe.Cloud.Messaging.API;
+using Gwupe.Cloud.Messaging.Response;
 using log4net;
 
-namespace BlitsMe.Agent.Components.Processors
+namespace Gwupe.Agent.Components.Processors
 {
     internal abstract class UserToUserProcessor : Processor
     {
         private static readonly ILog Logger = LogManager.GetLogger(typeof(PresenceChangeProcessor));
 
-        protected readonly BlitsMeClientAppContext _appContext;
+        protected readonly GwupeClientAppContext _appContext;
 
-        internal UserToUserProcessor(BlitsMeClientAppContext appContext)
+        internal UserToUserProcessor(GwupeClientAppContext appContext)
         {
             _appContext = appContext;
         }
@@ -22,7 +22,7 @@ namespace BlitsMe.Agent.Components.Processors
             var request = (UserToUserRequest)req;
             Engagement engagement = _appContext.EngagementManager.GetNewEngagement(request.username, request.shortCode);
             String requestTypeName = request.GetType().ToString();
-            Type responseType = Type.GetType((requestTypeName.Substring(0, requestTypeName.Length - 2) + "Rs").Replace(".Request.", ".Response.") + ", BlitsMe.Cloud");
+            Type responseType = Type.GetType((requestTypeName.Substring(0, requestTypeName.Length - 2) + "Rs").Replace(".Request.", ".Response.") + ", Gwupe.Cloud");
             UserToUserResponse response = null;
             if (engagement == null)
             {

@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Threading;
 
-namespace BlitsMe.Common
+namespace Gwupe.Common
 {
 	/// <summary>
 	/// PipeStream is a thread-safe read/write data stream for use between two threads in a 

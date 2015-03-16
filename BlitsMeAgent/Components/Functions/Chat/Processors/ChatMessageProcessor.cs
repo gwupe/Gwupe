@@ -2,19 +2,19 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using BlitsMe.Agent.Components.Processors;
-using BlitsMe.Cloud.Messaging.API;
-using BlitsMe.Cloud.Messaging.Request;
-using BlitsMe.Cloud.Messaging.Response;
+using Gwupe.Agent.Components.Processors;
+using Gwupe.Cloud.Messaging.API;
+using Gwupe.Cloud.Messaging.Request;
+using Gwupe.Cloud.Messaging.Response;
 using log4net;
 
-namespace BlitsMe.Agent.Components.Functions.Chat.Processors
+namespace Gwupe.Agent.Components.Functions.Chat.Processors
 {
     internal class ChatMessageProcessor : UserToUserProcessor
     {
         private static readonly ILog Logger = LogManager.GetLogger(typeof(ChatMessageProcessor));
 
-        internal ChatMessageProcessor(BlitsMeClientAppContext appContext)
+        internal ChatMessageProcessor(GwupeClientAppContext appContext)
             : base(appContext)
         {
         }

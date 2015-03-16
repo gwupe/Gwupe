@@ -5,7 +5,7 @@
 	xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
 	xmlns:mahappsControls="clr-namespace:MahApps.Metro.Controls;assembly=MahApps.Metro"
 	mc:Ignorable="d"
-	x:Class="BlitsMe.Agent.UI.WPF.SignUpControl"
+	x:Class="Gwupe.Agent.UI.WPF.SignUpControl"
     d:DesignWidth="640" d:DesignHeight="480">
     <UserControl.Resources>
         <ResourceDictionary>
@@ -24,7 +24,7 @@
     <Grid x:Name="LayoutRoot" Background="Transparent">
 		<Grid Background="White" Opacity="0.35"></Grid>
         <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center" Margin="100,0,0,0">
-            <TextBlock Style="{DynamicResource TextblockHeaderStyle}">Join BlitsMe</TextBlock>
+            <TextBlock Style="{DynamicResource TextblockHeaderStyle}">Join Gwupe</TextBlock>
             <TextBlock x:Name="ErrorText" Margin="0,10,0,0" TextWrapping="Wrap" Text="Error" 
                        VerticalAlignment="Top" TextAlignment="Center" Foreground="Red" Visibility="Hidden"/>
             <TextBox mahappsControls:TextboxHelper.Watermark="Firstname" Margin="0,10,0,0" x:Name="Firstname"

@@ -3,9 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.Serialization;
 using System.Text;
-using BlitsMe.Cloud.Messaging.Elements;
+using Gwupe.Cloud.Messaging.Elements;
 
-namespace BlitsMe.Cloud.Messaging.Request
+namespace Gwupe.Cloud.Messaging.Request
 {
     [DataContract]
     public class UpdateRelationshipRq : API.ElevatedRequestImpl

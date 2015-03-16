@@ -1,8 +1,8 @@
 ﻿using System;
-using BlitsMe.Communication.P2P.RUDP.Packet.API;
+using Gwupe.Communication.P2P.RUDP.Packet.API;
 using System.Net;
 
-namespace BlitsMe.Communication.P2P.RUDP.Packet.Tunnel
+namespace Gwupe.Communication.P2P.RUDP.Packet.Tunnel
 {
     public abstract class BasicTunnelPacket : ITunnelPacket
     {

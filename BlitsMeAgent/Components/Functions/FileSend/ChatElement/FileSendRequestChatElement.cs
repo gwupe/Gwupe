@@ -1,6 +1,6 @@
-﻿using BlitsMe.Agent.Components.Functions.Chat.ChatElement;
+﻿using Gwupe.Agent.Components.Functions.Chat.ChatElement;
 
-namespace BlitsMe.Agent.Components.Functions.FileSend.ChatElement
+namespace Gwupe.Agent.Components.Functions.FileSend.ChatElement
 {
     public class FileSendRequestChatElement : TrueFalseChatElement
     {

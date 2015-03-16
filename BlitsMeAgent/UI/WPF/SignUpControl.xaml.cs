@@ -5,15 +5,15 @@ using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Navigation;
-using BlitsMe.Agent.Components;
-using BlitsMe.Agent.UI.WPF.Utils;
-using BlitsMe.Cloud.Exceptions;
-using BlitsMe.Cloud.Messaging.Request;
-using BlitsMe.Cloud.Messaging.Response;
+using Gwupe.Agent.Components;
+using Gwupe.Agent.UI.WPF.Utils;
+using Gwupe.Cloud.Exceptions;
+using Gwupe.Cloud.Messaging.Request;
+using Gwupe.Cloud.Messaging.Response;
 using log4net;
 using MahApps.Metro.Controls;
 
-namespace BlitsMe.Agent.UI.WPF
+namespace Gwupe.Agent.UI.WPF
 {
     /// <summary>
     /// Interaction logic for SignUpControl.xaml
@@ -21,7 +21,7 @@ namespace BlitsMe.Agent.UI.WPF
     public partial class SignUpControl : UserControl
     {
         private static readonly ILog Logger = LogManager.GetLogger(typeof(SignUpControl));
-        private readonly BlitsMeClientAppContext _appContext;
+        private readonly GwupeClientAppContext _appContext;
         private bool isSigningUp = false;
         private readonly InputValidator _validator;
         private Dashboard _dashboard;
@@ -29,7 +29,7 @@ namespace BlitsMe.Agent.UI.WPF
         public SignUpControl(Dashboard dashboard)
         {
             _dashboard = dashboard;
-            _appContext = BlitsMeClientAppContext.CurrentAppContext;
+            _appContext = GwupeClientAppContext.CurrentAppContext;
             this.InitializeComponent();
             _validator = new InputValidator(null,ErrorText,Dispatcher);
         }
@@ -57,7 +57,7 @@ namespace BlitsMe.Agent.UI.WPF
                 {
                     ClearBlurEffect(_dashboard);
                     ConfirmPasswordWindow confirmPasswordWindow = new ConfirmPasswordWindow();
-                    BlitsMeClientAppContext.CurrentAppContext.UIManager.ShowDialog(confirmPasswordWindow);
+                    GwupeClientAppContext.CurrentAppContext.UIManager.ShowDialog(confirmPasswordWindow);
                     if (!confirmPasswordWindow.Cancelled)
                     {
                         // OK, password will be changed
@@ -76,7 +76,7 @@ namespace BlitsMe.Agent.UI.WPF
                 }
                 else
                 {
-                    _validator.SetError("Cannot sign up, BlitsMe is not connected.");
+                    _validator.SetError("Cannot sign up, Gwupe is not connected.");
                 }
             }
         }
@@ -123,11 +123,11 @@ namespace BlitsMe.Agent.UI.WPF
         {
             if (_appContext.LoginManager.IsLoggedIn)
             {
-                BlitsMeClientAppContext.CurrentAppContext.UIManager.ClearDashboardState();
+                GwupeClientAppContext.CurrentAppContext.UIManager.ClearDashboardState();
             }
             else
             {
-                BlitsMeClientAppContext.CurrentAppContext.UIManager.PromptLogin();
+                GwupeClientAppContext.CurrentAppContext.UIManager.PromptLogin();
             }
         }
 

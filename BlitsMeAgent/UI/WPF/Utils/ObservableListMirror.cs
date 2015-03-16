@@ -9,7 +9,7 @@ using System.Text;
 using System.Windows.Threading;
 using log4net;
 
-namespace BlitsMe.Agent.UI.WPF.Utils
+namespace Gwupe.Agent.UI.WPF.Utils
 {
     abstract class ObservableListMirror<TIncomingType,TOutgoingType> : IEnumerable<TOutgoingType>
     {

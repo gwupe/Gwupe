@@ -1,16 +1,16 @@
 using System;
-using BlitsMe.Cloud.Messaging.API;
-using BlitsMe.Cloud.Messaging.Request;
-using BlitsMe.Cloud.Messaging.Response;
+using Gwupe.Cloud.Messaging.API;
+using Gwupe.Cloud.Messaging.Request;
+using Gwupe.Cloud.Messaging.Response;
 using log4net;
 
-namespace BlitsMe.Agent.Components.Processors
+namespace Gwupe.Agent.Components.Processors
 {
     internal class NotifyChangeProcessor : Processor
     {
         private static readonly ILog Logger = LogManager.GetLogger(typeof (NotifyChangeProcessor));
 
-        public NotifyChangeProcessor(BlitsMeClientAppContext appContext)
+        public NotifyChangeProcessor(GwupeClientAppContext appContext)
         {
         }
 
@@ -24,7 +24,7 @@ namespace BlitsMe.Agent.Components.Processors
                 {
                     try
                     {
-                        BlitsMeClientAppContext.CurrentAppContext.RosterManager.RequestContactUpdate(request.changeId);
+                        GwupeClientAppContext.CurrentAppContext.RosterManager.RequestContactUpdate(request.changeId);
                     }
                     catch (Exception)
                     {

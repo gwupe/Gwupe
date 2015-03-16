@@ -6,7 +6,7 @@ using System.Windows.Forms;
 using System.Collections;
 
 
-namespace BlitsMe.Agent
+namespace Gwupe.Agent
 {
     class Utils
     {

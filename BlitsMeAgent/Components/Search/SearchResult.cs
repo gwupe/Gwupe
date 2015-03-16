@@ -1,9 +1,9 @@
 using System;
 using System.ComponentModel;
-using BlitsMe.Agent.Components.Notification;
-using BlitsMe.Cloud.Messaging.Elements;
+using Gwupe.Agent.Components.Notification;
+using Gwupe.Cloud.Messaging.Elements;
 
-namespace BlitsMe.Agent.Components.Search
+namespace Gwupe.Agent.Components.Search
 {
     public class SearchResult : INotifyPropertyChanged
     {

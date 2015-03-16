@@ -2,14 +2,14 @@
 using System.Collections.Generic;
 using System.Security.Cryptography.X509Certificates;
 using System.Threading;
-using BlitsMe.Cloud.Messaging;
-using BlitsMe.Cloud.Messaging.Request;
+using Gwupe.Cloud.Messaging;
+using Gwupe.Cloud.Messaging.Request;
 using Bauglir.Ex;
 using System.IO;
-using BlitsMe.Cloud.Messaging.Response;
+using Gwupe.Cloud.Messaging.Response;
 using log4net;
 
-namespace BlitsMe.Cloud.Communication
+namespace Gwupe.Cloud.Communication
 {
     public delegate void ConnectionEvent(object sender, EventArgs e);
 
@@ -56,7 +56,7 @@ namespace BlitsMe.Cloud.Communication
             {
                 foreach (String destination in destinations)
                 {
-                    String uriString = "ws://" + destination + ":" + port + "/blitsme-ws/ws";
+                    String uriString = "ws://" + destination + ":" + port + "/gwupe-ws/ws";
                     try
                     {
                         Uri uri = new Uri(uriString);

@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace BlitsMe.Communication.P2P.RUDP.Connector.API
+namespace Gwupe.Communication.P2P.RUDP.Connector.API
 {
     public interface INamedConnector
     {

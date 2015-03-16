@@ -1,11 +1,9 @@
 ﻿using System;
 using System.Diagnostics;
 using System.IO;
-using System.Linq;
-using System.Management;
 using System.Reflection;
 
-namespace BlitsMe.Agent.Upgrade
+namespace Gwupe.Upgrade
 {
     static class Program
     {
@@ -29,10 +27,33 @@ namespace BlitsMe.Agent.Upgrade
                 foreach (Process pr in prs)
                 {
                     if (pr.ProcessName == "BlitsMe.Agent" &&
-                        (Common.OsUtils.ProgramFilesx86 + "\\BlitsMe" + BuildMarker + "\\BlitsMe.Agent.exe")
-                            .Equals(Common.OsUtils.GetMainModuleFilepath(pr.Id)) &&
+                        (OsUtils.ProgramFilesx86 + "\\BlitsMe" + BuildMarker + "\\BlitsMe.Agent.exe")
+                            .Equals(OsUtils.GetMainModuleFilepath(pr.Id)) &&
                         (Environment.UserDomainName + "\\" + Environment.UserName).Equals(
-                            Common.OsUtils.GetProcessOwner(pr.Id)))
+                            OsUtils.GetProcessOwner(pr.Id)))
+                    {
+                        try
+                        {
+                            if (!pr.WaitForExit(20000))
+                            {
+                                try
+                                {
+                                    pr.Kill();
+                                }
+                                catch (Exception e)
+                                {
+                                }
+                            }
+                        }
+                        catch (Exception e)
+                        {
+                        }
+                    }
+                    if (pr.ProcessName == "Gwupe" &&
+                        (OsUtils.ProgramFilesx86 + "\\Gwupe" + BuildMarker + "\\Gwupe.Agent.exe")
+                            .Equals(OsUtils.GetMainModuleFilepath(pr.Id)) &&
+                        (Environment.UserDomainName + "\\" + Environment.UserName).Equals(
+                            OsUtils.GetProcessOwner(pr.Id)))
                     {
                         try
                         {
@@ -56,7 +77,7 @@ namespace BlitsMe.Agent.Upgrade
             // Now start BlitsMe
             try
             {
-                Process.Start(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location) + "\\BlitsMe.Agent.exe");
+                Process.Start(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location) + "\\Gwupe.Agent.exe");
             }
             catch
             {

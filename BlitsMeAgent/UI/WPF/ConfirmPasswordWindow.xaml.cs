@@ -1,7 +1,7 @@
 ﻿using System.Windows;
 using System.Windows.Input;
 
-namespace BlitsMe.Agent.UI.WPF
+namespace Gwupe.Agent.UI.WPF
 {
 	/// <summary>
 	/// Interaction logic for ConfirmPasswordWindow.xaml

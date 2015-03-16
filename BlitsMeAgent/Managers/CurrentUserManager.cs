@@ -3,21 +3,21 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
 using System.Text;
-using BlitsMe.Agent.Annotations;
-using BlitsMe.Agent.Components;
-using BlitsMe.Agent.Components.Person;
-using BlitsMe.Agent.Components.Person.Presence;
-using BlitsMe.Cloud.Messaging.Elements;
-using BlitsMe.Cloud.Messaging.Request;
-using BlitsMe.Cloud.Messaging.Response;
+using Gwupe.Agent.Annotations;
+using Gwupe.Agent.Components;
+using Gwupe.Agent.Components.Person;
+using Gwupe.Agent.Components.Person.Presence;
+using Gwupe.Cloud.Messaging.Elements;
+using Gwupe.Cloud.Messaging.Request;
+using Gwupe.Cloud.Messaging.Response;
 using log4net;
 
-namespace BlitsMe.Agent.Managers
+namespace Gwupe.Agent.Managers
 {
     internal class CurrentUserManager : INotifyPropertyChanged
     {
         private static readonly ILog Logger = LogManager.GetLogger(typeof (CurrentUserManager));
-        private readonly BlitsMeClientAppContext _appContext;
+        private readonly GwupeClientAppContext _appContext;
         private Person _currentUser;
         private Presence _currentUserPresence;
         private string _activeShortCode;
@@ -44,7 +44,7 @@ namespace BlitsMe.Agent.Managers
 
         internal CurrentUserManager()
         {
-            _appContext = BlitsMeClientAppContext.CurrentAppContext;
+            _appContext = GwupeClientAppContext.CurrentAppContext;
             _appContext.IdleChanged += OnIdleChanged;
             _appContext.LoginManager.LoggedOut += (sender, args) => Reset();
         }

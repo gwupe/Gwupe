@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Net;
 
-namespace BlitsMe.Communication.P2P.P2P.Socket.API
+namespace Gwupe.Communication.P2P.P2P.Socket.API
 {
     public interface ISocket
     {

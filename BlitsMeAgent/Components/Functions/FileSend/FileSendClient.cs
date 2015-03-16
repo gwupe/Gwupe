@@ -4,16 +4,16 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading;
-using BlitsMe.Agent.Components.Functions.API;
-using BlitsMe.Agent.Components.Person;
-using BlitsMe.Cloud.Communication;
-using BlitsMe.Communication.P2P.P2P.Socket.API;
-using BlitsMe.Communication.P2P.RUDP.Connector;
-using BlitsMe.Communication.P2P.RUDP.Connector.API;
-using BlitsMe.Communication.P2P.RUDP.Tunnel.API;
+using Gwupe.Agent.Components.Functions.API;
+using Gwupe.Agent.Components.Person;
+using Gwupe.Cloud.Communication;
+using Gwupe.Communication.P2P.P2P.Socket.API;
+using Gwupe.Communication.P2P.RUDP.Connector;
+using Gwupe.Communication.P2P.RUDP.Connector.API;
+using Gwupe.Communication.P2P.RUDP.Tunnel.API;
 using log4net;
 
-namespace BlitsMe.Agent.Components.Functions.FileSend
+namespace Gwupe.Agent.Components.Functions.FileSend
 {
     internal class FileSendClient : ClientImpl
     {
@@ -57,7 +57,7 @@ namespace BlitsMe.Agent.Components.Functions.FileSend
                 try
                 {
                     // First we need p2p connection
-                    Socket = BlitsMeClientAppContext.CurrentAppContext.P2PManager.GetP2PConnection(SecondParty, _fileInfo.FileSendId);
+                    Socket = GwupeClientAppContext.CurrentAppContext.P2PManager.GetP2PConnection(SecondParty, _fileInfo.FileSendId);
                     Socket.ConnectionOpened += (sender, args) => { Closed = false; };
                     Socket.ConnectionClosed += (sender, args) => Close();
                     Socket.Connect();

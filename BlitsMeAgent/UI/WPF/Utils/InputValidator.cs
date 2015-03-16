@@ -9,7 +9,7 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Threading;
 
-namespace BlitsMe.Agent.UI.WPF.Utils
+namespace Gwupe.Agent.UI.WPF.Utils
 {
     public class InputValidator
     {

@@ -3,15 +3,15 @@ using System.ComponentModel;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Threading;
-using BlitsMe.Agent.Annotations;
+using Gwupe.Agent.Annotations;
 
-namespace BlitsMe.Agent.UI.WPF.API
+namespace Gwupe.Agent.UI.WPF.API
 {
-    interface IBlitsMeUserControl
+    interface IGwupeUserControl
     {
     }
 
-    public class BlitsMeDisablerContext : INotifyPropertyChanged
+    public class GwupeDisablerContext : INotifyPropertyChanged
     {
         private readonly Dispatcher _dispatcher;
         private readonly ContentPresenter _disabler;
@@ -24,7 +24,7 @@ namespace BlitsMe.Agent.UI.WPF.API
             private set { _disableMessage = value; OnPropertyChanged("DisableMessage"); }
         }
 
-        public BlitsMeDisablerContext(Dispatcher dispatcher, ContentPresenter disabler)
+        public GwupeDisablerContext(Dispatcher dispatcher, ContentPresenter disabler)
         {
             _dispatcher = dispatcher;
             _disabler = disabler;

@@ -5,10 +5,10 @@ using System.Globalization;
 using System.Text.RegularExpressions;
 using System.Windows.Controls;
 using System.Windows.Data;
-using BlitsMe.Agent.Components.Person;
+using Gwupe.Agent.Components.Person;
 using log4net;
 
-namespace BlitsMe.Agent.UI.WPF.Roster
+namespace Gwupe.Agent.UI.WPF.Roster
 {
     internal class SearchRosterList : RosterList
     {

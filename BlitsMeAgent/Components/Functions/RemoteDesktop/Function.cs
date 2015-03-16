@@ -1,18 +1,18 @@
 ﻿using System;
 using System.Diagnostics;
-using BlitsMe.Agent.Components.Functions.API;
-using BlitsMe.Agent.Components.Functions.Chat;
-using BlitsMe.Agent.Components.Functions.RemoteDesktop.ChatElement;
-using BlitsMe.Cloud.Exceptions;
-using BlitsMe.Cloud.Messaging.Request;
-using BlitsMe.Cloud.Messaging.Response;
-using BlitsMe.Common.Security;
+using Gwupe.Agent.Components.Functions.API;
+using Gwupe.Agent.Components.Functions.Chat;
+using Gwupe.Agent.Components.Functions.RemoteDesktop.ChatElement;
+using Gwupe.Cloud.Exceptions;
+using Gwupe.Cloud.Messaging.Request;
+using Gwupe.Cloud.Messaging.Response;
+using Gwupe.Common.Security;
 using log4net;
 using System.Runtime.InteropServices;
 
 
 
-namespace BlitsMe.Agent.Components.Functions.RemoteDesktop
+namespace Gwupe.Agent.Components.Functions.RemoteDesktop
 {
     //internal delegate void RDPSessionRequestResponseEvent(object sender, RdpSessionRequestResponse args);
     //internal delegate void RDPIncomingRequestEvent(object sender, RdpIncomingRequest args);
@@ -26,7 +26,7 @@ namespace BlitsMe.Agent.Components.Functions.RemoteDesktop
         [DllImportAttribute("User32.dll")]
         static extern bool IsWindow(IntPtr hWnd);
 
-        private readonly BlitsMeClientAppContext _appContext;
+        private readonly GwupeClientAppContext _appContext;
         private readonly Engagement _engagement;
         public override String Name { get { return "RemoteDesktop"; } }
 
@@ -35,7 +35,7 @@ namespace BlitsMe.Agent.Components.Functions.RemoteDesktop
 
         private Chat.Function Chat { get { return _engagement.Functions["Chat"] as Chat.Function; } }
 
-        internal Function(BlitsMeClientAppContext appContext, Engagement engagement)
+        internal Function(GwupeClientAppContext appContext, Engagement engagement)
         {
             _appContext = appContext;
             _engagement = engagement;
@@ -137,14 +137,14 @@ namespace BlitsMe.Agent.Components.Functions.RemoteDesktop
                     // this will restart the service if its offline
                     try
                     {
-                        _appContext.BlitsMeServiceProxy.Ping();
+                        _appContext.GwupeServiceProxy.Ping();
                     }
                     catch
                     {
                         _appContext.RestartBlitsMeService();
                     }
                     // Startup the underlying VNC service
-                    if (_appContext.BlitsMeServiceProxy.VNCStartService())
+                    if (_appContext.GwupeServiceProxy.VNCStartService())
                     {
                         // Now we listen for a connection from the tunnel
                         Server.Listen(connectionId);
@@ -329,7 +329,7 @@ namespace BlitsMe.Agent.Components.Functions.RemoteDesktop
             string tokenId;
             string securityKey;
             if (
-                BlitsMeClientAppContext.CurrentAppContext.Elevate(
+                GwupeClientAppContext.CurrentAppContext.Elevate(
                     "This connection requires you to verify your identity, please enter your BlitsMe password to connect to " +
                     _engagement.SecondParty.Person.Name + ".", out tokenId, out securityKey))
             {
@@ -422,7 +422,7 @@ namespace BlitsMe.Agent.Components.Functions.RemoteDesktop
                 try
                 {
                     int port = Client.Start(request.connectionId);
-                    String viewerExe = System.IO.Path.GetDirectoryName(Environment.GetCommandLineArgs()[0]) + "\\bmss.exe";
+                    String viewerExe = System.IO.Path.GetDirectoryName(Environment.GetCommandLineArgs()[0]) + "\\gwupess.exe";
                     var parameters = "-username=\"" + _engagement.SecondParty.Person.Name + "\" -copyrect=yes -encoding=tight -compressionlevel=9 -jpegimagequality=3 -scale=auto -host=localhost -port=" + port;
                     Logger.Debug("Running " + viewerExe + " " + parameters);
                     _bmssHandle = Process.Start(viewerExe, parameters);

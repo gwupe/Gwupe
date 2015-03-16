@@ -10,18 +10,18 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Shapes;
 using System.Windows.Threading;
-using BlitsMe.Agent.Annotations;
-using BlitsMe.Agent.Components;
-using BlitsMe.Agent.Components.Alert;
-using BlitsMe.Agent.Components.Notification;
-using BlitsMe.Agent.Components.Person;
-using BlitsMe.Agent.Managers;
-using BlitsMe.Agent.UI.WPF.API;
-using BlitsMe.Communication.P2P.RUDP.Tunnel.API;
+using Gwupe.Agent.Annotations;
+using Gwupe.Agent.Components;
+using Gwupe.Agent.Components.Alert;
+using Gwupe.Agent.Components.Notification;
+using Gwupe.Agent.Components.Person;
+using Gwupe.Agent.Managers;
+using Gwupe.Agent.UI.WPF.API;
+using Gwupe.Communication.P2P.RUDP.Tunnel.API;
 using Microsoft.Win32;
 using log4net;
 
-namespace BlitsMe.Agent.UI.WPF.Engage
+namespace Gwupe.Agent.UI.WPF.Engage
 {
     public enum EngagementVisibleContent
     {
@@ -35,7 +35,7 @@ namespace BlitsMe.Agent.UI.WPF.Engage
     public partial class EngagementWindow : UserControl, IDashboardContentControl
     {
         internal Engagement Engagement { get; set; }
-        private readonly BlitsMeClientAppContext _appContext;
+        private readonly GwupeClientAppContext _appContext;
         private ChatWindow _chatWindow;
         //private ContactInfoControl _contactInfoControl;
         private static readonly ILog Logger = LogManager.GetLogger(typeof(EngagementWindow));
@@ -45,7 +45,7 @@ namespace BlitsMe.Agent.UI.WPF.Engage
         internal EngagementVisibleContent EngagementVisibleContent;
         private ContactSettings _contactSettings;
 
-        internal EngagementWindow(BlitsMeClientAppContext appContext, DispatchingCollection<ObservableCollection<Notification>, Notification> notificationList, Engagement engagement)
+        internal EngagementWindow(GwupeClientAppContext appContext, DispatchingCollection<ObservableCollection<Notification>, Notification> notificationList, Engagement engagement)
         {
             InitializeComponent();
             _appContext = appContext;
@@ -219,7 +219,7 @@ namespace BlitsMe.Agent.UI.WPF.Engage
 
         internal void ShowChat()
         {
-            //BlitsMeClientAppContext.CurrentAppContext.UIManager.GetEngagement(Engagement, this);
+            //GwupeClientAppContext.CurrentAppContext.UIManager.GetEngagement(Engagement, this);
             _chatWindow = _chatWindow ?? new ChatWindow(_appContext, this) { Notifications = { ItemsSource = _notificationView.View } };
             EngagementContent.Content = _chatWindow;
             Engagement.IsUnread = false;
@@ -309,7 +309,7 @@ namespace BlitsMe.Agent.UI.WPF.Engage
 
     internal class EngagementWindowDataContext : INotifyPropertyChanged
     {
-        private readonly BlitsMeClientAppContext _appContext;
+        private readonly GwupeClientAppContext _appContext;
         private bool _contactSettingsEnabled;
         private ContactSettings _contactSettings;
         public Attendance SecondParty { get; private set; }
@@ -330,7 +330,7 @@ namespace BlitsMe.Agent.UI.WPF.Engage
             set;
         }
 
-        public EngagementWindowDataContext(BlitsMeClientAppContext appContext, Engagement engagement)
+        public EngagementWindowDataContext(GwupeClientAppContext appContext, Engagement engagement)
         {
             _appContext = appContext;
             Engagement = engagement;

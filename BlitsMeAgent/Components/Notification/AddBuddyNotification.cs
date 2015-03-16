@@ -1,6 +1,6 @@
 using System;
 
-namespace BlitsMe.Agent.Components.Notification
+namespace Gwupe.Agent.Components.Notification
 {
     class AddBuddyNotification : TrueFalseNotification
     {

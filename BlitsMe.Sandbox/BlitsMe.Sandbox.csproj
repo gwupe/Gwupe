@@ -109,13 +109,13 @@
       <Project>{5D03D6CA-077B-4EF3-8937-8B05114B6A22}</Project>
       <Name>BlitsMe.TransportEmulator</Name>
     </ProjectReference>
-    <ProjectReference Include="..\BlitsMeCommon\BlitsMeCommon.csproj">
+    <ProjectReference Include="..\BlitsMeCommon\GwupeCommon.csproj">
       <Project>{1b355f1c-9d50-4bab-8ceb-e6ca72e6de69}</Project>
-      <Name>BlitsMeCommon</Name>
+      <Name>GwupeCommon</Name>
     </ProjectReference>
-    <ProjectReference Include="..\BlitsMeP2PConnection\BlitsMeP2PConnection.csproj">
+    <ProjectReference Include="..\BlitsMeP2PConnection\GwupeCommunicatonP2P.csproj">
       <Project>{C8080119-3305-43B5-8944-592DBC960F12}</Project>
-      <Name>BlitsMeP2PConnection</Name>
+      <Name>GwupeCommunicatonP2P</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>

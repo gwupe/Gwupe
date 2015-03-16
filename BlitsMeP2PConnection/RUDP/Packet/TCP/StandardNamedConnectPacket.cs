@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Text;
 
-namespace BlitsMe.Communication.P2P.RUDP.Packet.TCP
+namespace Gwupe.Communication.P2P.RUDP.Packet.TCP
 {
     public class StandardNamedConnectRqPacket : BasicTcpPacket
     {

@@ -6,7 +6,7 @@ using System.Text;
 using log4net;
 using log4net.Repository.Hierarchy;
 
-namespace BlitsMe.Agent.Components.Person.Presence
+namespace Gwupe.Agent.Components.Person.Presence
 {
     class MultiPresence : IPresence
     {
@@ -77,7 +77,7 @@ namespace BlitsMe.Agent.Components.Person.Presence
                                 Logger.Error(
                                     "Caught the multi presence exception we are attempting to understand, logging fault report",
                                     e);
-                                BlitsMeClientAppContext.CurrentAppContext.SubmitFaultReport(new FaultReport()
+                                GwupeClientAppContext.CurrentAppContext.SubmitFaultReport(new FaultReport()
                                 {
                                     UserReport = "MultiPresence error " + String.Join(" | ", _presences.Values)
                                 });

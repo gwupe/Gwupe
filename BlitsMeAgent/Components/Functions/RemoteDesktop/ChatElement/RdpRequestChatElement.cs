@@ -1,7 +1,7 @@
 ﻿using System.ComponentModel;
-using BlitsMe.Agent.Components.Functions.Chat.ChatElement;
+using Gwupe.Agent.Components.Functions.Chat.ChatElement;
 
-namespace BlitsMe.Agent.Components.Functions.RemoteDesktop.ChatElement
+namespace Gwupe.Agent.Components.Functions.RemoteDesktop.ChatElement
 {
     public class RdpRequestChatElement : TrueFalseChatElement
     {

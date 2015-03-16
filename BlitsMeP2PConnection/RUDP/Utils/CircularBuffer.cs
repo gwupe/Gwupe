@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Threading;
 
-namespace BlitsMe.Communication.P2P.RUDP.Utils
+namespace Gwupe.Communication.P2P.RUDP.Utils
 {
     public class CircularBuffer<T>
     {

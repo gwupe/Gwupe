@@ -3,9 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Runtime.Serialization;
-using BlitsMe.Cloud.Messaging.Elements;
+using Gwupe.Cloud.Messaging.Elements;
 
-namespace BlitsMe.Cloud.Messaging.Response
+namespace Gwupe.Cloud.Messaging.Response
 {
     [DataContract]
     public class LoginRs : API.Response

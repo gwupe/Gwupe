@@ -11,6 +11,7 @@
     <OutputType>Package</OutputType>
     <WixTargetsPath Condition=" '$(WixTargetsPath)' == '' AND '$(MSBuildExtensionsPath32)' != '' ">$(MSBuildExtensionsPath32)\Microsoft\WiX\v3.x\Wix.targets</WixTargetsPath>
     <WixTargetsPath Condition=" '$(WixTargetsPath)' == '' ">$(MSBuildExtensionsPath)\Microsoft\WiX\v3.x\Wix.targets</WixTargetsPath>
+    <Name>GwupeSetup</Name>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|x86' ">
     <OutputPath>bin\$(Configuration)\</OutputPath>
@@ -30,40 +31,40 @@
     <Compile Include="Product.wxs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\BlitsMeAgent\BlitsMeAgent.csproj">
-      <Name>BlitsMeAgent</Name>
+    <ProjectReference Include="..\BlitsMeAgent\Gwupe.csproj">
+      <Name>Gwupe</Name>
       <Project>{211d2399-36e1-4e1e-bfc5-fe76f7a8efcc}</Project>
       <Private>True</Private>
       <DoNotHarvest>True</DoNotHarvest>
       <RefProjectOutputGroups>Binaries;Content;Satellites</RefProjectOutputGroups>
       <RefTargetDir>INSTALLFOLDER</RefTargetDir>
     </ProjectReference>
-    <ProjectReference Include="..\BlitsMeRestartService\BlitsMeRestartService.csproj">
-      <Name>BlitsMeRestartService</Name>
+    <ProjectReference Include="..\BlitsMeRestartService\GwupeRestartService.csproj">
+      <Name>GwupeRestartService</Name>
       <Project>{74cde8f8-2f3c-400a-852a-7b195d3cda30}</Project>
       <Private>True</Private>
       <DoNotHarvest>True</DoNotHarvest>
       <RefProjectOutputGroups>Binaries;Content;Satellites</RefProjectOutputGroups>
       <RefTargetDir>INSTALLFOLDER</RefTargetDir>
     </ProjectReference>
-    <ProjectReference Include="..\BlitsMeService\BlitsMeService.csproj">
-      <Name>BlitsMeService</Name>
+    <ProjectReference Include="..\BlitsMeService\GwupeService.csproj">
+      <Name>GwupeService</Name>
       <Project>{90b503c9-7032-4a9c-9d1a-b1187cdb56a8}</Project>
       <Private>True</Private>
       <DoNotHarvest>True</DoNotHarvest>
       <RefProjectOutputGroups>Binaries;Content;Satellites</RefProjectOutputGroups>
       <RefTargetDir>INSTALLFOLDER</RefTargetDir>
     </ProjectReference>
-    <ProjectReference Include="..\BlitsMeSetupCustomAction\BlitsMeSetupCustomAction.csproj">
-      <Name>BlitsMeSetupCustomAction</Name>
+    <ProjectReference Include="..\BlitsMeSetupCustomAction\GwupeSetupCustomAction.csproj">
+      <Name>GwupeSetupCustomAction</Name>
       <Project>{8266da82-5594-4cea-bf14-413bd5fa95e5}</Project>
       <Private>True</Private>
       <DoNotHarvest>True</DoNotHarvest>
       <RefProjectOutputGroups>Binaries;Content;Satellites</RefProjectOutputGroups>
       <RefTargetDir>INSTALLFOLDER</RefTargetDir>
     </ProjectReference>
-    <ProjectReference Include="..\BlitsMeUpgradeAgent\BlitsMeUpgradeAgent.csproj">
-      <Name>BlitsMeUpgradeAgent</Name>
+    <ProjectReference Include="..\BlitsMeUpgradeAgent\GwupeUpgradeAgent.csproj">
+      <Name>GwupeUpgradeAgent</Name>
       <Project>{6702e385-f3b9-4b63-b094-70eeb5c6126b}</Project>
       <Private>True</Private>
       <DoNotHarvest>True</DoNotHarvest>

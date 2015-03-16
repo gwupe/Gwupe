@@ -2,9 +2,9 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using BlitsMe.Agent.Components.Notification;
+using Gwupe.Agent.Components.Notification;
 
-namespace BlitsMe.Agent.Components
+namespace Gwupe.Agent.Components
 {
     internal class Interactions
     {

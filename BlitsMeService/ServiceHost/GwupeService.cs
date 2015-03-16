@@ -1,17 +1,17 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ServiceModel;
-using BlitsMe.ServiceHost;
+using Gwupe.ServiceHost;
 
-namespace BlitsMe.Service.ServiceHost
+namespace Gwupe.Service.ServiceHost
 {
     [ServiceBehavior(InstanceContextMode = InstanceContextMode.Single)]
-    public class BlitsMeService : IBlitsMeService
+    public class GwupeService : IGwupeService
     {
-        private BMService service;
-        public BlitsMeService(BMService bmService)
+        private Service.GwupeService service;
+        public GwupeService(Service.GwupeService gwupeService)
         {
-            this.service = bmService;
+            this.service = gwupeService;
         }
 
         public List<String> getServers()

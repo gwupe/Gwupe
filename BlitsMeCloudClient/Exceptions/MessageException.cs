@@ -2,9 +2,9 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using BlitsMe.Cloud.Messaging.API;
+using Gwupe.Cloud.Messaging.API;
 
-namespace BlitsMe.Cloud.Exceptions
+namespace Gwupe.Cloud.Exceptions
 {
     public class MessageException<T> : Exception where T : Response
     {

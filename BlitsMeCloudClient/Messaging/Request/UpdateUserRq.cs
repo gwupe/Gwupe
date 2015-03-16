@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Runtime.Serialization;
-using BlitsMe.Cloud.Messaging.Elements;
+using Gwupe.Cloud.Messaging.Elements;
 
-namespace BlitsMe.Cloud.Messaging.Request
+namespace Gwupe.Cloud.Messaging.Request
 {
     [DataContract]
     public class UpdateUserRq : API.ElevatedRequestImpl

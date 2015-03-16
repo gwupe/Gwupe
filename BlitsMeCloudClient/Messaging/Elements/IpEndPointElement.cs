@@ -5,7 +5,7 @@ using System.Net;
 using System.Runtime.Serialization;
 using System.Text;
 
-namespace BlitsMe.Cloud.Messaging.Elements
+namespace Gwupe.Cloud.Messaging.Elements
 {
     [DataContract]
     public class IpEndPointElement

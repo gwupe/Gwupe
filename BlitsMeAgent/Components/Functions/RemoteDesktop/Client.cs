@@ -1,13 +1,13 @@
 ﻿using System;
 using System.Net;
 using System.Threading;
-using BlitsMe.Agent.Components.Functions.API;
-using BlitsMe.Agent.Components.Person;
-using BlitsMe.Communication.P2P.P2P.Connector;
-using BlitsMe.Communication.P2P.P2P.Socket;
+using Gwupe.Agent.Components.Functions.API;
+using Gwupe.Agent.Components.Person;
+using Gwupe.Communication.P2P.P2P.Connector;
+using Gwupe.Communication.P2P.P2P.Socket;
 using log4net;
 
-namespace BlitsMe.Agent.Components.Functions.RemoteDesktop
+namespace Gwupe.Agent.Components.Functions.RemoteDesktop
 {
     internal class Client : ClientImpl
     {
@@ -23,7 +23,7 @@ namespace BlitsMe.Agent.Components.Functions.RemoteDesktop
         internal int Start(String connectionId)
         {
             // First we need p2p connection
-            Socket = BlitsMeClientAppContext.CurrentAppContext.P2PManager.GetP2PConnection(SecondParty, connectionId);
+            Socket = GwupeClientAppContext.CurrentAppContext.P2PManager.GetP2PConnection(SecondParty, connectionId);
             // Now we need to create a proxy
             var tcpSocket = new BmTcpSocket(new IPEndPoint(IPAddress.Any,0));
             tcpSocket.BindListen();

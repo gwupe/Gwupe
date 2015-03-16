@@ -8,8 +8,8 @@
     <ProjectGuid>{C8080119-3305-43B5-8944-592DBC960F12}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>BlitsMe.Communication.P2P</RootNamespace>
-    <AssemblyName>BlitsMe.Communication.P2P</AssemblyName>
+    <RootNamespace>Gwupe.Communication.P2P</RootNamespace>
+    <AssemblyName>Gwupe.Communication.P2P</AssemblyName>
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <TargetFrameworkProfile>Client</TargetFrameworkProfile>
@@ -143,9 +143,9 @@
     <Compile Include="RUDP\Utils\TcpSlidingWindowStats.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\BlitsMeCommon\BlitsMeCommon.csproj">
+    <ProjectReference Include="..\BlitsMeCommon\GwupeCommon.csproj">
       <Project>{1B355F1C-9D50-4BAB-8CEB-E6CA72E6DE69}</Project>
-      <Name>BlitsMeCommon</Name>
+      <Name>GwupeCommon</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>

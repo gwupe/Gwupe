@@ -9,30 +9,30 @@ using System.Security.Cryptography.X509Certificates;
 using System.ServiceProcess;
 using System.Text.RegularExpressions;
 using System.Timers;
-using BlitsMe.Common.Security;
-using Microsoft.Win32;
-using BlitsMe.Service.ServiceHost;
+using Gwupe.Common.Security;
+using Gwupe.Service.ServiceHost;
 using log4net;
 using log4net.Config;
+using Microsoft.Win32;
 
-namespace BlitsMe.Service
+namespace Gwupe.Service
 {
-    public partial class BMService : ServiceBase
+    public partial class GwupeService : ServiceBase
     {
-        private static readonly ILog Logger = LogManager.GetLogger(typeof(BMService));
+        private static readonly ILog Logger = LogManager.GetLogger(typeof(GwupeService));
         private WebClient _webClient;
         private Timer _updateCheck;
 #if DEBUG
-        private const String UpdateServer = "dev.blits.me";
+        private const String UpdateServer = "dev.gwupe.com";
         private const int UpdateCheckInterval = 300;
         public const String BuildMarker = "_Dev";
 #else
-        private const String UpdateServer = "blits.me";
+        private const String UpdateServer = "gwupe.me";
         private const int UpdateCheckInterval = 3600;
         public const String BuildMarker = "";
 #endif
         // FIXME: Move this to a global config file at some point
-        private const string VncServiceName = "BlitsMeSupportService" + BuildMarker;
+        private const string VncServiceName = "GwupeSupportService" + BuildMarker;
         private const int VncServiceTimeoutMs = 30000;
         private String _version;
         private X509Certificate2 _cacert;
@@ -40,21 +40,21 @@ namespace BlitsMe.Service
 
         public List<String> Servers;
         private System.ServiceModel.ServiceHost _serviceHost;
-        public BMService()
+        public GwupeService()
         {
             InitializeComponent();
-            if (!EventLog.SourceExists("BMService"))
-                EventLog.CreateEventSource("BMService", "Application");
-            EventLog.WriteEntry("BMService", "Initialised the BlitsMeService" + BuildMarker);
+            if (!EventLog.SourceExists("GwupeService"))
+                EventLog.CreateEventSource("GwupeService", "Application");
+            EventLog.WriteEntry("GwupeService", "Initialised the GwupeService" + BuildMarker);
         }
 
         protected override void OnStart(string[] args)
         {
-            EventLog.WriteEntry("BMService", "Starting BlitsMeService" + BuildMarker);
-            XmlConfigurator.Configure(Assembly.GetExecutingAssembly().GetManifestResourceStream("BlitsMe.Service.log4net.xml"));
+            EventLog.WriteEntry("GwupeService", "Starting GwupeService" + BuildMarker);
+            XmlConfigurator.Configure(Assembly.GetExecutingAssembly().GetManifestResourceStream("Gwupe.Service.log4net.xml"));
             _version = Regex.Replace(FileVersionInfo.GetVersionInfo(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location) +
-                                                   "/BlitsMe.Agent.exe").FileVersion, "\\.[0-9]+$", "");
-            Logger.Info("BlitsMeService Starting Up [" + Environment.UserName + ", " + _version + "]");
+                                                   "/Gwupe.Agent.exe").FileVersion, "\\.[0-9]+$", "");
+            Logger.Info("Gwupe Service Starting Up [" + Environment.UserName + ", " + _version + "]");
             SaveVersion();
 #if DEBUG
             foreach (var manifestResourceName in Assembly.GetExecutingAssembly().GetManifestResourceNames())
@@ -69,7 +69,7 @@ namespace BlitsMe.Service
             _updateCheck.Elapsed += delegate { CheckForNewVersion(); };
             _updateCheck.Start();
             initServers();
-            _serviceHost = new System.ServiceModel.ServiceHost(new BlitsMeService(this), new Uri("net.pipe://localhost/BlitsMeService" + BuildMarker));
+            _serviceHost = new System.ServiceModel.ServiceHost(new ServiceHost.GwupeService(this), new Uri("net.pipe://localhost/GwupeService" + BuildMarker));
             _serviceHost.Open();
         }
 
@@ -83,7 +83,7 @@ namespace BlitsMe.Service
                 try
                 {
                     var stream =
-                        Assembly.GetExecutingAssembly().GetManifestResourceStream("BlitsMe.Service.cacert.pem");
+                        Assembly.GetExecutingAssembly().GetManifestResourceStream("Gwupe.Service.cacert.pem");
                     Byte[] certificateData = new Byte[stream.Length];
                     stream.Read(certificateData, 0, certificateData.Length);
                     _cacert = new X509Certificate2(certificateData);
@@ -103,7 +103,7 @@ namespace BlitsMe.Service
                 Logger.Debug("Checking for new version from " + downloadUrl);
                 String versionInfomation =
                     _webClient.DownloadString(downloadUrl);
-                if (Regex.Match(versionInfomation, "^[0-9]+\\.[0-9]+\\.[0-9]+:BlitsMeSetupFull" + BuildMarker + ".*").Success)
+                if (Regex.Match(versionInfomation, "^[0-9]+\\.[0-9]+\\.[0-9]+:(BlitsMe|Gwupe)SetupFull" + BuildMarker + ".*").Success)
                 {
                     String[] versionParts = versionInfomation.Split('\n')[0].Split(':');
                     Version updateVersion = new Version(versionParts[0]);
@@ -119,7 +119,7 @@ namespace BlitsMe.Service
                                 _webClient.DownloadFile(GetDownloadUrl(versionParts[1]),
                                     fileLocation);
                                 Logger.Info("Downloaded update " + versionParts[1]);
-                                String logfile = Path.GetTempPath() + "BlitsMeInstall" + BuildMarker + ".log";
+                                String logfile = Path.GetTempPath() + "GwupeInstall" + BuildMarker + ".log";
                                 Logger.Info("Executing " + fileLocation + ", log file is " + logfile);
                                 if (Regex.Match(fileLocation, ".*.msi$").Success)
                                 {
@@ -187,8 +187,8 @@ namespace BlitsMe.Service
             {
                 RegistryKey bmKey =
                     RegistryKey.OpenBaseKey(RegistryHive.LocalMachine, RegistryView.Registry32).OpenSubKey(
-                        BLMRegistry.Root);
-                String preRelease = (String)bmKey.GetValue(BLMRegistry.PreReleaseKey);
+                        GwupeRegistry.Root);
+                String preRelease = (String)bmKey.GetValue(GwupeRegistry.PreReleaseKey);
                 if (preRelease != null)
                 {
                     return true;
@@ -209,8 +209,8 @@ namespace BlitsMe.Service
             {
                 RegistryKey bmKey =
                     RegistryKey.OpenBaseKey(RegistryHive.LocalMachine, RegistryView.Registry32).OpenSubKey(
-                        BLMRegistry.Root);
-                String autoUpgrade = (String)bmKey.GetValue(BLMRegistry.AutoUpgradeKey);
+                        GwupeRegistry.Root);
+                String autoUpgrade = (String)bmKey.GetValue(GwupeRegistry.AutoUpgradeKey);
                 Logger.Debug("AutoUpgrade is " + autoUpgrade);
                 if (autoUpgrade != null && autoUpgrade.Equals("no"))
                 {
@@ -257,8 +257,8 @@ namespace BlitsMe.Service
 
         public List<String> getServerIPs()
         {
-            RegistryKey bmKey = RegistryKey.OpenBaseKey(RegistryHive.LocalMachine, RegistryView.Registry32).OpenSubKey(BLMRegistry.Root);
-            String ipKey = (String)bmKey.GetValue(BLMRegistry.ServerIPsKey);
+            RegistryKey bmKey = RegistryKey.OpenBaseKey(RegistryHive.LocalMachine, RegistryView.Registry32).OpenSubKey(GwupeRegistry.Root);
+            String ipKey = (String)bmKey.GetValue(GwupeRegistry.ServerIPsKey);
             return new List<String>(ipKey.Split(','));
         }
 
@@ -266,8 +266,8 @@ namespace BlitsMe.Service
         {
             try
             {
-                RegistryKey root = RegistryKey.OpenBaseKey(RegistryHive.LocalMachine, RegistryView.Registry32).CreateSubKey(BLMRegistry.Root, RegistryKeyPermissionCheck.ReadWriteSubTree);
-                root.SetValue(BLMRegistry.VersionKey, _version);
+                RegistryKey root = RegistryKey.OpenBaseKey(RegistryHive.LocalMachine, RegistryView.Registry32).CreateSubKey(GwupeRegistry.Root, RegistryKeyPermissionCheck.ReadWriteSubTree);
+                root.SetValue(GwupeRegistry.VersionKey, _version);
             }
             catch (Exception e)
             {
@@ -292,8 +292,8 @@ namespace BlitsMe.Service
             // Lets add some
             try
             {
-                RegistryKey ips = RegistryKey.OpenBaseKey(RegistryHive.LocalMachine, RegistryView.Registry32).CreateSubKey(BLMRegistry.Root, RegistryKeyPermissionCheck.ReadWriteSubTree);
-                ips.SetValue(BLMRegistry.ServerIPsKey, String.Join(",", newIPs.ToArray()));
+                RegistryKey ips = RegistryKey.OpenBaseKey(RegistryHive.LocalMachine, RegistryView.Registry32).CreateSubKey(GwupeRegistry.Root, RegistryKeyPermissionCheck.ReadWriteSubTree);
+                ips.SetValue(GwupeRegistry.ServerIPsKey, String.Join(",", newIPs.ToArray()));
             }
             catch (Exception e2)
             {
@@ -332,7 +332,7 @@ namespace BlitsMe.Service
         protected override void OnStop()
         {
             _serviceHost.Close();
-            Logger.Info("BlitsMe Service Shutting Down");
+            Logger.Info("Gwupe Service Shutting Down");
         }
 
     }

@@ -1,11 +1,11 @@
 ﻿using System.Net.Security;
 using System.Security.Cryptography.X509Certificates;
 using Bauglir.Ex;
-using BlitsMe.Cloud.Messaging;
-using BlitsMe.Cloud.Messaging.API;
+using Gwupe.Cloud.Messaging;
+using Gwupe.Cloud.Messaging.API;
 using log4net;
 
-namespace BlitsMe.Cloud.Communication
+namespace Gwupe.Cloud.Communication
 {
     internal class WebSocketClientSSLConnection : WebSocketClientConnection
     {

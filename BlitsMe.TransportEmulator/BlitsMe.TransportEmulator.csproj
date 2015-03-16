@@ -67,9 +67,9 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\BlitsMeP2PConnection\BlitsMeP2PConnection.csproj">
+    <ProjectReference Include="..\BlitsMeP2PConnection\GwupeCommunicatonP2P.csproj">
       <Project>{c8080119-3305-43b5-8944-592dbc960f12}</Project>
-      <Name>BlitsMeP2PConnection</Name>
+      <Name>GwupeCommunicatonP2P</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>

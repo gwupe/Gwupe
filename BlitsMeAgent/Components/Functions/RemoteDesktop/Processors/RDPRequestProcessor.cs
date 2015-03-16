@@ -1,18 +1,18 @@
 using System;
-using BlitsMe.Agent.Components.Processors;
-using BlitsMe.Cloud.Messaging.API;
-using BlitsMe.Cloud.Messaging.Request;
-using BlitsMe.Cloud.Messaging.Response;
+using Gwupe.Agent.Components.Processors;
+using Gwupe.Cloud.Messaging.API;
+using Gwupe.Cloud.Messaging.Request;
+using Gwupe.Cloud.Messaging.Response;
 using log4net;
 
-namespace BlitsMe.Agent.Components.Functions.RemoteDesktop.Processors
+namespace Gwupe.Agent.Components.Functions.RemoteDesktop.Processors
 {
     internal class RDPRequestProcessor : UserToUserProcessor
     {
         private static readonly ILog Logger = LogManager.GetLogger(typeof(RDPRequestProcessor));
-        private readonly BlitsMeClientAppContext _appContext;
+        private readonly GwupeClientAppContext _appContext;
 
-        internal RDPRequestProcessor(BlitsMeClientAppContext appContext) : base(appContext)
+        internal RDPRequestProcessor(GwupeClientAppContext appContext) : base(appContext)
         {
             _appContext = appContext;
         }

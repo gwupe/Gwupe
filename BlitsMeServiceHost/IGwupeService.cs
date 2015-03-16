@@ -1,14 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Runtime.Serialization;
 using System.ServiceModel;
-using System.Text;
 
-namespace BlitsMe.ServiceHost
+namespace Gwupe.ServiceHost
 {
     [ServiceContract]
-    public interface IBlitsMeService
+    public interface IGwupeService
     {
         [OperationContract]
         List<string> getServers();
@@ -26,7 +23,7 @@ namespace BlitsMe.ServiceHost
         String HardwareFingerprint();
     }
 
-    public interface IBlitsMeServiceChannel : IBlitsMeService, System.ServiceModel.IClientChannel
+    public interface IGwupeServiceChannel : IGwupeService, IClientChannel
     {
     }
 

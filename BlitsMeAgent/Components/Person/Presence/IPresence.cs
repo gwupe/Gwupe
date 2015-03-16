@@ -4,7 +4,7 @@ using System.ComponentModel;
 using System.Linq;
 using System.Text;
 
-namespace BlitsMe.Agent.Components.Person.Presence
+namespace Gwupe.Agent.Components.Person.Presence
 {
     public enum PresenceMode { chat, available, away, xa, dnd };
     public enum PresenceType { available, unavailable };

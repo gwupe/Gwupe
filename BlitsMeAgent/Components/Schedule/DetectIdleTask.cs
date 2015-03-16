@@ -2,14 +2,14 @@
 using System.Runtime.InteropServices;
 using log4net;
 
-namespace BlitsMe.Agent.Components.Schedule
+namespace Gwupe.Agent.Components.Schedule
 {
     class DetectIdleTask : IScheduledTask
     {
         private static readonly ILog Logger = LogManager.GetLogger(typeof(DetectIdleTask));
-        private readonly BlitsMeClientAppContext _appContext;
+        private readonly GwupeClientAppContext _appContext;
 
-        public DetectIdleTask(BlitsMeClientAppContext appContext)
+        public DetectIdleTask(GwupeClientAppContext appContext)
         {
             _appContext = appContext;
             LastCompleteTime = DateTime.MinValue;

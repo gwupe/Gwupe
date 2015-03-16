@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Runtime.Serialization;
-using BlitsMe.Cloud.Messaging.Elements;
+using Gwupe.Cloud.Messaging.Elements;
 
-namespace BlitsMe.Cloud.Messaging.Response
+namespace Gwupe.Cloud.Messaging.Response
 {
     [DataContract]
     public class InitUDPConnectionRs : API.Response

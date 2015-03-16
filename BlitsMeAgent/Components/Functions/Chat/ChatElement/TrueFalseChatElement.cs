@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Windows.Input;
 
-namespace BlitsMe.Agent.Components.Functions.Chat.ChatElement
+namespace Gwupe.Agent.Components.Functions.Chat.ChatElement
 {
     public abstract class TrueFalseChatElement : BaseChatElement
     {

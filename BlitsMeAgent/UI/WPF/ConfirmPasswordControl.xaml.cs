@@ -1,17 +1,17 @@
 ﻿using System;
-using BlitsMe.Agent.UI.WPF.API;
+using Gwupe.Agent.UI.WPF.API;
 
-namespace BlitsMe.Agent.UI.WPF
+namespace Gwupe.Agent.UI.WPF
 {
     /// <summary>
     /// Interaction logic for ConfirmPasswordControl.xaml
     /// </summary>
-    public partial class ConfirmPasswordControl : BlitsMeModalUserControl
+    public partial class ConfirmPasswordControl : GwupeModalUserControl
     {
         public ConfirmPasswordControl()
         {
             InitializeComponent();
-            InitBlitsMeModalUserControl(Disabler,null,null);
+            InitGwupeModalUserControl(Disabler,null,null);
             StartWithFocus = ConfirmPassword;
         }
 

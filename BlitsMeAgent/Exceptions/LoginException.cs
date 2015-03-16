@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace BlitsMe.Agent.Exceptions
+namespace Gwupe.Agent.Exceptions
 {
     public class LoginException : Exception
     {

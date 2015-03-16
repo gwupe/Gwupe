@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using Bauglir.Ex;
 
-namespace BlitsMe.Cloud.Messaging.API
+namespace Gwupe.Cloud.Messaging.API
 {
     public interface IWebSocketMessageHandler
     {

@@ -1,11 +1,11 @@
-﻿<UserControl x:Class="BlitsMe.Agent.UI.WPF.Search.SearchResultControl"
+﻿<UserControl x:Class="Gwupe.Agent.UI.WPF.Search.SearchResultControl"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
 			 xmlns:ed="http://schemas.microsoft.com/expression/2010/drawing"
-             xmlns:Person="clr-namespace:BlitsMe.Agent.Components.Person"
-             xmlns:utils="clr-namespace:BlitsMe.Agent.UI.WPF.Utils"
+             xmlns:Person="clr-namespace:Gwupe.Agent.Components.Person"
+             xmlns:utils="clr-namespace:Gwupe.Agent.UI.WPF.Utils"
              mc:Ignorable="d" 
              >
     <UserControl.Resources>
@@ -36,7 +36,7 @@
             <Image Stretch="Uniform" Source="{Binding Path=Person.Avatar, Converter={StaticResource imageStreamReader}}"
                         Width="70" Height="55" Grid.Column="1" VerticalAlignment="Top" Margin="0,10,0,0"/>
             -->
-            <Image Stretch="Uniform" Source="/BlitsMe.Agent;component/UI/WPF/Images/silhoette.png"
+            <Image Stretch="Uniform" Source="/Gwupe.Agent;component/UI/WPF/Images/silhoette.png"
                         Height="55" Margin="5,0,0,0" VerticalAlignment="Center" HorizontalAlignment="Left"
 						DockPanel.Dock="Left"
 						/>

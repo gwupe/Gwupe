@@ -1,7 +1,7 @@
 ﻿using System;
-using BlitsMe.Communication.P2P.RUDP.Packet.API;
+using Gwupe.Communication.P2P.RUDP.Packet.API;
 
-namespace BlitsMe.Communication.P2P.RUDP.Packet.TCP
+namespace Gwupe.Communication.P2P.RUDP.Packet.TCP
 {
     public abstract class BasicTcpPacket : ITcpPacket, IComparable
     {

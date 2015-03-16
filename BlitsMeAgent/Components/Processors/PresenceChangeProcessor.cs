@@ -1,20 +1,20 @@
 using System;
-using BlitsMe.Agent.Components.Person;
-using BlitsMe.Cloud.Messaging.API;
-using BlitsMe.Cloud.Messaging.Request;
-using BlitsMe.Cloud.Messaging.Response;
+using Gwupe.Agent.Components.Person;
+using Gwupe.Cloud.Messaging.API;
+using Gwupe.Cloud.Messaging.Request;
+using Gwupe.Cloud.Messaging.Response;
 using log4net;
 using log4net.Repository.Hierarchy;
 
-namespace BlitsMe.Agent.Components.Processors
+namespace Gwupe.Agent.Components.Processors
 {
     public class PresenceChangeProcessor : Processor
     {
         private static readonly ILog Logger = LogManager.GetLogger(typeof (PresenceChangeProcessor));
 
-        private readonly BlitsMeClientAppContext _appContext;
+        private readonly GwupeClientAppContext _appContext;
 
-        public PresenceChangeProcessor(BlitsMeClientAppContext appContext)
+        public PresenceChangeProcessor(GwupeClientAppContext appContext)
         {
             _appContext = appContext;
         }

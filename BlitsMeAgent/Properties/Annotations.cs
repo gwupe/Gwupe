@@ -17,7 +17,7 @@
 using System;
 using System.ComponentModel;
 
-namespace BlitsMe.Agent.Annotations
+namespace Gwupe.Agent.Annotations
 {
   /// <summary>
   /// Indicates that marked element should be localized or not.

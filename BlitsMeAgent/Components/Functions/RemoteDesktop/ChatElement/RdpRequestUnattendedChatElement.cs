@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Timers;
 
-namespace BlitsMe.Agent.Components.Functions.RemoteDesktop.ChatElement
+namespace Gwupe.Agent.Components.Functions.RemoteDesktop.ChatElement
 {
     public class RdpRequestUnattendedChatElement : RdpRequestChatElement
     {

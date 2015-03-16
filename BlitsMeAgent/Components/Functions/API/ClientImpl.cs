@@ -2,12 +2,12 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using BlitsMe.Agent.Components.Functions.RemoteDesktop;
-using BlitsMe.Agent.Components.Person;
-using BlitsMe.Communication.P2P.P2P.Socket.API;
+using Gwupe.Agent.Components.Functions.RemoteDesktop;
+using Gwupe.Agent.Components.Person;
+using Gwupe.Communication.P2P.P2P.Socket.API;
 using log4net;
 
-namespace BlitsMe.Agent.Components.Functions.API
+namespace Gwupe.Agent.Components.Functions.API
 {
     internal abstract class ClientImpl
     {

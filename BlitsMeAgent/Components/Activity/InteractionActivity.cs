@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace BlitsMe.Agent.Components.Activity
+namespace Gwupe.Agent.Components.Activity
 {
     class InteractionActivity : EngagementActivity
     {

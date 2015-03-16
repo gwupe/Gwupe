@@ -3,11 +3,11 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
 using System.Text;
-using BlitsMe.Agent.Annotations;
+using Gwupe.Agent.Annotations;
 using log4net;
 using log4net.Repository.Hierarchy;
 
-namespace BlitsMe.Agent.UI.WPF
+namespace Gwupe.Agent.UI.WPF
 {
     
     public enum DashboardState

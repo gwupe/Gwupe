@@ -3,19 +3,19 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading;
-using BlitsMe.Communication.P2P.Exceptions;
+using Gwupe.Communication.P2P.Exceptions;
 using log4net;
 
-namespace BlitsMe.Agent.Components.Schedule
+namespace Gwupe.Agent.Components.Schedule
 {
     internal class CheckServiceTask : IScheduledTask
     {
         private static readonly ILog Logger = LogManager.GetLogger(typeof(CheckServiceTask));
-        private readonly BlitsMeClientAppContext _appContext;
+        private readonly GwupeClientAppContext _appContext;
         private Alert.Alert _serviceAlert;
         private bool SentFaultReport = false;
 
-        internal CheckServiceTask(BlitsMeClientAppContext appContext)
+        internal CheckServiceTask(GwupeClientAppContext appContext)
         {
             _appContext = appContext;
             LastCompleteTime = DateTime.MinValue;
@@ -26,7 +26,7 @@ namespace BlitsMe.Agent.Components.Schedule
         {
             try
             {
-                _appContext.BlitsMeService.Ping();
+                _appContext.GwupeService.Ping();
                 if (_serviceAlert != null)
                 {
                     _appContext.NotificationManager.DeleteAlert(_serviceAlert);
@@ -55,7 +55,7 @@ namespace BlitsMe.Agent.Components.Schedule
                         SentFaultReport = true;
                         ThreadPool.QueueUserWorkItem(
                             state =>
-                                BlitsMeClientAppContext.CurrentAppContext.SubmitFaultReport(new FaultReport()
+                                GwupeClientAppContext.CurrentAppContext.SubmitFaultReport(new FaultReport()
                                 {
                                     UserReport = "Detected blitsme service unavailable."
                                 }));
@@ -66,7 +66,7 @@ namespace BlitsMe.Agent.Components.Schedule
 
         private void ClickRestartBlitsMeService()
         {
-            if (BlitsMeClientAppContext.CurrentAppContext.RestartBlitsMeService())
+            if (GwupeClientAppContext.CurrentAppContext.RestartBlitsMeService())
             {
                 RunTask();
             }

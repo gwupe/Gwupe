@@ -116,13 +116,13 @@
     </Content>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\BlitsMeCommon\BlitsMeCommon.csproj">
+    <ProjectReference Include="..\BlitsMeCommon\GwupeCommon.csproj">
       <Project>{1b355f1c-9d50-4bab-8ceb-e6ca72e6de69}</Project>
-      <Name>BlitsMeCommon</Name>
+      <Name>GwupeCommon</Name>
     </ProjectReference>
-    <ProjectReference Include="..\BlitsMeP2PConnection\BlitsMeP2PConnection.csproj">
+    <ProjectReference Include="..\BlitsMeP2PConnection\GwupeCommunicatonP2P.csproj">
       <Project>{c8080119-3305-43b5-8944-592dbc960f12}</Project>
-      <Name>BlitsMeP2PConnection</Name>
+      <Name>GwupeCommunicatonP2P</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

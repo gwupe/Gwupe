@@ -4,7 +4,7 @@ using System.Collections.Specialized;
 using System.Windows.Threading;
 using log4net;
 
-namespace BlitsMe.Agent
+namespace Gwupe.Agent
 {
 
 

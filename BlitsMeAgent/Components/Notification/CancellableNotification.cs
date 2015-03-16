@@ -5,7 +5,7 @@ using System.Text;
 using System.Windows.Input;
 using log4net;
 
-namespace BlitsMe.Agent.Components.Notification
+namespace Gwupe.Agent.Components.Notification
 {
     class CancellableNotification : Notification
     {

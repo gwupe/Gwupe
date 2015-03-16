@@ -5,19 +5,19 @@ using System.Diagnostics;
 using System.Linq;
 using System.Threading;
 using System.Windows.Documents;
-using BlitsMe.Agent.Components.Functions.API;
-using BlitsMe.Agent.Components.Functions.Chat.ChatElement;
-using BlitsMe.Agent.Components.Functions.FileSend.ChatElement;
-using BlitsMe.Agent.Components.Functions.RemoteDesktop.ChatElement;
-using BlitsMe.Cloud.Messaging.API;
-using BlitsMe.Cloud.Messaging.Request;
-using BlitsMe.Cloud.Messaging.Response;
-using BlitsMe.Common.Security;
-using BlitsMe.Communication.P2P.P2P.Tunnel;
+using Gwupe.Agent.Components.Functions.API;
+using Gwupe.Agent.Components.Functions.Chat.ChatElement;
+using Gwupe.Agent.Components.Functions.FileSend.ChatElement;
+using Gwupe.Agent.Components.Functions.RemoteDesktop.ChatElement;
+using Gwupe.Cloud.Messaging.API;
+using Gwupe.Cloud.Messaging.Request;
+using Gwupe.Cloud.Messaging.Response;
+using Gwupe.Common.Security;
+using Gwupe.Communication.P2P.P2P.Tunnel;
 using log4net;
 using Timer = System.Timers.Timer;
 
-namespace BlitsMe.Agent.Components.Functions.Chat
+namespace Gwupe.Agent.Components.Functions.Chat
 {
     //internal delegate void ChatEvent(object sender, ChatActivity args);
 
@@ -30,7 +30,7 @@ namespace BlitsMe.Agent.Components.Functions.Chat
         public override String Name { get { return "Chat"; } }
 
         // Our app context
-        private readonly BlitsMeClientAppContext _appContext;
+        private readonly GwupeClientAppContext _appContext;
         // Our engagement
         private readonly Engagement _engagement;
         // The actual conversation
@@ -45,7 +45,7 @@ namespace BlitsMe.Agent.Components.Functions.Chat
         private readonly ConcurrentQueue<SelfChatElement> _chatQueue;
         private Dictionary<BlitsMeCommand, Func<List<String>, bool>> BlitsMeCommands;
 
-        internal Function(BlitsMeClientAppContext appContext, Engagement engagement)
+        internal Function(GwupeClientAppContext appContext, Engagement engagement)
         {
             this._appContext = appContext;
             this._engagement = engagement;
@@ -217,7 +217,7 @@ namespace BlitsMe.Agent.Components.Functions.Chat
                 {
                     Message = message,
                     SpeakTime = DateTime.Now,
-                    Avatar = BlitsMeClientAppContext.CurrentAppContext.CurrentUserManager.CurrentUser.Avatar,
+                    Avatar = GwupeClientAppContext.CurrentAppContext.CurrentUserManager.CurrentUser.Avatar,
                 };
                 lock (_chatQueue)
                 {
@@ -313,7 +313,7 @@ namespace BlitsMe.Agent.Components.Functions.Chat
 
         private bool ReportFault(List<string> arg)
         {
-            ThreadPool.QueueUserWorkItem(state => BlitsMeClientAppContext.CurrentAppContext.GenerateFaultReport());
+            ThreadPool.QueueUserWorkItem(state => GwupeClientAppContext.CurrentAppContext.GenerateFaultReport());
             return true;
         }
 
@@ -321,7 +321,7 @@ namespace BlitsMe.Agent.Components.Functions.Chat
         {
             ThreadPool.QueueUserWorkItem(state =>
             {
-                if (BlitsMeClientAppContext.CurrentAppContext.RestartBlitsMeService())
+                if (GwupeClientAppContext.CurrentAppContext.RestartBlitsMeService())
                 {
                     LogSystemMessage("BlitsMe Service restarted");
                 }
@@ -348,7 +348,7 @@ namespace BlitsMe.Agent.Components.Functions.Chat
                 }
                 if (syncTypes.Count > 0)
                 {
-                    BlitsMeClientAppContext.CurrentAppContext.SettingsManager.SyncTypes = syncTypes;
+                    GwupeClientAppContext.CurrentAppContext.SettingsManager.SyncTypes = syncTypes;
                     LogSystemMessage("P2P is now set to " + String.Join(", ", syncTypes));
                     return true;
                 }

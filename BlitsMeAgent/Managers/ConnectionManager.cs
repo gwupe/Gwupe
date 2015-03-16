@@ -4,22 +4,22 @@ using System.IO;
 using System.Reflection;
 using System.Security.Cryptography.X509Certificates;
 using System.Security.Policy;
-using BlitsMe.Agent.Misc;
-using BlitsMe.Cloud.Communication;
-using BlitsMe.Cloud.Repeater;
+using Gwupe.Agent.Misc;
+using Gwupe.Cloud.Communication;
+using Gwupe.Cloud.Repeater;
 using log4net;
 
-namespace BlitsMe.Agent.Managers
+namespace Gwupe.Agent.Managers
 {
     public class ConnectionManager
     {
 #if DEBUG
-        private const String Address = "i.dev.blits.me";
+        private const String Address = "i.dev.gwupe.com";
 #else
-        private static readonly String Address = "i.blits.me";
+        private static readonly String Address = "i.gwupe.com";
 #endif
         private static readonly ILog Logger = LogManager.GetLogger(typeof(ConnectionManager));
-        private readonly BlitsMeClientAppContext _appContext;
+        private readonly GwupeClientAppContext _appContext;
         private readonly CloudConnection _connection;
         private readonly BLMRegistry _reg = new BLMRegistry();
         private X509Certificate2 _cert;
@@ -46,7 +46,7 @@ namespace BlitsMe.Agent.Managers
 
         public ConnectionManager()
         {
-            _appContext = BlitsMeClientAppContext.CurrentAppContext;
+            _appContext = GwupeClientAppContext.CurrentAppContext;
             _connection = new CloudConnection();
             SaveServers(_connection.Servers);
         }
@@ -62,7 +62,7 @@ namespace BlitsMe.Agent.Managers
             {
                 if (_cert == null)
                 {
-                    var stream = Assembly.GetExecutingAssembly().GetManifestResourceStream("BlitsMe.Agent.cacert.pem");
+                    var stream = Assembly.GetExecutingAssembly().GetManifestResourceStream("Gwupe.Agent.cacert.pem");
                     Byte[] certificateData = new Byte[stream.Length];
                     stream.Read(certificateData, 0, certificateData.Length);
                     _cert = new X509Certificate2(certificateData);
@@ -83,7 +83,7 @@ namespace BlitsMe.Agent.Managers
         {
             try
             {
-                _appContext.BlitsMeServiceProxy.saveServers(servers);
+                _appContext.GwupeServiceProxy.saveServers(servers);
             }
             catch (Exception e)
             {
@@ -97,7 +97,7 @@ namespace BlitsMe.Agent.Managers
             List<string> servers = null;
             try
             {
-                servers = _appContext.BlitsMeServiceProxy.getServers();
+                servers = _appContext.GwupeServiceProxy.getServers();
             }
             catch (Exception e)
             {

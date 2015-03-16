@@ -1,9 +1,9 @@
 ﻿using System;
 using System.IO;
-using BlitsMe.Agent.Managers;
-using BlitsMe.Cloud.Communication;
+using Gwupe.Agent.Managers;
+using Gwupe.Cloud.Communication;
 
-namespace BlitsMe.Agent.Components.RepeatedConnection
+namespace Gwupe.Agent.Components.RepeatedConnection
 {
     internal class WaitingRepeatedConnection
     {

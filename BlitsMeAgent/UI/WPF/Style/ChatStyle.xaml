@@ -3,12 +3,12 @@
 	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
 	xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
 	xmlns:ed="http://schemas.microsoft.com/expression/2010/drawing"
-	xmlns:Utils="clr-namespace:BlitsMe.Agent.UI.WPF.Utils" 
-	xmlns:chat="clr-namespace:BlitsMe.Agent.Components.Functions.Chat.ChatElement" 
-	xmlns:filesend="clr-namespace:BlitsMe.Agent.Components.Functions.FileSend.ChatElement" 
-	xmlns:rdp="clr-namespace:BlitsMe.Agent.Components.Functions.RemoteDesktop.ChatElement" 
-    xmlns:notification="clr-namespace:BlitsMe.Agent.Components.Notification"
-	xmlns:engage="clr-namespace:BlitsMe.Agent.UI.WPF.Engage" 
+	xmlns:Utils="clr-namespace:Gwupe.Agent.UI.WPF.Utils" 
+	xmlns:chat="clr-namespace:Gwupe.Agent.Components.Functions.Chat.ChatElement" 
+	xmlns:filesend="clr-namespace:Gwupe.Agent.Components.Functions.FileSend.ChatElement" 
+	xmlns:rdp="clr-namespace:Gwupe.Agent.Components.Functions.RemoteDesktop.ChatElement" 
+    xmlns:notification="clr-namespace:Gwupe.Agent.Components.Notification"
+	xmlns:engage="clr-namespace:Gwupe.Agent.UI.WPF.Engage" 
     xmlns:s="clr-namespace:System;assembly=mscorlib">
 
     <!-- Resource dictionary entries should be defined here. -->
@@ -281,12 +281,12 @@
 
     <!-- the Template containing the image we use for cancel -->
     <DataTemplate x:Key="CancelButtonImage">
-        <Image Source="/BlitsMe.Agent;component/UI/WPF/Images/smallcross.png" Width="16" Height="16" />
+        <Image Source="/Gwupe.Agent;component/UI/WPF/Images/smallcross.png" Width="16" Height="16" />
     </DataTemplate>
 
     <!-- the Template containing the image we use for accept -->
     <DataTemplate x:Key="AcceptButtonImage">
-        <Image Source="/BlitsMe.Agent;component/UI/WPF/Images/smalltick.png" Width="16" Height="16" />
+        <Image Source="/Gwupe.Agent;component/UI/WPF/Images/smalltick.png" Width="16" Height="16" />
     </DataTemplate>
 
     <!-- Template for a cancel button -->

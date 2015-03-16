@@ -5,7 +5,7 @@
 	xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
 	xmlns:PresentationOptions="http://schemas.microsoft.com/winfx/2006/xaml/presentation/options"
 	mc:Ignorable="d"
-	x:Class="BlitsMe.Agent.UI.WPF.Engage.ChatWindow"
+	x:Class="Gwupe.Agent.UI.WPF.Engage.ChatWindow"
 	x:Name="UserControl"
     >
     <UserControl.Resources>
@@ -311,7 +311,7 @@
                     <ColumnDefinition Width="10"/>
                     <ColumnDefinition Width="Auto"/>
                 </Grid.ColumnDefinitions>
-                <!--<Image Margin="8,0,0,8" Source="/BlitsMe.Agent;component/UI/WPF/Images/Thought Bubble Left.png" Height="80" VerticalAlignment="Bottom" HorizontalAlignment="Left" Width="1135">
+                <!--<Image Margin="8,0,0,8" Source="/Gwupe.Agent;component/UI/WPF/Images/Thought Bubble Left.png" Height="80" VerticalAlignment="Bottom" HorizontalAlignment="Left" Width="1135">
                     <Image.Effect>
                         <DropShadowEffect/>
                     </Image.Effect>
@@ -319,7 +319,7 @@
                 <!--<Grid x:Name="BubbleCover" Margin="0,0,0,8" VerticalAlignment="Bottom" HorizontalAlignment="Right" Width="320" 
                       Background="#FF2B519B" >
                 </Grid>-->
-                <!--<Image Margin="0,0,62,8" Source="/BlitsMe.Agent;component/UI/WPF/Images/Thought Bubble Right.png" Height="80" VerticalAlignment="Bottom" HorizontalAlignment="Right" Width="277">
+                <!--<Image Margin="0,0,62,8" Source="/Gwupe.Agent;component/UI/WPF/Images/Thought Bubble Right.png" Height="80" VerticalAlignment="Bottom" HorizontalAlignment="Right" Width="277">
                     <Image.Effect>
                         <DropShadowEffect/>
                     </Image.Effect>
@@ -343,7 +343,7 @@
                 </TextBox>
                 <Button Width="36" Height="36" Command="{Binding SendMessage}" ToolTip="Send message"
                     Margin="0,0,20,0" Grid.Column="2" Background="Transparent" BorderBrush="Transparent">
-                    <Image Source="/BlitsMe.Agent;component/UI/WPF/Images/single chat.png" />
+                    <Image Source="/Gwupe.Agent;component/UI/WPF/Images/single chat.png" />
                 </Button>
             </Grid>
         </Border>

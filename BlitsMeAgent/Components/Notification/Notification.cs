@@ -1,10 +1,10 @@
 ﻿using System;
 using System.ComponentModel;
 using System.Windows.Input;
-using BlitsMe.Agent.Managers;
-using BlitsMe.Common.Security;
+using Gwupe.Agent.Managers;
+using Gwupe.Common.Security;
 
-namespace BlitsMe.Agent.Components.Notification
+namespace Gwupe.Agent.Components.Notification
 {
     internal abstract class Notification : INotifyPropertyChanged
     {

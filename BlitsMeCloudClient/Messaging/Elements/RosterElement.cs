@@ -3,9 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Runtime.Serialization;
-using BlitsMe.Cloud.Messaging.API;
+using Gwupe.Cloud.Messaging.API;
 
-namespace BlitsMe.Cloud.Messaging.Elements
+namespace Gwupe.Cloud.Messaging.Elements
 {
     [DataContract]
     public class RosterElement

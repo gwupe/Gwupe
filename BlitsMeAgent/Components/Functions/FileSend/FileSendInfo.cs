@@ -4,7 +4,7 @@ using System.Deployment.Internal;
 using System.Linq;
 using System.Text;
 
-namespace BlitsMe.Agent.Components.Functions.FileSend
+namespace Gwupe.Agent.Components.Functions.FileSend
 {
     internal enum FileSendDirection { Send, Receive };
     internal enum FileSendState { Initialised, PendingSend, Sending, SendCancelled, PendingReceive, Receiving, ReceiveCancelled, SendComplete, ReceiveComplete }

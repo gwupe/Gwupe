@@ -2,10 +2,10 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using BlitsMe.Cloud.Exceptions;
-using BlitsMe.Cloud.Messaging.Response;
+using Gwupe.Cloud.Exceptions;
+using Gwupe.Cloud.Messaging.Response;
 
-namespace BlitsMe.Agent.Exceptions
+namespace Gwupe.Agent.Exceptions
 {
     class SignUpException : Exception
     {

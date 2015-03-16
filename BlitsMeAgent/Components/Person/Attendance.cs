@@ -1,13 +1,13 @@
 ﻿using System;
 using System.ComponentModel;
 using System.Threading;
-using BlitsMe.Agent.Components.Activity;
-using BlitsMe.Agent.Components.Person.Presence;
-using BlitsMe.Cloud.Messaging.Elements;
+using Gwupe.Agent.Components.Activity;
+using Gwupe.Agent.Components.Person.Presence;
+using Gwupe.Cloud.Messaging.Elements;
 using log4net;
 using System.Windows.Input;
 
-namespace BlitsMe.Agent.Components.Person
+namespace Gwupe.Agent.Components.Person
 {
     internal class Attendance : INotifyPropertyChanged
     {

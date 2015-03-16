@@ -1,11 +1,9 @@
 ﻿using System;
-using System.Configuration.Install;
-using System.Diagnostics;
 using System.Linq;
 using System.Reflection;
 using System.ServiceProcess;
 
-namespace BlitsMe.Service
+namespace Gwupe.Service
 {
     static class Program
     {
@@ -18,7 +16,7 @@ namespace BlitsMe.Service
             ServiceBase[] ServicesToRun;
             ServicesToRun = new ServiceBase[]
                 {
-                    new BMService()
+                    new GwupeService()
                 };
             ServiceBase.Run(ServicesToRun);
         }

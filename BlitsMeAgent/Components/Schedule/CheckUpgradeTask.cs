@@ -7,14 +7,14 @@ using System.Reflection;
 using System.Text;
 using log4net;
 
-namespace BlitsMe.Agent.Components.Schedule
+namespace Gwupe.Agent.Components.Schedule
 {
     class CheckUpgradeTask : IScheduledTask
     {
         private static readonly ILog Logger = LogManager.GetLogger(typeof (CheckUpgradeTask));
-        private readonly BlitsMeClientAppContext _appContext;
+        private readonly GwupeClientAppContext _appContext;
 
-        public CheckUpgradeTask(BlitsMeClientAppContext appContext)
+        public CheckUpgradeTask(GwupeClientAppContext appContext)
         {
             _appContext = appContext;
             LastCompleteTime = DateTime.MinValue;
@@ -38,7 +38,7 @@ namespace BlitsMe.Agent.Components.Schedule
                     try
                     {
                         Process.Start(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location) +
-                                      "\\BlitsMe.Agent.Upgrade.exe");
+                                      "\\Gwupe.Agent.Upgrade.exe");
                     }
                     catch (Exception e)
                     {

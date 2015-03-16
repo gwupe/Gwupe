@@ -5,7 +5,7 @@ using System.Management;
 using System.Runtime.InteropServices;
 using System.Text.RegularExpressions;
 
-namespace BlitsMe.Common
+namespace Gwupe.Common
 {
     public static class OsUtils
     {
@@ -86,7 +86,7 @@ namespace BlitsMe.Common
 
             foreach (Process pr in prs)
             {
-                if (pr.ProcessName == "BlitsMe.Agent" &&
+                if (pr.ProcessName == "Gwupe" &&
                         (
                             (!String.IsNullOrWhiteSpace(pathRegex) && Regex.Match(GetMainModuleFilepath(pr.Id), pathRegex).Success) ||
                             (!String.IsNullOrWhiteSpace(path) && path.Equals(GetMainModuleFilepath(pr.Id)))

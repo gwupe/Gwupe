@@ -4,10 +4,10 @@ using System.Linq;
 using System.Text;
 using System.Runtime.Serialization;
 
-namespace BlitsMe.Cloud.Messaging.Response
+namespace Gwupe.Cloud.Messaging.Response
 {
     [DataContract]
-    public class ErrorRs : BlitsMe.Cloud.Messaging.API.Response
+    public class ErrorRs : Gwupe.Cloud.Messaging.API.Response
     {
         [DataMember]
         public override string type

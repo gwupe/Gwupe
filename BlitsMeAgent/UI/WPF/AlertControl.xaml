@@ -1,12 +1,12 @@
-﻿<bm:BlitsMeModalUserControl x:Class="BlitsMe.Agent.UI.WPF.AlertControl"
+﻿<bm:GwupeModalUserControl x:Class="Gwupe.Agent.UI.WPF.AlertControl"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
-             xmlns:bm="clr-namespace:BlitsMe.Agent.UI.WPF.API"
+             xmlns:bm="clr-namespace:Gwupe.Agent.UI.WPF.API"
              mc:Ignorable="d" 
             >
-    <bm:BlitsMeModalUserControl.Resources>
+    <bm:GwupeModalUserControl.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
                 <ResourceDictionary Source="Style/Style.xaml" />
@@ -18,7 +18,7 @@
                 <ResourceDictionary Source="Skins/Skin.xaml" />
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>
-    </bm:BlitsMeModalUserControl.Resources>
+    </bm:GwupeModalUserControl.Resources>
     <Grid MinHeight="175" MinWidth="350">
 		<Grid Background="White" Opacity="0.35" />
 		<Border BorderThickness="1" BorderBrush="#4A7EBB" HorizontalAlignment="Center" VerticalAlignment="Center">
@@ -34,4 +34,4 @@
 			</Grid>
 		</Border>
     </Grid>
-</bm:BlitsMeModalUserControl>
+</bm:GwupeModalUserControl>

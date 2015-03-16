@@ -5,13 +5,13 @@
 	xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
 	xmlns:ed="http://schemas.microsoft.com/expression/2010/drawing"
 	mc:Ignorable="d"
-	x:Class="BlitsMe.Agent.UI.WPF.Engage.RatingControl"
+	x:Class="Gwupe.Agent.UI.WPF.Engage.RatingControl"
 	d:DesignWidth="75" d:DesignHeight="15">
     <UserControl.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
-            	<ResourceDictionary Source="/BlitsMe.Agent;component/UI/WPF/Style/Style.xaml"/>
-            	<ResourceDictionary Source="/BlitsMe.Agent;component/UI/WPF/Style/RatingStyle.xaml"/>
+            	<ResourceDictionary Source="/Gwupe.Agent;component/UI/WPF/Style/Style.xaml"/>
+            	<ResourceDictionary Source="/Gwupe.Agent;component/UI/WPF/Style/RatingStyle.xaml"/>
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>
     </UserControl.Resources>

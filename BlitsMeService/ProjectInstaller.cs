@@ -1,11 +1,9 @@
 ﻿using System;
 using System.ComponentModel;
-using System.Linq;
-using System.Reflection;
-using System.ServiceProcess;
 using System.Diagnostics;
+using System.ServiceProcess;
 
-namespace BlitsMe.Service
+namespace Gwupe.Service
 {
     [RunInstaller(true)]
     public partial class ProjectInstaller : System.Configuration.Install.Installer

@@ -4,7 +4,7 @@ using System.Threading;
 using System.Windows;
 using log4net;
 
-namespace BlitsMe.Agent.UI.WPF
+namespace Gwupe.Agent.UI.WPF
 {
     /// <summary>
     /// Interaction logic for UpdateNotification.xaml
@@ -12,7 +12,7 @@ namespace BlitsMe.Agent.UI.WPF
     public partial class UpdateNotification : Window
     {
         private static readonly ILog Logger = LogManager.GetLogger(typeof (UpdateNotification));
-        private readonly BlitsMeClientAppContext _appContext;
+        private readonly GwupeClientAppContext _appContext;
         public ObservableCollection<String> Changes { get { return _appContext.ChangeLog; } }
         public String Version { get { return _appContext.Version(2); } }
         public String Description { get { return _appContext.ChangeDescription; } }
@@ -23,7 +23,7 @@ namespace BlitsMe.Agent.UI.WPF
         {
             this.InitializeComponent();
             UiThread = Thread.CurrentThread;
-            _appContext = BlitsMeClientAppContext.CurrentAppContext;
+            _appContext = GwupeClientAppContext.CurrentAppContext;
             DataContext = this;
         }
 

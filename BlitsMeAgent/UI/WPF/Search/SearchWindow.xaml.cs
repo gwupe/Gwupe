@@ -2,12 +2,12 @@
 using System.ComponentModel;
 using System.Windows;
 using System.Windows.Controls;
-using BlitsMe.Agent.Annotations;
-using BlitsMe.Agent.UI.WPF.API;
+using Gwupe.Agent.Annotations;
+using Gwupe.Agent.UI.WPF.API;
 using log4net;
 using log4net.Repository.Hierarchy;
 
-namespace BlitsMe.Agent.UI.WPF.Search
+namespace Gwupe.Agent.UI.WPF.Search
 {
     /// <summary>
     /// Interaction logic for SearchWindow.xaml
@@ -16,10 +16,10 @@ namespace BlitsMe.Agent.UI.WPF.Search
     {
         private static readonly ILog Logger = LogManager.GetLogger(typeof(SearchWindow));
         private readonly SearchResultControlList _searchResults;
-        private readonly BlitsMeClientAppContext _appContext;
+        private readonly GwupeClientAppContext _appContext;
         private readonly SearchWindowDataContext _dataContext;
 
-        public SearchWindow(BlitsMeClientAppContext appContext)
+        public SearchWindow(GwupeClientAppContext appContext)
         {
             this.InitializeComponent();
             _appContext = appContext;
@@ -56,9 +56,9 @@ namespace BlitsMe.Agent.UI.WPF.Search
 
         public SearchWindowDataContext()
         {
-            BlitsMeClientAppContext.CurrentAppContext.SearchManager.SearchStart +=
+            GwupeClientAppContext.CurrentAppContext.SearchManager.SearchStart +=
                 OnSearchManagerOnSearchStart;
-            BlitsMeClientAppContext.CurrentAppContext.SearchManager.SearchStop +=
+            GwupeClientAppContext.CurrentAppContext.SearchManager.SearchStop +=
                 OnSearchManagerOnSearchStop;
         }
 

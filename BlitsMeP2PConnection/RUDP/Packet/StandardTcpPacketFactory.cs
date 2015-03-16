@@ -1,7 +1,7 @@
-﻿using BlitsMe.Communication.P2P.Exceptions;
-using BlitsMe.Communication.P2P.RUDP.Packet.TCP;
+﻿using Gwupe.Communication.P2P.Exceptions;
+using Gwupe.Communication.P2P.RUDP.Packet.TCP;
 
-namespace BlitsMe.Communication.P2P.RUDP.Packet
+namespace Gwupe.Communication.P2P.RUDP.Packet
 {
     public class StandardTcpPacketFactory
     {

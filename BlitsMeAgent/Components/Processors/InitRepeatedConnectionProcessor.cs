@@ -2,18 +2,18 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using BlitsMe.Cloud.Messaging.API;
-using BlitsMe.Cloud.Messaging.Request;
-using BlitsMe.Cloud.Messaging.Response;
-using BlitsMe.Cloud.Repeater;
+using Gwupe.Cloud.Messaging.API;
+using Gwupe.Cloud.Messaging.Request;
+using Gwupe.Cloud.Messaging.Response;
+using Gwupe.Cloud.Repeater;
 using log4net;
 
-namespace BlitsMe.Agent.Components.Processors
+namespace Gwupe.Agent.Components.Processors
 {
     internal class InitRepeatedConnectionProcessor : UserToUserProcessor
     {
         private static readonly ILog Logger = LogManager.GetLogger(typeof (InitRepeatedConnectionProcessor));
-        public InitRepeatedConnectionProcessor(BlitsMeClientAppContext appContext) : base(appContext)
+        public InitRepeatedConnectionProcessor(GwupeClientAppContext appContext) : base(appContext)
         {
         }
 

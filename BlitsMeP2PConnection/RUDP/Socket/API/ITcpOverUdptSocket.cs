@@ -1,6 +1,6 @@
-﻿using BlitsMe.Communication.P2P.RUDP.Tunnel.API;
+﻿using Gwupe.Communication.P2P.RUDP.Tunnel.API;
 
-namespace BlitsMe.Communication.P2P.RUDP.Socket.API
+namespace Gwupe.Communication.P2P.RUDP.Socket.API
 {
     public interface ITcpOverUdptSocket
     {

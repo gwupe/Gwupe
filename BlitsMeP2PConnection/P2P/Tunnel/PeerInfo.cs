@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 
-namespace BlitsMe.Communication.P2P.P2P.Tunnel
+namespace Gwupe.Communication.P2P.P2P.Tunnel
 {
     public class PeerInfo
     {

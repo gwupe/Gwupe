@@ -1,4 +1,4 @@
-namespace BlitsMe.Communication.P2P.RUDP.Connector.API
+namespace Gwupe.Communication.P2P.RUDP.Connector.API
 {
     public interface ITcpTransportConnection
     {

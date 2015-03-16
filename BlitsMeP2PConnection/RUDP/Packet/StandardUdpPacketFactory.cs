@@ -1,8 +1,8 @@
-﻿using BlitsMe.Communication.P2P.Exceptions;
+﻿using Gwupe.Communication.P2P.Exceptions;
 using System.Net;
-using BlitsMe.Communication.P2P.RUDP.Packet.Tunnel;
+using Gwupe.Communication.P2P.RUDP.Packet.Tunnel;
 
-namespace BlitsMe.Communication.P2P.RUDP.Packet
+namespace Gwupe.Communication.P2P.RUDP.Packet
 {
     public class StandardUdpPacketFactory
     {

@@ -7,13 +7,14 @@ using System.Drawing;
 using log4net;
 using log4net.Repository.Hierarchy;
 
-namespace BlitsMe.Agent.UI
+namespace Gwupe.Agent.UI
 {
     public class SystemTray
     {
         private static readonly ILog Logger = LogManager.GetLogger(typeof (SystemTray));
-        private readonly BlitsMeClientAppContext _appContext;
+        private readonly GwupeClientAppContext _appContext;
         private static readonly Icon IconConnected = Properties.Resources.icon_main;
+        private static readonly Icon IconDisconnected = Properties.Resources.icon_disconnected;
         private bool pulseUp = true;
         private int pulseLocation = 0;
         private static Icon[] IconSearchingList = { 
@@ -29,21 +30,22 @@ namespace BlitsMe.Agent.UI
                                                       Properties.Resources.icon_pulse_90,
                                                       Properties.Resources.icon_pulse_100
                                                   };
-        private static readonly string DefaultTooltip = "BlitsMe" + Program.BuildMarker + " (Offline)";
+        private static readonly string DefaultTooltip = "Gwupe" + Program.BuildMarker + " (Offline)";
         private System.ComponentModel.IContainer components;
         public NotifyIcon notifyIcon { get; set; }
         private Timer linkDownIconBlinker;
 
         public SystemTray()
         {
-            this._appContext = BlitsMeClientAppContext.CurrentAppContext;
+            this._appContext = GwupeClientAppContext.CurrentAppContext;
             components = new System.ComponentModel.Container();
             notifyIcon = new NotifyIcon(components)
             {
                 // This is the actual context menu which will appear
                 ContextMenuStrip = new ContextMenuStrip(),
                 // This is the icon to user
-                Icon = IconSearchingList[0],
+                //Icon = IconSearchingList[0],
+                Icon = IconDisconnected,
                 // Whats the default text (to start)
                 Text = DefaultTooltip,
                 // Of course we want it visible
@@ -52,7 +54,7 @@ namespace BlitsMe.Agent.UI
             // Set the event handlers
             notifyIcon.ContextMenuStrip.Opening += ContextMenuStrip_Opening;
             notifyIcon.Click += LaunchDashboardLeftClick;
-            notifyIcon.DoubleClick += (sender, args) => BlitsMeClientAppContext.CurrentAppContext.UIManager.Show();
+            notifyIcon.DoubleClick += (sender, args) => GwupeClientAppContext.CurrentAppContext.UIManager.Show();
             //notifyIcon.MouseUp += notifyIcon_MouseUp;
         }
 
@@ -67,7 +69,7 @@ namespace BlitsMe.Agent.UI
         private void LaunchDashboardLeftClick(object sender, EventArgs e)
         {
             if(((MouseEventArgs)e).Button.Equals(MouseButtons.Left)) {
-                BlitsMeClientAppContext.CurrentAppContext.UIManager.Show();
+                GwupeClientAppContext.CurrentAppContext.UIManager.Show();
             }
         }
 
@@ -97,6 +99,7 @@ namespace BlitsMe.Agent.UI
             return IconSearchingList[pulseLocation];
         }
 
+        
         private void OfflineSearch(object sender, EventArgs e)
         {
             if (_appContext.ConnectionManager.IsOnline())
@@ -104,20 +107,19 @@ namespace BlitsMe.Agent.UI
                 if (!notifyIcon.Icon.Equals(IconConnected))
                 {
                     notifyIcon.Icon = IconConnected;
-                    notifyIcon.Text = "BlitsMe" + Program.BuildMarker + " [" + _appContext.CurrentUserManager.ActiveShortCode.Substring(0, 3) + " " + _appContext.CurrentUserManager.ActiveShortCode.Substring(3, 4) + "]";
+                    notifyIcon.Text = "Gwupe" + Program.BuildMarker + " [" + _appContext.CurrentUserManager.ActiveShortCode.Substring(0, 3) + " " + _appContext.CurrentUserManager.ActiveShortCode.Substring(3, 4) + "]";
                 }
             }
             else
             {
                 if (_appContext.ConnectionManager.Connection.isEstablished())
                 {
-                    notifyIcon.Text = "BlitsMe" + Program.BuildMarker + " (Logging In)";
-                    notifyIcon.Icon = PulseIcon();
+                    notifyIcon.Text = "Gwupe" + Program.BuildMarker + " (Logging In)";
                 } else
                 {
-                    notifyIcon.Text = "BlitsMe" + Program.BuildMarker + " (Connecting)";
-                    notifyIcon.Icon = PulseIcon();
+                    notifyIcon.Text = "Gwupe" + Program.BuildMarker + " (Connecting)";
                 }
+                notifyIcon.Icon = PulseIcon();
             }
         }
 
@@ -132,7 +134,7 @@ namespace BlitsMe.Agent.UI
             e.Cancel = false;
             notifyIcon.ContextMenuStrip.Items.Clear();
             notifyIcon.ContextMenuStrip.Items.Add(Utils.GenerateItem("&Open",
-                (o, args) => BlitsMeClientAppContext.CurrentAppContext.UIManager.Show()));
+                (o, args) => GwupeClientAppContext.CurrentAppContext.UIManager.Show()));
             notifyIcon.ContextMenuStrip.Items.Add(Utils.GenerateItem("&Exit", exitItem_Click));
         }
 

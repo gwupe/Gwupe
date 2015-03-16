@@ -3,10 +3,10 @@ using System.ComponentModel;
 using System.IO;
 using System.Windows.Controls;
 using System.Windows.Media.Imaging;
-using BlitsMe.Agent.Components.Person;
-using BlitsMe.Agent.UI.WPF.Engage;
+using Gwupe.Agent.Components.Person;
+using Gwupe.Agent.UI.WPF.Engage;
 
-namespace BlitsMe.Agent.UI.WPF.Roster
+namespace Gwupe.Agent.UI.WPF.Roster
 {
     /// <summary>
     /// Interaction logic for RosterElement.xaml

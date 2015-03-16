@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace BlitsMe.Cloud.Messaging.Response
+namespace Gwupe.Cloud.Messaging.Response
 {
     class MultiRs : API.Response
     {

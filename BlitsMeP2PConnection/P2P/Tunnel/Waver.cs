@@ -5,11 +5,11 @@ using System.Net;
 using System.Net.NetworkInformation;
 using System.Net.Sockets;
 using System.Threading;
-using BlitsMe.Communication.P2P.RUDP.Packet;
-using BlitsMe.Communication.P2P.RUDP.Packet.Tunnel;
+using Gwupe.Communication.P2P.RUDP.Packet;
+using Gwupe.Communication.P2P.RUDP.Packet.Tunnel;
 using log4net;
 
-namespace BlitsMe.Communication.P2P.P2P.Tunnel
+namespace Gwupe.Communication.P2P.P2P.Tunnel
 {
     public class Waver
     {

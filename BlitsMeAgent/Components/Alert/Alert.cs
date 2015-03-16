@@ -1,9 +1,9 @@
 using System;
 using System.Windows;
 using System.Windows.Input;
-using BlitsMe.Agent.Managers;
+using Gwupe.Agent.Managers;
 
-namespace BlitsMe.Agent.Components.Alert
+namespace Gwupe.Agent.Components.Alert
 {
     internal class Alert
     {

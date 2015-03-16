@@ -5,9 +5,9 @@
 	xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
 	xmlns:ed="http://schemas.microsoft.com/expression/2010/drawing"
 	xmlns:PresentationOptions="http://schemas.microsoft.com/winfx/2006/xaml/presentation/options"
-	xmlns:local="clr-namespace:BlitsMe.Agent.UI.WPF.Engage"
+	xmlns:local="clr-namespace:Gwupe.Agent.UI.WPF.Engage"
 	mc:Ignorable="d"
-	x:Class="BlitsMe.Agent.UI.WPF.Engage.EngagementWindow"
+	x:Class="Gwupe.Agent.UI.WPF.Engage.EngagementWindow"
 	d:DesignWidth="600" d:DesignHeight="480" 
     Name="EngageWindow">
     <UserControl.Resources>
@@ -59,17 +59,17 @@
             <StackPanel Grid.Column="0" Orientation="Horizontal" VerticalAlignment="Center"
                         Margin="10,0,0,0">
                 <Button Click="SendFileButtonClick" ToolTip="Send a File" Template="{DynamicResource TransparentButtonStyle}" >
-                    <Image Source="/BlitsMe.Agent;component/UI/WPF/Images/1401500204_519673-179_Upload.png" />
+                    <Image Source="/Gwupe.Agent;component/UI/WPF/Images/1401500204_519673-179_Upload.png" />
                 </Button>
                 <!--<Button x:Name="KickOffButton" ToolTip="Disconnect Supporter" Click="KickOffButton_Click"
                         Template="{DynamicResource TransparentButtonStyle}" Margin="10,0,0,0">
-                    <Image Source="/BlitsMe.Agent;component/UI/WPF/Images/close.png"/>
+                    <Image Source="/Gwupe.Agent;component/UI/WPF/Images/close.png"/>
                 </Button>-->
                 <Button x:Name="RemoteAssistanceButton" Click="RemoteAssistanceButtonClick" ToolTip="Request Desktop Access" 
                         Margin="10,0,0,0" 
                         Template="{DynamicResource TransparentButtonStyle}"
 						Visibility="Visible">
-                    <Image Source="/BlitsMe.Agent;component/UI/WPF/Images/1401499468_61_Screen.png"/>
+                    <Image Source="/Gwupe.Agent;component/UI/WPF/Images/1401499468_61_Screen.png"/>
                 </Button>
 
                 <Button x:Name="RemoteTerminateButton" ToolTip="Terminate Remote Assistance" 
@@ -84,7 +84,7 @@
                 <Button x:Name="ContactSettings" ToolTip="Contact Settings" 
                         Margin="0,0,0,0" Template="{DynamicResource TransparentButtonStyle}" 
 						Visibility="Visible" Click="ContactSettings_Click">
-                    <Image Source="/BlitsMe.Agent;component/UI/WPF/Images/Settings.png"/>
+                    <Image Source="/Gwupe.Agent;component/UI/WPF/Images/Settings.png"/>
                 </Button>
 				</Grid>
         </Grid>

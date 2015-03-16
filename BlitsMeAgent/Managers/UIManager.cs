@@ -2,15 +2,15 @@
 using System.Threading;
 using System.Windows;
 using System.Windows.Threading;
-using BlitsMe.Agent.Components;
-using BlitsMe.Agent.Components.Functions.Chat;
-using BlitsMe.Agent.Components.Search;
-using BlitsMe.Agent.UI;
-using BlitsMe.Agent.UI.WPF;
-using BlitsMe.Agent.UI.WPF.Engage;
+using Gwupe.Agent.Components;
+using Gwupe.Agent.Components.Functions.Chat;
+using Gwupe.Agent.Components.Search;
+using Gwupe.Agent.UI;
+using Gwupe.Agent.UI.WPF;
+using Gwupe.Agent.UI.WPF.Engage;
 using log4net;
 
-namespace BlitsMe.Agent.Managers
+namespace Gwupe.Agent.Managers
 {
     internal class UIManager
     {
@@ -32,12 +32,12 @@ namespace BlitsMe.Agent.Managers
         internal UIManager()
         {
             uiReady = new AutoResetEvent(false);
-            BlitsMeClientAppContext.CurrentAppContext.LoginManager.LoggedIn += LoginManagerOnLoggedIn;
-            BlitsMeClientAppContext.CurrentAppContext.LoginManager.LoggedOut += LoginManagerOnLoggedOut;
-            BlitsMeClientAppContext.CurrentAppContext.LoginManager.LoggingIn += LoginManagerOnLoggingIn;
-            BlitsMeClientAppContext.CurrentAppContext.LoginManager.LoginFailed += LoginManagerOnLoginFailed;
-            BlitsMeClientAppContext.CurrentAppContext.LoginManager.SigningUp += LoginManagerOnSigningUp;
-            BlitsMeClientAppContext.CurrentAppContext.LoginManager.SignupFailed += LoginManagerOnSignupFailed;
+            GwupeClientAppContext.CurrentAppContext.LoginManager.LoggedIn += LoginManagerOnLoggedIn;
+            GwupeClientAppContext.CurrentAppContext.LoginManager.LoggedOut += LoginManagerOnLoggedOut;
+            GwupeClientAppContext.CurrentAppContext.LoginManager.LoggingIn += LoginManagerOnLoggingIn;
+            GwupeClientAppContext.CurrentAppContext.LoginManager.LoginFailed += LoginManagerOnLoginFailed;
+            GwupeClientAppContext.CurrentAppContext.LoginManager.SigningUp += LoginManagerOnSigningUp;
+            GwupeClientAppContext.CurrentAppContext.LoginManager.SignupFailed += LoginManagerOnSignupFailed;
             _systray = new SystemTray();
             _systray.Start();
         }
@@ -49,7 +49,7 @@ namespace BlitsMe.Agent.Managers
             uiThread.Start();
             uiReady.WaitOne();
             //LoadBaseSkin();
-            if (BlitsMeClientAppContext.CurrentAppContext.Options.Contains(BlitsMeOption.Minimize))
+            if (GwupeClientAppContext.CurrentAppContext.Options.Contains(GwupeOption.Minimize))
             {
                 dashBoard.InitWindowHandle();
             }
@@ -57,8 +57,8 @@ namespace BlitsMe.Agent.Managers
             {
                 Show();
             }
-            if (!BlitsMeClientAppContext.CurrentAppContext.StartupVersion.Equals(BlitsMeClientAppContext.CurrentAppContext.Reg.LastVersion)
-                 && !String.IsNullOrWhiteSpace(BlitsMeClientAppContext.CurrentAppContext.ChangeDescription))
+            if (!GwupeClientAppContext.CurrentAppContext.StartupVersion.Equals(GwupeClientAppContext.CurrentAppContext.Reg.LastVersion)
+                 && !String.IsNullOrWhiteSpace(GwupeClientAppContext.CurrentAppContext.ChangeDescription))
                 SetupAndRunUpdateNotificationWindow();
         }
 
@@ -79,7 +79,7 @@ namespace BlitsMe.Agent.Managers
 
         private void RunUI()
         {
-            dashBoard = new Dashboard(BlitsMeClientAppContext.CurrentAppContext);
+            dashBoard = new Dashboard(GwupeClientAppContext.CurrentAppContext);
             uiReady.Set();
             Dispatcher.Run();
         }
@@ -157,9 +157,9 @@ namespace BlitsMe.Agent.Managers
             dashBoard.PromptSignup(dataSubmitErrorArgs);
         }
 
-        public BlitsMeClientAppContext GetAppcontext()
+        public GwupeClientAppContext GetAppcontext()
         {
-            return BlitsMeClientAppContext.CurrentAppContext;
+            return GwupeClientAppContext.CurrentAppContext;
         }
 
         public void PromptLogin()
@@ -221,41 +221,41 @@ namespace BlitsMe.Agent.Managers
 
         private void LoginManagerOnLoginFailed(object sender, DataSubmitErrorArgs dataSubmitErrorArgs)
         {
-            if (BlitsMeClientAppContext.CurrentAppContext.IsShuttingDown) return;
+            if (GwupeClientAppContext.CurrentAppContext.IsShuttingDown) return;
             Logger.Debug("Received a login error " + dataSubmitErrorArgs);
             dashBoard.LoginFailed(dataSubmitErrorArgs);
         }
 
         private void LoginManagerOnLoggingIn(object sender, LoginEventArgs loginEventArgs)
         {
-            if (BlitsMeClientAppContext.CurrentAppContext.IsShuttingDown) return;
+            if (GwupeClientAppContext.CurrentAppContext.IsShuttingDown) return;
             if (loginEventArgs.LoginState == LoginState.LoggingIn)
                 dashBoard.LoggingIn();
         }
 
         private void LoginManagerOnLoggedOut(object sender, LoginEventArgs loginEventArgs)
         {
-            if (BlitsMeClientAppContext.CurrentAppContext.IsShuttingDown) return;
+            if (GwupeClientAppContext.CurrentAppContext.IsShuttingDown) return;
             if (loginEventArgs.LoginState == LoginState.LoggedOut)
                 dashBoard.Login();
         }
 
         private void LoginManagerOnLoggedIn(object sender, LoginEventArgs loginEventArgs)
         {
-            if (BlitsMeClientAppContext.CurrentAppContext.IsShuttingDown) return;
+            if (GwupeClientAppContext.CurrentAppContext.IsShuttingDown) return;
             if (loginEventArgs.LoginState == LoginState.LoggedIn)
                 dashBoard.LoggedIn();
         }
 
         private void LoginManagerOnSigningUp(object sender, EventArgs eventArgs)
         {
-            if (BlitsMeClientAppContext.CurrentAppContext.IsShuttingDown) return;
+            if (GwupeClientAppContext.CurrentAppContext.IsShuttingDown) return;
             dashBoard.SigningUp();
         }
 
         private void LoginManagerOnSignupFailed(object sender, DataSubmitErrorArgs dataSubmitErrorArgs)
         {
-            if (BlitsMeClientAppContext.CurrentAppContext.IsShuttingDown) return;
+            if (GwupeClientAppContext.CurrentAppContext.IsShuttingDown) return;
             dashBoard.PromptSignup(dataSubmitErrorArgs);
         }
 

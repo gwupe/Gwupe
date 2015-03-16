@@ -1,22 +1,22 @@
 using System;
 using System.Net;
 using System.Threading;
-using BlitsMe.Cloud.Messaging.API;
-using BlitsMe.Cloud.Messaging.Request;
-using BlitsMe.Cloud.Messaging.Response;
-using BlitsMe.Communication.P2P.P2P.Tunnel;
-using BlitsMe.Communication.P2P.RUDP.Tunnel.API;
-using BlitsMe.Communication.P2P.RUDP.Utils;
+using Gwupe.Cloud.Messaging.API;
+using Gwupe.Cloud.Messaging.Request;
+using Gwupe.Cloud.Messaging.Response;
+using Gwupe.Communication.P2P.P2P.Tunnel;
+using Gwupe.Communication.P2P.RUDP.Tunnel.API;
+using Gwupe.Communication.P2P.RUDP.Utils;
 using log4net;
 
-namespace BlitsMe.Agent.Components.Processors
+namespace Gwupe.Agent.Components.Processors
 {
     internal class ListenHandshakeProcessor : UserToUserProcessor
     {
         private static readonly ILog Logger = LogManager.GetLogger(typeof(ListenHandshakeProcessor));
-        private readonly BlitsMeClientAppContext _appContext;
+        private readonly GwupeClientAppContext _appContext;
 
-        internal ListenHandshakeProcessor(BlitsMeClientAppContext appContext)
+        internal ListenHandshakeProcessor(GwupeClientAppContext appContext)
             : base(appContext)
         {
             _appContext = appContext;

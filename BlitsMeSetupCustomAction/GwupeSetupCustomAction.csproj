@@ -8,8 +8,8 @@
     <ProjectGuid>{8266DA82-5594-4CEA-BF14-413BD5FA95E5}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>BlitsMeSetupCustomAction</RootNamespace>
-    <AssemblyName>BlitsMeSetupCustomAction</AssemblyName>
+    <RootNamespace>GwupeSetupCustomAction</RootNamespace>
+    <AssemblyName>GwupeSetupCustomAction</AssemblyName>
     <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <WixCATargetsPath Condition=" '$(WixCATargetsPath)' == '' ">$(MSBuildExtensionsPath)\Microsoft\WiX\v3.x\Wix.CA.targets</WixCATargetsPath>

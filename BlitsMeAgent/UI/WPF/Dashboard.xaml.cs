@@ -17,21 +17,21 @@ using System.Windows.Input;
 using System.Windows.Interop;
 using System.Windows.Media;
 using System.Windows.Navigation;
-using BlitsMe.Agent.Components;
-using BlitsMe.Agent.Components.Alert;
-using BlitsMe.Agent.Components.Notification;
-using BlitsMe.Agent.Components.Person;
-using BlitsMe.Agent.Managers;
-using BlitsMe.Agent.UI.WPF.API;
-using BlitsMe.Agent.UI.WPF.Engage;
-using BlitsMe.Agent.UI.WPF.Roster;
-using BlitsMe.Agent.UI.WPF.Search;
+using Gwupe.Agent.Components;
+using Gwupe.Agent.Components.Alert;
+using Gwupe.Agent.Components.Notification;
+using Gwupe.Agent.Components.Person;
+using Gwupe.Agent.Managers;
+using Gwupe.Agent.UI.WPF.API;
+using Gwupe.Agent.UI.WPF.Engage;
+using Gwupe.Agent.UI.WPF.Roster;
+using Gwupe.Agent.UI.WPF.Search;
 using log4net;
 using Panel = System.Windows.Controls.Panel;
 using SelectionMode = System.Windows.Controls.SelectionMode;
 using Timer = System.Timers.Timer;
 
-namespace BlitsMe.Agent.UI.WPF
+namespace Gwupe.Agent.UI.WPF
 {
     /// <summary>
     /// Interaction logic for Dashboard.xaml
@@ -44,7 +44,7 @@ namespace BlitsMe.Agent.UI.WPF
         private const int ActivityTimeout = 600000;
 #endif
         private static readonly ILog Logger = LogManager.GetLogger(typeof(Dashboard));
-        private readonly BlitsMeClientAppContext _appContext;
+        private readonly GwupeClientAppContext _appContext;
 
         private LoginControl loginControl;
         // Observable mirror for engagements as engagement windows
@@ -68,7 +68,7 @@ namespace BlitsMe.Agent.UI.WPF
 
         private DispatchingCollection<ObservableCollection<Attendance>, Attendance> dispatchingCollection;
 
-        public Dashboard(BlitsMeClientAppContext appContext)
+        public Dashboard(GwupeClientAppContext appContext)
         {
             this.InitializeComponent();
             this._appContext = appContext;
@@ -834,7 +834,7 @@ namespace BlitsMe.Agent.UI.WPF
 
         private void ReportFaultButtonClick(object sender, System.Windows.RoutedEventArgs e)
         {
-            ThreadPool.QueueUserWorkItem(state => BlitsMeClientAppContext.CurrentAppContext.GenerateFaultReport());
+            ThreadPool.QueueUserWorkItem(state => GwupeClientAppContext.CurrentAppContext.GenerateFaultReport());
         }
 
         private void SearchMenuClick(object sender, System.Windows.RoutedEventArgs e)
@@ -968,10 +968,10 @@ namespace BlitsMe.Agent.UI.WPF
         {
             get
             {
-                return BlitsMeClientAppContext.CurrentAppContext.CurrentUserManager.ActiveShortCode;
+                return GwupeClientAppContext.CurrentAppContext.CurrentUserManager.ActiveShortCode;
             }
         }
-        public String Version { get { return BlitsMeClientAppContext.CurrentAppContext.Version(2); } }
+        public String Version { get { return GwupeClientAppContext.CurrentAppContext.Version(2); } }
 
         private readonly Dashboard _dashboard;
         private string _customTitle;
@@ -979,7 +979,7 @@ namespace BlitsMe.Agent.UI.WPF
         private SignUpControl _signUpScreen;
         private ElevateControl _elevateScreen;
         private AlertControl _alertScreen;
-        private BlitsMeModalUserControl _faultReportPrompt;
+        private GwupeModalUserControl _faultReportPrompt;
         private LoginState _loginState;
         private Visibility _searchMenuVisibility = Visibility.Hidden;
         private Visibility _searchBoxVisibility;
@@ -999,7 +999,7 @@ namespace BlitsMe.Agent.UI.WPF
         }
         public DashboardStateManager DashboardStateManager { get; private set; }
 
-        public BlitsMeModalUserControl FaultReportPrompt
+        public GwupeModalUserControl FaultReportPrompt
         {
             get { return _faultReportPrompt; }
             set { _faultReportPrompt = value; OnPropertyChanged("FaultReportPrompt"); }
@@ -1029,7 +1029,7 @@ namespace BlitsMe.Agent.UI.WPF
         public DashboardDataContext(Dashboard dashboard)
         {
             _dashboard = dashboard;
-            BlitsMeClientAppContext.CurrentAppContext.CurrentUserManager.PropertyChanged +=
+            GwupeClientAppContext.CurrentAppContext.CurrentUserManager.PropertyChanged +=
                 (sender, args) => { if (args.PropertyName.Equals("ActiveShoreCode")) OnPropertyChanged("ShortCode"); };
             DashboardStateManager = new DashboardStateManager();
             DashboardStateManager.PropertyChanged += (sender, args) =>
@@ -1043,7 +1043,7 @@ namespace BlitsMe.Agent.UI.WPF
 
         public String Title
         {
-            get { return "BlitsMe" + Program.BuildMarker + " : " + _customTitle; }
+            get { return "Gwupe" + Program.BuildMarker + " : " + _customTitle; }
             set { _customTitle = value; OnPropertyChanged("Title"); }
         }
 

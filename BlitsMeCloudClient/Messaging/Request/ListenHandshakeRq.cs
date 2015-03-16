@@ -1,12 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Runtime.Serialization;
-using BlitsMe.Cloud.Messaging.Elements;
+using Gwupe.Cloud.Messaging.Elements;
 
-namespace BlitsMe.Cloud.Messaging.Request
+namespace Gwupe.Cloud.Messaging.Request
 {
     [DataContract]
-    public class ListenHandshakeRq : BlitsMe.Cloud.Messaging.API.UserToUserRequest
+    public class ListenHandshakeRq : Gwupe.Cloud.Messaging.API.UserToUserRequest
     {
         public override String type
         {

@@ -3,11 +3,11 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading;
-using BlitsMe.Common.Security;
-using BlitsMe.Communication.P2P.RUDP.Socket.API;
+using Gwupe.Common.Security;
+using Gwupe.Communication.P2P.RUDP.Socket.API;
 using log4net;
 
-namespace BlitsMe.Communication.P2P.RUDP.Connector.API
+namespace Gwupe.Communication.P2P.RUDP.Connector.API
 {
     public abstract class TcpTransportConnection : ITcpTransportConnection
     {

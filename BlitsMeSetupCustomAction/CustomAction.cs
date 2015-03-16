@@ -1,11 +1,8 @@
 ﻿using System;
 using System.Diagnostics;
-using System.Linq;
-using System.Management;
-using System.Runtime.InteropServices;
 using Microsoft.Deployment.WindowsInstaller;
 
-namespace BlitsMeSetupCustomAction
+namespace GwupeSetupCustomAction
 {
     public class CustomActions
     {
@@ -15,11 +12,11 @@ namespace BlitsMeSetupCustomAction
         public const String BuildMarker = "";
 #endif
         [CustomAction]
-        public static ActionResult RequestBlitsMeAgentsRestart(Session session)
+        public static ActionResult RequestGwupeRestart(Session session)
         {
-            session.Log("Begin open BlitsMeAgentIfNotOpen");
+            session.Log("Begin open GwupeRestart");
             // send messages to all blitsme agents
-            BlitsMe.Common.OsUtils.PostMessage((IntPtr)BlitsMe.Common.OsUtils.HWND_BROADCAST, BlitsMe.Common.OsUtils.WM_UPGRADEBM,
+            OsUtils.PostMessage((IntPtr)OsUtils.HWND_BROADCAST, OsUtils.WM_UPGRADEBM,
 #if DEBUG
                             IntPtr.Zero, 
 #else
@@ -30,20 +27,21 @@ namespace BlitsMeSetupCustomAction
         }
 
         [CustomAction]
-        public static ActionResult OpenBlitsMeAgentIfNotOpen(Session session)
+        public static ActionResult OpenGwupeIfNotOpen(Session session)
         {
-            session.Log("Begin open BlitsMeAgentIfNotOpen");
-            Process pr = BlitsMe.Common.OsUtils.GetMyProcess("BlitsMe.Agent", null, BlitsMe.Common.OsUtils.ProgramFilesx86 + "\\BlitsMe" + BuildMarker + "\\BlitsMe.Agent.exe");
-            if (pr == null)
+            session.Log("Begin open GwupeIfNotOpen");
+            Process pr = OsUtils.GetMyProcess("BlitsMe.Agent", null, OsUtils.ProgramFilesx86 + "\\BlitsMe" + BuildMarker + "\\BlitsMe.Agent.exe");
+            Process pr2 = OsUtils.GetMyProcess("Gwupe", null, OsUtils.ProgramFilesx86 + "\\Gwupe" + BuildMarker + "\\Gwupe.Agent.exe");
+            if (pr == null && pr2 == null)
             {
-                // Now start BlitsMe
+                // Now start Gwupe
                 try
                 {
-                    Process.Start(BlitsMe.Common.OsUtils.ProgramFilesx86 + "\\BlitsMe" + BuildMarker + "\\BlitsMe.Agent.exe");
+                    Process.Start(OsUtils.ProgramFilesx86 + "\\Gwupe" + BuildMarker + "\\Gwupe.Agent.exe");
                 }
                 catch (Exception e)
                 {
-                    session.Log("BlitsMeAgentIfNotOpen caught exception : " + e.Message + "\n" + e);
+                    session.Log("GwupeIfNotOpen caught exception : " + e.Message + "\n" + e);
                     return ActionResult.Failure;
                 }
                 return ActionResult.Success;
@@ -53,11 +51,11 @@ namespace BlitsMeSetupCustomAction
         }
 
         [CustomAction]
-        public static ActionResult CloseBlitsMeAgents(Session session)
+        public static ActionResult CloseGwupe(Session session)
         {
-            session.Log("Begin terminate BlitsMeAgent");
+            session.Log("Begin terminate Gwupe");
             // send messages to all blitsme agents
-            BlitsMe.Common.OsUtils.PostMessage((IntPtr)BlitsMe.Common.OsUtils.HWND_BROADCAST, BlitsMe.Common.OsUtils.WM_SHUTDOWNBM,
+            OsUtils.PostMessage((IntPtr)OsUtils.HWND_BROADCAST, OsUtils.WM_SHUTDOWNBM,
 #if DEBUG
                             IntPtr.Zero, 
 #else
@@ -72,8 +70,8 @@ namespace BlitsMeSetupCustomAction
                 try
                 {
                     if (pr.ProcessName == "BlitsMe.Agent" &&
-                        (BlitsMe.Common.OsUtils.ProgramFilesx86 + "\\BlitsMe" + BuildMarker + "\\BlitsMe.Agent.exe")
-                            .Equals(BlitsMe.Common.OsUtils.GetMainModuleFilepath(pr.Id)))
+                        (OsUtils.ProgramFilesx86 + "\\BlitsMe" + BuildMarker + "\\BlitsMe.Agent.exe")
+                            .Equals(OsUtils.GetMainModuleFilepath(pr.Id)))
                     {
                         session.Log("Agent is still alive and kicking so we gonna kill 'im after 5 seconds");
                         if (!pr.WaitForExit(5000))
@@ -86,6 +84,24 @@ namespace BlitsMeSetupCustomAction
                             catch (Exception e)
                             {
                                 session.Log("CloseBlitsMeAgent caught exception : " + e.Message + "\n" + e);
+                            }
+                        }
+                    }
+                    if (pr.ProcessName == "Gwupe" &&
+                        (OsUtils.ProgramFilesx86 + "\\Gwupe" + BuildMarker + "\\Gwupe.Agent.exe")
+                            .Equals(OsUtils.GetMainModuleFilepath(pr.Id)))
+                    {
+                        session.Log("Gwupe is still alive and kicking so we gonna kill 'im after 5 seconds");
+                        if (!pr.WaitForExit(5000))
+                        {
+                            session.Log("Gwupe: times up");
+                            try
+                            {
+                                pr.Kill();
+                            }
+                            catch (Exception e)
+                            {
+                                session.Log("CloseGwupe caught exception : " + e.Message + "\n" + e);
                             }
                         }
                     }

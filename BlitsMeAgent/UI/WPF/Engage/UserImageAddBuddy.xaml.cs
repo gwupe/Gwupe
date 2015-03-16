@@ -1,4 +1,4 @@
-﻿using BlitsMe.Agent.Components.Person;
+﻿using Gwupe.Agent.Components.Person;
 using log4net;
 using System;
 using System.Collections.Generic;
@@ -14,7 +14,7 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 
-namespace BlitsMe.Agent.UI.WPF.Engage
+namespace Gwupe.Agent.UI.WPF.Engage
 {
     /// <summary>
     /// Interaction logic for UserImageAddBuddy.xaml
@@ -24,7 +24,7 @@ namespace BlitsMe.Agent.UI.WPF.Engage
         public UserImageAddBuddy()
         {
             InitializeComponent();
-            BlitsMeClientAppContext appContext = BlitsMeClientAppContext.CurrentAppContext.UIManager.GetAppcontext();
+            GwupeClientAppContext appContext = GwupeClientAppContext.CurrentAppContext.UIManager.GetAppcontext();
             //DataContext = SearchResult;
             //new AddPerson(appContext, SearchResult.Person);
         }
@@ -34,10 +34,10 @@ namespace BlitsMe.Agent.UI.WPF.Engage
     public class AddPerson : ICommand
     {
         private static readonly ILog Logger = LogManager.GetLogger(typeof(AddPerson));
-        private readonly BlitsMeClientAppContext _appContext;
+        private readonly GwupeClientAppContext _appContext;
         private readonly Person _person;
 
-        internal AddPerson(BlitsMeClientAppContext appContext, Person person)
+        internal AddPerson(GwupeClientAppContext appContext, Person person)
         {
             _appContext = appContext;
             _person = person;

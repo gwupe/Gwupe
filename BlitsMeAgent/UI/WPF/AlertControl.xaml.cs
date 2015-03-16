@@ -1,13 +1,13 @@
 ﻿using System;
 using System.Windows;
-using BlitsMe.Agent.UI.WPF.API;
+using Gwupe.Agent.UI.WPF.API;
 
-namespace BlitsMe.Agent.UI.WPF
+namespace Gwupe.Agent.UI.WPF
 {
     /// <summary>
     /// Interaction logic for AlertControl.xaml
     /// </summary>
-    public partial class AlertControl : BlitsMeModalUserControl
+    public partial class AlertControl : GwupeModalUserControl
     {
         private readonly DashboardDataContext _dashboardDataContext;
 
@@ -15,7 +15,7 @@ namespace BlitsMe.Agent.UI.WPF
         {
             InitializeComponent();
             _dashboardDataContext = dashboardDataContext;
-            InitBlitsMeModalUserControl(Disabler, null, null);
+            InitGwupeModalUserControl(Disabler, null, null);
         }
 
         protected override bool ValidateInput()

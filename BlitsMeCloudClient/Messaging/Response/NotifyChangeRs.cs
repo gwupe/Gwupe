@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace BlitsMe.Cloud.Messaging.Response
+namespace Gwupe.Cloud.Messaging.Response
 {
     public class NotifyChangeRs : API.Response
     {

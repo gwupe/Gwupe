@@ -1,14 +1,14 @@
-﻿<bm:BlitsMeModalUserControl
+﻿<bm:GwupeModalUserControl
 	xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
 	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
 	xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
 	xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
 	xmlns:mahappsControls="clr-namespace:MahApps.Metro.Controls;assembly=MahApps.Metro"
-    xmlns:bm="clr-namespace:BlitsMe.Agent.UI.WPF.API"
+    xmlns:bm="clr-namespace:Gwupe.Agent.UI.WPF.API"
 	mc:Ignorable="d"
-	x:Class="BlitsMe.Agent.UI.WPF.FaultReportControl"
+	x:Class="Gwupe.Agent.UI.WPF.FaultReportControl"
 	d:DesignWidth="640" d:DesignHeight="480">
-    <bm:BlitsMeModalUserControl.Resources>
+    <bm:GwupeModalUserControl.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
             	<ResourceDictionary Source="Style/Style.xaml" />
@@ -20,7 +20,7 @@
             	<ResourceDictionary Source="Skins/Skin.xaml" />
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>
-    </bm:BlitsMeModalUserControl.Resources>
+    </bm:GwupeModalUserControl.Resources>
 	<Grid MinHeight="175" MinWidth="350">
 		<Grid Background="White" Opacity="0.35" />
 		<Border BorderThickness="1" BorderBrush="#4A7EBB" HorizontalAlignment="Center" VerticalAlignment="Center">
@@ -33,11 +33,11 @@
 					</StackPanel>
 					<TextBlock Margin="5,5,5,0" DockPanel.Dock="Top" TextWrapping="Wrap">
 						Please enter description of the problem you experienced, including what you were trying to do when the problem happened.
-						Thank you for wanting to report a fault with BlitsMe, your report is very valuable to us in improving our service to you.
+						Thank you for wanting to report a fault with Gwupe, your report is very valuable to us in improving our service to you.
 					</TextBlock>
 					<TextBox  Margin="5,5,5,0" Name="UserReport" DockPanel.Dock="Top" mahappsControls:TextboxHelper.Watermark="Enter description of the problem you experienced." TextWrapping="Wrap" />
 				</DockPanel>
 			</Grid>
 		</Border>
 	</Grid>
-</bm:BlitsMeModalUserControl>
+</bm:GwupeModalUserControl>

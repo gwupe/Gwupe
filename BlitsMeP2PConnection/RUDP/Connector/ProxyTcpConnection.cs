@@ -1,12 +1,12 @@
 ﻿using System;
 using System.Net.Sockets;
 using System.Threading;
-using BlitsMe.Common.Security;
-using BlitsMe.Communication.P2P.RUDP.Connector.API;
-using BlitsMe.Communication.P2P.RUDP.Socket.API;
+using Gwupe.Common.Security;
+using Gwupe.Communication.P2P.RUDP.Connector.API;
+using Gwupe.Communication.P2P.RUDP.Socket.API;
 using log4net;
 
-namespace BlitsMe.Communication.P2P.RUDP.Connector
+namespace Gwupe.Communication.P2P.RUDP.Connector
 {
     internal class ProxyTcpConnection : TcpTransportConnection
     {

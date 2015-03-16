@@ -3,9 +3,9 @@ using System.Globalization;
 using System.IO;
 using System.Windows.Data;
 using System.Windows.Media.Imaging;
-using BlitsMe.Agent.Properties;
+using Gwupe.Agent.Properties;
 
-namespace BlitsMe.Agent.UI.WPF.Utils
+namespace Gwupe.Agent.UI.WPF.Utils
 {
     class ImageStreamReader : IValueConverter
     {

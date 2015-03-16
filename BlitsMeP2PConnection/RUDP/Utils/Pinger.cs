@@ -5,10 +5,10 @@ using System.Net;
 using System.Text;
 using System.Threading;
 using System.Net.Sockets;
-using BlitsMe.Communication.P2P.RUDP.Packet.Tunnel;
+using Gwupe.Communication.P2P.RUDP.Packet.Tunnel;
 using log4net;
 
-namespace BlitsMe.Communication.P2P.RUDP.Utils
+namespace Gwupe.Communication.P2P.RUDP.Utils
 {
     public class Pinger
     {

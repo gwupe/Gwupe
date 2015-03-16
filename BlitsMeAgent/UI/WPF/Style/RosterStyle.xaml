@@ -3,10 +3,10 @@
 	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
 	xmlns:ed="http://schemas.microsoft.com/expression/2010/drawing"
 	xmlns:presentationOptions="http://schemas.microsoft.com/winfx/2006/xaml/presentation/options"
-	xmlns:person="clr-namespace:BlitsMe.Agent.Components.Person" 
-    xmlns:Engage="clr-namespace:BlitsMe.Agent.UI.WPF.Engage"
-	xmlns:Components="clr-namespace:BlitsMe.Agent.Components"
-	xmlns:Convertors="clr-namespace:BlitsMe.Agent.UI.WPF.Utils">
+	xmlns:person="clr-namespace:Gwupe.Agent.Components.Person" 
+    xmlns:Engage="clr-namespace:Gwupe.Agent.UI.WPF.Engage"
+	xmlns:Components="clr-namespace:Gwupe.Agent.Components"
+	xmlns:Convertors="clr-namespace:Gwupe.Agent.UI.WPF.Utils">
     <ResourceDictionary.MergedDictionaries>
         <ResourceDictionary Source="./Style.xaml" />
         <ResourceDictionary Source="./RatingStyle.xaml" />
@@ -253,7 +253,7 @@
                     HorizontalAlignment="Left" VerticalAlignment="Center" Margin="0,0,5,0"
                     Template="{DynamicResource TransparentButtonTerminateRDP}"
                     Visibility="{Binding IsRemoteActive,Converter={StaticResource BoolToVisibilityConverter},Mode=TwoWay,UpdateSourceTrigger=PropertyChanged}" >
-                <Image Source="/BlitsMe.Agent;component/UI/WPF/Images/close.png" Height="12" Width="12" />
+                <Image Source="/Gwupe.Agent;component/UI/WPF/Images/close.png" Height="12" Width="12" />
             </Button> -->
         </StackPanel>
     </DataTemplate>
@@ -291,7 +291,7 @@
                     </ContentControl.Style>
                 </ContentControl>
             </Grid>
-            <Image Source="/BlitsMe.Agent;component/UI/WPF/Images/1337420206_Char.png" Height="25" Width="25" 
+            <Image Source="/Gwupe.Agent;component/UI/WPF/Images/1337420206_Char.png" Height="25" Width="25" 
                 Margin="2,0,0,0" HorizontalAlignment="Left"/>
             
         </StackPanel>

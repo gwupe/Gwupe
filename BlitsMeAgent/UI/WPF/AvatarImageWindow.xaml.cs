@@ -4,18 +4,18 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
-using BlitsMe.Agent.UI.WPF.Utils;
+using Gwupe.Agent.UI.WPF.Utils;
 using Microsoft.Win32;
 using log4net;
 
-namespace BlitsMe.Agent.UI.WPF
+namespace Gwupe.Agent.UI.WPF
 {
     /// <summary>
     /// Interaction logic for AvatarImageWindow.xaml
     /// </summary>
     public partial class AvatarImageWindow : Window
     {
-        private readonly BlitsMeClientAppContext _appContext;
+        private readonly GwupeClientAppContext _appContext;
         private InputValidator validator;
         private static readonly ILog Logger = LogManager.GetLogger(typeof(AvatarImageWindow));
         internal bool ImageReady = false;
@@ -26,7 +26,7 @@ namespace BlitsMe.Agent.UI.WPF
             set { _profileImage = value; ImageContainer.Fill = new ImageBrush() { ImageSource = value, Stretch = Stretch.Uniform }; }
         }
 
-        internal AvatarImageWindow(BlitsMeClientAppContext appContext)
+        internal AvatarImageWindow(GwupeClientAppContext appContext)
         {
             _appContext = appContext;
             this.InitializeComponent();

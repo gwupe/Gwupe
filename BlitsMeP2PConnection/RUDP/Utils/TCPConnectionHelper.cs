@@ -1,14 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Threading;
-using BlitsMe.Communication.P2P.RUDP.Packet.TCP;
-using BlitsMe.Communication.P2P.RUDP.Tunnel;
-using BlitsMe.Communication.P2P.RUDP.Tunnel.API;
-using BlitsMe.Communication.P2P.Exceptions;
-using BlitsMe.Communication.P2P.RUDP.Tunnel.Transport;
+using Gwupe.Communication.P2P.RUDP.Packet.TCP;
+using Gwupe.Communication.P2P.RUDP.Tunnel;
+using Gwupe.Communication.P2P.RUDP.Tunnel.API;
+using Gwupe.Communication.P2P.Exceptions;
+using Gwupe.Communication.P2P.RUDP.Tunnel.Transport;
 using log4net;
 
-namespace BlitsMe.Communication.P2P.RUDP.Utils
+namespace Gwupe.Communication.P2P.RUDP.Utils
 {
     internal class TCPConnectionHelper
     {

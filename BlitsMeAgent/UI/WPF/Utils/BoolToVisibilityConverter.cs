@@ -8,7 +8,7 @@ using System.Windows.Data;
 using System.Windows.Markup;
 using log4net;
 
-namespace BlitsMe.Agent.UI.WPF.Utils
+namespace Gwupe.Agent.UI.WPF.Utils
 {
     public class BoolToVisibilityConverter : IValueConverter
     {

@@ -1,4 +1,4 @@
-﻿<UserControl x:Class="BlitsMe.Agent.UI.WPF.Engage.GetRating"
+﻿<UserControl x:Class="Gwupe.Agent.UI.WPF.Engage.GetRating"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
@@ -7,8 +7,8 @@
     <UserControl.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
-                <ResourceDictionary Source="/BlitsMe.Agent;component/UI/WPF/Style/Style.xaml"/>
-                <ResourceDictionary Source="/BlitsMe.Agent;component/UI/WPF/Style/RatingStyle.xaml"/>
+                <ResourceDictionary Source="/Gwupe.Agent;component/UI/WPF/Style/Style.xaml"/>
+                <ResourceDictionary Source="/Gwupe.Agent;component/UI/WPF/Style/RatingStyle.xaml"/>
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>
     </UserControl.Resources>

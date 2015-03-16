@@ -1,6 +1,6 @@
 using System;
 
-namespace BlitsMe.Agent.Components.Functions.Chat.ChatElement
+namespace Gwupe.Agent.Components.Functions.Chat.ChatElement
 {
     public interface IChatMessage
     {

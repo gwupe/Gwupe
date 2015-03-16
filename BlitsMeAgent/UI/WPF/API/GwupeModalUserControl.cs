@@ -7,9 +7,9 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 
-namespace BlitsMe.Agent.UI.WPF.API
+namespace Gwupe.Agent.UI.WPF.API
 {
-    public abstract class BlitsMeModalUserControl : UserControl
+    public abstract class GwupeModalUserControl : UserControl
     {
         private AutoResetEvent _userCompleted = new AutoResetEvent(false);
         public bool Cancelled = false;
@@ -24,7 +24,7 @@ namespace BlitsMe.Agent.UI.WPF.API
             set { _processingWord = value; }
         }
 
-        protected void InitBlitsMeModalUserControl(ContentPresenter disablerContentPresenter, TextBlock statusTextBlock, TextBlock errorTextBlock)
+        protected void InitGwupeModalUserControl(ContentPresenter disablerContentPresenter, TextBlock statusTextBlock, TextBlock errorTextBlock)
         {
             _uiHelper = new UiHelper(Dispatcher, disablerContentPresenter, null, errorTextBlock);
         }

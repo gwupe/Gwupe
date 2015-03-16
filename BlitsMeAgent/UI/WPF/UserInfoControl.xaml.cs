@@ -7,27 +7,27 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
-using BlitsMe.Agent.Annotations;
-using BlitsMe.Agent.Managers;
-using BlitsMe.Agent.UI.WPF.API;
-using BlitsMe.Agent.UI.WPF.Utils;
-using BlitsMe.Cloud.Exceptions;
-using BlitsMe.Cloud.Messaging.API;
-using BlitsMe.Cloud.Messaging.Response;
+using Gwupe.Agent.Annotations;
+using Gwupe.Agent.Managers;
+using Gwupe.Agent.UI.WPF.API;
+using Gwupe.Agent.UI.WPF.Utils;
+using Gwupe.Cloud.Exceptions;
+using Gwupe.Cloud.Messaging.API;
+using Gwupe.Cloud.Messaging.Response;
 using log4net;
 
-namespace BlitsMe.Agent.UI.WPF
+namespace Gwupe.Agent.UI.WPF
 {
     /// <summary>
     /// Interaction logic for UserInfo.xaml
     /// </summary>
-    public partial class UserInfoControl : IDashboardContentControl, IBlitsMeUserControl
+    public partial class UserInfoControl : IDashboardContentControl, IGwupeUserControl
     {
         private static readonly ILog Logger = LogManager.GetLogger(typeof(UserInfoControl));
-        private readonly BlitsMeClientAppContext _appContext;
+        private readonly GwupeClientAppContext _appContext;
         private readonly UiHelper _uiHelper;
 
-        public UserInfoControl(BlitsMeClientAppContext appContext)
+        public UserInfoControl(GwupeClientAppContext appContext)
         {
             this.InitializeComponent();
             _uiHelper = new UiHelper(Dispatcher, Disabler, StatusText, ErrorText);

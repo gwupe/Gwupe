@@ -2,11 +2,11 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
-using BlitsMe.Agent.Components.Person.Presence;
-using BlitsMe.Cloud.Messaging.Elements;
+using Gwupe.Agent.Components.Person.Presence;
+using Gwupe.Cloud.Messaging.Elements;
 using log4net;
 
-namespace BlitsMe.Agent.Components.Person
+namespace Gwupe.Agent.Components.Person
 {
     public class Person : INotifyPropertyChanged
     {

@@ -2,10 +2,10 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using BlitsMe.Communication.P2P.RUDP.Packet;
+using Gwupe.Communication.P2P.RUDP.Packet;
 using log4net;
 
-namespace BlitsMe.Communication.P2P.P2P.Socket
+namespace Gwupe.Communication.P2P.P2P.Socket
 {
     public class BmUdtEncryptedSocket : BmUdtSocket
     {

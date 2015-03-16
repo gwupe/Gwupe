@@ -1,17 +1,17 @@
 ﻿using System;
-using BlitsMe.Common.Security;
-using BlitsMe.Communication.P2P.P2P.Tunnel;
-using BlitsMe.Communication.P2P.RUDP.Packet;
-using BlitsMe.Communication.P2P.RUDP.Packet.Tunnel;
-using BlitsMe.Communication.P2P.RUDP.Tunnel.API;
-using BlitsMe.Communication.P2P.RUDP.Utils;
+using Gwupe.Common.Security;
+using Gwupe.Communication.P2P.P2P.Tunnel;
+using Gwupe.Communication.P2P.RUDP.Packet;
+using Gwupe.Communication.P2P.RUDP.Packet.Tunnel;
+using Gwupe.Communication.P2P.RUDP.Tunnel.API;
+using Gwupe.Communication.P2P.RUDP.Utils;
 using System.Net;
 using System.Net.Sockets;
 using System.Threading;
-using BlitsMe.Communication.P2P.Exceptions;
+using Gwupe.Communication.P2P.Exceptions;
 using log4net;
 
-namespace BlitsMe.Communication.P2P.RUDP.Tunnel
+namespace Gwupe.Communication.P2P.RUDP.Tunnel
 {
     /* This endPointManager is an implementation of the IDUP interface (see interface for more info).  It waves to the blitsme server platform and then sets
      * up a platform where it adds typing to packets (data/close/sync/ping/wave etc) to provide a endPointManager which requires no maintenance but this endPointManager

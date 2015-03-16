@@ -2,12 +2,12 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using BlitsMe.Communication.P2P.RUDP.Connector.API;
-using BlitsMe.Communication.P2P.RUDP.Socket.API;
-using BlitsMe.Communication.P2P.RUDP.Tunnel.API;
+using Gwupe.Communication.P2P.RUDP.Connector.API;
+using Gwupe.Communication.P2P.RUDP.Socket.API;
+using Gwupe.Communication.P2P.RUDP.Tunnel.API;
 using log4net;
 
-namespace BlitsMe.Communication.P2P.RUDP.Connector
+namespace Gwupe.Communication.P2P.RUDP.Connector
 {
     public class EchoTcpTransportListener : TcpTransportListener
     {

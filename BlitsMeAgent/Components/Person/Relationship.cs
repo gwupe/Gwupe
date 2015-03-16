@@ -1,8 +1,8 @@
 using System.ComponentModel;
-using BlitsMe.Agent.Annotations;
-using BlitsMe.Cloud.Messaging.Elements;
+using Gwupe.Agent.Annotations;
+using Gwupe.Cloud.Messaging.Elements;
 
-namespace BlitsMe.Agent.Components.Person
+namespace Gwupe.Agent.Components.Person
 {
     public class Relationship : INotifyPropertyChanged
     {

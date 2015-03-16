@@ -3,9 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Text;
-using BlitsMe.Communication.P2P.RUDP.Socket.API;
+using Gwupe.Communication.P2P.RUDP.Socket.API;
 
-namespace BlitsMe.Communication.P2P.RUDP.Connector.API
+namespace Gwupe.Communication.P2P.RUDP.Connector.API
 {
     public interface INamedListener
     {

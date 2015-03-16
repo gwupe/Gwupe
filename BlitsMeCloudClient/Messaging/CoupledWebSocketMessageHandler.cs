@@ -5,11 +5,11 @@ using System.Linq;
 using System.Text;
 using System.Threading;
 using Bauglir.Ex;
-using BlitsMe.Cloud.Communication;
-using BlitsMe.Cloud.Messaging.API;
+using Gwupe.Cloud.Communication;
+using Gwupe.Cloud.Messaging.API;
 using log4net;
 
-namespace BlitsMe.Cloud.Messaging
+namespace Gwupe.Cloud.Messaging
 {
     public class CoupledWebSocketMessageHandler : IWebSocketMessageHandler
     {

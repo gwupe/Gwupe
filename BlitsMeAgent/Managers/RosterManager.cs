@@ -4,20 +4,20 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Threading;
-using BlitsMe.Agent.Components.Person;
-using BlitsMe.Agent.Components.Person.Presence;
-using BlitsMe.Cloud.Messaging.Elements;
-using BlitsMe.Cloud.Messaging.Request;
-using BlitsMe.Cloud.Messaging.Response;
+using Gwupe.Agent.Components.Person;
+using Gwupe.Agent.Components.Person.Presence;
+using Gwupe.Cloud.Messaging.Elements;
+using Gwupe.Cloud.Messaging.Request;
+using Gwupe.Cloud.Messaging.Response;
 using log4net;
 
-namespace BlitsMe.Agent.Managers
+namespace Gwupe.Agent.Managers
 {
     public class RosterManager
     {
         private const int PauseOnRosterFail = 10000;
         private static readonly ILog Logger = LogManager.GetLogger(typeof(RosterManager));
-        private readonly BlitsMeClientAppContext _appContext;
+        private readonly GwupeClientAppContext _appContext;
         private readonly RosterRq _rosterRequest = new RosterRq();
         private bool _haveRoster;
         private readonly ConcurrentQueue<PresenceChangeRq> _queuedPresenceChanges;
@@ -29,7 +29,7 @@ namespace BlitsMe.Agent.Managers
 
         public RosterManager()
         {
-            _appContext = BlitsMeClientAppContext.CurrentAppContext;
+            _appContext = GwupeClientAppContext.CurrentAppContext;
             ServicePersonAttendanceList = new ObservableCollection<Attendance>();
             ServicePersonAttendanceLookup = new Dictionary<String, Attendance>();
             _queuedPresenceChanges = new ConcurrentQueue<PresenceChangeRq>();

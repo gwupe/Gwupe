@@ -1,10 +1,10 @@
 ﻿using System;
-using BlitsMe.Communication.P2P.RUDP.Socket.API;
-using BlitsMe.Communication.P2P.RUDP.Tunnel.API;
-using BlitsMe.Communication.P2P.RUDP.Utils;
+using Gwupe.Communication.P2P.RUDP.Socket.API;
+using Gwupe.Communication.P2P.RUDP.Tunnel.API;
+using Gwupe.Communication.P2P.RUDP.Utils;
 using log4net;
 
-namespace BlitsMe.Communication.P2P.RUDP.Socket
+namespace Gwupe.Communication.P2P.RUDP.Socket
 {
     class BufferedTcpOverUdptSocket : IInternalTcpOverUdptSocket
     {

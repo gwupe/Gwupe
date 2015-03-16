@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace BlitsMe.Cloud.Repeater
+namespace Gwupe.Cloud.Repeater
 {
     public class RepeatedConnection
     {

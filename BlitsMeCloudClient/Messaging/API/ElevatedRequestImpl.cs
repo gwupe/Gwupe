@@ -4,7 +4,7 @@ using System.Linq;
 using System.Runtime.Serialization;
 using System.Text;
 
-namespace BlitsMe.Cloud.Messaging.API
+namespace Gwupe.Cloud.Messaging.API
 {
     [DataContract]
     public abstract class ElevatedRequestImpl : Request, IElevatedRequest

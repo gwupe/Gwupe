@@ -1,13 +1,13 @@
 using System;
 using System.Collections.ObjectModel;
-using BlitsMe.Agent.Components.Functions.Chat.ChatElement;
+using Gwupe.Agent.Components.Functions.Chat.ChatElement;
 using log4net;
 
-namespace BlitsMe.Agent.Components.Functions.Chat
+namespace Gwupe.Agent.Components.Functions.Chat
 {
     public class Conversation
     {
-        private readonly BlitsMeClientAppContext _appContext;
+        private readonly GwupeClientAppContext _appContext;
         private static readonly ILog Logger = LogManager.GetLogger(typeof (Conversation));
         public ObservableCollection<IChatMessage> Exchange { get; private set; }
         public DateTime Started { get; set; }
@@ -15,7 +15,7 @@ namespace BlitsMe.Agent.Components.Functions.Chat
         // 10 minute conversation groups
         private const Int64 MaxChatInterval = 6000000000;
 
-        public Conversation(BlitsMeClientAppContext appContext)
+        public Conversation(GwupeClientAppContext appContext)
         {
             _appContext = appContext;
             Exchange = new ObservableCollection<IChatMessage>();

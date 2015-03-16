@@ -3,11 +3,11 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
-using BlitsMe.Common.Security;
+using Gwupe.Common.Security;
 using log4net;
 using log4net.Repository.Hierarchy;
 
-namespace BlitsMe.Communication.P2P.RUDP.Packet
+namespace Gwupe.Communication.P2P.RUDP.Packet
 {
     public class AesCryptoPacketUtil
     {

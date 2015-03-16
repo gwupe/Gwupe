@@ -3,22 +3,22 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Text;
-using BlitsMe.Cloud.Messaging.API;
-using BlitsMe.Cloud.Messaging.Elements;
-using BlitsMe.Cloud.Messaging.Request;
-using BlitsMe.Cloud.Messaging.Response;
-using BlitsMe.Communication.P2P.P2P.Tunnel;
-using BlitsMe.Communication.P2P.RUDP.Utils;
+using Gwupe.Cloud.Messaging.API;
+using Gwupe.Cloud.Messaging.Elements;
+using Gwupe.Cloud.Messaging.Request;
+using Gwupe.Cloud.Messaging.Response;
+using Gwupe.Communication.P2P.P2P.Tunnel;
+using Gwupe.Communication.P2P.RUDP.Utils;
 using log4net;
 
-namespace BlitsMe.Agent.Components.Processors
+namespace Gwupe.Agent.Components.Processors
 {
     class InitUDPConnectionProcessor : Processor
     {
         private static readonly ILog Logger = LogManager.GetLogger(typeof(InitUDPConnectionProcessor));
-        private readonly BlitsMeClientAppContext _appContext;
+        private readonly GwupeClientAppContext _appContext;
 
-        internal InitUDPConnectionProcessor(BlitsMeClientAppContext appContext)
+        internal InitUDPConnectionProcessor(GwupeClientAppContext appContext)
         {
             _appContext = appContext;
         }

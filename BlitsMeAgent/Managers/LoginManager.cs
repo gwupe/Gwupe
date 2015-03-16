@@ -1,16 +1,16 @@
 ﻿using System;
 using System.Threading;
 using System.Windows.Forms;
-using BlitsMe.Agent.Components;
-using BlitsMe.Agent.Exceptions;
-using BlitsMe.Agent.Misc;
-using BlitsMe.Cloud.Exceptions;
-using BlitsMe.Cloud.Messaging.Request;
-using BlitsMe.Cloud.Messaging.Response;
-using BlitsMe.Common.Security;
+using Gwupe.Agent.Components;
+using Gwupe.Agent.Exceptions;
+using Gwupe.Agent.Misc;
+using Gwupe.Cloud.Exceptions;
+using Gwupe.Cloud.Messaging.Request;
+using Gwupe.Cloud.Messaging.Response;
+using Gwupe.Common.Security;
 using log4net;
 
-namespace BlitsMe.Agent.Managers
+namespace Gwupe.Agent.Managers
 {
     internal delegate void LoginEvent(object sender, LoginEventArgs e);
 
@@ -21,7 +21,7 @@ namespace BlitsMe.Agent.Managers
         internal bool IsClosed { get; private set; }
         private readonly BLMRegistry _reg = new BLMRegistry();
         private readonly AutoResetEvent _signinEvent = new AutoResetEvent(false);
-        private readonly BlitsMeClientAppContext _appContext;
+        private readonly GwupeClientAppContext _appContext;
         public bool IsLoggedIn = false;
         public bool IsLoggingIn = false;
 
@@ -137,7 +137,7 @@ namespace BlitsMe.Agent.Managers
 
         public LoginManager()
         {
-            this._appContext = BlitsMeClientAppContext.CurrentAppContext;
+            this._appContext = GwupeClientAppContext.CurrentAppContext;
             LoginOccurredLock = new Object();
             LogoutOccurredLock = new Object();
             if (!String.IsNullOrEmpty(_reg.Username))
@@ -241,7 +241,7 @@ namespace BlitsMe.Agent.Managers
             LoginDetails.Profile = _reg.Profile;
             try
             {
-                LoginDetails.Workstation = _appContext.BlitsMeService.HardwareFingerprint();
+                LoginDetails.Workstation = _appContext.GwupeService.HardwareFingerprint();
             }
             catch (Exception e)
             {

@@ -1,11 +1,14 @@
 using System;
 using System.ComponentModel;
-using BlitsMe.Cloud.Messaging.Elements;
+using Gwupe.Cloud.Messaging.Elements;
+using log4net;
+using log4net.Repository.Hierarchy;
 
-namespace BlitsMe.Agent.Components.Person.Presence
+namespace Gwupe.Agent.Components.Person.Presence
 {
     internal class Presence : IPresence
     {
+        private static readonly ILog Logger = LogManager.GetLogger(typeof (Presence));
         private PresenceMode _mode;
         private PresenceType _type;
         private int _priority;
@@ -131,7 +134,29 @@ namespace BlitsMe.Agent.Components.Person.Presence
 
         public int CompareTo(IPresence other)
         {
-            return other.Type.Equals(PresenceType.unavailable) ? -1 : other.Priority.CompareTo(Priority);
+            int result;
+            // If either are unavailable, we need to run comparisons on it
+            if (other.Type.Equals(PresenceType.unavailable) || this.Type.Equals(PresenceType.unavailable))
+            {
+                if (other.Type.Equals(PresenceType.unavailable) == this.Type.Equals(PresenceType.unavailable))
+                {
+                    return 0;
+                }
+                if (other.Type.Equals(PresenceType.unavailable))
+                {
+                    return -1;
+                }
+                else
+                {
+                    return 1;
+                }
+            }
+            else
+            {
+                // otherwise its all about the priority
+                result = other.Priority.CompareTo(Priority);
+            }
+            return result;
         }
 
         public override String ToString()

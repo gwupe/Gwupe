@@ -2,11 +2,11 @@
 using System.ComponentModel;
 using System.Linq;
 using System.Text;
-using BlitsMe.Agent.Annotations;
-using BlitsMe.Agent.Components;
-using BlitsMe.Communication.P2P.P2P.Tunnel;
+using Gwupe.Agent.Annotations;
+using Gwupe.Agent.Components;
+using Gwupe.Communication.P2P.P2P.Tunnel;
 
-namespace BlitsMe.Agent.Managers
+namespace Gwupe.Agent.Managers
 {
     internal class SettingsManager : INotifyPropertyChanged
     {

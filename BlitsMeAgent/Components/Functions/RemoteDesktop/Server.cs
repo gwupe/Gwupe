@@ -1,12 +1,12 @@
 ﻿using System;
 using System.Net;
-using BlitsMe.Agent.Components.Functions.API;
-using BlitsMe.Communication.P2P.P2P.Connector;
-using BlitsMe.Communication.P2P.P2P.Socket;
-using BlitsMe.Communication.P2P.P2P.Socket.API;
+using Gwupe.Agent.Components.Functions.API;
+using Gwupe.Communication.P2P.P2P.Connector;
+using Gwupe.Communication.P2P.P2P.Socket;
+using Gwupe.Communication.P2P.P2P.Socket.API;
 using log4net;
 
-namespace BlitsMe.Agent.Components.Functions.RemoteDesktop
+namespace Gwupe.Agent.Components.Functions.RemoteDesktop
 {
     internal class Server : ServerImpl
     {
@@ -26,7 +26,7 @@ namespace BlitsMe.Agent.Components.Functions.RemoteDesktop
 
         internal void Listen(String connectionId)
         {
-            BlitsMeClientAppContext.CurrentAppContext.P2PManager.AwaitConnection(connectionId, ReceiveConnection);
+            GwupeClientAppContext.CurrentAppContext.P2PManager.AwaitConnection(connectionId, ReceiveConnection);
         }
 
         private void ReceiveConnection(ISocket socket)

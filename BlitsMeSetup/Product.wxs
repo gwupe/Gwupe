@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Wix xmlns="http://schemas.microsoft.com/wix/2006/wi">
-  <Product Id="*" Name="BlitsMe$(var.buildMarker)" Language="1033"
-           Version="!(bind.FileVersion.$(var.BlitsMeAgent.TargetFileName))"
-           Manufacturer="BlitsMe Pty (Ltd)"
+  <Product Id="*" Name="Gwupe$(var.buildMarker)" Language="1033"
+           Version="!(bind.FileVersion.$(var.Gwupe.TargetFileName))"
+           Manufacturer="Gwupe Pty (Ltd)"
            UpgradeCode="$(var.upgradeCode)">
     <Package InstallerVersion="200" Compressed="yes" InstallScope="perMachine" />
 
     <MajorUpgrade
-      DowngradeErrorMessage="A newer version of BlitsMe$(var.buildMarker) is already installed."
+      DowngradeErrorMessage="A newer version of Gwupe$(var.buildMarker) is already installed."
       Schedule="afterInstallInitialize"
       
     />
@@ -20,36 +20,36 @@
     <Feature Id="ProductFeature" Title="Application" Level="1">
       <ComponentGroupRef Id="ProductComponents" />
     </Feature>
-    <Icon Id="icon.ico" SourceFile="$(var.BlitsMeAgent.ProjectDir)/icon-main.ico"/>
+    <Icon Id="icon.ico" SourceFile="$(var.Gwupe.ProjectDir)/icon-main.ico"/>
     <Property Id="ARPPRODUCTICON" Value="icon.ico" />
     <Property Id="ARPNOMODIFY" Value="yes" Secure="yes" />
     <Property Id="START_VIA_REGISTRY">1</Property>
     <Property Id="MSIDISABLERMRESTART">0</Property>
     <!-- we have included some custom actions -->
-    <Binary Id="BlitsMeSetupCustomAction.dll"
-      SourceFile="$(var.BlitsMeSetupCustomAction.TargetDir)\BlitsMeSetupCustomAction.CA.dll" />
-    <!-- the action which kills blitsme agent -->
+    <Binary Id="GwupeSetupCustomAction.dll"
+      SourceFile="$(var.GwupeSetupCustomAction.TargetDir)\GwupeSetupCustomAction.CA.dll" />
+    <!-- the action which kills Gwupe agent -->
     <CustomAction Id="CloseApps"
       Return="check"
       Execute="immediate"
-      BinaryKey="BlitsMeSetupCustomAction.dll"
-      DllEntry="CloseBlitsMeAgents" />
+      BinaryKey="GwupeSetupCustomAction.dll"
+      DllEntry="CloseGwupe" />
     <!-- this action opens the agent if it isn't open -->
-    <CustomAction Id="OpenBlitsMeAgentIfNotOpen"
+    <CustomAction Id="OpenGwupeIfNotOpen"
       Return="check"
       Execute="immediate"
-      BinaryKey="BlitsMeSetupCustomAction.dll"
-      DllEntry="OpenBlitsMeAgentIfNotOpen" />
+      BinaryKey="GwupeSetupCustomAction.dll"
+      DllEntry="OpenGwupeIfNotOpen" />
     <!-- this action opens the agent if it isn't open -->
-    <CustomAction Id="RequestBlitsMeAgentsRestart"
+    <CustomAction Id="RequestGwupeRestart"
       Return="check"
       Execute="immediate"
-      BinaryKey="BlitsMeSetupCustomAction.dll"
-      DllEntry="RequestBlitsMeAgentsRestart" />
+      BinaryKey="GwupeSetupCustomAction.dll"
+      DllEntry="RequestGwupeRestart" />
     <!-- this just starts the agent -->
-    <CustomAction Id="StartAgent"
-      FileKey= "BlitsMe.Agent.exe"
-      ExeCommand="[INSTALLFOLDER]BlitsMe.Agent.exe"
+    <CustomAction Id="StartGwupe"
+      FileKey= "Gwupe.Agent.exe"
+      ExeCommand="[INSTALLFOLDER]Gwupe.Agent.exe"
       Execute="immediate"
       Return="asyncNoWait" />
     <!-- when installing we have 2 modes, user install or installed by service (automatically upgraded) -->
@@ -59,10 +59,10 @@
       <Custom Action="CloseApps" Before="InstallValidate">
         NOT(LogonUser="SYSTEM")
       </Custom>
-      <Custom Action="StartAgent" After="InstallFinalize">
+      <Custom Action="StartGwupe" After="InstallFinalize">
         NOT(LogonUser="SYSTEM")
       </Custom>
-      <Custom Action="RequestBlitsMeAgentsRestart" After="InstallFinalize">
+      <Custom Action="RequestGwupeRestart" After="InstallFinalize">
         LogonUser="SYSTEM"
       </Custom>
     </InstallExecuteSequence>
@@ -72,17 +72,17 @@
   <Fragment>
     <Directory Id="TARGETDIR" Name="SourceDir">
       <Directory Id="ProgramFilesFolder">
-        <Directory Id="INSTALLFOLDER" Name="BlitsMe$(var.buildMarker)" />
+        <Directory Id="INSTALLFOLDER" Name="Gwupe$(var.buildMarker)" />
       </Directory>
       <Directory Id="ProgramMenuFolder">
-        <Directory Id="ApplicationProgramsFolder" Name="BlitsMe$(var.buildMarker)"/>
+        <Directory Id="ApplicationProgramsFolder" Name="Gwupe$(var.buildMarker)"/>
       </Directory>
       <Directory Id="DesktopFolder" Name="Desktop">
         <Component Id="ApplicationShortcutDesktop" Guid="{AEA96F71-DE3C-4BD5-9C3A-A04D138CE83C}">
           <Shortcut Id="ApplicationDesktopShortcut"
-             Name="BlitsMe$(var.buildMarker)"
-             Description="Launch BlitsMe$(var.buildMarker)"
-             Target="[INSTALLFOLDER]BlitsMe.Agent.exe"
+             Name="Gwupe$(var.buildMarker)"
+             Description="Launch Gwupe$(var.buildMarker)"
+             Target="[INSTALLFOLDER]Gwupe.Agent.exe"
              WorkingDirectory="INSTALLFOLDER"/>
           <RemoveFolder Id="DesktopFolder" On="uninstall"/>
           <RegistryValue
@@ -98,9 +98,9 @@
     <DirectoryRef Id="ApplicationProgramsFolder">
       <Component Id="ApplicationShortcut">
         <Shortcut Id="ApplicationStartMenuShortcut"
-                  Name="BlitsMe$(var.buildMarker)"
-                  Description="BlitsMe$(var.buildMarker)"
-                  Target="[INSTALLFOLDER]BlitsMe.Agent.exe"
+                  Name="Gwupe$(var.buildMarker)"
+                  Description="Gwupe$(var.buildMarker)"
+                  Target="[INSTALLFOLDER]Gwupe.Agent.exe"
                   WorkingDirectory="INSTALLFOLDER" />
         <RemoveFolder Id="ApplicationProgramsFolder" On="uninstall"/>
         <RegistryValue Root="HKCU"
@@ -118,30 +118,30 @@
     <ComponentGroup Id="ProductComponents" Directory="INSTALLFOLDER">
       <!-- TODO: Remove the comments around this Component element and the ComponentRef below in order to add resources to this installer. -->
       <!-- this installs the actual agent -->
-      <Component Id="BlitsmeAgent">
-        <File Id="BlitsMe.Agent.exe" Source="$(var.BlitsMeAgent.TargetPath)" KeyPath="yes" />
+      <Component Id="Gwupe">
+        <File Id="Gwupe.Agent.exe" Source="$(var.Gwupe.TargetPath)" KeyPath="yes" />
       </Component>
       <!-- the blits me upgrader -->
-      <Component Id="BlitsMeUpgradeAgent">
-        <File Id="BlitsMe.Agent.Upgrade.exe" Source="$(var.BlitsMeUpgradeAgent.TargetPath)" KeyPath="yes" />
+      <Component Id="GwupeUpgradeGwupe">
+        <File Id="Gwupe.Upgrade.exe" Source="$(var.GwupeUpgradeAgent.TargetPath)" KeyPath="yes" />
       </Component>
       <!-- the blits me service restarter -->
-      <Component Id="BlitsMeRestartService">
-        <File Id="BlitsMeRestartService.exe" Source="$(var.BlitsMeRestartService.TargetPath)" KeyPath="yes" />
+      <Component Id="GwupeRestartService">
+        <File Id="GwupeRestartService.exe" Source="$(var.GwupeRestartService.TargetPath)" KeyPath="yes" />
       </Component>
       <!-- this installs the vnc client -->
-      <Component Id="BlitsMeAgentSupportScreen">
-        <File Source="$(var.BlitsMeAgent.TargetDir)\\bmss.exe" KeyPath="yes" />
+      <Component Id="GwupeSupportScreen">
+        <File Source="$(var.Gwupe.TargetDir)\\gwupess.exe" KeyPath="yes" />
       </Component>
       <!-- this installs the blits me service -->
-      <Component Id='c_BlitsMeService'>
-        <File Id='f_BlitsMeService' Name='BlitsMeService.exe' Vital='yes' Source="$(var.BlitsMeService.TargetPath)" KeyPath='yes'/>
+      <Component Id='c_GwupeService'>
+        <File Id='f_GwupeService' Name='GwupeService.exe' Vital='yes' Source="$(var.GwupeService.TargetPath)" KeyPath='yes'/>
         <ServiceInstall
-          Id='BlitsMeService.exe'
+          Id='GwupeService.exe'
           Type='ownProcess'
-          Name="BlitsMeService$(var.buildMarker)"
-          DisplayName="BlitsMe$(var.buildMarker) Service"
-          Description="Part of the BlitsMe Application Suite"
+          Name="GwupeService$(var.buildMarker)"
+          DisplayName="Gwupe$(var.buildMarker) Service"
+          Description="Part of the Gwupe Application Suite"
           Interactive='no'
           Start='auto'
           Vital='yes'
@@ -156,18 +156,18 @@
                       ResetPeriodInDays="1"
                       RestartServiceDelayInSeconds="60" />
         </ServiceInstall>
-        <ServiceControl Id="StartService" Start="install" Stop="both" Remove="uninstall" Name="BlitsMeService$(var.buildMarker)" Wait="yes" />
+        <ServiceControl Id="StartService" Start="install" Stop="both" Remove="uninstall" Name="GwupeService$(var.buildMarker)" Wait="yes" />
       </Component>
       <!-- this installs the vnc service -->
-      <Component Id='c_BlitsMeSupportService'>
-        <File Id='f_BlitsMeSupportService' Name='bmserver.exe' Vital='yes' Source="$(var.BlitsMeService.TargetDir)/bmserver.exe" KeyPath='yes'/>
+      <Component Id='c_GwupeSupportService'>
+        <File Id='f_GwupeSupportService' Name='gwupeserver.exe' Vital='yes' Source="$(var.GwupeService.TargetDir)/gwupeserver.exe" KeyPath='yes'/>
         <ServiceInstall
-          Id='bmserver.exe'
+          Id='gwupeserver.exe'
           Type='ownProcess'
           Arguments='-service'
-          Name="BlitsMeSupportService$(var.buildMarker)"
-          DisplayName="BlitsMe$(var.buildMarker) Support Service"
-          Description="Part of the BlitsMe Application Suite"
+          Name="GwupeSupportService$(var.buildMarker)"
+          DisplayName="Gwupe$(var.buildMarker) Support Service"
+          Description="Part of the Gwupe Application Suite"
           Interactive='no'
           Start='auto'
           Vital='yes'
@@ -175,28 +175,28 @@
           Password="[SERVICEPASSWORD]"
           ErrorControl='normal'
          />
-        <ServiceControl Id="StartSupportService" Start="install" Stop="both" Remove="uninstall" Name="BlitsMeSupportService$(var.buildMarker)" Wait="yes" />
+        <ServiceControl Id="StartSupportService" Start="install" Stop="both" Remove="uninstall" Name="GwupeSupportService$(var.buildMarker)" Wait="yes" />
       </Component>
       <ComponentRef Id="ApplicationShortcut" />
       <ComponentRef Id="ApplicationShortcutDesktop" />
       <!-- Auto-start for all users via Registry -->
-      <Component Id="BlitsMeAutoStart">
+      <Component Id="GwupeAutoStart">
         <RegistryValue Id="BMAuthoStart.Reg" Root="HKMU" Action="write"
                        Key="Software\Microsoft\Windows\CurrentVersion\Run"
-                       Name="BlitsMe$(var.buildMarker) Agent"
-                       Value="[INSTALLFOLDER]BlitsMe.Agent.exe /minimize"
+                       Name="Gwupe$(var.buildMarker)"
+                       Value="[INSTALLFOLDER]Gwupe.Agent.exe /minimize"
                        Type="string" KeyPath="yes" />
         <Condition>START_VIA_REGISTRY</Condition>
       </Component>
-      <Component Id="BlitsMePromoSetting" NeverOverwrite="yes" Permanent="yes">
+      <Component Id="GwupePromoSetting" NeverOverwrite="yes" Permanent="yes">
 <!--        <Condition>PROMO_SET=""</Condition> -->
-        <RegistryValue Id="BMSettings.Reg" Root="HKLM" Action="write" KeyPath="yes"
+        <RegistryValue Id="GwupeSettings.Reg" Root="HKLM" Action="write" KeyPath="yes"
                        Key="Software\BlitsMe$(var.buildMarker)"
                        Name="PromoCode"
                        Value="[PROMO]"
                        Type="string" />
       </Component>
-      <Component Id="BlitsMeServerSettings">
+      <Component Id="GwupeServerSettings">
         <!-- turns off  http connections for vnc -->
         <RegistryValue Id="AcceptHttpConnections.Reg" Root="HKLM" Action="write"
                      Key="Software\BlitsMe$(var.buildMarker)\Server"

@@ -1,11 +1,6 @@
-﻿using System;
-using System.Net;
-using System.Timers;
-using log4net;
-
-namespace BlitsMe.Service
+﻿namespace Gwupe.Service
 {
-    partial class BMService
+    partial class GwupeService
     {
 
         /// <summary> 

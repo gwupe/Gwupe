@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Runtime.Serialization;
 
-namespace BlitsMe.Cloud.Messaging.Request
+namespace Gwupe.Cloud.Messaging.Request
 {
     [DataContract]
     public class FaultReportRq : API.Request

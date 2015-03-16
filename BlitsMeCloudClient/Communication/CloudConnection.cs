@@ -2,23 +2,22 @@
 using System.Collections.Generic;
 using System.Security.Cryptography.X509Certificates;
 using System.Threading;
-using BlitsMe.Cloud.Messaging.API;
-using BlitsMe.Cloud.Exceptions;
-using BlitsMe.Cloud.Messaging;
-using BlitsMe.Cloud.Messaging.Request;
-using BlitsMe.Cloud.Messaging.Response;
+using Gwupe.Cloud.Messaging.API;
+using Gwupe.Cloud.Exceptions;
+using Gwupe.Cloud.Messaging;
+using Gwupe.Cloud.Messaging.Request;
+using Gwupe.Cloud.Messaging.Response;
 using log4net;
 
-namespace BlitsMe.Cloud.Communication
+namespace Gwupe.Cloud.Communication
 {
     public class CloudConnection
     {
         private static readonly ILog Logger = LogManager.GetLogger(typeof(CloudConnection));
 #if DEBUG
-        //private static readonly List<string> DefaultIPs = new List<String>(new String[] { "s1.i.dev.blits.me", "s2.i.dev.blits.me", "s3.i.dev.blits.me" });
-        private static readonly List<string> DefaultIPs = new List<String>(new String[] { "i.dev.blits.me" });
+        private static readonly List<string> DefaultIPs = new List<String>(new String[] { "i.dev.gwupe.com" });
 #else
-        private static readonly List<string> DefaultIPs = new List<String>(new String[] { "i.blits.me" });
+        private static readonly List<string> DefaultIPs = new List<String>(new String[] { "i.gwupe.com" });
 #endif
         private static readonly List<int> DefaultPorts = new List<int>(new int[] { 443 });
         private ConnectionMaintainer _connectionMaintainer;

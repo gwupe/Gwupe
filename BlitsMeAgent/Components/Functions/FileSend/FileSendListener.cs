@@ -5,16 +5,16 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading;
-using BlitsMe.Agent.Components.Functions.API;
-using BlitsMe.Communication.P2P.P2P.Socket.API;
-using BlitsMe.Communication.P2P.RUDP.Connector;
-using BlitsMe.Communication.P2P.RUDP.Connector.API;
-using BlitsMe.Communication.P2P.RUDP.Socket.API;
-using BlitsMe.Communication.P2P.RUDP.Tunnel.API;
-using BlitsMe.Common;
+using Gwupe.Agent.Components.Functions.API;
+using Gwupe.Communication.P2P.P2P.Socket.API;
+using Gwupe.Communication.P2P.RUDP.Connector;
+using Gwupe.Communication.P2P.RUDP.Connector.API;
+using Gwupe.Communication.P2P.RUDP.Socket.API;
+using Gwupe.Communication.P2P.RUDP.Tunnel.API;
+using Gwupe.Common;
 using log4net;
 
-namespace BlitsMe.Agent.Components.Functions.FileSend
+namespace Gwupe.Agent.Components.Functions.FileSend
 {
     internal class FileSendListener : ServerImpl
     {
@@ -39,7 +39,7 @@ namespace BlitsMe.Agent.Components.Functions.FileSend
 
         internal void Listen()
         {
-            BlitsMeClientAppContext.CurrentAppContext.P2PManager.AwaitConnection(_fileInfo.FileSendId, ReceiveConnection);
+            GwupeClientAppContext.CurrentAppContext.P2PManager.AwaitConnection(_fileInfo.FileSendId, ReceiveConnection);
         }
 
         private void ReceiveConnection(ISocket socket)

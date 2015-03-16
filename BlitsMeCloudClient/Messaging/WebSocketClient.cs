@@ -1,12 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using BlitsMe.Cloud.Exceptions;
-using BlitsMe.Cloud.Messaging.Response;
+using Gwupe.Cloud.Exceptions;
+using Gwupe.Cloud.Messaging.Response;
 using System.Threading;
 using log4net;
 
-namespace BlitsMe.Cloud.Messaging
+namespace Gwupe.Cloud.Messaging
 {
     public class WebSocketClient
     {

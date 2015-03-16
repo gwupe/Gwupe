@@ -4,7 +4,7 @@
 	xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
 	xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
 	mc:Ignorable="d"
-	x:Class="BlitsMe.Agent.UI.WPF.Search.SearchWindow"
+	x:Class="Gwupe.Agent.UI.WPF.Search.SearchWindow"
 	x:Name="UserControl"
 	d:DesignWidth="640" d:DesignHeight="480">
     <UserControl.Resources>

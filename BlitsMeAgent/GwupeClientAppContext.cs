@@ -5,41 +5,36 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Reflection;
-using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading;
-using System.Windows;
 using System.Windows.Forms;
-using System.Windows.Threading;
-using BlitsMe.Agent.Components;
-using BlitsMe.Agent.Components.Schedule;
-using BlitsMe.Agent.Managers;
-using BlitsMe.Agent.Misc;
-using BlitsMe.Agent.UI;
-using BlitsMe.Agent.UI.WPF;
-using BlitsMe.Cloud.Messaging.Request;
-using BlitsMe.Cloud.Messaging.Response;
-using BlitsMe.Common;
-using BlitsMe.Common.Security;
-using BlitsMe.ServiceProxy;
+using Gwupe.Agent.Components;
+using Gwupe.Agent.Components.Schedule;
+using Gwupe.Agent.Managers;
+using Gwupe.Agent.Misc;
+using Gwupe.Cloud.Messaging.Request;
+using Gwupe.Cloud.Messaging.Response;
+using Gwupe.Common;
+using Gwupe.Common.Security;
+using Gwupe.ServiceProxy;
 using log4net;
 using log4net.Appender;
 using log4net.Config;
 using log4net.Core;
 using log4net.Repository.Hierarchy;
 
-namespace BlitsMe.Agent
+namespace Gwupe.Agent
 {
-    public enum BlitsMeOption
+    public enum GwupeOption
     {
         Minimize
     };
 
-    public class BlitsMeClientAppContext : ApplicationContext
+    public class GwupeClientAppContext : ApplicationContext
     {
-        internal List<BlitsMeOption> Options { get; private set; }
-        private static readonly ILog Logger = LogManager.GetLogger(typeof(BlitsMeClientAppContext));
-        internal readonly BlitsMeServiceProxy BlitsMeServiceProxy;
+        internal List<GwupeOption> Options { get; private set; }
+        private static readonly ILog Logger = LogManager.GetLogger(typeof(GwupeClientAppContext));
+        internal readonly GwupeServiceProxy GwupeServiceProxy;
         //public Dashboard UIDashBoard;
         internal P2PManager P2PManager;
         private RequestManager _requestManager;
@@ -62,17 +57,17 @@ namespace BlitsMe.Agent
         internal ObservableCollection<String> ChangeLog = new ObservableCollection<string>();
         internal string ChangeDescription { get; set; }
 
-        internal static BlitsMeClientAppContext CurrentAppContext;
+        internal static GwupeClientAppContext CurrentAppContext;
 
         /// <summary>
         /// This class should be created and passed into Application.Run( ... )
         /// </summary>
         /// <param name="options"> </param>
-        public BlitsMeClientAppContext(List<BlitsMeOption> options)
+        public GwupeClientAppContext(List<GwupeOption> options)
         {
             CurrentAppContext = this;
             Options = options;
-            XmlConfigurator.Configure(Assembly.GetExecutingAssembly().GetManifestResourceStream("BlitsMe.Agent.log4net.xml"));
+            XmlConfigurator.Configure(Assembly.GetExecutingAssembly().GetManifestResourceStream("Gwupe.Agent.log4net.xml"));
             StartupVersion = Regex.Replace(FileVersionInfo.GetVersionInfo(Assembly.GetExecutingAssembly().Location).FileVersion, "\\.[0-9]+$", "");
             Logger.Info("BlitsMe" + Program.BuildMarker + ".Agent Starting up [" + StartupVersion + "]");
 #if DEBUG
@@ -81,7 +76,7 @@ namespace BlitsMe.Agent
                 Logger.Debug("Embedded Resource : " + manifestResourceName);
             }
 #endif
-            BlitsMeServiceProxy = new BlitsMeServiceProxy();
+            GwupeServiceProxy = new GwupeServiceProxy();
             ConnectionManager = new ConnectionManager();
             LoginManager = new LoginManager();
             P2PManager = new P2PManager();
@@ -117,7 +112,7 @@ namespace BlitsMe.Agent
                 {
                     using (
                         Stream stream =
-                            Assembly.GetExecutingAssembly().GetManifestResourceStream("BlitsMe.Agent.changelog.txt"))
+                            Assembly.GetExecutingAssembly().GetManifestResourceStream("Gwupe.Agent.changelog.txt"))
                     {
                         using (StreamReader reader = new StreamReader(stream))
                         {
@@ -213,9 +208,9 @@ namespace BlitsMe.Agent
             }
         }
 
-        public BlitsMeServiceProxy BlitsMeService
+        public GwupeServiceProxy GwupeService
         {
-            get { return BlitsMeServiceProxy; }
+            get { return GwupeServiceProxy; }
         }
 
         public event EventHandler IdleChanged;
@@ -258,7 +253,7 @@ namespace BlitsMe.Agent
                     byte[] buffer = new byte[toRead];
                     var read = stream.Read(buffer, 0, (int)toRead);
                     stream.Close();
-                    byte[] zippedLog = Common.Misc.Instance().Zip(buffer);
+                    byte[] zippedLog = Gwupe.Common.Misc.Instance().Zip(buffer);
                     var request = new FaultReportRq
                     {
                         log = Convert.ToBase64String(zippedLog),
@@ -423,8 +418,8 @@ namespace BlitsMe.Agent
             if (SearchManager != null)
                 SearchManager.Close();
             // Don't need service contact anymore
-            if (BlitsMeServiceProxy != null)
-                BlitsMeServiceProxy.close();
+            if (GwupeServiceProxy != null)
+                GwupeServiceProxy.close();
             // Connection can close
             if (ConnectionManager != null)
                 ConnectionManager.Close();
@@ -432,7 +427,7 @@ namespace BlitsMe.Agent
             if (UIManager != null)
                 UIManager.Close();
             // Done
-            Logger.Info("BlitsMe.Agent has shut down");
+            Logger.Info("Gwupe.Agent has shut down");
             base.ExitThreadCore();
         }
     }

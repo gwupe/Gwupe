@@ -4,12 +4,12 @@
 	xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
 	xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
 	xmlns:mahappsControls="clr-namespace:MahApps.Metro.Controls;assembly=MahApps.Metro"
-    xmlns:bm="clr-namespace:BlitsMe.Agent.UI.WPF"
+    xmlns:bm="clr-namespace:Gwupe.Agent.UI.WPF"
 	xmlns:Anno="http://schemas.microsoft.com/expression/blend/extensions/annotations/2008" 
 	mc:Ignorable="d Anno"
-	x:Class="BlitsMe.Agent.UI.WPF.Dashboard"
+	x:Class="Gwupe.Agent.UI.WPF.Dashboard"
 	x:Name="Main"
-	Title="{Binding Title, FallbackValue=BlitsMe}"
+	Title="{Binding Title, FallbackValue=Gwupe}"
 	WindowStartupLocation="CenterScreen" 
 	Closing="HideIfClosing" StateChanged="WindowStateChanged" MinWidth="870" MinHeight="600">
 	<!-- This doesn't show up on XP and some Win7, so dropping it for now -->
@@ -260,7 +260,7 @@
 					</Grid>
 					<Grid Margin="0,2,120,0" HorizontalAlignment="Right"><TextBlock Text="{Binding Path=Version, FallbackValue=0.0.00}" /></Grid>
 					<Grid Height="20" HorizontalAlignment="Right">
-						<Button Content="Report BlitsMe Bug" Click="ReportFaultButtonClick" Width="115" Height="15" HorizontalAlignment="Right" FontSize="10" VerticalAlignment="Center"/>
+                        <Button Content="Report Gwupe Bug" Click="ReportFaultButtonClick" Width="115" Height="15" HorizontalAlignment="Right" FontSize="10" VerticalAlignment="Center"/>
 					</Grid>
 				</Grid>
             </Border>

@@ -3,19 +3,19 @@ using System.ComponentModel;
 using System.Threading;
 using System.Windows;
 using System.Windows.Controls;
-using BlitsMe.Agent.Components;
-using BlitsMe.Agent.Components.Person;
-using BlitsMe.Agent.UI.WPF.API;
-using BlitsMe.Agent.UI.WPF.Utils;
-using BlitsMe.Cloud.Exceptions;
+using Gwupe.Agent.Components;
+using Gwupe.Agent.Components.Person;
+using Gwupe.Agent.UI.WPF.API;
+using Gwupe.Agent.UI.WPF.Utils;
+using Gwupe.Cloud.Exceptions;
 using log4net;
 
-namespace BlitsMe.Agent.UI.WPF.Engage
+namespace Gwupe.Agent.UI.WPF.Engage
 {
     /// <summary>
     /// Interaction logic for ContactSettings.xaml
     /// </summary>
-    public partial class ContactSettings : BlitsMeModalUserControl
+    public partial class ContactSettings : GwupeModalUserControl
     {
         private static readonly ILog Logger = LogManager.GetLogger(typeof(ContactSettings));
         private readonly EngagementWindowDataContext _dataContext;
@@ -25,7 +25,7 @@ namespace BlitsMe.Agent.UI.WPF.Engage
         internal ContactSettings(EngagementWindowDataContext dataContext)
         {
             this.InitializeComponent();
-            InitBlitsMeModalUserControl(Disabler,null, ErrorText);
+            InitGwupeModalUserControl(Disabler,null, ErrorText);
             _dataContext = dataContext;
             ProcessingWord = "Saving";
             //_uiHelper = new UiHelper(Dispatcher, Disabler, null, ErrorText);
@@ -36,7 +36,7 @@ namespace BlitsMe.Agent.UI.WPF.Engage
         {
             if (UnattendedAccessCheckbox.IsChecked == true)
             {
-                ThreadPool.QueueUserWorkItem(state => BlitsMeClientAppContext.CurrentAppContext.UIManager.Alert(
+                ThreadPool.QueueUserWorkItem(state => GwupeClientAppContext.CurrentAppContext.UIManager.Alert(
                     "Please note, that by checking this box, you are allowing " +
                     _dataContext.Engagement.SecondParty.Person.Name +
                     " to access your desktop without prompting you for authorization. This is a potential security risk, please click OK to indicate you understand and accept the risks associated with this setting."));
@@ -62,7 +62,7 @@ namespace BlitsMe.Agent.UI.WPF.Engage
                     IHaveUnattendedAccess = _dataContext.Engagement.SecondParty.Relationship.IHaveUnattendedAccess
                 };
                 Dispatcher.Invoke(new Action(() => { relationship.TheyHaveUnattendedAccess = (UnattendedAccessCheckbox.IsChecked == true); }));
-                BlitsMeClientAppContext.CurrentAppContext.RosterManager.UpdateRelationship(
+                GwupeClientAppContext.CurrentAppContext.RosterManager.UpdateRelationship(
                     _dataContext.Engagement.SecondParty.Person.Username,
                     relationship, tokenId, securityKey);
                 _updatedRelationship = true;

@@ -1,13 +1,13 @@
 ﻿using System;
 using System.Windows.Controls;
-using BlitsMe.Agent.UI.WPF.API;
+using Gwupe.Agent.UI.WPF.API;
 
-namespace BlitsMe.Agent.UI.WPF
+namespace Gwupe.Agent.UI.WPF
 {
     /// <summary>
     /// Interaction logic for ElevateControl.xaml
     /// </summary>
-    public partial class FaultReportControl : BlitsMeModalUserControl
+    public partial class FaultReportControl : GwupeModalUserControl
     {
         private readonly DashboardDataContext _dashboardDataContext;
 
@@ -15,7 +15,7 @@ namespace BlitsMe.Agent.UI.WPF
         {
             this.InitializeComponent();
             _dashboardDataContext = dashboardDataContext;
-            InitBlitsMeModalUserControl(Disabler, null, null);
+            InitGwupeModalUserControl(Disabler, null, null);
             ProcessingWord = "Sending";
             StartWithFocus = UserReport;
         }

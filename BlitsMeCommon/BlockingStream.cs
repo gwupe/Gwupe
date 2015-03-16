@@ -1,12 +1,9 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+using System.Collections.Concurrent;
 using System.IO;
 using System.Threading;
-using System.Collections.Concurrent;
 
-namespace BlitsMe.Common
+namespace Gwupe.Common
 {
     public class BlockingStream : Stream
     {

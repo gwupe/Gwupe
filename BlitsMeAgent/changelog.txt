@@ -1,1 +1,4 @@
-﻿
+﻿BlitsMe rebranded to Gwupe
+BlitsMe has changed its name to Gwupe.
+A host of small bug fixes and general improvements.
+More updates coming soon on a tight release cycle.

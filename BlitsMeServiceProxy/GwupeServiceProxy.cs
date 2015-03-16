@@ -1,11 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ServiceModel;
-using BlitsMe.ServiceHost;
+using Gwupe.ServiceHost;
 
-namespace BlitsMe.ServiceProxy
+namespace Gwupe.ServiceProxy
 {
-    public class BlitsMeServiceProxy : IBlitsMeService
+    public class GwupeServiceProxy : IGwupeService
     {
 #if DEBUG
         public const String BuildMarker = "_Dev";
@@ -13,18 +13,18 @@ namespace BlitsMe.ServiceProxy
         public const String BuildMarker = "";
 #endif
         private readonly NetNamedPipeBinding _binding = new NetNamedPipeBinding();
-        private EndpointAddress endpoint = new EndpointAddress("net.pipe://localhost/BlitsMeService" + BuildMarker);
-        private readonly ChannelFactory<IBlitsMeService> _channelFactory;
+        private EndpointAddress endpoint = new EndpointAddress("net.pipe://localhost/GwupeService" + BuildMarker);
+        private readonly ChannelFactory<IGwupeService> _channelFactory;
         internal bool IsClosed { get; private set; }
 
-        public BlitsMeServiceProxy()
+        public GwupeServiceProxy()
         {
-            _channelFactory = new ChannelFactory<IBlitsMeService>(_binding, endpoint);
+            _channelFactory = new ChannelFactory<IGwupeService>(_binding, endpoint);
         }
 
         public List<string> getServers()
         {
-            IBlitsMeService channel = _channelFactory.CreateChannel();
+            IGwupeService channel = _channelFactory.CreateChannel();
             List<String> returnValue = channel.getServers();
             ((IClientChannel)channel).Close();
             return returnValue;
@@ -32,14 +32,14 @@ namespace BlitsMe.ServiceProxy
 
         public void saveServers(List<string> servers)
         {
-            IBlitsMeService channel = _channelFactory.CreateChannel();
+            IGwupeService channel = _channelFactory.CreateChannel();
             channel.saveServers(servers);
             ((IClientChannel)channel).Close();
         }
 
         public bool VNCStartService()
         {
-            IBlitsMeService channel = _channelFactory.CreateChannel();
+            IGwupeService channel = _channelFactory.CreateChannel();
             bool rv = channel.VNCStartService();
             ((IClientChannel)channel).Close();
 
@@ -48,21 +48,21 @@ namespace BlitsMe.ServiceProxy
 
         public void Ping()
         {
-            IBlitsMeService channel = _channelFactory.CreateChannel();
+            IGwupeService channel = _channelFactory.CreateChannel();
             channel.Ping();
             ((IClientChannel)channel).Close();
         }
 
         public string HardwareFingerprint()
         {
-            IBlitsMeService channel = _channelFactory.CreateChannel();
+            IGwupeService channel = _channelFactory.CreateChannel();
             String rv = channel.HardwareFingerprint();
             ((IClientChannel)channel).Close();
 
             return rv;
         }
 
-        ~BlitsMeServiceProxy()
+        ~GwupeServiceProxy()
         {
             this.close();
         }

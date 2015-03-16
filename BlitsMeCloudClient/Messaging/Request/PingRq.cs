@@ -1,10 +1,10 @@
 ﻿using System;
 using System.Runtime.Serialization;
 
-namespace BlitsMe.Cloud.Messaging.Request
+namespace Gwupe.Cloud.Messaging.Request
 {
     [DataContract]
-    public class PingRq : BlitsMe.Cloud.Messaging.API.Request
+    public class PingRq : Gwupe.Cloud.Messaging.API.Request
     {
         public override String type  {
             get { return "Ping-RQ"; }

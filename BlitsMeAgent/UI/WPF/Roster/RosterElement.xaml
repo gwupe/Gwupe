@@ -5,7 +5,7 @@
 	xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
 	xmlns:ed="http://schemas.microsoft.com/expression/2010/drawing"
 	mc:Ignorable="d"
-	x:Class="BlitsMe.Agent.UI.WPF.Roster.RosterElement"
+	x:Class="Gwupe.Agent.UI.WPF.Roster.RosterElement"
 	x:Name="UserControl">
     <UserControl.Resources>
         <ResourceDictionary>

@@ -1,6 +1,6 @@
 using System;
 
-namespace BlitsMe.Agent.Components
+namespace Gwupe.Agent.Components
 {
     public class LoginDetails
     {

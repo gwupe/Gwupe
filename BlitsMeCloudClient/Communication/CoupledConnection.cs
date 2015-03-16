@@ -6,10 +6,10 @@ using System.Net;
 using System.Security.Cryptography.X509Certificates;
 using System.Text;
 using Bauglir.Ex;
-using BlitsMe.Cloud.Messaging;
+using Gwupe.Cloud.Messaging;
 using log4net;
 
-namespace BlitsMe.Cloud.Communication
+namespace Gwupe.Cloud.Communication
 {
     public class CoupledConnection
     {

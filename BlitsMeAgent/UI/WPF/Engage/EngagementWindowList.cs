@@ -3,22 +3,22 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Windows.Threading;
-using BlitsMe.Agent.Components;
-using BlitsMe.Agent.Components.Notification;
-using BlitsMe.Agent.Components.Person;
-using BlitsMe.Agent.UI.WPF.Utils;
+using Gwupe.Agent.Components;
+using Gwupe.Agent.Components.Notification;
+using Gwupe.Agent.Components.Person;
+using Gwupe.Agent.UI.WPF.Utils;
 using log4net;
 
-namespace BlitsMe.Agent.UI.WPF.Engage
+namespace Gwupe.Agent.UI.WPF.Engage
 {
     internal class EngagementWindowList : ObservableListMirror<Engagement,EngagementWindow>
     {
         private static readonly ILog Logger = LogManager.GetLogger(typeof(EngagementWindowList));
-        private readonly BlitsMeClientAppContext _appContext;
+        private readonly GwupeClientAppContext _appContext;
         private readonly DispatchingCollection<ObservableCollection<Notification>, Notification> _notificationList;
         private readonly PropertyChangedEventHandler _propertyChangeHandler;
 
-        public EngagementWindowList(BlitsMeClientAppContext appContext, 
+        public EngagementWindowList(GwupeClientAppContext appContext, 
                         DispatchingCollection<ObservableCollection<Notification>, Notification> notificationList, 
                         PropertyChangedEventHandler propertyChangeHandler, 
                         Dispatcher dispatcher) : base(dispatcher)

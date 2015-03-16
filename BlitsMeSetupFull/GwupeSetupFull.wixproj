@@ -12,6 +12,7 @@
     <WixTargetsPath Condition=" '$(WixTargetsPath)' == '' AND '$(MSBuildExtensionsPath32)' != '' ">$(MSBuildExtensionsPath32)\Microsoft\WiX\v3.x\Wix.targets</WixTargetsPath>
     <WixTargetsPath Condition=" '$(WixTargetsPath)' == '' ">$(MSBuildExtensionsPath)\Microsoft\WiX\v3.x\Wix.targets</WixTargetsPath>
     <SignOutput>true</SignOutput>
+    <Name>GwupeSetupFull</Name>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|x86' ">
     <OutputPath>bin\$(Configuration)\</OutputPath>
@@ -61,8 +62,8 @@
     <Content Include="icon-main.ico" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\BlitsMeSetup\BlitsMeSetup.wixproj">
-      <Name>BlitsMeSetup</Name>
+    <ProjectReference Include="..\BlitsMeSetup\GwupeSetup.wixproj">
+      <Name>GwupeSetup</Name>
       <Project>{41b5ab51-8d24-4d3d-9448-6f3584a34c34}</Project>
       <Private>True</Private>
       <DoNotHarvest>True</DoNotHarvest>
@@ -86,7 +87,7 @@
     <Exec Command="ren &quot;$(TargetPath)&quot; &quot;$(FinalTargetFileName)&quot;" />
   </Target>
   <Target Name="BeforeBuild">
-    <GetAssemblyIdentity AssemblyFiles="$(SolutionDir)BlitsMeAgent\bin\$(Configuration)\BlitsMe.Agent.exe">
+    <GetAssemblyIdentity AssemblyFiles="$(SolutionDir)BlitsMeAgent\bin\$(Configuration)\Gwupe.Agent.exe">
       <Output TaskParameter="Assemblies" ItemName="AssemblyVersions" />
     </GetAssemblyIdentity>
     <FormatVersion Version="%(AssemblyVersions.Version)" Revision="0">

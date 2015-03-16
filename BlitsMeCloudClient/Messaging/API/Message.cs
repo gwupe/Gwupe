@@ -3,10 +3,10 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Runtime.Serialization;
-using BlitsMe.Cloud.Messaging.Request;
-using BlitsMe.Cloud.Messaging.Response;
+using Gwupe.Cloud.Messaging.Request;
+using Gwupe.Cloud.Messaging.Response;
 
-namespace BlitsMe.Cloud.Messaging.API
+namespace Gwupe.Cloud.Messaging.API
 {
     [DataContract]
     public abstract class Message

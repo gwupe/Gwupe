@@ -3,12 +3,12 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Net;
-using BlitsMe.Communication.P2P.RUDP.Packet.API;
-using BlitsMe.Communication.P2P.RUDP.Socket.API;
-using BlitsMe.Communication.P2P.RUDP.Socket;
-using BlitsMe.Communication.P2P.RUDP.Tunnel.Transport;
+using Gwupe.Communication.P2P.RUDP.Packet.API;
+using Gwupe.Communication.P2P.RUDP.Socket.API;
+using Gwupe.Communication.P2P.RUDP.Socket;
+using Gwupe.Communication.P2P.RUDP.Tunnel.Transport;
 
-namespace BlitsMe.Communication.P2P.RUDP.Tunnel.API
+namespace Gwupe.Communication.P2P.RUDP.Tunnel.API
 {
     /* This interface describes a endpoint manager which can multiplex multiple connections over and IUDPTunnel using named end points (like ports, only named)
      * You can listen on named end points and connect to named end points at the other end of the endPointManager.

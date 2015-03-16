@@ -4,12 +4,12 @@ using System.Runtime.Serialization.Json;
 using System.Text;
 using System.Text.RegularExpressions;
 using Bauglir.Ex;
-using BlitsMe.Cloud.Communication;
-using BlitsMe.Cloud.Exceptions;
-using BlitsMe.Cloud.Messaging.API;
+using Gwupe.Cloud.Communication;
+using Gwupe.Cloud.Exceptions;
+using Gwupe.Cloud.Messaging.API;
 using log4net;
 
-namespace BlitsMe.Cloud.Messaging
+namespace Gwupe.Cloud.Messaging
 {
     public class WebSocketMessageHandler : IWebSocketMessageHandler
     {
@@ -150,11 +150,11 @@ namespace BlitsMe.Cloud.Messaging
             String className = "";
             if (typeInfo[1].Equals("RQ"))
             {
-                className = "BlitsMe.Cloud.Messaging.Request." + typeInfo[0] + "Rq";
+                className = "Gwupe.Cloud.Messaging.Request." + typeInfo[0] + "Rq";
             }
             else if (typeInfo[1].Equals("RS"))
             {
-                className = "BlitsMe.Cloud.Messaging.Response." + typeInfo[0] + "Rs";
+                className = "Gwupe.Cloud.Messaging.Response." + typeInfo[0] + "Rs";
             }
             else
             {

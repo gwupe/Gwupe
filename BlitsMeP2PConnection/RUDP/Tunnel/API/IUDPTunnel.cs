@@ -1,10 +1,10 @@
 using System;
 using System.ComponentModel;
 using System.Net;
-using BlitsMe.Communication.P2P.P2P.Tunnel;
-using BlitsMe.Communication.P2P.RUDP.Utils;
+using Gwupe.Communication.P2P.P2P.Tunnel;
+using Gwupe.Communication.P2P.RUDP.Utils;
 
-namespace BlitsMe.Communication.P2P.RUDP.Tunnel.API
+namespace Gwupe.Communication.P2P.RUDP.Tunnel.API
 {
     public delegate void ProcessPacket(byte[] data, String id);
     public delegate void EncryptData(ref byte[] data);

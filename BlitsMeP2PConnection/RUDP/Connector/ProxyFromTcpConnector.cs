@@ -5,13 +5,13 @@ using System.Text;
 using System.Net.Sockets;
 using System.Threading;
 using System.Net;
-using BlitsMe.Communication.P2P.Exceptions;
-using BlitsMe.Communication.P2P.RUDP.Connector.API;
+using Gwupe.Communication.P2P.Exceptions;
+using Gwupe.Communication.P2P.RUDP.Connector.API;
 using log4net;
-using BlitsMe.Communication.P2P.RUDP.Tunnel.API;
-using BlitsMe.Communication.P2P.RUDP.Socket.API;
+using Gwupe.Communication.P2P.RUDP.Tunnel.API;
+using Gwupe.Communication.P2P.RUDP.Socket.API;
 
-namespace BlitsMe.Communication.P2P.RUDP.Connector
+namespace Gwupe.Communication.P2P.RUDP.Connector
 {
     public class ProxyFromTcpConnector : API.INamedConnector
     {

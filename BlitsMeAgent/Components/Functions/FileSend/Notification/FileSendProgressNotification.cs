@@ -2,11 +2,11 @@
 using System.ComponentModel;
 using System.Threading;
 using System.Windows.Input;
-using BlitsMe.Agent.Components.Notification;
-using BlitsMe.Agent.Managers;
+using Gwupe.Agent.Components.Notification;
+using Gwupe.Agent.Managers;
 using log4net;
 
-namespace BlitsMe.Agent.Components.Functions.FileSend.Notification
+namespace Gwupe.Agent.Components.Functions.FileSend.Notification
 {
     class FileSendProgressNotification : CancellableNotification
     {

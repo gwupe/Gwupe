@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Runtime.Serialization;
 
-namespace BlitsMe.Cloud.Messaging.API
+namespace Gwupe.Cloud.Messaging.API
 {
     [DataContract]
     public abstract class Response : Message

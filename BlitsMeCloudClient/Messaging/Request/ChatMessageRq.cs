@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Runtime.Serialization;
-using BlitsMe.Cloud.Messaging.API;
+using Gwupe.Cloud.Messaging.API;
 
-namespace BlitsMe.Cloud.Messaging.Request
+namespace Gwupe.Cloud.Messaging.Request
 {
     [DataContract]
     public class ChatMessageRq : UserToUserRequest

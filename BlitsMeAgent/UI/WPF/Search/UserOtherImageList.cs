@@ -3,18 +3,19 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Windows.Threading;
-using BlitsMe.Agent.Components.Search;
-using BlitsMe.Agent.UI.WPF.Engage;
-using BlitsMe.Agent.UI.WPF.Utils;
+using Gwupe.Agent.Components.Search;
+using Gwupe.Agent.UI.WPF.Engage;
+using Gwupe.Agent.UI.WPF.Utils;
 
-namespace BlitsMe.Agent.UI.WPF.Search
+namespace Gwupe.Agent.UI.WPF.Search
 {
     class UserOtherImageList : ObservableListMirror<SearchResult, UserImageOthers>
     {
-        private BlitsMeClientAppContext _appContext;
+        private GwupeClientAppContext _appContext;
         private SearchResult _sourceObject;
 
-        public UserOtherImageList(BlitsMeClientAppContext appContext, Dispatcher dispatcher): base(dispatcher)
+        public UserOtherImageList(GwupeClientAppContext appContext, Dispatcher dispatcher)
+            : base(dispatcher)
         {
             _appContext = appContext;
         }

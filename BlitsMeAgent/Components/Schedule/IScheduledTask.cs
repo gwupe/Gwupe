@@ -1,6 +1,6 @@
 using System;
 
-namespace BlitsMe.Agent.Components.Schedule
+namespace Gwupe.Agent.Components.Schedule
 {
     internal delegate RunTask RunTask();
 

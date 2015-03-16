@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Wix xmlns="http://schemas.microsoft.com/wix/2006/wi" xmlns:bal="http://schemas.microsoft.com/wix/BalExtension"
      xmlns:util="http://schemas.microsoft.com/wix/UtilExtension">
-  <Bundle Name="BlitsMe$(var.buildMarker)" Version="!(bind.PackageVersion.BlitsMeSetup)"
-           Manufacturer="BlitsMe Pty (Ltd)"
+  <Bundle Name="Gwupe$(var.buildMarker)" Version="!(bind.PackageVersion.GwupeSetup)"
+           Manufacturer="Gwupe Pty (Ltd)"
            UpgradeCode="$(var.upgradeCode)"
            IconSourceFile="icon-main.ico"
     >
@@ -16,7 +16,7 @@
         LogoFile="arrow.png"
         />
     </BootstrapperApplicationRef>
-    <Variable Name="Promo" bal:Overridable="yes" Type="string" Value="BLITSME" />
+    <Variable Name="Promo" bal:Overridable="yes" Type="string" Value="GWUPE" />
     <Chain>
       <!-- Need client profile 4.0 -->
       <PackageGroupRef Id="NetFx40ClientWeb" />
@@ -43,9 +43,9 @@
           Size="4995416"
           Version="10.0.40219.1" />
       </ExePackage>
-      <MsiPackage Id="BlitsMeSetup"
+      <MsiPackage Id="GwupeSetup"
         Compressed="yes"
-        SourceFile="$(var.BlitsMeSetup.TargetPath)"
+        SourceFile="$(var.GwupeSetup.TargetPath)"
         Vital="yes">
         <MsiProperty Name="PROMO" Value="[Promo]" />
       </MsiPackage>

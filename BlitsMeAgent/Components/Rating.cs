@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace BlitsMe.Agent.Components
+namespace Gwupe.Agent.Components
 {
     internal class Rating
     {

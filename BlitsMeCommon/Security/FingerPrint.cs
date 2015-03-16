@@ -5,7 +5,7 @@ using System.Security;
 using System.Collections;
 using System.Text;
 
-namespace BlitsMe.Common.Security
+namespace Gwupe.Common.Security
 {
     /// <summary>
     /// Generates a 16 byte Unique Identification code of a computer

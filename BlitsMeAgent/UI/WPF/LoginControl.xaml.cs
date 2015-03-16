@@ -2,12 +2,12 @@
 using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Navigation;
-using BlitsMe.Agent.Components;
-using BlitsMe.Agent.UI.WPF.Utils;
+using Gwupe.Agent.Components;
+using Gwupe.Agent.UI.WPF.Utils;
 using log4net;
 using System.Windows.Media;
 
-namespace BlitsMe.Agent.UI.WPF
+namespace Gwupe.Agent.UI.WPF
 {
     /// <summary>
     /// Interaction logic for LoginControl.xaml
@@ -22,7 +22,7 @@ namespace BlitsMe.Agent.UI.WPF
             this.InitializeComponent();
             _dashboard = dashboard;
             ApplyBlurEffect(dashboard);
-            Username.Text = BlitsMeClientAppContext.CurrentAppContext.LoginManager.LoginDetails.Username ?? "";
+            Username.Text = GwupeClientAppContext.CurrentAppContext.LoginManager.LoginDetails.Username ?? "";
             _validator = new InputValidator(null, null, Dispatcher);
         }
 
@@ -71,7 +71,7 @@ namespace BlitsMe.Agent.UI.WPF
             {
                 ClearBlurEffect(_dashboard);
                 Logger.Debug("Got username and password, submitting to login manager");
-                BlitsMeClientAppContext.CurrentAppContext.LoginManager.Login(Username.Text, Password.Password);
+                GwupeClientAppContext.CurrentAppContext.LoginManager.Login(Username.Text, Password.Password);
             }
         }
 
@@ -96,7 +96,7 @@ namespace BlitsMe.Agent.UI.WPF
 
         public void NewUserCreate(object sender, RequestNavigateEventArgs e)
         {
-            BlitsMeClientAppContext.CurrentAppContext.UIManager.PromptSignup();
+            GwupeClientAppContext.CurrentAppContext.UIManager.PromptSignup();
         }
 
         public void LoginGuestClick(object sender, RequestNavigateEventArgs e)
@@ -104,7 +104,7 @@ namespace BlitsMe.Agent.UI.WPF
             ResetStatus();
             ClearBlurEffect(_dashboard);
             Logger.Debug("Logging in as Guest");
-            BlitsMeClientAppContext.CurrentAppContext.LoginManager.LoginGuest();
+            GwupeClientAppContext.CurrentAppContext.LoginManager.LoginGuest();
         }
 
         private void ApplyBlurEffect(Dashboard dashboard)

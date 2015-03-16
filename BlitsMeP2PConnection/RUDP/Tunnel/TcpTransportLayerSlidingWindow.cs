@@ -1,14 +1,14 @@
 ﻿using System;
 using System.IO;
 using System.Threading;
-using BlitsMe.Communication.P2P.Exceptions;
-using BlitsMe.Communication.P2P.RUDP.Packet.API;
-using BlitsMe.Communication.P2P.RUDP.Packet.TCP;
-using BlitsMe.Communication.P2P.RUDP.Tunnel.API;
-using BlitsMe.Communication.P2P.RUDP.Utils;
+using Gwupe.Communication.P2P.Exceptions;
+using Gwupe.Communication.P2P.RUDP.Packet.API;
+using Gwupe.Communication.P2P.RUDP.Packet.TCP;
+using Gwupe.Communication.P2P.RUDP.Tunnel.API;
+using Gwupe.Communication.P2P.RUDP.Utils;
 using log4net;
 
-namespace BlitsMe.Communication.P2P.RUDP.Tunnel
+namespace Gwupe.Communication.P2P.RUDP.Tunnel
 {
     class TcpTransportLayerSlidingWindow : TcpTransportLayer
     {

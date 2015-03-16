@@ -2,16 +2,16 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
-using BlitsMe.Agent.Components.Functions.API;
-using BlitsMe.Agent.Components.Person;
-using BlitsMe.Agent.Managers;
-using BlitsMe.Cloud.Messaging.API;
-using BlitsMe.Cloud.Messaging.Request;
-using BlitsMe.Cloud.Messaging.Response;
+using Gwupe.Agent.Components.Functions.API;
+using Gwupe.Agent.Components.Person;
+using Gwupe.Agent.Managers;
+using Gwupe.Cloud.Messaging.API;
+using Gwupe.Cloud.Messaging.Request;
+using Gwupe.Cloud.Messaging.Response;
 using log4net;
 using Timer = System.Timers.Timer;
 
-namespace BlitsMe.Agent.Components
+namespace Gwupe.Agent.Components
 {
 
     /* This class is all about interaction with a user, their chat, their billing, their everything */
@@ -19,7 +19,7 @@ namespace BlitsMe.Agent.Components
     internal class Engagement : INotifyPropertyChanged
     {
         // Our app context
-        private readonly BlitsMeClientAppContext _appContext;
+        private readonly GwupeClientAppContext _appContext;
         // Our logger
         private static readonly ILog Logger = LogManager.GetLogger(typeof(Engagement));
         // The person we are engaging with
@@ -38,7 +38,7 @@ namespace BlitsMe.Agent.Components
 
         internal readonly Dictionary<String, IFunction> Functions;
 
-        internal Engagement(BlitsMeClientAppContext appContext, Attendance personAttendance)
+        internal Engagement(GwupeClientAppContext appContext, Attendance personAttendance)
         {
             this._appContext = appContext;
             Interactions = new Interactions(this);

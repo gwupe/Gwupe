@@ -1,4 +1,4 @@
-﻿namespace BlitsMe.Communication.P2P.RUDP.Packet.TCP
+﻿namespace Gwupe.Communication.P2P.RUDP.Packet.TCP
 {
     public class StandardDisconnectPacket : BasicTcpPacket
     {

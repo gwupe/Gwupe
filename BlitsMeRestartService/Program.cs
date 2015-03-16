@@ -2,12 +2,12 @@
 using System.Security.Authentication.ExtendedProtection;
 using System.ServiceProcess;
 
-namespace BlitsMeRestartService
+namespace GwupeRestartService
 {
     class Program
     {
 #if DEBUG
-        private static String ServiceName = "BlitsMe_Dev Service";
+        private static String ServiceName = "Gwupe_Dev Service";
 #else
         private static String ServiceName = "BlitsMe Service";
 #endif

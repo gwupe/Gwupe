@@ -1,10 +1,10 @@
 ﻿using System;
 using System.Threading;
-using BlitsMe.Communication.P2P.P2P.Socket.API;
-using BlitsMe.Communication.P2P.RUDP.Socket.API;
+using Gwupe.Communication.P2P.P2P.Socket.API;
+using Gwupe.Communication.P2P.RUDP.Socket.API;
 using log4net;
 
-namespace BlitsMe.Communication.P2P.P2P.Connector
+namespace Gwupe.Communication.P2P.P2P.Connector
 {
     public class StreamProxy
     {

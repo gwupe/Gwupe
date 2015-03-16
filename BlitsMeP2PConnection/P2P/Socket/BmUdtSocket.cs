@@ -3,11 +3,11 @@ using System.Collections.Generic;
 using System.Net;
 using System.Net.Sockets;
 using System.Threading;
-using BlitsMe.Communication.P2P.P2P.Socket.API;
-using BlitsMe.Communication.P2P.P2P.Tunnel;
+using Gwupe.Communication.P2P.P2P.Socket.API;
+using Gwupe.Communication.P2P.P2P.Tunnel;
 using log4net;
 
-namespace BlitsMe.Communication.P2P.P2P.Socket
+namespace Gwupe.Communication.P2P.P2P.Socket
 {
     public delegate byte[] EncryptData(byte[] data, int length);
     public delegate byte[] DecryptData(byte[] data, int length);

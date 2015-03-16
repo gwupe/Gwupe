@@ -8,8 +8,8 @@
     <ProjectGuid>{751A6516-1FE8-47F4-A754-8AA5594FFB11}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>BlitsMe.Cloud</RootNamespace>
-    <AssemblyName>BlitsMe.Cloud</AssemblyName>
+    <RootNamespace>Gwupe.Cloud</RootNamespace>
+    <AssemblyName>Gwupe.Cloud</AssemblyName>
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <TargetFrameworkProfile>Client</TargetFrameworkProfile>
@@ -159,13 +159,13 @@
     <Compile Include="Repeater\RepeatedConnection.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\BlitsMeCommon\BlitsMeCommon.csproj">
+    <ProjectReference Include="..\BlitsMeCommon\GwupeCommon.csproj">
       <Project>{1B355F1C-9D50-4BAB-8CEB-E6CA72E6DE69}</Project>
-      <Name>BlitsMeCommon</Name>
+      <Name>GwupeCommon</Name>
     </ProjectReference>
-    <ProjectReference Include="..\BlitsMeP2PConnection\BlitsMeP2PConnection.csproj">
+    <ProjectReference Include="..\BlitsMeP2PConnection\GwupeCommunicatonP2P.csproj">
       <Project>{C8080119-3305-43B5-8944-592DBC960F12}</Project>
-      <Name>BlitsMeP2PConnection</Name>
+      <Name>GwupeCommunicatonP2P</Name>
     </ProjectReference>
     <ProjectReference Include="..\WebSocketLib\WebSocket.csproj">
       <Project>{18413B76-A1FD-450D-989C-30B9F448F966}</Project>

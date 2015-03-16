@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace BlitsMe.Agent.Components.Functions.API
+namespace Gwupe.Agent.Components.Functions.API
 {
     interface IFunction
     {
