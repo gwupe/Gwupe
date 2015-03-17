@@ -13,7 +13,7 @@
       <bal:WixStandardBootstrapperApplication
         SuppressOptionsUI="yes"
         LicenseUrl=""
-        LogoFile="arrow.png"
+        LogoFile="Gwupe Logo No Text.png"
         />
     </BootstrapperApplicationRef>
     <Variable Name="Promo" bal:Overridable="yes" Type="string" Value="GWUPE" />

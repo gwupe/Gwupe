@@ -58,7 +58,7 @@
     </WixExtension>
   </ItemGroup>
   <ItemGroup>
-    <Content Include="arrow.png" />
+    <Content Include="Gwupe Logo No Text.png" />
     <Content Include="icon-main.ico" />
   </ItemGroup>
   <ItemGroup>

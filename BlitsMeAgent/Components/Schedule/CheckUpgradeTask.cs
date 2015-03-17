@@ -37,12 +37,21 @@ namespace Gwupe.Agent.Components.Schedule
                                 ", closing to re-open as new version.");
                     try
                     {
-                        Process.Start(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location) +
-                                      "\\Gwupe.Agent.Upgrade.exe");
+                        //if (File.Exists(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location) + "\\Gwupe.Upgrade.exe"))
+                        //{
+                            Process.Start(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location) +
+                                          "\\Gwupe.Upgrade.exe");
+                        /*}
+                        else
+                        {
+                            //Fallback
+                            Process.Start(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location) +
+                                          "\\BlitsMe.Agent.Upgrade.exe");
+                        }*/
                     }
                     catch (Exception e)
                     {
-                        Logger.Error("Failed to start the upgrade exe, but will stop myself anyway.");
+                        Logger.Error("Failed to start the upgrade exe, but will stop myself anyway.",e);
                     }
                     _appContext.Shutdown();
                 }

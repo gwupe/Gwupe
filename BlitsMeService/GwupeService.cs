@@ -27,7 +27,7 @@ namespace Gwupe.Service
         private const int UpdateCheckInterval = 300;
         public const String BuildMarker = "_Dev";
 #else
-        private const String UpdateServer = "gwupe.me";
+        private const String UpdateServer = "gwupe.com";
         private const int UpdateCheckInterval = 3600;
         public const String BuildMarker = "";
 #endif

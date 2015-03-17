@@ -19,6 +19,7 @@
 
     <Feature Id="ProductFeature" Title="Application" Level="1">
       <ComponentGroupRef Id="ProductComponents" />
+      <ComponentGroupRef Id="OldUpgradeComponents" />
     </Feature>
     <Icon Id="icon.ico" SourceFile="$(var.Gwupe.ProjectDir)/icon-main.ico"/>
     <Property Id="ARPPRODUCTICON" Value="icon.ico" />
@@ -73,6 +74,7 @@
     <Directory Id="TARGETDIR" Name="SourceDir">
       <Directory Id="ProgramFilesFolder">
         <Directory Id="INSTALLFOLDER" Name="Gwupe$(var.buildMarker)" />
+        <Directory Id="OLDBLITSME" Name="BlitsMe$(var.buildMarker)" />
       </Directory>
       <Directory Id="ProgramMenuFolder">
         <Directory Id="ApplicationProgramsFolder" Name="Gwupe$(var.buildMarker)"/>
@@ -115,6 +117,12 @@
 
   <!-- inside here is the actual installation process -->
   <Fragment>
+    <ComponentGroup Id="OldUpgradeComponents" Directory="OLDBLITSME">
+      <!-- the blits me upgrader -->
+      <Component Id="GwupeUpgradeBlitsMe">
+        <File Id="BlitsMe.Agent.Upgrade.exe" Source="$(var.GwupeUpgradeAgent.TargetPath)" KeyPath="yes" Name="BlitsMe.Agent.Upgrade.exe" />
+      </Component>
+    </ComponentGroup>
     <ComponentGroup Id="ProductComponents" Directory="INSTALLFOLDER">
       <!-- TODO: Remove the comments around this Component element and the ComponentRef below in order to add resources to this installer. -->
       <!-- this installs the actual agent -->
