@@ -153,7 +153,7 @@ namespace Gwupe.Agent
                         : "");
         }
 
-        public bool RestartBlitsMeService()
+        public bool RestartGwupeService()
         {
             Process restartProcess = null;
             try

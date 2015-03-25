@@ -141,7 +141,7 @@ namespace Gwupe.Agent.Components.Functions.RemoteDesktop
                     }
                     catch
                     {
-                        _appContext.RestartBlitsMeService();
+                        _appContext.RestartGwupeService();
                     }
                     // Startup the underlying VNC service
                     if (_appContext.GwupeServiceProxy.VNCStartService())
@@ -330,7 +330,7 @@ namespace Gwupe.Agent.Components.Functions.RemoteDesktop
             string securityKey;
             if (
                 GwupeClientAppContext.CurrentAppContext.Elevate(
-                    "This connection requires you to verify your identity, please enter your BlitsMe password to connect to " +
+                    "This connection requires you to verify your identity, please enter your Gwupe password to connect to " +
                     _engagement.SecondParty.Person.Name + ".", out tokenId, out securityKey))
             {
                 RequestRdpSession(tokenId, securityKey);
@@ -345,7 +345,7 @@ namespace Gwupe.Agent.Components.Functions.RemoteDesktop
         private bool CheckRdpActive()
         {
             if (_bmssHandle != null && !_bmssHandle.HasExited && IsWindow(_bmssHandle.MainWindowHandle) &&
-                _bmssHandle.MainWindowTitle.Contains("BlitsMe"))
+                _bmssHandle.MainWindowTitle.Contains("Gwupe"))
             {
                 // hey, we have a valid window, raise it and bring it to the front
                 // First call SwitchToThisWindow to unminimize it if it is minimized
@@ -446,7 +446,7 @@ namespace Gwupe.Agent.Components.Functions.RemoteDesktop
         private void ClientOnConnectionAccepted(object sender, EventArgs eventArgs)
         {
             IsUnderway = true;
-            Chat.LogSystemMessage("Launching BlitsMe Support Screen...");
+            Chat.LogSystemMessage("Launching Gwupe Support Screen...");
             Logger.Info("RDP client has connected to the proxy to " + _engagement.SecondParty.Person.Username + ".");
             OnNewActivity(new RemoteDesktopActivity(_engagement, RemoteDesktopActivity.REMOTE_DESKTOP_CONNECT) { From = "_SELF", To = _engagement.SecondParty.Person.Username });
         }

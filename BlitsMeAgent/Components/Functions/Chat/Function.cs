@@ -321,7 +321,7 @@ namespace Gwupe.Agent.Components.Functions.Chat
         {
             ThreadPool.QueueUserWorkItem(state =>
             {
-                if (GwupeClientAppContext.CurrentAppContext.RestartBlitsMeService())
+                if (GwupeClientAppContext.CurrentAppContext.RestartGwupeService())
                 {
                     LogSystemMessage("BlitsMe Service restarted");
                 }

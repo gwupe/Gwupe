@@ -66,7 +66,7 @@ namespace Gwupe.Agent.Components.Schedule
 
         private void ClickRestartBlitsMeService()
         {
-            if (GwupeClientAppContext.CurrentAppContext.RestartBlitsMeService())
+            if (GwupeClientAppContext.CurrentAppContext.RestartGwupeService())
             {
                 RunTask();
             }
