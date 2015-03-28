@@ -35,7 +35,7 @@ namespace Gwupe.Agent
                     var process = Common.OsUtils.GetMyDoppleGangerProcess();
                     if (process != null)
                     {
-                        var outcome = Common.OsUtils.PostMessage((IntPtr)Common.OsUtils.HWND_BROADCAST, Common.OsUtils.WM_SHOWBM,
+                        var outcome = Common.OsUtils.PostMessage((IntPtr)Common.OsUtils.HWND_BROADCAST, Common.OsUtils.WM_SHOWGWUPE,
 #if DEBUG
                             IntPtr.Zero,
 #else

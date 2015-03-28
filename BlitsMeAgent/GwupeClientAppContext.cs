@@ -349,7 +349,7 @@ namespace Gwupe.Agent
         // Handle messages from the dashboard window
         public IntPtr WndProc(IntPtr hwnd, int msg, IntPtr wParam, IntPtr lParam, ref bool handled)
         {
-            if (msg == OsUtils.WM_SHOWBM &&
+            if (msg == OsUtils.WM_SHOWGWUPE &&
 #if DEBUG
  wParam.ToInt32() == 0
 #else
@@ -361,7 +361,7 @@ namespace Gwupe.Agent
                 UIManager.Show();
                 handled = true;
             }
-            else if (msg == OsUtils.WM_SHUTDOWNBM &&
+            else if (msg == OsUtils.WM_SHUTDOWNGWUPE &&
 #if DEBUG
  wParam.ToInt32() == 0
 #else
@@ -373,7 +373,7 @@ namespace Gwupe.Agent
                 Thread shutdownThread = new Thread(Shutdown) { IsBackground = true, Name = "shutdownByMessageThread" };
                 shutdownThread.Start();
             }
-            else if (msg == OsUtils.WM_UPGRADEBM &&
+            else if (msg == OsUtils.WM_UPGRADEGWUPE &&
 #if DEBUG
  wParam.ToInt32() == 0
 #else

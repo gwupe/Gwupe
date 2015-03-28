@@ -1,2 +1,3 @@
 ﻿Gwupe Bugfix Release
 Fixed Branding of Support Screen
+Fixed Detection of Already running (opens running window)
