@@ -22,6 +22,10 @@
         </ResourceDictionary>
     </UserControl.Resources>
     <Grid x:Name="LayoutRoot" >
+		<StackPanel Orientation="Horizontal" VerticalAlignment="Top" HorizontalAlignment="Right" Margin="0,18,10,0">
+			<TextBlock Style="{DynamicResource TextblockHeaderActiveStyle}" Text="Me" Grid.Column="1" HorizontalAlignment="Right" Margin="0,0,10,0" />
+			<Image Source="Images/user_label_30.png" Height="27" Margin="0,3,5,0"/>
+		</StackPanel>
         <Border BorderThickness="1" BorderBrush="#4A7EBB"  Width="500" Height="280" >
             <Grid Width="500" Height="280"  Background="#FFDCE6F2"  >
                 <Grid.RowDefinitions>
@@ -61,8 +65,8 @@
                         <ColumnDefinition Width="*"/>
                         <ColumnDefinition Width="10"/>
                         <ColumnDefinition Width="*"/>
-                        <ColumnDefinition Width="20"/>
-                        <ColumnDefinition Width="15"/>
+                        <ColumnDefinition Width="25"/>
+                        <ColumnDefinition Width="10"/>
                     </Grid.ColumnDefinitions>
                     <Label Content="Name" x:Name="NameLabel"  Width="68.123"/>
                     <TextBox Text="{Binding Firstname, FallbackValue=James}" mahappsControls:TextboxHelper.Watermark="Firstname" TextWrapping="Wrap" x:Name="Firstname"  Grid.Row="1" Grid.Column="1" />

@@ -5,42 +5,50 @@
 	x:Class="Gwupe.Agent.UI.WPF.AvatarImageWindow"
 	x:Name="Window"  WindowStyle="None"
 	Title="Choose your Image"
-	Width="310" Height="310"
-	ResizeMode="NoResize" WindowStartupLocation="CenterOwner">
+	Width="313" 
+	ResizeMode="NoResize" WindowStartupLocation="CenterOwner" Height="310">
 
     <Window.Resources>
-        <ResourceDictionary Source="Style/Style.xaml"/>
+		<ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="Skins/Skin.xaml"/>
+                <ResourceDictionary Source="Style/Style.xaml"/>
+			    <ResourceDictionary Source="pack://application:,,,/MahApps.Metro;component/Styles/Colors.xaml" />
+				<ResourceDictionary Source="pack://application:,,,/MahApps.Metro;component/Styles/Fonts.xaml" />
+				<ResourceDictionary Source="pack://application:,,,/MahApps.Metro;component/Styles/Controls.xaml" />
+				<ResourceDictionary Source="pack://application:,,,/MahApps.Metro;component/Styles/Accents/BaseLight.xaml" />
+				<ResourceDictionary Source="Style/Theme.xaml" />
+			</ResourceDictionary.MergedDictionaries>
+		</ResourceDictionary>
     </Window.Resources>
 
-    <Grid x:Name="Layout">
-        <Border BorderThickness="1" BorderBrush="#4A7EBB">
+    <Grid x:Name="Layout" VerticalAlignment="Top">
+        <Border BorderThickness="1" BorderBrush="#4A7EBB" VerticalAlignment="Top">
             <Grid Background="#FFB9CDE5">
-                <Grid.RowDefinitions>
-                    <RowDefinition Height="15" />
-                    <RowDefinition Height="*" />
-                </Grid.RowDefinitions>
 
-                <Button Click="CloseWindow" Style="{DynamicResource WindowMinimizeCloseButtonStyle}" ToolTip="Close" Grid.Row="0" 
-                        HorizontalAlignment="Right" Background="#FFB9CDE5">
-                    <Path Style="{DynamicResource ClosePathStyle}" />
+                <Button Click="CloseWindow" Style="{DynamicResource WindowMinimizeCloseButtonStyle}" ToolTip="Close" 
+                        HorizontalAlignment="Right" Background="#FFB9CDE5" VerticalAlignment="Top">
+                    <Image Source="Images/cross_30.png"  Height="15"></Image>
                 </Button>
 
-                <StackPanel Orientation="Vertical" Grid.Row="1" Margin="0,5,0,0">
+                <StackPanel Orientation="Vertical" Grid.Row="1" Margin="0,5,0,0" VerticalAlignment="Top">
                     <Rectangle x:Name="ImageContainer" Width="300" Height="250" >
                         <Rectangle.Fill>
                             <ImageBrush Stretch="Uniform" ImageSource="Images/silhoette.png" PresentationOptions:Freeze="True" />
                         </Rectangle.Fill>
                     </Rectangle>
 
-                    <StackPanel Orientation="Horizontal" Margin="0,10,0,5">
+                    <StackPanel Orientation="Horizontal" Margin="0,10,0,0" HorizontalAlignment="Center">
+						<!--
                         <Button x:Name="WebcamButton"  Margin="30,0,0,0"  Click="WebcamButton_Click" ToolTip="Use Webcam" Template="{DynamicResource TransparentButtonStyle}" >
                             <Image Source="Images/1337424537_System.png" Height="25" Width="25"></Image>
                         </Button>
-                        <Button x:Name="FileButton" Margin="2,0,0,0"   Click="FileButton_Click" ToolTip="Use Image" Template="{DynamicResource TransparentButtonStyle}" >
-                            <Image Source="Images/stock_insert_image.png" Height="25" Width="25"></Image>
+						-->
+                        <Button x:Name="FileButton" Margin="2,0,0,0"   Click="FileButton_Click" ToolTip="Load Pic" Template="{DynamicResource TransparentButtonProgressCloseStyle}" Height="32" Width="40"  >
+                            <Image Source="Images/folder_person_30.png" Height="30"></Image>
                         </Button>
-                        <Button x:Name="SaveButton"    Click="SaveButton_Click" ToolTip="Save" Margin="160,0,0,0" Template="{DynamicResource TransparentButtonStyle}" >
-                            <Image Source="Images/floppy_unmount.png"  Height="25" Width="25"></Image>
+                        <Button x:Name="SaveButton"    Click="SaveButton_Click" ToolTip="OK" Margin="30,0,0,0" Template="{DynamicResource TransparentButtonProgressCloseStyle}" Height="32" Width="32">
+                            <Image Source="Images/tick_30.png"  Height="30"></Image>
                         </Button>
                     </StackPanel>
                     <TextBlock x:Name="ErrorText" HorizontalAlignment="Left" TextWrapping="Wrap" Text="" VerticalAlignment="Top" Width="302" Height="21" TextAlignment="Center" Foreground="Red" Visibility="Hidden"/>

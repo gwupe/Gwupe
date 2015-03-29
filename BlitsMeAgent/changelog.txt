@@ -1,3 +1,7 @@
 ﻿Gwupe Bugfix Release
 Fixed Branding of Support Screen
 Fixed Detection of Already running (opens running window)
+Added more info to fault reporting
+Fixed User Icon Adding
+Added basics for Team Functionality
+Added Settings Menu

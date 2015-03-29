@@ -189,7 +189,7 @@ namespace Gwupe.Service
                     RegistryKey.OpenBaseKey(RegistryHive.LocalMachine, RegistryView.Registry32).OpenSubKey(
                         GwupeRegistry.Root);
                 String preRelease = (String)bmKey.GetValue(GwupeRegistry.PreReleaseKey);
-                if (preRelease != null)
+                if (preRelease != null && preRelease.ToLower().Equals("yes"))
                 {
                     return true;
                 }
@@ -212,7 +212,7 @@ namespace Gwupe.Service
                         GwupeRegistry.Root);
                 String autoUpgrade = (String)bmKey.GetValue(GwupeRegistry.AutoUpgradeKey);
                 Logger.Debug("AutoUpgrade is " + autoUpgrade);
-                if (autoUpgrade != null && autoUpgrade.Equals("no"))
+                if (autoUpgrade != null && autoUpgrade.ToLower().Equals("no"))
                 {
                     return false;
                 }
@@ -266,8 +266,8 @@ namespace Gwupe.Service
         {
             try
             {
-                RegistryKey root = RegistryKey.OpenBaseKey(RegistryHive.LocalMachine, RegistryView.Registry32).CreateSubKey(GwupeRegistry.Root, RegistryKeyPermissionCheck.ReadWriteSubTree);
-                root.SetValue(GwupeRegistry.VersionKey, _version);
+                RegistryKey reg = GetRegistry();
+                reg.SetValue(GwupeRegistry.VersionKey, _version);
             }
             catch (Exception e)
             {
@@ -277,7 +277,7 @@ namespace Gwupe.Service
 
         public String HardwareFingerprint()
         {
-            Logger.Debug("Got HardwareDesc : " + FingerPrint.HardwareDescription());
+            //Logger.Debug("Got HardwareDesc : " + FingerPrint.HardwareDescription());
             Logger.Debug("Got fingerprint : " + FingerPrint.Value());
             return FingerPrint.Value();
         }
@@ -292,8 +292,8 @@ namespace Gwupe.Service
             // Lets add some
             try
             {
-                RegistryKey ips = RegistryKey.OpenBaseKey(RegistryHive.LocalMachine, RegistryView.Registry32).CreateSubKey(GwupeRegistry.Root, RegistryKeyPermissionCheck.ReadWriteSubTree);
-                ips.SetValue(GwupeRegistry.ServerIPsKey, String.Join(",", newIPs.ToArray()));
+                RegistryKey reg = GetRegistry();
+                reg.SetValue(GwupeRegistry.ServerIPsKey, String.Join(",", newIPs.ToArray()));
             }
             catch (Exception e2)
             {
@@ -335,5 +335,37 @@ namespace Gwupe.Service
             Logger.Info("Gwupe Service Shutting Down");
         }
 
+        public void SetPreRelease(bool preRelease)
+        {
+            try
+            {
+                RegistryKey reg = GetRegistry();
+                reg.SetValue(GwupeRegistry.PreReleaseKey, preRelease ? "yes" : "no");
+            }
+            catch (Exception e2)
+            {
+                Logger.Error("Failed to set preRelease [" + e2.GetType() + "] : " + e2.Message, e2);
+                throw e2;
+            }
+        }
+
+        public void DisableAutoUpgrade(bool disableAutoUpgrade)
+        {
+            try
+            {
+                RegistryKey reg = GetRegistry();
+                reg.SetValue(GwupeRegistry.AutoUpgradeKey, disableAutoUpgrade ? "no" : "yes");
+            }
+            catch (Exception e2)
+            {
+                Logger.Error("Failed to set preRelease [" + e2.GetType() + "] : " + e2.Message, e2);
+                throw e2;
+            }
+        }
+
+        private static RegistryKey GetRegistry()
+        {
+            return RegistryKey.OpenBaseKey(RegistryHive.LocalMachine, RegistryView.Registry32).CreateSubKey(GwupeRegistry.Root, RegistryKeyPermissionCheck.ReadWriteSubTree);
+        }
     }
 }

@@ -50,7 +50,7 @@ namespace Gwupe.Agent
         internal SettingsManager SettingsManager { get; private set; }
         //internal Thread DashboardUiThread;
         internal bool IsShuttingDown { get; private set; }
-        internal readonly BLMRegistry Reg = new BLMRegistry();
+        internal readonly GwupeUserRegistry Reg = new GwupeUserRegistry();
         internal readonly String StartupVersion;
         internal readonly ScheduleManager ScheduleManager;
         private IdleState _idleState;
@@ -242,23 +242,37 @@ namespace Gwupe.Agent
             // get the log file data
             var rootAppender = ((Hierarchy)LogManager.GetRepository()).Root.Appenders.OfType<FileAppender>().FirstOrDefault();
             string filename = rootAppender != null ? rootAppender.File : string.Empty;
+#if DEBUG
+            string serviceFilename = @"C:\Windows\Temp\GwupeService_Dev.log";
+#else
+            string serviceFilename = @"C:\Windows\Temp\GwupeService.log";
+#endif
             if (!String.IsNullOrEmpty(filename))
             {
-                Logger.Debug("Retrieving log from " + filename);
                 try
                 {
-                    FileStream stream = new FileStream(filename, FileMode.Open, FileAccess.Read, FileShare.ReadWrite);
-                    long toRead = stream.Length < 131072 ? stream.Length : 131072;
-                    stream.Seek(-toRead, SeekOrigin.End);
-                    byte[] buffer = new byte[toRead];
-                    var read = stream.Read(buffer, 0, (int)toRead);
-                    stream.Close();
-                    byte[] zippedLog = Gwupe.Common.Misc.Instance().Zip(buffer);
                     var request = new FaultReportRq
                     {
-                        log = Convert.ToBase64String(zippedLog),
                         report = report.UserReport
                     };
+                    try
+                    {
+                        request.log = Convert.ToBase64String(ExtractLog(filename));
+                    }
+                    catch (Exception e)
+                    {
+                        Logger.Error("Failed to extract log from " + filename,e);
+                        request.report += "\n\n\nFailed to extract log from " + filename;
+                    }
+                    try
+                    {
+                        request.serviceLog = Convert.ToBase64String(ExtractLog(serviceFilename));
+                    }
+                    catch (Exception e)
+                    {
+                        Logger.Error("Failed to extract log from " + serviceFilename, e);
+                        request.report += "\n\n\nFailed to extract log from " + filename;
+                    }
                     try
                     {
                         var response = ConnectionManager.Connection.Request<FaultReportRq, FaultReportRs>(request);
@@ -277,6 +291,19 @@ namespace Gwupe.Agent
             {
                 Logger.Error("Failed to get the log file, cannot submit fault.");
             }
+        }
+
+        private static byte[] ExtractLog(string filename)
+        {
+            Logger.Debug("Retrieving log from " + filename);
+            FileStream stream = new FileStream(filename, FileMode.Open, FileAccess.Read, FileShare.ReadWrite);
+            long toRead = stream.Length < 131072 ? stream.Length : 131072;
+            stream.Seek(-toRead, SeekOrigin.End);
+            byte[] buffer = new byte[toRead];
+            var read = stream.Read(buffer, 0, (int) toRead);
+            stream.Close();
+            byte[] zippedLog = Common.Misc.Instance().Zip(buffer);
+            return zippedLog;
         }
 
         public bool Elevate(out String tokenId, out String securityKey)

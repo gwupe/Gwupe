@@ -1,8 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
-using System.Diagnostics;
-using Gwupe.Agent.Components.Person.Presence;
 using Gwupe.Cloud.Messaging.Elements;
 using log4net;
 
@@ -81,7 +79,12 @@ namespace Gwupe.Agent.Components.Person
             set { _joined = value; OnPropertyChanged("Joined"); }
         }
 
-        
+        public bool Organisation
+        {
+            get { return _organisation; }
+            set { _organisation = value; OnPropertyChanged("Organisation"); }
+        }
+
         public IList<String> Groups { get; set; }
         private string _subscriptionStatus;
         public String SubscriptionStatus
@@ -108,6 +111,8 @@ namespace Gwupe.Agent.Components.Person
 
 
         private bool _supporter;
+        private bool _organisation;
+
         public bool Supporter
         {
             get { return _supporter; }
@@ -143,6 +148,7 @@ namespace Gwupe.Agent.Components.Person
             Firstname = userElement.firstname;
             Lastname = userElement.lastname;
             Description = userElement.description;
+            Organisation = userElement.organisation;
             Guest = userElement.guest;
             if (!String.IsNullOrWhiteSpace(userElement.avatarData))
             {

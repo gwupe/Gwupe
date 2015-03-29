@@ -1,14 +1,16 @@
 using System;
 using System.Collections.Generic;
+using System.Linq.Expressions;
 using Gwupe.Common.Security;
+using log4net.Repository.Hierarchy;
 using Microsoft.Win32;
 using log4net;
 
 namespace Gwupe.Agent.Misc
 {
-    public class BLMRegistry
+    public class GwupeUserRegistry
     {
-        private static readonly ILog logger = LogManager.GetLogger(typeof(BLMRegistry));
+        private static readonly ILog Logger = LogManager.GetLogger(typeof(GwupeUserRegistry));
         public const String root = @"SOFTWARE\BlitsMe" + Program.BuildMarker;
         public const String serverIPsKey = "serverIPs";
         public const String usernameKey = "username";
@@ -16,6 +18,9 @@ namespace Gwupe.Agent.Misc
         public const String passwordHashKey = "password";
         public const String lastVersionKey = "lastVersion";
         public const String loginAsGuestKey = "loginAsGuest";
+        public const String experimentalKey = "experimental";
+        public const String preReleaseKey = "PreRelease";
+        public const String autoUpgradeKey = "AutoUpgrade";
 
         public string Username {
             get { return getRegValue(usernameKey); }
@@ -64,7 +69,7 @@ namespace Gwupe.Agent.Misc
             }
             catch (Exception e)
             {
-                logger.Error("Failed to get registry value for " + regKey + " from registry [" + root + "] : " + e.Message);
+                Logger.Error("Failed to get registry value for " + regKey + " from registry [" + root + "] : " + e.Message);
             }
             return null;
         }
@@ -76,29 +81,71 @@ namespace Gwupe.Agent.Misc
             }
             catch (Exception e)
             {
-                logger.Error("Failed to set registry value [" + regValue + "] for " + regKey + " from registry [" + root + "] : " + e.Message);
+                Logger.Error("Failed to set registry value [" + regValue + "] for " + regKey + " from registry [" + root + "] : " + e.Message);
             }
         }
-        /*
-                private String generateProfile() {
-                    byte[] data = new byte[128];
-                    System.Security.Principal.WindowsIdentity.GetCurrent().User.AccountDomainSid.GetBinaryForm(data,0);
-                    MD5 md5 = new MD5CryptoServiceProvider();
-                    byte[] hashArray = md5.ComputeHash(data);
-                    StringBuilder hash = new StringBuilder();
-                    for (int i = 0; i < hashArray.Length; i++)
-                    {
-                        hash.Append(hashArray[i].ToString("X2"));
-                    }
-                    String profile = hash.ToString();
-                    setRegValue(profileKey, profile);
-                    return profile;
-                }
-        
-                private String generateWorkstation()
+
+        public bool PreRelease
+        {
+            get
+            {
+                try
                 {
-                    return FingerPrint.Value();
+                    String value = getRegValue(preReleaseKey,true);
+                    if (value != null && value.ToLower().Equals("yes"))
+                    {
+                        return true;
+                    }
                 }
-                */
+                catch (Exception e)
+                {
+                    Logger.Error("Failed to get prerelease key value from registry", e);
+                }
+                return false;
+            }
+        }
+
+        public bool AutoUpgrade
+        {
+            get
+            {
+                try
+                {
+                    String value = getRegValue(autoUpgradeKey, true);
+                    if (value != null && value.ToLower().Equals("no"))
+                    {
+                        return false;
+                    }
+                }
+                catch (Exception e)
+                {
+                    Logger.Error("Failed to get prerelease key value from registry", e);
+                }
+                return true;
+            }
+        }
+
+        public bool Experimental
+        {
+            get {
+                try
+                {
+                    String value = getRegValue(experimentalKey);
+                    if (value != null && value.ToLower().Equals("yes"))
+                    {
+                        return true;
+                    }
+                }
+                catch (Exception e)
+                {
+                    Logger.Error("Failed to get experimental key value from registry",e);
+                }
+                return false;
+            }
+            set
+            {
+                setRegValue(experimentalKey,value ? "yes" : "no");
+            }
+        }
     }
 }

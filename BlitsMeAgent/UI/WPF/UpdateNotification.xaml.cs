@@ -14,7 +14,19 @@ namespace Gwupe.Agent.UI.WPF
         private static readonly ILog Logger = LogManager.GetLogger(typeof (UpdateNotification));
         private readonly GwupeClientAppContext _appContext;
         public ObservableCollection<String> Changes { get { return _appContext.ChangeLog; } }
-        public String Version { get { return _appContext.Version(2); } }
+
+        public String Version
+        {
+            get
+            {
+#if DEBUG
+                return _appContext.Version(2);
+#else
+                return _appContext.Version(1);
+#endif
+            }
+        }
+
         public String Description { get { return _appContext.ChangeDescription; } }
         internal Thread UiThread;
         internal Boolean IsClosed = false;

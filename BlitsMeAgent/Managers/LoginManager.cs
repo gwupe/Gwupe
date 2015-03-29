@@ -19,7 +19,7 @@ namespace Gwupe.Agent.Managers
         private static readonly ILog Logger = LogManager.GetLogger(typeof(LoginManager));
         private Thread _loginManagerThread;
         internal bool IsClosed { get; private set; }
-        private readonly BLMRegistry _reg = new BLMRegistry();
+        private readonly GwupeUserRegistry _reg = new GwupeUserRegistry();
         private readonly AutoResetEvent _signinEvent = new AutoResetEvent(false);
         private readonly GwupeClientAppContext _appContext;
         public bool IsLoggedIn = false;

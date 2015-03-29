@@ -38,5 +38,15 @@ namespace Gwupe.Service.ServiceHost
         {
             return service.HardwareFingerprint();
         }
+
+        public void SetPreRelease(bool preRelease)
+        {
+            service.SetPreRelease(preRelease);
+        }
+
+        public void DisableAutoUpgrade(bool disableAutoUpgrade)
+        {
+            service.DisableAutoUpgrade(disableAutoUpgrade);
+        }
     }
 }

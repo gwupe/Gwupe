@@ -25,23 +25,42 @@ namespace Gwupe.ServiceProxy
         public List<string> getServers()
         {
             IGwupeService channel = _channelFactory.CreateChannel();
-            List<String> returnValue = channel.getServers();
-            ((IClientChannel)channel).Close();
+            List<String> returnValue = null;
+            try
+            {
+                returnValue = channel.getServers();
+            }
+            finally
+            {
+                ((IClientChannel)channel).Close();
+            }
             return returnValue;
         }
 
         public void saveServers(List<string> servers)
         {
-            IGwupeService channel = _channelFactory.CreateChannel();
-            channel.saveServers(servers);
-            ((IClientChannel)channel).Close();
+            IGwupeService channel = _channelFactory.CreateChannel(); try
+            {
+                channel.saveServers(servers);
+            }
+            finally
+            {
+                ((IClientChannel)channel).Close();
+            }
         }
 
         public bool VNCStartService()
         {
             IGwupeService channel = _channelFactory.CreateChannel();
-            bool rv = channel.VNCStartService();
-            ((IClientChannel)channel).Close();
+            bool rv;
+            try
+            {
+                rv = channel.VNCStartService();
+            }
+            finally
+            {
+                ((IClientChannel)channel).Close();
+            }
 
             return rv;
         }
@@ -49,17 +68,56 @@ namespace Gwupe.ServiceProxy
         public void Ping()
         {
             IGwupeService channel = _channelFactory.CreateChannel();
-            channel.Ping();
-            ((IClientChannel)channel).Close();
+            try
+            {
+                channel.Ping();
+            }
+            finally
+            {
+                ((IClientChannel)channel).Close();
+            }
         }
 
         public string HardwareFingerprint()
         {
             IGwupeService channel = _channelFactory.CreateChannel();
-            String rv = channel.HardwareFingerprint();
-            ((IClientChannel)channel).Close();
+            String rv = null;
+            try
+            {
+                rv = channel.HardwareFingerprint();
+            }
+            finally
+            {
+                ((IClientChannel)channel).Close();
+            }
 
             return rv;
+        }
+
+        public void SetPreRelease(bool preRelease)
+        {
+            IGwupeService channel = _channelFactory.CreateChannel();
+            try
+            {
+                channel.SetPreRelease(preRelease);
+            }
+            finally
+            {
+                ((IClientChannel)channel).Close();
+            }
+        }
+
+        public void DisableAutoUpgrade(bool disableAutoUpgrade)
+        {
+            IGwupeService channel = _channelFactory.CreateChannel();
+            try
+            {
+                channel.DisableAutoUpgrade(disableAutoUpgrade);
+            }
+            finally
+            {
+                ((IClientChannel)channel).Close();
+            }
         }
 
         ~GwupeServiceProxy()

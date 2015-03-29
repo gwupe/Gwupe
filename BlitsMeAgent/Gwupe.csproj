@@ -264,7 +264,7 @@
     <Compile Include="Managers\SearchManager.cs" />
     <Compile Include="Managers\SettingsManager.cs" />
     <Compile Include="Managers\UIManager.cs" />
-    <Compile Include="Misc\BLMRegistry.cs" />
+    <Compile Include="Misc\GwupeUserRegistry.cs" />
     <Compile Include="Managers\RosterManager.cs" />
     <Compile Include="OSUtils.cs" />
     <Compile Include="Properties\Annotations.cs" />
@@ -323,6 +323,10 @@
       <SubType>Designer</SubType>
     </Page>
     <Page Include="UI\WPF\Engage\ContactSettings.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="UI\WPF\Settings.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
@@ -459,8 +463,14 @@
     <Compile Include="UI\WPF\Roster\ActiveRosterList.cs" />
     <Compile Include="UI\WPF\Roster\SearchRosterList.cs" />
     <Compile Include="UI\WPF\Roster\RosterList.cs" />
+    <Compile Include="UI\WPF\Settings.xaml.cs">
+      <DependentUpon>Settings.xaml</DependentUpon>
+    </Compile>
     <Compile Include="UI\WPF\SignUpControl.xaml.cs">
       <DependentUpon>SignUpControl.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="UI\WPF\TeamManagement.xaml.cs">
+      <DependentUpon>TeamManagement.xaml</DependentUpon>
     </Compile>
     <Compile Include="UI\WPF\UiHelper.cs" />
     <Compile Include="UI\WPF\UpdateNotification.xaml.cs">
@@ -514,6 +524,10 @@
       <SubType>Designer</SubType>
     </Page>
     <Page Include="UI\WPF\Style\Theme.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="UI\WPF\TeamManagement.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
@@ -664,6 +678,8 @@
     <Resource Include="Icons\icon-main.ico" />
   </ItemGroup>
   <ItemGroup>
+    <Resource Include="UI\WPF\Images\user_label_30.png" />
+    <Resource Include="UI\WPF\Images\user_30x30.png" />
     <Resource Include="UI\WPF\Images\internt_web_technology-04-48.png" />
     <Resource Include="UI\WPF\Images\1401499468_61_Screen.png" />
     <Resource Include="UI\WPF\Images\1401500204_519673-179_Upload.png" />
@@ -681,11 +697,20 @@
     <Resource Include="UI\WPF\Images\BlueSpeech.png" />
     <Resource Include="UI\WPF\Images\GreenJoin.png" />
     <Resource Include="UI\WPF\Images\Gwupe Logo No Text.png" />
+    <Resource Include="UI\WPF\Images\1427643948_user-128.png" />
+    <Resource Include="UI\WPF\Images\cross_30.png" />
+    <Resource Include="UI\WPF\Images\folder_person_30.png" />
     <Content Include="UI\WPF\Images\loading-side.gif" />
+    <Resource Include="UI\WPF\Images\logoff_30.png" />
     <Content Include="UI\WPF\Images\Search.png" />
     <Resource Include="UI\WPF\Images\Settings.png" />
     <Resource Include="UI\WPF\Images\smallcross.png" />
     <Resource Include="UI\WPF\Images\smalltick.png" />
+    <Resource Include="UI\WPF\Images\settings_30x30.png" />
+    <Resource Include="UI\WPF\Images\team_30.png" />
+    <Resource Include="UI\WPF\Images\settings_label_30.png" />
+    <Resource Include="UI\WPF\Images\team_label_30.png" />
+    <Resource Include="UI\WPF\Images\tick_30.png" />
     <Content Include="UI\WPF\Images\Time.png" />
     <Resource Include="UI\WPF\Images\Blitsmewording200.png" />
     <EmbeddedResource Include="..\BlitsMeCommon\bin\$(Configuration)\Gwupe.Common.dll" />

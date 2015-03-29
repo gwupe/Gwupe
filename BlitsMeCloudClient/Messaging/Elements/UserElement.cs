@@ -39,5 +39,7 @@ namespace Gwupe.Cloud.Messaging.Elements
         public bool supporter;
         [DataMember]
         public bool guest;
+        [DataMember]
+        public bool organisation;
     }
 }

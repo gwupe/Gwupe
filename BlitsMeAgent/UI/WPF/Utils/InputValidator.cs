@@ -16,12 +16,14 @@ namespace Gwupe.Agent.UI.WPF.Utils
         private readonly TextBlock _statusText;
         private readonly TextBlock _errorText;
         private readonly Dispatcher _dispatcher;
+        private readonly bool _collapse;
 
-        internal InputValidator(TextBlock statusText, TextBlock errorText, Dispatcher dispatcher)
+        internal InputValidator(TextBlock statusText, TextBlock errorText, Dispatcher dispatcher, bool collapse = false)
         {
             _statusText = statusText;
             _errorText = errorText;
             _dispatcher = dispatcher;
+            _collapse = collapse;
         }
 
         public bool ValidateEmail(TextBox email, Label emailLabel)
@@ -81,7 +83,7 @@ namespace Gwupe.Agent.UI.WPF.Utils
             if (_dispatcher.CheckAccess())
             {
                 if (_statusText != null)
-                    _statusText.Visibility = Visibility.Hidden;
+                    _statusText.Visibility = _collapse ? Visibility.Collapsed : Visibility.Hidden;
                 if (_errorText != null)
                 {
                     _errorText.Text = error;
@@ -156,7 +158,7 @@ namespace Gwupe.Agent.UI.WPF.Utils
             if (_dispatcher.CheckAccess())
             {
                 if (_errorText != null)
-                    _errorText.Visibility = Visibility.Hidden;
+                    _errorText.Visibility = _collapse ? Visibility.Collapsed : Visibility.Hidden;
                 if (_statusText != null)
                 {
                     _statusText.Text = status;

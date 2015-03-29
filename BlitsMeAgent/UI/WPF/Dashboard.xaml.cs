@@ -58,6 +58,8 @@ namespace Gwupe.Agent.UI.WPF
         internal DispatchingCollection<ObservableCollection<Alert>, Alert> AlertList { get; set; }
         private SearchWindow _searchWindow;
         private UserInfoControl _userInfoControl;
+        private Settings _settings;
+        private TeamManagement _teamManagement;
         private Timer _searchCountDown;
         private readonly Object _searchLock = new Object();
         internal DashboardDataContext DashboardData;
@@ -816,16 +818,6 @@ namespace Gwupe.Agent.UI.WPF
 
         #endregion
 
-        /// <summary>
-        /// Called when the settings button is pushed.
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        private void Settings(object sender, System.Windows.RoutedEventArgs e)
-        {
-            // TODO: Add event handler implementation here.
-        }
-
         private void NavigateToUrl(object sender, RequestNavigateEventArgs e)
         {
             Logger.Debug("Opening web browser to " + e.Uri);
@@ -946,6 +938,35 @@ namespace Gwupe.Agent.UI.WPF
             }
         }
 
+        private void Settings_Click(object sender, System.Windows.RoutedEventArgs e)
+        {
+            if (_settings == null)
+            {
+                _settings = new Settings();
+            }
+            // Clear currently engaged
+            var currentEngaged = _appContext.RosterManager.CurrentlyEngaged;
+            if (currentEngaged != null) currentEngaged.IsCurrentlyEngaged = false;
+            // Set main active window
+            ActiveContent.Content = _settings;
+            _settings.SetAsMain(this);
+
+        }
+
+        private void Team_Click(object sender, System.Windows.RoutedEventArgs e)
+        {
+            if (_teamManagement == null)
+            {
+                _teamManagement = new TeamManagement();
+            }
+            // Clear currently engaged
+            var currentEngaged = _appContext.RosterManager.CurrentlyEngaged;
+            if (currentEngaged != null) currentEngaged.IsCurrentlyEngaged = false;
+            // Set main active window
+            ActiveContent.Content = _teamManagement;
+            _teamManagement.SetAsMain(this);
+        }
+
     }
 
     public enum LoginState
@@ -971,7 +992,18 @@ namespace Gwupe.Agent.UI.WPF
                 return GwupeClientAppContext.CurrentAppContext.CurrentUserManager.ActiveShortCode;
             }
         }
-        public String Version { get { return GwupeClientAppContext.CurrentAppContext.Version(2); } }
+
+        public String Version
+        {
+            get
+            {
+#if DEBUG
+                return GwupeClientAppContext.CurrentAppContext.Version(2);
+#else
+                return GwupeClientAppContext.CurrentAppContext.Version(1);
+#endif
+            }
+        }
 
         private readonly Dashboard _dashboard;
         private string _customTitle;

@@ -131,7 +131,7 @@ namespace Gwupe.Agent.Components.Functions.RemoteDesktop
             if (accept)
             {
                 String connectionId = Util.getSingleton().generateString(16);
-                Chat.LogSystemMessage("You accepted the desktop assistance request from " + _engagement.SecondParty.Person.Firstname);
+                Chat.LogSystemMessage("You accepted the desktop assistance request from " + _engagement.SecondParty.Person.Firstname + ", please wait while they connect to your desktop.  This window will go blue when they are connected.");
                 try
                 {
                     // this will restart the service if its offline

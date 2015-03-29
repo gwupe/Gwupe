@@ -21,6 +21,13 @@ namespace Gwupe.ServiceHost
 
         [OperationContract]
         String HardwareFingerprint();
+
+        [OperationContract]
+        void SetPreRelease(bool preRelease);
+
+        [OperationContract]
+        void DisableAutoUpgrade(bool disableAutoUpgrade);
+
     }
 
     public interface IGwupeServiceChannel : IGwupeService, IClientChannel

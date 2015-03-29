@@ -340,7 +340,7 @@
                     </ContentControl.Style>
                 </ContentControl>
 				
-                <Grid Height="52" VerticalAlignment="Top" Margin="9,92,0,0" HorizontalAlignment="Left" Width="191" Panel.ZIndex="1" 
+                <Grid Height="52" VerticalAlignment="Top" Margin="9,68,0,0" HorizontalAlignment="Left" Width="191" Panel.ZIndex="1" 
 				Visibility="{Binding Path=SearchMenuVisibility, FallbackValue=Hidden}">
                     <Border BorderThickness="1,1,1,1" BorderBrush="#4A7EBB" Margin="0,0,0,0">
                         <ListBox Background="#FFB9CDE5" Name="SearchBoxMenu" >
@@ -369,34 +369,35 @@
                         <RowDefinition Height="*"/>
                         <RowDefinition Height="Auto"/>
                     </Grid.RowDefinitions>
-                    <StackPanel  Margin="0,15,0,0" Width="160" Height="43" Orientation="Horizontal" Grid.Row="0">
-                        <Grid Height="42" Width="150">
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="10"/>
-                                <ColumnDefinition Width="*"/>
-                                <ColumnDefinition Width="20"/>
-                                <ColumnDefinition Width="*"/>
-                                <ColumnDefinition Width="20"/>
-                                <ColumnDefinition Width="*"/>
-                                <ColumnDefinition Width="10"/>
-                            </Grid.ColumnDefinitions>
-                            <Button x:Name="UserInfo" ToolTip="My Details" Click="UserInfo_Click" Grid.Column="1"
-							Template="{DynamicResource TransparentButtonProgressCloseStyle}" Height="30" Width="30">
-                                <Image Source="Images/User.png" Margin="1" HorizontalAlignment="Left" Height="25" Width="25"/>
+                    <StackPanel  Margin="0,0,0,0" Height="43" Orientation="Horizontal" Grid.Row="0" HorizontalAlignment="Center">
+                            <Button x:Name="UserInfo" ToolTip="Me" Click="UserInfo_Click" Margin="5,0,5,0"
+							Template="{DynamicResource TransparentButtonProgressCloseStyle}" Height="32" Width="32">
+                                <Image Source="Images/user_30x30.png" Height="30" />
                             </Button>
-                            <Button ToolTip="Logout" Click="Logout"  Grid.Column="3" Height="30" Width="30"
+                            <Button x:Name="Team" ToolTip="Team" Click="Team_Click"  Margin="5,0,5,0"
+							Template="{DynamicResource TransparentButtonProgressCloseStyle}" Height="32" Width="52">
+                                <Image Source="Images/team_30.png" HorizontalAlignment="Left" Height="30" />
+                            </Button>
+                            <Button x:Name="Settings" ToolTip="Settings" Click="Settings_Click"  Margin="5,0,5,0"
+							Template="{DynamicResource TransparentButtonProgressCloseStyle}" Height="32" Width="32">
+                                <Image Source="Images/settings_30x30.png" HorizontalAlignment="Left" Height="30" />
+                            </Button>
+							<!--
+                            <Button ToolTip="Logout" Click="Logout"   Margin="5,0,5,0" Height="32"
 							Template="{DynamicResource TransparentButtonProgressCloseStyle}">
-                                <Image Source="Images/Logoff.png" Margin="1" Height="25" Width="25"/>
+                                <Image Source="Images/logoff_30.png" Margin="1" Height="30"/>
                             </Button>
+							-->
+							<!--
                             <Button ToolTip="Exit" Click="ExitApplication" Height="30" Width="30"
-							Template="{DynamicResource TransparentButtonProgressCloseStyle}" Grid.Column="5">
-                                <Image Source="Images/exit.png" Margin="1" Height="25" Width="25"/>
+							Template="{DynamicResource TransparentButtonProgressCloseStyle}"  Margin="5,0,5,0">
+                                <Image Source="Images/exit.png" Margin="1" Height="22" />
                             </Button>
-                        </Grid>
+							-->
                     </StackPanel>
 
                     <Border BorderThickness="0,1,0,0" Width="190" BorderBrush="#4A7EBB"
-					Margin="0,10,0,0" MinHeight="22" Grid.Row="1" Height="25">
+					Margin="0,0,0,0" MinHeight="22" Grid.Row="1" Height="25">
                         <StackPanel Orientation="Horizontal" HorizontalAlignment="Left" VerticalAlignment="Top">
 							<!-- <Image Name="SearchIcon" Margin="0,0,0,0" Source="Images/1375406488_Cute Ball - Search.png" Height="13" Width="13" Visibility="{Binding SearchBoxVisibility, FallbackValue=Visible}" /> -->
 	                        <Grid Width="23">
