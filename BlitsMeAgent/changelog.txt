@@ -5,3 +5,4 @@ Added more info to fault reporting
 Fixed User Icon Adding
 Added basics for Team Functionality
 Added Settings Menu
+Added Settings for not notifying when an update occurs

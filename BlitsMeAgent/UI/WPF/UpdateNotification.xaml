@@ -4,10 +4,10 @@
 	x:Class="Gwupe.Agent.UI.WPF.UpdateNotification"
 	x:Name="Window"
 	Title="UpdateNotification"
-	Width="400" Height="300"
+	Width="400" Height="330"
 	WindowStyle="None"
     AllowsTransparency="False"
-    ResizeMode="CanResize" MinWidth="400" MaxWidth="400" MinHeight="300" MaxHeight="300" 
+    ResizeMode="CanResize" MinWidth="400" MaxWidth="400" MinHeight="330" MaxHeight="330" 
 	WindowStartupLocation="CenterScreen">
 
 	<Grid x:Name="LayoutRoot">
@@ -19,7 +19,7 @@
 		<TextBlock HorizontalAlignment="Left" Height="36" Margin="123,73,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="255">
 			<Run Text="{Binding Path=Description, FallbackValue=Description, Mode=OneWay}"/>
 		</TextBlock>
-		<ScrollViewer x:Name="ChangeLogViewer" Margin="5,114,5,41" VerticalScrollBarVisibility="Auto" Padding="0,0,0,0" BorderThickness="5" Background="White" BorderBrush="Black">
+		<ScrollViewer x:Name="ChangeLogViewer" Margin="5,114,5,60" VerticalScrollBarVisibility="Auto" Padding="0,0,0,0" BorderThickness="5" Background="White" BorderBrush="Black">
             <ItemsControl x:Name="ChangeLog" ItemsSource="{Binding Changes, Mode=OneWay}" VerticalAlignment="Top">
                 <ItemsControl.ItemTemplate>
                     <DataTemplate>
@@ -28,6 +28,7 @@
 				</ItemsControl.ItemTemplate>
 			</ItemsControl>
 		</ScrollViewer>
-		<Button Content="OK" HorizontalAlignment="Center" Height="25" Margin="0,0,0,11" VerticalAlignment="Bottom" Width="124" Click="Button_Click"/>
+		<Button Content="OK" HorizontalAlignment="Center" Height="25" Margin="0,0,0,30" VerticalAlignment="Bottom" Width="124" Click="Button_Click"/>
+		<CheckBox Name="NoUpdateNotifications" IsChecked="{Binding NoUpdateNotifications, FallbackValue=false}" Content="Stop notifying me when an update occurs" Margin="0,0,0,10" VerticalAlignment="Bottom" HorizontalAlignment="Center" />
 	</Grid>
 </Window>

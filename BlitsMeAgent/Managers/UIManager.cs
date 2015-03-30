@@ -57,7 +57,7 @@ namespace Gwupe.Agent.Managers
             {
                 Show();
             }
-            if (!GwupeClientAppContext.CurrentAppContext.StartupVersion.Equals(GwupeClientAppContext.CurrentAppContext.Reg.LastVersion)
+            if (GwupeClientAppContext.CurrentAppContext.Reg.NotifyUpdate && !GwupeClientAppContext.CurrentAppContext.StartupVersion.Equals(GwupeClientAppContext.CurrentAppContext.Reg.LastVersion)
                  && !String.IsNullOrWhiteSpace(GwupeClientAppContext.CurrentAppContext.ChangeDescription))
                 SetupAndRunUpdateNotificationWindow();
         }

@@ -107,7 +107,7 @@ namespace Gwupe.Agent
         {
             if (!StartupVersion.Equals(Reg.LastVersion))
             {
-                Logger.Debug("BlitsMe has been upgraded, reading and displaying changelog");
+                Logger.Debug("Gwupe has been upgraded, reading and displaying changelog");
                 try
                 {
                     using (

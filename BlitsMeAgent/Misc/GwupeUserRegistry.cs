@@ -21,6 +21,7 @@ namespace Gwupe.Agent.Misc
         public const String experimentalKey = "experimental";
         public const String preReleaseKey = "PreRelease";
         public const String autoUpgradeKey = "AutoUpgrade";
+        public const String notifyUpdateKey = "notifyUpdate";
 
         public string Username {
             get { return getRegValue(usernameKey); }
@@ -145,6 +146,30 @@ namespace Gwupe.Agent.Misc
             set
             {
                 setRegValue(experimentalKey,value ? "yes" : "no");
+            }
+        }
+
+        public bool NotifyUpdate
+        {
+            get
+            {
+                try
+                {
+                    String value = getRegValue(notifyUpdateKey);
+                    if (value != null && value.ToLower().Equals("no"))
+                    {
+                        return false;
+                    }
+                }
+                catch (Exception e)
+                {
+                    Logger.Error("Failed to get notifyUpdateKey key value from registry", e);
+                }
+                return true;
+            }
+            set
+            {
+                setRegValue(notifyUpdateKey, value ? "yes" : "no");
             }
         }
     }
