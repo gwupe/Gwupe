@@ -23,6 +23,7 @@ namespace Gwupe.Agent.Components.Person.Presence
         public bool IsOnline { get { return UnderlyingPresenceCount > 0 && GetHighestPriorityPresence().IsOnline; } }
         public bool IsPresent { get { return UnderlyingPresenceCount > 0 && GetHighestPriorityPresence().IsPresent; } }
         public string Status { get { return UnderlyingPresenceCount > 0 ? GetHighestPriorityPresence().Status : null; } }
+        public ClientInfo ClientInfo { get { return UnderlyingPresenceCount > 0 ? GetHighestPriorityPresence().ClientInfo : null; } }
 
         public void AddPresence(IPresence presence)
         {
@@ -52,6 +53,7 @@ namespace Gwupe.Agent.Components.Person.Presence
                 OnPropertyChanged("Type");
                 OnPropertyChanged("Proirity");
                 OnPropertyChanged("Resource");
+                OnPropertyChanged("ClientInfo");
             }
         }
 
@@ -79,6 +81,7 @@ namespace Gwupe.Agent.Components.Person.Presence
                                     e);
                                 GwupeClientAppContext.CurrentAppContext.SubmitFaultReport(new FaultReport()
                                 {
+                                    Subject = "Multipresence error detected",
                                     UserReport = "MultiPresence error " + String.Join(" | ", _presences.Values)
                                 });
                             }
@@ -101,21 +104,6 @@ namespace Gwupe.Agent.Components.Person.Presence
             }
             return null;
         }
-
-        /*
-        public IPresence GetPresence(String resource)
-        {
-            lock (_presenceLock)
-            {
-                IPresence presence = null;
-                if (_presences.ContainsKey(resource))
-                {
-                    _presences.TryGetValue(resource, out presence);
-                }
-                return presence;
-            }
-        }
-        */
 
         public int CompareTo(IPresence other)
         {

@@ -224,10 +224,12 @@
     <Compile Include="Components\Partner.cs" />
     <Compile Include="Components\Person\Attendance.cs" />
     <Compile Include="Components\Person\Person.cs" />
+    <Compile Include="Components\Person\Presence\ClientInfo.cs" />
     <Compile Include="Components\Person\Presence\IPresence.cs" />
     <Compile Include="Components\Person\Presence\MultiPresence.cs" />
     <Compile Include="Components\Person\Presence\Presence.cs" />
     <Compile Include="Components\Person\Relationship.cs" />
+    <Compile Include="Components\Person\Team.cs" />
     <Compile Include="Components\Processors\ServerNotificationProcessor.cs" />
     <Compile Include="Components\Processors\InitRepeatedConnectionProcessor.cs" />
     <Compile Include="Components\Processors\ListenHandshakeProcessor.cs" />
@@ -263,6 +265,7 @@
     <Compile Include="Managers\RequestManager.cs" />
     <Compile Include="Managers\SearchManager.cs" />
     <Compile Include="Managers\SettingsManager.cs" />
+    <Compile Include="Managers\TeamManager.cs" />
     <Compile Include="Managers\UIManager.cs" />
     <Compile Include="Misc\GwupeUserRegistry.cs" />
     <Compile Include="Managers\RosterManager.cs" />
@@ -277,6 +280,7 @@
     <Compile Include="UI\WPF\AlertControl.xaml.cs">
       <DependentUpon>AlertControl.xaml</DependentUpon>
     </Compile>
+    <Compile Include="UI\WPF\API\GwupeDataCaptureForm.cs" />
     <Compile Include="UI\WPF\API\GwupeModalUserControl.cs" />
     <Compile Include="UI\WPF\API\IGwupeUserControl.cs" />
     <Compile Include="UI\WPF\API\IDashboardContentControl.cs" />
@@ -327,6 +331,10 @@
       <SubType>Designer</SubType>
     </Page>
     <Page Include="UI\WPF\Settings.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="UI\WPF\SignupTeam.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
@@ -468,6 +476,9 @@
     </Compile>
     <Compile Include="UI\WPF\SignUpControl.xaml.cs">
       <DependentUpon>SignUpControl.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="UI\WPF\SignupTeam.xaml.cs">
+      <DependentUpon>SignupTeam.xaml</DependentUpon>
     </Compile>
     <Compile Include="UI\WPF\TeamManagement.xaml.cs">
       <DependentUpon>TeamManagement.xaml</DependentUpon>
@@ -700,8 +711,11 @@
     <Resource Include="UI\WPF\Images\1427643948_user-128.png" />
     <Resource Include="UI\WPF\Images\cross_30.png" />
     <Resource Include="UI\WPF\Images\folder_person_30.png" />
+    <Resource Include="UI\WPF\Images\add_30.png" />
+    <Resource Include="UI\WPF\Images\add_30_black.png" />
     <Content Include="UI\WPF\Images\loading-side.gif" />
     <Resource Include="UI\WPF\Images\logoff_30.png" />
+    <Resource Include="UI\WPF\Images\male-female-silhouette.png" />
     <Content Include="UI\WPF\Images\Search.png" />
     <Resource Include="UI\WPF\Images\Settings.png" />
     <Resource Include="UI\WPF\Images\smallcross.png" />

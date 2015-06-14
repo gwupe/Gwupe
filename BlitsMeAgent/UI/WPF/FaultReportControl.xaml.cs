@@ -30,7 +30,7 @@ namespace Gwupe.Agent.UI.WPF
 
         protected override bool CommitInput()
         {
-            FaultReport = new FaultReport();
+            FaultReport = new FaultReport() { Subject = "User generated fault report." };
             Dispatcher.Invoke(new Action(() => FaultReport.UserReport = UserReport.Text));
             return true;
         }

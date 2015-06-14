@@ -430,6 +430,14 @@ namespace Gwupe.Agent.Managers
                             ErrorCode = SignupRs.SignupErrorEmailAddressInUse
                         });
                     }
+                    if (ex.Response.signupErrors.Contains(SignupRs.SignupErrorEmailAddressInvalid))
+                    {
+                        errors.SubmitErrors.Add(new DataSubmitError()
+                        {
+                            FieldName = "email",
+                            ErrorCode = SignupRs.SignupErrorEmailAddressInvalid
+                        });
+                    } 
                     if (ex.Response.signupErrors.Contains(SignupRs.SignupErrorUserExists))
                     {
                         errors.SubmitErrors.Add(new DataSubmitError()

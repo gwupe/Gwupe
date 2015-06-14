@@ -19,5 +19,9 @@ namespace Gwupe.Cloud.Messaging.Request
         public string serviceLog;
         [DataMember]
         public string version;
+        [DataMember]
+        public string subject;
+        [DataMember]
+        public string platform;
     }
 }

@@ -28,7 +28,6 @@ namespace Gwupe.Agent.UI.WPF.Engage
             InitGwupeModalUserControl(Disabler,null, ErrorText);
             _dataContext = dataContext;
             ProcessingWord = "Saving";
-            //_uiHelper = new UiHelper(Dispatcher, Disabler, null, ErrorText);
             UnattendedAccessCheckbox.Click += CheckBox_Click;
         }
 

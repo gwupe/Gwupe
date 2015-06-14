@@ -17,7 +17,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GwupeCommon", "BlitsMeCommo
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GwupeCommunicatonP2P", "BlitsMeP2PConnection\GwupeCommunicatonP2P.csproj", "{C8080119-3305-43B5-8944-592DBC960F12}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BlitsMe.Sandbox", "BlitsMe.Sandbox\BlitsMe.Sandbox.csproj", "{475011C7-1636-4C6F-BF65-37D03C9A8B41}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Gwupe.Sandbox", "BlitsMe.Sandbox\Gwupe.Sandbox.csproj", "{475011C7-1636-4C6F-BF65-37D03C9A8B41}"
 EndProject
 Project("{930C7802-8A8C-48F9-8165-68863BCCD9DD}") = "GwupeSetup", "BlitsMeSetup\GwupeSetup.wixproj", "{41B5AB51-8D24-4D3D-9448-6F3584A34C34}"
 EndProject

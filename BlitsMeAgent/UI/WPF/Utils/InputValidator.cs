@@ -36,10 +36,7 @@ namespace Gwupe.Agent.UI.WPF.Utils
                     @"(?(\[)(\[(\d{1,3}\.){3}\d{1,3}\])|(([0-9a-z][-\w]*[0-9a-z]*\.)+[a-z0-9]{2,17}))$",
                     RegexOptions.IgnoreCase))
                 {
-                    SetError("Please enter a valid email address");
-                    email.Background = new SolidColorBrush(Colors.MistyRose);
-                    if (emailLabel != null)
-                        emailLabel.Foreground = new SolidColorBrush(Colors.Red);
+                    SetError("Please enter a valid email address",email, emailLabel);
                     dataOK = false;
                 }
             }
@@ -51,18 +48,22 @@ namespace Gwupe.Agent.UI.WPF.Utils
             return dataOK;
         }
 
+        private static void MarkErrorField(Control control, Label label = null)
+        {
+            control.Background = new SolidColorBrush(Colors.MistyRose);
+            if (label != null)
+                label.Foreground = new SolidColorBrush(Colors.Red);
+            control.Focus();
+            Keyboard.Focus(control);
+        }
+
         public bool ValidateFieldNonEmpty(Control control, string text, Label textLabel, string errorText, string defaultValue = "")
         {
             if (_dispatcher.CheckAccess())
             {
                 if (text.Equals(defaultValue) || String.IsNullOrWhiteSpace(text))
                 {
-                    control.Background = new SolidColorBrush(Colors.MistyRose);
-                    if (textLabel != null)
-                        textLabel.Foreground = new SolidColorBrush(Colors.Red);
-                    SetError(errorText);
-                    control.Focus();
-                    Keyboard.Focus(control);
+                    SetError(errorText,control,textLabel);
                     return false;
                 }
             }
@@ -78,7 +79,7 @@ namespace Gwupe.Agent.UI.WPF.Utils
             return true;
         }
 
-        public void SetError(string error)
+        public void SetError(string error, Control control = null, Label label = null)
         {
             if (_dispatcher.CheckAccess())
             {
@@ -89,10 +90,14 @@ namespace Gwupe.Agent.UI.WPF.Utils
                     _errorText.Text = error;
                     _errorText.Visibility = Visibility.Visible;
                 }
+                if (control != null)
+                {
+                    MarkErrorField(control, label);
+                }
             }
             else
             {
-                _dispatcher.Invoke(new Action(() => SetError(error)));
+                _dispatcher.Invoke(new Action(() => SetError(error, control, label)));
             }
         }
 
@@ -136,10 +141,7 @@ namespace Gwupe.Agent.UI.WPF.Utils
                     regEx,
                     RegexOptions.IgnoreCase))
                 {
-                    SetError(errorString);
-                    textBox.Background = new SolidColorBrush(Colors.MistyRose);
-                    if (label != null)
-                        label.Foreground = new SolidColorBrush(Colors.Red);
+                    SetError(errorString,textBox,label);
                     dataOK = false;
                 }
             }

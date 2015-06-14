@@ -1,8 +1,4 @@
-﻿Gwupe Bugfix Release
-Fixed Branding of Support Screen
-Fixed Detection of Already running (opens running window)
-Added more info to fault reporting
-Fixed User Icon Adding
-Added basics for Team Functionality
-Added Settings Menu
-Added Settings for not notifying when an update occurs
+﻿Gwupe Team Release
+Changed service so it starts up quicker
+Added service fault tolerance and automatic restarting
+Added Team Management screen

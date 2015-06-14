@@ -60,7 +60,9 @@ namespace Gwupe.Agent.Managers
         {
             if (_haveRoster)
             {
-                ChangePresence(request.user, new Presence(request.resource, request.presence, request.shortCode));
+                ChangePresence(request.user, 
+                    new Presence(request.resource, request.presence, request.shortCode) { ClientInfo = new ClientInfo() { Platform = request.clientInfo.platform, Version = request.clientInfo.version}}
+                    );
             }
             else
             {

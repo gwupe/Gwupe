@@ -39,11 +39,21 @@ namespace Gwupe.Agent.Managers
             if (self.ExternalEndPoint == null)
             {
                 Logger.Warn("Failed to get external endpoint : " + self);
-                ThreadPool.QueueUserWorkItem(m => GwupeClientAppContext.CurrentAppContext.SubmitFaultReport(new FaultReport() { UserReport = "INTERNAL : Failed to get external endpoint : " + self }));
+                ThreadPool.QueueUserWorkItem(m => GwupeClientAppContext.CurrentAppContext.SubmitFaultReport(
+                    new FaultReport()
+                    {
+                        Subject = "External endpoint error",
+                        UserReport = "INTERNAL : Failed to get external endpoint : " + self
+                    }));
             }
             if (self.EndPoints.Count == 0)
             {
-                ThreadPool.QueueUserWorkItem(m => GwupeClientAppContext.CurrentAppContext.SubmitFaultReport(new FaultReport() { UserReport = "INTERNAL : Failed to get external endpoint : " + self }));
+                ThreadPool.QueueUserWorkItem(m => GwupeClientAppContext.CurrentAppContext.SubmitFaultReport(
+                    new FaultReport()
+                    {
+                        Subject = "Endpoint error",
+                        UserReport = "INTERNAL : Failed to get any endpoint : " + self
+                    }));
                 throw new Exception("Failed to determine any local endpoints : " + self.ToString());
             }
 
@@ -76,14 +86,24 @@ namespace Gwupe.Agent.Managers
                 catch (Exception e)
                 {
                     Logger.Error("Failed to sync with peer : " + e.Message, e);
-                    ThreadPool.QueueUserWorkItem(m => GwupeClientAppContext.CurrentAppContext.SubmitFaultReport(new FaultReport() { UserReport = "INTERNAL : Failed to sync with peer : " + e.Message }));
+                    ThreadPool.QueueUserWorkItem(m => GwupeClientAppContext.CurrentAppContext.SubmitFaultReport(
+                        new FaultReport()
+                        {
+                            Subject = "Sync error",
+                            UserReport = "INTERNAL : Failed to sync with peer : " + e.Message
+                        }));
                     throw new Exception("Failed to sync with peer : " + e.Message, e);
                 }
             }
             catch (Exception e)
             {
                 Logger.Error("Failed to setup P2P Connection : " + e.Message, e);
-                ThreadPool.QueueUserWorkItem(m => GwupeClientAppContext.CurrentAppContext.SubmitFaultReport(new FaultReport() { UserReport = "INTERNAL : Failed to setup p2p connection : " + e.Message }));
+                ThreadPool.QueueUserWorkItem(m => GwupeClientAppContext.CurrentAppContext.SubmitFaultReport(
+                    new FaultReport()
+                    {
+                        Subject = "P2P setup error [" + connectionId + "]",
+                        UserReport = "INTERNAL : Failed to setup p2p connection  [" + connectionId + "]: " + e.Message
+                    }));
                 throw new Exception("Failed to setup P2P Connection : " + e.Message, e);
             }
             return pendingTunnel.TunnelEndpoint;
@@ -162,7 +182,12 @@ namespace Gwupe.Agent.Managers
             }
             catch (Exception ex)
             {
-                ThreadPool.QueueUserWorkItem(m => GwupeClientAppContext.CurrentAppContext.SubmitFaultReport(new FaultReport() { UserReport = "INTERNAL : Failed to sync with peer : " + ex.Message }));
+                ThreadPool.QueueUserWorkItem(m => GwupeClientAppContext.CurrentAppContext.SubmitFaultReport(
+                    new FaultReport()
+                    {
+                        Subject = "P2P setup error [" + connectionId + "]",
+                        UserReport = "INTERNAL : Failed to sync with peer [" + connectionId + "] : " + ex.Message
+                    }));
                 Logger.Error("Failed to sync with peer [" + peer + "] for connection " + connectionId, ex);
             }
         }

@@ -8,12 +8,13 @@ using System.Reflection;
 using System.Security.Cryptography.X509Certificates;
 using System.ServiceProcess;
 using System.Text.RegularExpressions;
-using System.Timers;
+using System.Threading;
 using Gwupe.Common.Security;
 using Gwupe.Service.ServiceHost;
 using log4net;
 using log4net.Config;
 using Microsoft.Win32;
+using Timer = System.Timers.Timer;
 
 namespace Gwupe.Service
 {
@@ -50,10 +51,16 @@ namespace Gwupe.Service
 
         protected override void OnStart(string[] args)
         {
+            ThreadPool.QueueUserWorkItem(state => BackgroundInit());
+        }
+
+        private void BackgroundInit()
+        {
             EventLog.WriteEntry("GwupeService", "Starting GwupeService" + BuildMarker);
             XmlConfigurator.Configure(Assembly.GetExecutingAssembly().GetManifestResourceStream("Gwupe.Service.log4net.xml"));
-            _version = Regex.Replace(FileVersionInfo.GetVersionInfo(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location) +
-                                                   "/Gwupe.Agent.exe").FileVersion, "\\.[0-9]+$", "");
+            _version =
+                Regex.Replace(FileVersionInfo.GetVersionInfo(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location) +
+                                                             "/Gwupe.Agent.exe").FileVersion, "\\.[0-9]+$", "");
             Logger.Info("Gwupe Service Starting Up [" + Environment.UserName + ", " + _version + "]");
             SaveVersion();
 #if DEBUG
@@ -69,8 +76,10 @@ namespace Gwupe.Service
             _updateCheck.Elapsed += delegate { CheckForNewVersion(); };
             _updateCheck.Start();
             initServers();
-            _serviceHost = new System.ServiceModel.ServiceHost(new ServiceHost.GwupeService(this), new Uri("net.pipe://localhost/GwupeService" + BuildMarker));
+            _serviceHost = new System.ServiceModel.ServiceHost(new ServiceHost.GwupeService(this),
+                new Uri("net.pipe://localhost/GwupeService" + BuildMarker));
             _serviceHost.Open();
+            Logger.Info("Gwupe Service Init Complete [" + Environment.UserName + ", " + _version + "]");
         }
 
         private void CheckForNewVersion()

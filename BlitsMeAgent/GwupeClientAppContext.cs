@@ -48,6 +48,7 @@ namespace Gwupe.Agent
         internal UIManager UIManager { get; private set; }
         internal RepeaterManager RepeaterManager { get; private set; }
         internal SettingsManager SettingsManager { get; private set; }
+        internal TeamManager TeamManager { get; set; }
         //internal Thread DashboardUiThread;
         internal bool IsShuttingDown { get; private set; }
         internal readonly GwupeUserRegistry Reg = new GwupeUserRegistry();
@@ -69,7 +70,7 @@ namespace Gwupe.Agent
             Options = options;
             XmlConfigurator.Configure(Assembly.GetExecutingAssembly().GetManifestResourceStream("Gwupe.Agent.log4net.xml"));
             StartupVersion = Regex.Replace(FileVersionInfo.GetVersionInfo(Assembly.GetExecutingAssembly().Location).FileVersion, "\\.[0-9]+$", "");
-            Logger.Info("BlitsMe" + Program.BuildMarker + ".Agent Starting up [" + StartupVersion + "]");
+            Logger.Info("Gwupe" + Program.BuildMarker + ".Agent Starting up [" + StartupVersion + "]");
 #if DEBUG
             foreach (var manifestResourceName in Assembly.GetExecutingAssembly().GetManifestResourceNames())
             {
@@ -85,6 +86,7 @@ namespace Gwupe.Agent
             NotificationManager = new NotificationManager();
             SearchManager = new SearchManager();
             CurrentUserManager = new CurrentUserManager();
+            TeamManager = new TeamManager();
             SettingsManager = new SettingsManager();
             UIManager = new UIManager();
             _requestManager = new RequestManager();
@@ -167,7 +169,7 @@ namespace Gwupe.Agent
                         WindowStyle = ProcessWindowStyle.Hidden,
                         Verb = "runas",
                         FileName = Path.GetDirectoryName(Environment.GetCommandLineArgs()[0]) +
-                                   "\\BlitsMeRestartService.exe"
+                                   "\\GwupeRestartService.exe"
                     }
                 };
                 restartProcess.Start();
@@ -175,27 +177,29 @@ namespace Gwupe.Agent
 
                 if (restartProcess.ExitCode != 0)
                 {
-                    Logger.Error("Failed to restart BlitsMeService");
+                    Logger.Error("Failed to restart GwupeService");
                     ThreadPool.QueueUserWorkItem(state =>
                         SubmitFaultReport(new FaultReport()
                         {
-                            UserReport = "Failed to restart BlitsMeService manually"
+                            Subject = "Gwupe Service restart failure.",
+                            UserReport = "Failed to restart GwupeService manually"
                         }));
                     return false;
                 }
                 else
                 {
-                    Logger.Info("Restarted BlitsMe Service");
+                    Logger.Info("Restarted Gwupe Service");
                     return true;
                 }
             }
             catch (Exception e)
             {
-                Logger.Error("Attempt to call BlitsMe Service Restarter failed", e);
+                Logger.Error("Attempt to call Gwupe Service Restarter failed", e);
                 ThreadPool.QueueUserWorkItem(state =>
                     SubmitFaultReport(new FaultReport()
                     {
-                        UserReport = "Attempt to call BlitsMe Service Restarter failed : " + e
+                        Subject = "Gwupe Service restarter error",
+                        UserReport = "Attempt to call Gwupe Service Restarter failed : " + e
                     }));
                 return false;
             }
@@ -253,7 +257,10 @@ namespace Gwupe.Agent
                 {
                     var request = new FaultReportRq
                     {
-                        report = report.UserReport
+                        report = report.UserReport,
+                        subject = report.Subject,
+                        version = Version(3),
+                        platform = Environment.OSVersion.ToString()
                     };
                     try
                     {
@@ -308,7 +315,7 @@ namespace Gwupe.Agent
 
         public bool Elevate(out String tokenId, out String securityKey)
         {
-            return Elevate("The secure action you are requesting requires you to enter your current BlitsMe password to verify your identity.",
+            return Elevate("The secure action you are requesting requires you to enter your current Gwupe password to verify your identity.",
                 out tokenId, out securityKey);
         }
 

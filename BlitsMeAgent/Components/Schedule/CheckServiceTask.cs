@@ -31,18 +31,28 @@ namespace Gwupe.Agent.Components.Schedule
                 {
                     _appContext.NotificationManager.DeleteAlert(_serviceAlert);
                     _serviceAlert = null;
-                    Logger.Info("BlitsMeService has recovered and is available");
+                    Logger.Info("GwupeService has recovered and is available");
+                    // As a temporary fault report, we need to see if the restart worked
+                    // remove this after this bug is concluded fixed
+                    ThreadPool.QueueUserWorkItem(
+                        state =>
+                            GwupeClientAppContext.CurrentAppContext.SubmitFaultReport(new FaultReport()
+                            {
+                                Subject = "Service restart success",
+                                UserReport = "Not a fault, it was restarted ok."
+                            }));
                 }
             }
             catch (Exception e)
             {
-                Logger.Error("BlitsMeService is not available : " + e.Message);
+                Logger.Error("GwupeService is not available : " + e.Message);
                 if (_serviceAlert == null)
                 {
+                    // this is the first time we have seen this.
                     _serviceAlert = new Alert.Alert
                     {
-                        Message = "BlitsMe Service Unavailable",
-                        ClickCommand = ClickRestartBlitsMeService
+                        Message = "Gwupe Service Unavailable",
+                        ClickCommand = ClickRestartGwupeService
                     };
                     _appContext.NotificationManager.AddAlert(_serviceAlert);
                     SentFaultReport = false;
@@ -57,14 +67,35 @@ namespace Gwupe.Agent.Components.Schedule
                             state =>
                                 GwupeClientAppContext.CurrentAppContext.SubmitFaultReport(new FaultReport()
                                 {
-                                    UserReport = "Detected blitsme service unavailable."
+                                    Subject = "Service unavailable error",
+                                    UserReport = "Detected gwupe service unavailable."
                                 }));
+                        // Lets try restart it
+                        try
+                        {
+                            if (!GwupeClientAppContext.CurrentAppContext.RestartGwupeService())
+                            {
+                                throw new Exception("Automatic restart of Gwupe failed");
+                            }
+                            RunTask();
+                        }
+                        catch (Exception)
+                        {
+                            // crap, we couldn't restart it.
+                            ThreadPool.QueueUserWorkItem(
+                                state =>
+                                    GwupeClientAppContext.CurrentAppContext.SubmitFaultReport(new FaultReport()
+                                    {
+                                        Subject = "Auto service restart failed",
+                                        UserReport = "Failed to automatically restart gwupe service."
+                                    }));
+                        }
                     }
                 }
             }
         }
 
-        private void ClickRestartBlitsMeService()
+        private void ClickRestartGwupeService()
         {
             if (GwupeClientAppContext.CurrentAppContext.RestartGwupeService())
             {

@@ -16,6 +16,7 @@ namespace Gwupe.Agent.Components.Person.Presence
         int Priority { get; }
         String Resource { get; }
         String ShortCode { get; }
+        ClientInfo ClientInfo { get; }
 
         Boolean IsOnline { get; }
         Boolean IsPresent { get; }

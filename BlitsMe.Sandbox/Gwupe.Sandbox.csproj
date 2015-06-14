@@ -7,8 +7,8 @@
     <ProjectGuid>{475011C7-1636-4C6F-BF65-37D03C9A8B41}</ProjectGuid>
     <OutputType>Exe</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>BlitsMe.Sandbox</RootNamespace>
-    <AssemblyName>BlitsMe.Sandbox</AssemblyName>
+    <RootNamespace>Gwupe.Sandbox</RootNamespace>
+    <AssemblyName>Gwupe.Sandbox</AssemblyName>
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <TargetFrameworkProfile>Client</TargetFrameworkProfile>
@@ -105,10 +105,6 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\BlitsMe.TransportEmulator\BlitsMe.TransportEmulator.csproj">
-      <Project>{5D03D6CA-077B-4EF3-8937-8B05114B6A22}</Project>
-      <Name>BlitsMe.TransportEmulator</Name>
-    </ProjectReference>
     <ProjectReference Include="..\BlitsMeCommon\GwupeCommon.csproj">
       <Project>{1b355f1c-9d50-4bab-8ceb-e6ca72e6de69}</Project>
       <Name>GwupeCommon</Name>

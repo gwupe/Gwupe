@@ -12,6 +12,7 @@ namespace Gwupe.Cloud.Messaging.Response
         public const String SignupErrorPasswordComplexity = "PASSWORD_COMPLEXITY";
         public const String SignupErrorUserExists = "USER_EXISTS";
         public const String SignupErrorEmailAddressInUse = "EMAIL_EXISTS";
+        public const String SignupErrorEmailAddressInvalid = "EMAIL_INVALID";
 
         public override string type { get { return "Signup-RS"; } set { } }
 

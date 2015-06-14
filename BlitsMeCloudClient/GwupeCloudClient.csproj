@@ -86,6 +86,7 @@
     <Compile Include="Messaging\API\Response.cs" />
     <Compile Include="Messaging\API\UserToUserRequest.cs" />
     <Compile Include="Messaging\CoupledWebSocketMessageHandler.cs" />
+    <Compile Include="Messaging\Elements\ClientInfoElement.cs" />
     <Compile Include="Messaging\Elements\IpEndPointElement.cs" />
     <Compile Include="Messaging\Elements\PartnerElement.cs" />
     <Compile Include="Messaging\Elements\PresenceElement.cs" />
@@ -94,6 +95,7 @@
     <Compile Include="Messaging\Elements\RosterElement.cs" />
     <Compile Include="Messaging\Elements\UserElement.cs" />
     <Compile Include="Messaging\Request\ChatMessageRq.cs" />
+    <Compile Include="Messaging\Request\SignupTeamRq.cs" />
     <Compile Include="Messaging\Request\LookupUserRq.cs" />
     <Compile Include="Messaging\Request\FaultReportRq.cs" />
     <Compile Include="Messaging\Request\ServerNotificationRq.cs" />
@@ -123,6 +125,7 @@
     <Compile Include="Messaging\Request\VCardRq.cs" />
     <Compile Include="Messaging\Request\VersionRq.cs" />
     <Compile Include="Messaging\Response\ChatMessageRs.cs" />
+    <Compile Include="Messaging\Response\SignupTeamRs.cs" />
     <Compile Include="Messaging\Response\LookupUserRs.cs" />
     <Compile Include="Messaging\Response\FaultReportRs.cs" />
     <Compile Include="Messaging\Response\ServerNotificationRs.cs" />

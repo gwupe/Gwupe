@@ -5,7 +5,7 @@ using Gwupe.Cloud.Messaging.Elements;
 namespace Gwupe.Cloud.Messaging.Request
 {
     [DataContract]
-    public class PresenceChangeRq : Gwupe.Cloud.Messaging.API.Request
+    public class PresenceChangeRq : API.Request
     {
         public override String type
         {
@@ -23,5 +23,8 @@ namespace Gwupe.Cloud.Messaging.Request
 
         [DataMember]
         public String resource { get; set; }
+
+        [DataMember]
+        public ClientInfoElement clientInfo { get; set; }
     }
 }

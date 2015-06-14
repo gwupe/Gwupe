@@ -43,7 +43,7 @@ namespace Gwupe.Agent.Components.Functions.Chat
         // Thread which handles the sending of messages (sending is async)
         private readonly Thread _chatSender;
         private readonly ConcurrentQueue<SelfChatElement> _chatQueue;
-        private Dictionary<BlitsMeCommand, Func<List<String>, bool>> BlitsMeCommands;
+        private Dictionary<GwupeCommand, Func<List<String>, bool>> GwupeCommands;
 
         internal Function(GwupeClientAppContext appContext, Engagement engagement)
         {
@@ -268,11 +268,11 @@ namespace Gwupe.Agent.Components.Functions.Chat
         {
             if (message.StartsWith("/"))
             {
-                BlitsMeCommand command;
+                GwupeCommand command;
                 String[] commandElements = message.Split(new char[] { ' ' });
-                if (commandElements.Length > 0 && BlitsMeCommand.TryParse(commandElements[0].Split(new char[] { '/' })[1], out command))
+                if (commandElements.Length > 0 && GwupeCommand.TryParse(commandElements[0].Split(new char[] { '/' })[1], out command))
                 {
-                    return BlitsMeCommands[command](commandElements.Skip(1).ToList());
+                    return GwupeCommands[command](commandElements.Skip(1).ToList());
                 }
                 Logger.Warn("Failed to parse " + message + " into a command, probably not one.");
             }
@@ -302,12 +302,12 @@ namespace Gwupe.Agent.Components.Functions.Chat
 
         private void SetupCommands()
         {
-            BlitsMeCommands = new Dictionary<BlitsMeCommand, Func<List<string>, bool>>
+            GwupeCommands = new Dictionary<GwupeCommand, Func<List<string>, bool>>
             {
-                {BlitsMeCommand.Debug, DebugCommand},
-                {BlitsMeCommand.P2P, P2PCommand},
-                {BlitsMeCommand.ReportFault, ReportFault},
-                {BlitsMeCommand.RestartService, RestartService},
+                {GwupeCommand.Debug, DebugCommand},
+                {GwupeCommand.P2P, P2PCommand},
+                {GwupeCommand.ReportFault, ReportFault},
+                {GwupeCommand.RestartService, RestartService},
             };
         }
 
@@ -323,11 +323,11 @@ namespace Gwupe.Agent.Components.Functions.Chat
             {
                 if (GwupeClientAppContext.CurrentAppContext.RestartGwupeService())
                 {
-                    LogSystemMessage("BlitsMe Service restarted");
+                    LogSystemMessage("Gwupe Service restarted");
                 }
                 else
                 {
-                    LogErrorMessage("BlitsMe Service failed to restart");
+                    LogErrorMessage("Gwupe Service failed to restart");
                 }
             });
             return true;
@@ -358,7 +358,7 @@ namespace Gwupe.Agent.Components.Functions.Chat
         }
     }
 
-    internal enum BlitsMeCommand
+    internal enum GwupeCommand
     {
         Debug,
         P2P,

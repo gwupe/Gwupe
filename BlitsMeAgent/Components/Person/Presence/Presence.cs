@@ -2,7 +2,6 @@ using System;
 using System.ComponentModel;
 using Gwupe.Cloud.Messaging.Elements;
 using log4net;
-using log4net.Repository.Hierarchy;
 
 namespace Gwupe.Agent.Components.Person.Presence
 {
@@ -15,6 +14,13 @@ namespace Gwupe.Agent.Components.Person.Presence
         private string _resource;
         private string _shortCode;
         private string _status;
+        private ClientInfo _clientInfo;
+
+        public ClientInfo ClientInfo
+        {
+            get { return _clientInfo; }
+            set { _clientInfo = value; OnPropertyChanged("ClientInfo"); }
+        }
 
         public static Presence AlwaysOn
         {

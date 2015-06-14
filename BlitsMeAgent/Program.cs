@@ -94,7 +94,11 @@ namespace Gwupe.Agent
             {
                 if (GwupeClientAppContext.CurrentAppContext != null)
                 {
-                    GwupeClientAppContext.CurrentAppContext.SubmitFaultReport(new FaultReport() {UserReport = ex.ToString()});
+                    GwupeClientAppContext.CurrentAppContext.SubmitFaultReport(new FaultReport()
+                    {
+                        Subject = "Unhandled exception error",
+                        UserReport = ex.ToString()
+                    });
                 }
             }
             catch

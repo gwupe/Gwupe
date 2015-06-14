@@ -87,7 +87,19 @@ namespace Gwupe.Agent.UI.WPF.Roster
             }
             else
             {
-                ContactsView.View.Refresh();
+                try
+                {
+                    ContactsView.View.Refresh();
+                }
+                catch (Exception e)
+                {
+                    Logger.Error("Caught the refresh roster exception we are attempting to understand, logging fault report",e);
+                    GwupeClientAppContext.CurrentAppContext.SubmitFaultReport(new FaultReport()
+                    {
+                        Subject = "Roster refresh error",
+                        UserReport = "Roster Refresh error, fatal exception caught when refreshing roster"
+                    });
+                }
             }
         }
 
