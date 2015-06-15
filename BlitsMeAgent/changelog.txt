@@ -1,4 +1,1 @@
-﻿Gwupe Team Release
-Changed service so it starts up quicker
-Added service fault tolerance and automatic restarting
-Added Team Management screen
+﻿

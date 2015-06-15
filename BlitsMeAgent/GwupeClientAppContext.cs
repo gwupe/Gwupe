@@ -167,7 +167,7 @@ namespace Gwupe.Agent
                         UseShellExecute = true,
                         CreateNoWindow = true,
                         WindowStyle = ProcessWindowStyle.Hidden,
-                        Verb = "runas",
+                        Verb = OsUtils.IsWinVistaOrHigher ? "runas" : "",
                         FileName = Path.GetDirectoryName(Environment.GetCommandLineArgs()[0]) +
                                    "\\GwupeRestartService.exe"
                     }
@@ -385,7 +385,7 @@ namespace Gwupe.Agent
         {
             if (msg == OsUtils.WM_SHOWGWUPE &&
 #if DEBUG
- wParam.ToInt32() == 0
+                wParam.ToInt32() == 0
 #else
                 wParam.ToInt32() == 1
 #endif
@@ -397,7 +397,7 @@ namespace Gwupe.Agent
             }
             else if (msg == OsUtils.WM_SHUTDOWNGWUPE &&
 #if DEBUG
- wParam.ToInt32() == 0
+                wParam.ToInt32() == 0
 #else
                 wParam.ToInt32() == 1
 #endif
@@ -409,7 +409,7 @@ namespace Gwupe.Agent
             }
             else if (msg == OsUtils.WM_UPGRADEGWUPE &&
 #if DEBUG
- wParam.ToInt32() == 0
+                wParam.ToInt32() == 0
 #else
                 wParam.ToInt32() == 1
 #endif

@@ -60,8 +60,15 @@ namespace Gwupe.Agent.Managers
         {
             if (_haveRoster)
             {
-                ChangePresence(request.user, 
-                    new Presence(request.resource, request.presence, request.shortCode) { ClientInfo = new ClientInfo() { Platform = request.clientInfo.platform, Version = request.clientInfo.version}}
+                ChangePresence(request.user,
+                    new Presence(request.resource, request.presence, request.shortCode)
+                    {
+                        ClientInfo = new ClientInfo()
+                        {
+                            Platform = request.clientInfo == null ? null : request.clientInfo.platform,
+                            Version = request.clientInfo == null ? null : request.clientInfo.version
+                        }
+                    }
                     );
             }
             else
@@ -266,13 +273,13 @@ namespace Gwupe.Agent.Managers
             }
             catch (Exception e)
             {
-                Logger.Error("Failed to add adhoc person " + username,e);
+                Logger.Error("Failed to add adhoc person " + username, e);
             }
         }
 
         public void AddAdHocPerson(UserElement userElement, String shortCode)
         {
-            Attendance attendance = new Attendance(new Person(userElement),Relationship.NoRelationship);
+            Attendance attendance = new Attendance(new Person(userElement), Relationship.NoRelationship);
             var presence = Presence.AlwaysOn;
             presence.Resource = "_blitsme-" + shortCode;
             presence.ShortCode = shortCode;
