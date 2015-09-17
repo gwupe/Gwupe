@@ -94,7 +94,10 @@ namespace Gwupe.Agent.UI.WPF.Engage
 
         private void EngagementOnRDPConnectionAccepted(object sender, EventArgs eventArgs)
         {
-            _thisAlert = new Alert() { Message = Engagement.SecondParty.Person.Firstname + " is Connected", ClickCommand =
+            _thisAlert = new Alert()
+            {
+                Message = Engagement.SecondParty.Party.Firstname + " is Connected",
+                ClickCommand =
                 () => _appContext.UIManager.Dashboard.ActivateEngagement(Engagement.SecondParty)
             };
             _appContext.NotificationManager.AddAlert(_thisAlert);
@@ -229,7 +232,7 @@ namespace Gwupe.Agent.UI.WPF.Engage
         private void NotificationFilter(object sender, FilterEventArgs eventArgs)
         {
             Notification notification = eventArgs.Item as Notification;
-            if (notification != null && notification.AssociatedUsername != null && notification.AssociatedUsername.Equals(Engagement.SecondParty.Person.Username))
+            if (notification != null && notification.AssociatedUsername != null && notification.AssociatedUsername.Equals(Engagement.SecondParty.Party.Username))
             {
                 eventArgs.Accepted = true;
             }
@@ -281,10 +284,21 @@ namespace Gwupe.Agent.UI.WPF.Engage
             {
                 ThreadPool.QueueUserWorkItem(state => _appContext.UIManager.PromptGuestSignup());
             }
-            else if (Engagement.SecondParty.Person.Guest)
+            else if (Engagement.SecondParty.Party is Person && ((Person)Engagement.SecondParty.Party).Guest)
             {
-                ThreadPool.QueueUserWorkItem(state => _appContext.UIManager.Alert("This user is a guest, for to get unattended access to their desktop and for other features, they need to be logged in."));
-            } else
+                ThreadPool.QueueUserWorkItem(
+                    state =>
+                        _appContext.UIManager.Alert(
+                            "This user is a guest, for to get unattended access to their desktop and for other features, they need to be logged in."));
+            }
+            else if (Engagement.SecondParty.Party is Team)
+            {
+                ThreadPool.QueueUserWorkItem(
+                    state =>
+                        _appContext.UIManager.Alert(
+                            "This party is a team, there are no settings for teams at this stage."));
+            }
+            else
             {
                 if (_ewDataContext.ContactSettings == null)
                 {
@@ -313,7 +327,7 @@ namespace Gwupe.Agent.UI.WPF.Engage
         private bool _contactSettingsEnabled;
         private ContactSettings _contactSettings;
         public Attendance SecondParty { get; private set; }
-        public String Name { get { return SecondParty.Person.Name; } }
+        public String Name { get { return SecondParty.Party.Name; } }
         private static readonly ILog Logger = LogManager.GetLogger(typeof(EngagementWindowDataContext));
 
         public Engagement Engagement { get; private set; }

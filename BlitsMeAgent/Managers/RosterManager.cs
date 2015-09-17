@@ -18,20 +18,20 @@ namespace Gwupe.Agent.Managers
         private const int PauseOnRosterFail = 10000;
         private static readonly ILog Logger = LogManager.GetLogger(typeof(RosterManager));
         private readonly GwupeClientAppContext _appContext;
-        private readonly RosterRq _rosterRequest = new RosterRq();
+        //private readonly RosterRq _rosterRequest = new RosterRq();
         private bool _haveRoster;
         private readonly ConcurrentQueue<PresenceChangeRq> _queuedPresenceChanges;
 
-        internal ObservableCollection<Attendance> ServicePersonAttendanceList { get; private set; }
-        private Dictionary<String, Attendance> ServicePersonAttendanceLookup { get; set; }
+        internal ObservableCollection<Attendance> ServicePartyAttendanceList { get; private set; }
+        private Dictionary<String, Attendance> ServicePartyAttendanceLookup { get; set; }
         internal bool IsClosed { get; private set; }
         internal Attendance CurrentlyEngaged { get; private set; }
 
         public RosterManager()
         {
             _appContext = GwupeClientAppContext.CurrentAppContext;
-            ServicePersonAttendanceList = new ObservableCollection<Attendance>();
-            ServicePersonAttendanceLookup = new Dictionary<String, Attendance>();
+            ServicePartyAttendanceList = new ObservableCollection<Attendance>();
+            ServicePartyAttendanceLookup = new Dictionary<String, Attendance>();
             _queuedPresenceChanges = new ConcurrentQueue<PresenceChangeRq>();
             _appContext.LoginManager.LoggedOut += (sender, args) => Reset();
         }
@@ -49,9 +49,9 @@ namespace Gwupe.Agent.Managers
 
         internal Attendance GetServicePersonAttendance(String username)
         {
-            if (ServicePersonAttendanceLookup.ContainsKey(username))
+            if (ServicePartyAttendanceLookup.ContainsKey(username))
             {
-                return ServicePersonAttendanceLookup[username];
+                return ServicePartyAttendanceLookup[username];
             }
             return null;
         }
@@ -80,7 +80,7 @@ namespace Gwupe.Agent.Managers
         private void ChangePresence(String user, Presence presence)
         {
             Logger.Debug("Change Presence Request for " + user);
-            if (!ServicePersonAttendanceLookup.ContainsKey(user))
+            if (!ServicePartyAttendanceLookup.ContainsKey(user))
             {
                 if (PresenceType.unavailable.Equals(presence.Type))
                     return;
@@ -109,28 +109,29 @@ namespace Gwupe.Agent.Managers
             {
                 try
                 {
-                    RosterRs response = _appContext.ConnectionManager.Connection.Request<RosterRq, RosterRs>(_rosterRequest);
+                    RosterRs response = _appContext.ConnectionManager.Connection.Request<RosterRq, RosterRs>(new RosterRq());
                     if (response.rosterElements != null)
                     {
                         foreach (RosterElement rosterElement in response.rosterElements)
                         {
                             // If there are no subscriptions, as far as we are concerned, they are not part of the roster.
-                            if (rosterElement.presence != null && "none".Equals(rosterElement.userElement.subscriptionType))
+                            if (rosterElement.presence != null && "none".Equals(rosterElement.PartyElement.subscriptionType))
                                 continue;
                             // Add each buddy to the list
                             // I think we should not add a default presence, lets see how it goes
-                            AddUserElementToList(rosterElement.userElement, rosterElement.relationshipElement);
+                            
+                            AddPartyElementToList(rosterElement.PartyElement, rosterElement.relationshipElement);
                             // Now async get the images
-                            if (rosterElement.userElement.hasAvatar)
+                            if (rosterElement.PartyElement.hasAvatar)
                             {
                                 try
                                 {
                                     _appContext.ConnectionManager.Connection.RequestAsync<VCardRq, VCardRs>(
-                                        new VCardRq(rosterElement.userElement.user), ResponseHandler);
+                                        new VCardRq(rosterElement.PartyElement.user), ResponseHandler);
                                 }
                                 catch (Exception e)
                                 {
-                                    Logger.Error("Failed to get the vcard for " + rosterElement.userElement.user, e);
+                                    Logger.Error("Failed to get the vcard for " + rosterElement.PartyElement.user, e);
                                 }
                             }
                         }
@@ -176,19 +177,19 @@ namespace Gwupe.Agent.Managers
 
         private void _reset()
         {
-            ServicePersonAttendanceList.Clear();
-            ServicePersonAttendanceLookup.Clear();
+            ServicePartyAttendanceList.Clear();
+            ServicePartyAttendanceLookup.Clear();
         }
 
         private void ResponseHandler(VCardRq vCardRq, VCardRs vCardRs, Exception e)
         {
             if (e == null)
             {
-                if (!String.IsNullOrWhiteSpace(vCardRs.userElement.avatarData) && ServicePersonAttendanceLookup.ContainsKey(vCardRq.username))
+                if (!String.IsNullOrWhiteSpace(vCardRs.PartyElement.avatarData) && ServicePartyAttendanceLookup.ContainsKey(vCardRq.username))
                 {
                     try
                     {
-                        ServicePersonAttendanceLookup[vCardRq.username].Person.SetAvatarData(vCardRs.userElement.avatarData);
+                        ServicePartyAttendanceLookup[vCardRq.username].Party.SetAvatarData(vCardRs.PartyElement.avatarData);
                     }
                     catch (Exception e1)
                     {
@@ -208,7 +209,7 @@ namespace Gwupe.Agent.Managers
             try
             {
                 VCardRs cardRs = _appContext.ConnectionManager.Connection.Request<VCardRq, VCardRs>(new VCardRq(username));
-                AddUserElementToList(cardRs.userElement, cardRs.relationshipElement, presence);
+                AddPartyElementToList(cardRs.PartyElement, cardRs.relationshipElement, presence);
             }
             catch (Exception e)
             {
@@ -216,16 +217,24 @@ namespace Gwupe.Agent.Managers
             }
         }
 
-        private void AddUserElementToList(UserElement userElement, RelationshipElement relationshipElement, Presence presence = null)
+        private void AddPartyElementToList(PartyElement partyElement, RelationshipElement relationshipElement, Presence presence = null)
         {
-            Attendance attendance = new Attendance(userElement, relationshipElement);
+            Attendance attendance = null;
+            if (partyElement is UserElement)
+            {
+                attendance = new Attendance(new Person(partyElement as UserElement), new Relationship(relationshipElement));
+            }
+            else
+            {
+                attendance = new Attendance(new Team(partyElement as TeamElement), new Relationship(relationshipElement));
+            }
             attendance.PropertyChanged += MarkUnmarkCurrentlyEngaged;
             if (presence != null)
             {
                 attendance.SetPresence(presence);
             }
-            ServicePersonAttendanceList.Add(attendance);
-            ServicePersonAttendanceLookup[attendance.Person.Username] = attendance;
+            ServicePartyAttendanceList.Add(attendance);
+            ServicePartyAttendanceLookup[attendance.Party.Username] = attendance;
         }
 
         private void MarkUnmarkCurrentlyEngaged(object sender, PropertyChangedEventArgs propertyChangedEventArgs)
@@ -251,7 +260,7 @@ namespace Gwupe.Agent.Managers
         {
             // Lets add this person to the roster
             Logger.Debug("Attempting to add " + person + " to " + _appContext.CurrentUserManager.CurrentUser.Username + "'s Team");
-            if (ServicePersonAttendanceLookup.ContainsKey(person.Username))
+            if (ServicePartyAttendanceLookup.ContainsKey(person.Username))
             {
                 Logger.Error("Will not add " + person.Username + " to list, he/she already exists");
             }
@@ -269,7 +278,7 @@ namespace Gwupe.Agent.Managers
             try
             {
                 var response = _appContext.ConnectionManager.Connection.Request<VCardRq, VCardRs>(request);
-                AddAdHocPerson(response.userElement, shortCode);
+                AddAdHocPerson(response.PartyElement, shortCode);
             }
             catch (Exception e)
             {
@@ -277,16 +286,24 @@ namespace Gwupe.Agent.Managers
             }
         }
 
-        public void AddAdHocPerson(UserElement userElement, String shortCode)
+        public void AddAdHocPerson(PartyElement partyElement, String shortCode)
         {
-            Attendance attendance = new Attendance(new Person(userElement), Relationship.NoRelationship);
+            Attendance attendance = null;
+            if (partyElement is UserElement)
+            {
+                attendance = new Attendance(new Person(partyElement as UserElement), Relationship.NoRelationship);
+            }
+            else
+            {
+                attendance = new Attendance(new Team(partyElement as TeamElement), Relationship.NoRelationship);
+            }
             var presence = Presence.AlwaysOn;
             presence.Resource = "_blitsme-" + shortCode;
             presence.ShortCode = shortCode;
             attendance.PropertyChanged += MarkUnmarkCurrentlyEngaged;
             attendance.SetPresence(presence);
-            ServicePersonAttendanceList.Add(attendance);
-            ServicePersonAttendanceLookup[attendance.Person.Username] = attendance;
+            ServicePartyAttendanceList.Add(attendance);
+            ServicePartyAttendanceLookup[attendance.Party.Username] = attendance;
         }
 
         internal void UpdateRelationship(String contactUsername, Relationship relationship, String tokenId, String securityKey)
@@ -304,13 +321,13 @@ namespace Gwupe.Agent.Managers
                         tokenId = tokenId,
                         securityKey = securityKey
                     });
-            if (!ServicePersonAttendanceLookup.ContainsKey(contactUsername))
+            if (!ServicePartyAttendanceLookup.ContainsKey(contactUsername))
             {
                 Logger.Error("Failed to update relationship to " + contactUsername + ", no such contact.");
             }
             else
             {
-                ServicePersonAttendanceLookup[contactUsername].Relationship =
+                ServicePartyAttendanceLookup[contactUsername].Relationship =
                     new Relationship(response.relationshipElement);
             }
         }
@@ -339,12 +356,12 @@ namespace Gwupe.Agent.Managers
         {
             if (exception == null)
             {
-                if (ServicePersonAttendanceLookup.ContainsKey(vCardRq.username))
+                if (ServicePartyAttendanceLookup.ContainsKey(vCardRq.username))
                 {
                     try
                     {
-                        ServicePersonAttendanceLookup[vCardRq.username].Person.InitPerson(vCardRs.userElement);
-                        ServicePersonAttendanceLookup[vCardRq.username].Relationship.InitRelationship(vCardRs.relationshipElement);
+                        ServicePartyAttendanceLookup[vCardRq.username].Party.InitParty(vCardRs.PartyElement);
+                        ServicePartyAttendanceLookup[vCardRq.username].Relationship.InitRelationship(vCardRs.relationshipElement);
                     }
                     catch (Exception e1)
                     {

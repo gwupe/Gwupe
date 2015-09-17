@@ -9,22 +9,17 @@ using System.Windows.Input;
 
 namespace Gwupe.Agent.Components.Person
 {
+
     internal class Attendance : INotifyPropertyChanged
     {
         private static readonly ILog Logger = LogManager.GetLogger(typeof(Attendance));
 
-        public Person Person { get; set; }
+        public Party Party { get; set; }
 
         private readonly MultiPresence _presence;
         public IPresence Presence
         {
             get { return _presence; }
-        }
-
-        internal Attendance()
-        {
-            this._presence = new MultiPresence();
-            Person = new Person();
         }
 
         private bool _isRemoteActive = false;
@@ -46,19 +41,19 @@ namespace Gwupe.Agent.Components.Person
             set { _relationship = value; OnPropertyChanged("Relationship"); }
         }
 
-        internal Attendance(RosterElement element)
-        {
-            Person = new Person(element);
-            this._presence = new MultiPresence();
-        }
-
-        internal Attendance(UserElement element, RelationshipElement relationshipElement) : this(new Person(element), new Relationship(relationshipElement))
+        internal Attendance(UserElement element, RelationshipElement relationshipElement) 
+            : this(new Person(element), new Relationship(relationshipElement))
         {
         }
 
-        internal Attendance(Person person, Relationship relationship)
+        internal Attendance(TeamElement element, RelationshipElement relationshipElement)
+            : this(new Team(element), new Relationship(relationshipElement))
         {
-            Person = person;
+        }
+
+        internal Attendance(Party party, Relationship relationship)
+        {
+            Party = party;
             Relationship = relationship;
             this._presence = new MultiPresence();
         }
@@ -161,7 +156,7 @@ namespace Gwupe.Agent.Components.Person
 
         public override string ToString()
         {
-            return Person.ToString();
+            return Party.ToString();
         }
     }
 }

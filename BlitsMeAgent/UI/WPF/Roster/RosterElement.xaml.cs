@@ -66,7 +66,7 @@ namespace Gwupe.Agent.UI.WPF.Roster
         {
             InitializeComponent();
             Attendance = attendance;
-            ToolTip = "Chat with " + attendance.Person.Firstname;
+            ToolTip = "Chat with " + attendance.Party.Firstname;
             IsCurrent = false;
         }
 

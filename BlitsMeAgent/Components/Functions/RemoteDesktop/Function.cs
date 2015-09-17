@@ -80,7 +80,7 @@ namespace Gwupe.Agent.Components.Functions.RemoteDesktop
                 rdpChatElement.AnsweredTrue += delegate { ProcessAnswer(true); };
                 rdpChatElement.AnsweredFalse += delegate { ProcessAnswer(false); };
                 // There has been an activity, raise the event
-                OnNewActivity(new RemoteDesktopActivity(_engagement, RemoteDesktopActivity.REMOTE_DESKTOP_REQUEST) { To = "_SELF", From = _engagement.SecondParty.Person.Username });
+                OnNewActivity(new RemoteDesktopActivity(_engagement, RemoteDesktopActivity.REMOTE_DESKTOP_REQUEST) { To = "_SELF", From = _engagement.SecondParty.Party.Username });
                 // Now we wait to see what the user does
             }
             //}
@@ -93,24 +93,24 @@ namespace Gwupe.Agent.Components.Functions.RemoteDesktop
             String message;
             if (_engagement.SecondParty.Relationship.TheyHaveUnattendedAccess)
             {
-                message = _engagement.SecondParty.Person.Firstname +
+                message = _engagement.SecondParty.Party.Firstname +
                           " requested control of your desktop. Unattended access will be granted in 10 seconds.";
                 chatElement = new RdpRequestUnattendedChatElement(10)
                 {
                     Message = message,
                     SpeakTime = DateTime.Now,
-                    UserName = _engagement.SecondParty.Person.Username,
+                    UserName = _engagement.SecondParty.Party.Username,
                 };
 
             }
             else
             {
-                message = _engagement.SecondParty.Person.Firstname + " requested control of your desktop.";
+                message = _engagement.SecondParty.Party.Firstname + " requested control of your desktop.";
                 chatElement = new RdpRequestChatElement()
                 {
                     Message = message,
                     SpeakTime = DateTime.Now,
-                    UserName = _engagement.SecondParty.Person.Username,
+                    UserName = _engagement.SecondParty.Party.Username,
                 };
 
             }
@@ -118,7 +118,7 @@ namespace Gwupe.Agent.Components.Functions.RemoteDesktop
             // Notify that there is activity in the chat
             OnNewActivity(new ChatActivity(_engagement, ChatActivity.LOG_RDP_REQUEST)
             {
-                From = _engagement.SecondParty.Person.Username,
+                From = _engagement.SecondParty.Party.Username,
                 To = _appContext.CurrentUserManager.CurrentUser.Username,
                 Message = message
             });
@@ -131,7 +131,7 @@ namespace Gwupe.Agent.Components.Functions.RemoteDesktop
             if (accept)
             {
                 String connectionId = Util.getSingleton().generateString(16);
-                Chat.LogSystemMessage("You accepted the desktop assistance request from " + _engagement.SecondParty.Person.Firstname + ", please wait while they connect to your desktop.  This window will go blue when they are connected.");
+                Chat.LogSystemMessage("You accepted the desktop assistance request from " + _engagement.SecondParty.Party.Firstname + ", please wait while they connect to your desktop.  This window will go blue when they are connected.");
                 try
                 {
                     // this will restart the service if its offline
@@ -166,11 +166,11 @@ namespace Gwupe.Agent.Components.Functions.RemoteDesktop
                 // mark the remote control as not underway
                 //_engagement.IsRemoteControlActive = false;
                 // Log in the chat that we denied the request
-                Chat.LogSystemMessage("You denied the desktop assistance request from " + _engagement.SecondParty.Person.Firstname);
+                Chat.LogSystemMessage("You denied the desktop assistance request from " + _engagement.SecondParty.Party.Firstname);
                 // notify the second party that he cannot connect.
                 SendRdpRequestResponse(false, null, delegate(RDPRequestResponseRq rq, RDPRequestResponseRs rs, Exception arg3) { IsActive = false; });
             }
-            OnNewActivity(new RemoteDesktopActivity(_engagement, RemoteDesktopActivity.REMOTE_DESKTOP_RESPONSE) { To = _engagement.SecondParty.Person.Username, From = "_SELF", Answer = accept });
+            OnNewActivity(new RemoteDesktopActivity(_engagement, RemoteDesktopActivity.REMOTE_DESKTOP_RESPONSE) { To = _engagement.SecondParty.Party.Username, From = "_SELF", Answer = accept });
         }
 
         // generic method to send a response to the remote desktop request
@@ -181,7 +181,7 @@ namespace Gwupe.Agent.Components.Functions.RemoteDesktop
                 {
                     accepted = answer,
                     shortCode = _engagement.SecondParty.ActiveShortCode,
-                    username = _engagement.SecondParty.Person.Username,
+                    username = _engagement.SecondParty.Party.Username,
                     interactionId = _engagement.Interactions.CurrentOrNewInteraction.Id,
                     connectionId = connectionId,
                 };
@@ -193,7 +193,7 @@ namespace Gwupe.Agent.Components.Functions.RemoteDesktop
             }
             catch (Exception e)
             {
-                Logger.Error("Failed to send a RDP request (answer=" + answer + ") to " + _engagement.SecondParty.Person.Username, e);
+                Logger.Error("Failed to send a RDP request (answer=" + answer + ") to " + _engagement.SecondParty.Party.Username, e);
             }
         }
 
@@ -234,7 +234,7 @@ namespace Gwupe.Agent.Components.Functions.RemoteDesktop
         {
             Logger.Info("The remote party has connected to the RDP server");
             IsUnderway = true;
-            OnNewActivity(new RemoteDesktopActivity(_engagement, RemoteDesktopActivity.REMOTE_DESKTOP_CONNECT) { From = _engagement.SecondParty.Person.Username, To = "_SELF" });
+            OnNewActivity(new RemoteDesktopActivity(_engagement, RemoteDesktopActivity.REMOTE_DESKTOP_CONNECT) { From = _engagement.SecondParty.Party.Username, To = "_SELF" });
         }
 
         // This event is fired when the connection to our server is closed
@@ -245,14 +245,14 @@ namespace Gwupe.Agent.Components.Functions.RemoteDesktop
             Logger.Info("Server connection closed, notifying end of service.");
             if (_engagement.SecondParty.Relationship.TheyHaveUnattendedAccess)
             {
-                Chat.LogServiceCompleteMessage("You were just helped by " + _engagement.SecondParty.Person.Name, false);
+                Chat.LogServiceCompleteMessage("You were just helped by " + _engagement.SecondParty.Party.Name, false);
             }
             else
             {
-                Chat.LogServiceCompleteMessage("You were just helped by " + _engagement.SecondParty.Person.Name +
+                Chat.LogServiceCompleteMessage("You were just helped by " + _engagement.SecondParty.Party.Name +
                                                ", please rate their service below.");
             }
-            OnNewActivity(new RemoteDesktopActivity(_engagement, RemoteDesktopActivity.REMOTE_DESKTOP_DISCONNECT) { From = _engagement.SecondParty.Person.Username, To = "_SELF" });
+            OnNewActivity(new RemoteDesktopActivity(_engagement, RemoteDesktopActivity.REMOTE_DESKTOP_DISCONNECT) { From = _engagement.SecondParty.Party.Username, To = "_SELF" });
         }
 
         internal void RequestRdpSession()
@@ -277,7 +277,7 @@ namespace Gwupe.Agent.Components.Functions.RemoteDesktop
             RDPRequestRq request = new RDPRequestRq()
             {
                 shortCode = _engagement.SecondParty.ActiveShortCode,
-                username = _engagement.SecondParty.Person.Username,
+                username = _engagement.SecondParty.Party.Username,
                 interactionId = _engagement.Interactions.CurrentOrNewInteraction.Id,
                 securityKey = securityKey,
                 tokenId = tokenId,
@@ -289,7 +289,7 @@ namespace Gwupe.Agent.Components.Functions.RemoteDesktop
                 try
                 {
                     // Print in chat that we sent the second party a rdp request
-                    Chat.LogSystemMessage("You sent " + _engagement.SecondParty.Person.Firstname + " a request to control their desktop.");
+                    Chat.LogSystemMessage("You sent " + _engagement.SecondParty.Party.Firstname + " a request to control their desktop.");
                     var response = _appContext.ConnectionManager.Connection.Request<RDPRequestRq, RDPRequestRs>(request);
                     // if its unattended, indicate this
                     if (tokenId != null)
@@ -299,7 +299,7 @@ namespace Gwupe.Agent.Components.Functions.RemoteDesktop
                     // The message was delivered
                     IsActive = true;
                     // Raise an activity that we managed to send a rdp request to second party successfully.
-                    OnNewActivity(new RemoteDesktopActivity(_engagement, RemoteDesktopActivity.REMOTE_DESKTOP_REQUEST) { From = "_SELF", To = _engagement.SecondParty.Person.Username });
+                    OnNewActivity(new RemoteDesktopActivity(_engagement, RemoteDesktopActivity.REMOTE_DESKTOP_REQUEST) { From = "_SELF", To = _engagement.SecondParty.Party.Username });
                 }
                 catch (MessageException<RDPRequestRs> e)
                 {
@@ -310,6 +310,20 @@ namespace Gwupe.Agent.Components.Functions.RemoteDesktop
                     } else if ("WILL_NOT_PROCESS_AUTH".Equals(e.ErrorCode))
                     {
                         Chat.LogErrorMessage("Sorry, you entered your password incorrectly.  Please try again.");
+                    } else if ("KEY_NOT_FOUND".Equals(e.ErrorCode))
+                    {
+                        // sometimes the user disappears and comes back with another shortcode, lets try that
+                        if (_engagement.SecondParty.Presence.IsOnline &&
+                            !_engagement.SecondParty.ActiveShortCode.Equals(_engagement.SecondParty.Presence.ShortCode))
+                        {
+                            Logger.Debug("ActiveShortCode is different from current presence shortcode, trying the new one");
+                            _engagement.SecondParty.ActiveShortCode = _engagement.SecondParty.Presence.ShortCode;
+                            RequestRdpSession(tokenId, securityKey);
+                        }
+                        else
+                        {
+                            throw;
+                        }
                     }
                     else
                     {
@@ -320,7 +334,7 @@ namespace Gwupe.Agent.Components.Functions.RemoteDesktop
             catch (Exception ex)
             {
                 Logger.Error("Error during request for RDP Session : " + ex.Message, ex);
-                Chat.LogErrorMessage("An error occured trying to send " + _engagement.SecondParty.Person.Firstname + " a request to control their desktop.");
+                Chat.LogErrorMessage("An error occured trying to send " + _engagement.SecondParty.Party.Firstname + " a request to control their desktop.");
             }
         }
 
@@ -331,13 +345,13 @@ namespace Gwupe.Agent.Components.Functions.RemoteDesktop
             if (
                 GwupeClientAppContext.CurrentAppContext.Elevate(
                     "This connection requires you to verify your identity, please enter your Gwupe password to connect to " +
-                    _engagement.SecondParty.Person.Name + ".", out tokenId, out securityKey))
+                    _engagement.SecondParty.Party.Name + ".", out tokenId, out securityKey))
             {
                 RequestRdpSession(tokenId, securityKey);
             }
             else
             {
-                Chat.LogErrorMessage("Failed to elevate privileges to connect to " + _engagement.SecondParty.Person.Name);
+                Chat.LogErrorMessage("Failed to elevate privileges to connect to " + _engagement.SecondParty.Party.Name);
                 throw new Exception("Failed to gain unattended access through elevation");
             }
         }
@@ -410,7 +424,7 @@ namespace Gwupe.Agent.Components.Functions.RemoteDesktop
         internal void ProcessRemoteDesktopRequestResponse(RDPRequestResponseRq request)
         {
             // Hey, we received an answer, note the activity
-            OnNewActivity(new RemoteDesktopActivity(_engagement, RemoteDesktopActivity.REMOTE_DESKTOP_RESPONSE) { To = "_SELF", From = _engagement.SecondParty.Person.Username, Answer = request.accepted });
+            OnNewActivity(new RemoteDesktopActivity(_engagement, RemoteDesktopActivity.REMOTE_DESKTOP_RESPONSE) { To = "_SELF", From = _engagement.SecondParty.Party.Username, Answer = request.accepted });
             if (request.accepted)
             {
                 // ok, he wants us to control his desktop
@@ -418,28 +432,28 @@ namespace Gwupe.Agent.Components.Functions.RemoteDesktop
                 // note that we are go to remote control second partys desktop
                 //_engagement.IsRemoteControlActive = true;
                 // print message in chat that we are about to go ahead and connect
-                Chat.LogSecondPartySystemMessage(_engagement.SecondParty.Person.Firstname + " accepted your remote assistance request, please wait while we establish a connection...");
+                Chat.LogSecondPartySystemMessage(_engagement.SecondParty.Party.Firstname + " accepted your remote assistance request, please wait while we establish a connection...");
                 try
                 {
                     int port = Client.Start(request.connectionId);
                     String viewerExe = System.IO.Path.GetDirectoryName(Environment.GetCommandLineArgs()[0]) + "\\gwupess.exe";
-                    var parameters = "-username=\"" + _engagement.SecondParty.Person.Name + "\" -copyrect=yes -encoding=tight -compressionlevel=9 -jpegimagequality=3 -scale=auto -host=localhost -port=" + port;
+                    var parameters = "-username=\"" + _engagement.SecondParty.Party.Name + "\" -copyrect=yes -encoding=tight -compressionlevel=9 -jpegimagequality=3 -scale=auto -host=localhost -port=" + port;
                     Logger.Debug("Running " + viewerExe + " " + parameters);
                     _bmssHandle = Process.Start(viewerExe, parameters);
 
                 }
                 catch (Exception e)
                 {
-                    Chat.LogErrorMessage("Failed to create a connection to " + _engagement.SecondParty.Person.Username);
+                    Chat.LogErrorMessage("Failed to create a connection to " + _engagement.SecondParty.Party.Username);
                     IsActive = false;
-                    Logger.Error("Failed to start RDP client to " + _engagement.SecondParty.Person.Username + " : " + e.Message, e);
+                    Logger.Error("Failed to start RDP client to " + _engagement.SecondParty.Party.Username + " : " + e.Message, e);
                     throw e;
                 }
             }
             else
             {
                 IsActive = false;
-                Chat.LogSecondPartySystemMessage(_engagement.SecondParty.Person.Firstname + " did not accept your remote assistance request.");
+                Chat.LogSecondPartySystemMessage(_engagement.SecondParty.Party.Firstname + " did not accept your remote assistance request.");
             }
         }
 
@@ -447,17 +461,17 @@ namespace Gwupe.Agent.Components.Functions.RemoteDesktop
         {
             IsUnderway = true;
             Chat.LogSystemMessage("Launching Gwupe Support Screen...");
-            Logger.Info("RDP client has connected to the proxy to " + _engagement.SecondParty.Person.Username + ".");
-            OnNewActivity(new RemoteDesktopActivity(_engagement, RemoteDesktopActivity.REMOTE_DESKTOP_CONNECT) { From = "_SELF", To = _engagement.SecondParty.Person.Username });
+            Logger.Info("RDP client has connected to the proxy to " + _engagement.SecondParty.Party.Username + ".");
+            OnNewActivity(new RemoteDesktopActivity(_engagement, RemoteDesktopActivity.REMOTE_DESKTOP_CONNECT) { From = "_SELF", To = _engagement.SecondParty.Party.Username });
         }
 
         private void ClientOnConnectionClosed(object sender, EventArgs eventArgs)
         {
             IsUnderway = false;
-            Chat.LogSystemMessage("You disconnected from " + _engagement.SecondParty.Person.Firstname + "'s desktop.");
-            Logger.Info("RDP client has disconnected from the proxy to " + _engagement.SecondParty.Person.Username + ".");
+            Chat.LogSystemMessage("You disconnected from " + _engagement.SecondParty.Party.Firstname + "'s desktop.");
+            Logger.Info("RDP client has disconnected from the proxy to " + _engagement.SecondParty.Party.Username + ".");
             IsActive = false;
-            OnNewActivity(new RemoteDesktopActivity(_engagement, RemoteDesktopActivity.REMOTE_DESKTOP_DISCONNECT) { From = "_SELF", To = _engagement.SecondParty.Person.Username });
+            OnNewActivity(new RemoteDesktopActivity(_engagement, RemoteDesktopActivity.REMOTE_DESKTOP_DISCONNECT) { From = "_SELF", To = _engagement.SecondParty.Party.Username });
         }
 
         public override void Close()

@@ -39,17 +39,17 @@ namespace Gwupe.Agent.UI.WPF.Roster
                             Attendance attendance = filterEventArgs.Item as Attendance;
 
                             if (attendance != null &&
-                                ((attendance.Person.Firstname != null &&
-                                  attendance.Person.Firstname.StartsWith(searchString, true,
+                                ((attendance.Party.Firstname != null &&
+                                  attendance.Party.Firstname.StartsWith(searchString, true,
                                       CultureInfo.CurrentUICulture)) ||
-                                 (attendance.Person.Lastname != null &&
-                                  attendance.Person.Lastname.StartsWith(searchString, true,
+                                 (attendance.Party.Lastname != null &&
+                                  attendance.Party.Lastname.StartsWith(searchString, true,
                                       CultureInfo.CurrentUICulture)) ||
-                                 (attendance.Person.Username != null &&
-                                  attendance.Person.Username.StartsWith(searchString, true,
+                                 (attendance.Party.Username != null &&
+                                  attendance.Party.Username.StartsWith(searchString, true,
                                       CultureInfo.CurrentUICulture)) ||
-                                 (attendance.Person.Email != null &&
-                                  attendance.Person.Email.StartsWith(searchString, true,
+                                 (attendance.Party.Email != null &&
+                                  attendance.Party.Email.StartsWith(searchString, true,
                                       CultureInfo.CurrentUICulture)))
                                 )
                             {

@@ -9,7 +9,7 @@ namespace Gwupe.Agent.Components.Functions.RemoteDesktop.ChatElement
         private readonly Engagement _engagement;
         private readonly String _interactionId;
         private static readonly ILog Logger = LogManager.GetLogger(typeof (ServiceCompleteChatElement));
-        public byte[] Avatar { get { return _engagement.SecondParty.Person.Avatar; }  }
+        public byte[] Avatar { get { return _engagement.SecondParty.Party.Avatar; }  }
 
         internal ServiceCompleteChatElement(Engagement engagement)
         {

@@ -206,7 +206,7 @@
     <DataTemplate x:Key="PersonIcon">
         <Rectangle x:Name="ImageContainer" Width="35" Height="50" StrokeThickness="0" VerticalAlignment="center" HorizontalAlignment="Left" Margin="0">
             <Rectangle.Fill>
-                <ImageBrush Stretch="Uniform" ImageSource="{Binding Path=Person.Avatar, Converter={StaticResource imageStreamReader}}" />
+                <ImageBrush Stretch="Uniform" ImageSource="{Binding Path=Party.Avatar, Converter={StaticResource imageStreamReader}}" />
             </Rectangle.Fill>
         </Rectangle>
     </DataTemplate>
@@ -215,7 +215,7 @@
                             <Setter Property="ContentTemplate" Value="{StaticResource Rating}" />
 							<Setter Property="HorizontalAlignment" Value="Left" />
                             <Style.Triggers>
-                                <DataTrigger Binding="{Binding Person.Rating}" Value="0">
+                                <DataTrigger Binding="{Binding Party.Rating}" Value="0">
                                     <Setter Property="ContentTemplate" Value="{StaticResource Unrated}" />
                                 </DataTrigger>
                             </Style.Triggers>
@@ -237,15 +237,15 @@
                     <RowDefinition Height="Auto"/>
                     <RowDefinition Height="Auto"/>
                 </Grid.RowDefinitions>
-                <TextBlock Text="{Binding Path=Person.Name, FallbackValue=FirstName LastName}" Width="110" 
+                <TextBlock Text="{Binding Path=Party.Name, FallbackValue=FirstName LastName}" Width="110" 
                            Grid.Row="0" FontSize="13" FontWeight="ExtraBlack" HorizontalAlignment="Left"
                            Margin="0,0,0,0"/>
 
-                <TextBlock  Text="{Binding Path=Person.Location, FallbackValue=Planet Earth}" Grid.Row="1" 
+                <TextBlock  Text="{Binding Path=Party.Location, FallbackValue=Planet Earth}" Grid.Row="1" 
                            Width="110" HorizontalAlignment="Left" Margin="0,0,0,0"/>
 
                 <!--<Engage:GetContactListRating Grid.Row="2" HorizontalAlignment="Left" Margin="10,0,0,0"/>-->
-                <ContentControl Content="{Binding Person.Rating}" Grid.Row="3" Style="{StaticResource StarStyle}">
+                <ContentControl Content="{Binding Party.Rating}" Grid.Row="3" Style="{StaticResource StarStyle}">
                 </ContentControl>
             </Grid>
 			<!--
@@ -271,19 +271,19 @@
                     <RowDefinition Height="Auto"/>
                     <RowDefinition Height="Auto"/>
                 </Grid.RowDefinitions>
-                <TextBlock Text="{Binding Path=Person.Name, FallbackValue=FirstName LastName}" Grid.Row="0" 
+                <TextBlock Text="{Binding Path=Party.Name, FallbackValue=FirstName LastName}" Grid.Row="0" 
                            FontSize="13" FontWeight="ExtraBlack" HorizontalAlignment="Left" Margin="0,0,0,0"/>
 
-                <TextBlock  Text="{Binding Path=Person.Location, FallbackValue=Planet Earth}" Grid.Row="1" 
+                <TextBlock  Text="{Binding Path=Party.Location, FallbackValue=Planet Earth}" Grid.Row="1" 
                            Width="110" HorizontalAlignment="Left" Margin="0,0,0,0"/>
 
                 <!-- <Engage:GetContactListRating Grid.Row="2" HorizontalAlignment="Left" Margin="10,0,0,0"/>-->
-                <ContentControl Content="{Binding Person.Rating}" HorizontalAlignment="Left" Grid.Row="2" Margin="0,0,0,0">
+                <ContentControl Content="{Binding Party.Rating}" HorizontalAlignment="Left" Grid.Row="2" Margin="0,0,0,0">
                     <ContentControl.Style>
                         <Style TargetType="{x:Type ContentControl}">
                             <Setter Property="ContentTemplate" Value="{StaticResource Rating}" />
                             <Style.Triggers>
-                                <DataTrigger Binding="{Binding Person.Rating}" Value="0">
+                                <DataTrigger Binding="{Binding Party.Rating}" Value="0">
                                     <Setter Property="ContentTemplate" Value="{StaticResource Unrated}" />
                                 </DataTrigger>
                             </Style.Triggers>
@@ -309,21 +309,21 @@
                     <RowDefinition Height="Auto"/>
                     <RowDefinition Height="Auto"/>
                 </Grid.RowDefinitions>
-                <TextBlock Text="{Binding Path=Person.Name, FallbackValue=FirstName LastName}"  
+                <TextBlock Text="{Binding Path=Party.Name, FallbackValue=FirstName LastName}"  
                            Grid.Row="0" HorizontalAlignment="Left" Margin="0,0,0,0"
                            FontSize="13" FontWeight="ExtraBlack"/>
 
-                <TextBlock Text="{Binding Path=Person.Location, FallbackValue=Planet Earth}" Grid.Row="1" 
+                <TextBlock Text="{Binding Path=Party.Location, FallbackValue=Planet Earth}" Grid.Row="1" 
                            Width="110" HorizontalAlignment="Left" Margin="0,0,0,0"/>
 
                 <!--<Engage:GetContactListRating Grid.Row="2" HorizontalAlignment="Left" Margin="10,0,0,0"/> -->
 
-                <ContentControl Content="{Binding Person.Rating}" HorizontalAlignment="Left" Grid.Row="2" Margin="0,0,0,0">
+                <ContentControl Content="{Binding Party.Rating}" HorizontalAlignment="Left" Grid.Row="2" Margin="0,0,0,0">
                     <ContentControl.Style>
                         <Style TargetType="{x:Type ContentControl}">
                             <Setter Property="ContentTemplate" Value="{StaticResource Rating}" />
                             <Style.Triggers>
-                                <DataTrigger Binding="{Binding Person.Rating}" Value="0">
+                                <DataTrigger Binding="{Binding Party.Rating}" Value="0">
                                     <Setter Property="ContentTemplate" Value="{StaticResource Unrated}" />
                                 </DataTrigger>
                             </Style.Triggers>
@@ -347,20 +347,20 @@
                     <RowDefinition Height="Auto"/>
                     <RowDefinition Height="Auto"/>
                 </Grid.RowDefinitions>
-                <TextBlock Text="{Binding Path=Person.Name, FallbackValue=FirstName LastName}" Width="110" Grid.Row="0" 
+                <TextBlock Text="{Binding Path=Party.Name, FallbackValue=FirstName LastName}" Width="110" Grid.Row="0" 
                            FontSize="13" FontWeight="ExtraBlack" HorizontalAlignment="Left" Margin="10,0,0,0"/>
 
-                <TextBlock Text="{Binding Path=Person.Location, FallbackValue=Planet Earth}" Grid.Row="1" 
+                <TextBlock Text="{Binding Path=Party.Location, FallbackValue=Planet Earth}" Grid.Row="1" 
                            Width="110" HorizontalAlignment="Left" Margin="10,0,0,0"/>
 
                 <!-- <Engage:GetContactListRating Grid.Row="2" HorizontalAlignment="Left" Margin="10,0,0,0"/>-->
-                <ContentControl Content="{Binding Person.Rating}" HorizontalAlignment="Center" Grid.Row="2"
+                <ContentControl Content="{Binding Party.Rating}" HorizontalAlignment="Center" Grid.Row="2"
                                 Width="110">
                     <ContentControl.Style>
                         <Style TargetType="{x:Type ContentControl}">
                             <Setter Property="ContentTemplate" Value="{StaticResource Rating}" />
                             <Style.Triggers>
-                                <DataTrigger Binding="{Binding Person.Rating}" Value="0">
+                                <DataTrigger Binding="{Binding Party.Rating}" Value="0">
                                     <Setter Property="ContentTemplate" Value="{StaticResource Unrated}" />
                                 </DataTrigger>
                             </Style.Triggers>

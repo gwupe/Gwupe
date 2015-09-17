@@ -63,7 +63,7 @@ namespace Gwupe.Agent.Components
 
         internal void Expire()
         {
-            Logger.Debug("Interaction " + _id + " with " + _engagement.SecondParty.Person.Username + " expired");
+            Logger.Debug("Interaction " + _id + " with " + _engagement.SecondParty.Party.Username + " expired");
             _expired = true;
         }
 

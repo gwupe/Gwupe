@@ -139,7 +139,7 @@ namespace Gwupe.Agent.UI.WPF
 	            request = new SignupTeamRq()
 	            {
 	                email = Email.Text.Trim(),
-	                teamname = Teamname.Text.Trim(),
+	                teamName = Teamname.Text.Trim(),
 	                location = Location.Text.Trim(),
 	                uniqueHandle = Username.Text.Trim(),
 	                supporter = Supporter.IsChecked == true

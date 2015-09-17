@@ -346,8 +346,8 @@ namespace Gwupe.Agent.Managers
             try
             {
                 loginRs = _appContext.ConnectionManager.Connection.Request<LoginRq, LoginRs>(loginRq);
-                _appContext.RosterManager.RetrieveRoster();
                 _appContext.CurrentUserManager.SetUser(loginRs.userElement, loginRs.shortCode);
+                _appContext.RosterManager.RetrieveRoster();
                 if (loginRs.partnerElement != null)
                 {
                     _appContext.SettingsManager.Partner = new Partner()
@@ -390,7 +390,17 @@ namespace Gwupe.Agent.Managers
             OnLoggedIn();
             Logger.Info("Login success : " + _appContext.CurrentUserManager.CurrentUser.Username + "!" + _appContext.CurrentUserManager.ActiveShortCode + "@" + LoginDetails.Profile + "-" +
                         LoginDetails.Workstation);
-
+            // can fetch the team in the background
+            ThreadPool.QueueUserWorkItem(state => {
+                                                      try
+                                                      {
+                                                          _appContext.TeamManager.RetrieveTeams();
+                                                      }
+                                                      catch (Exception e)
+                                                      {
+                                                          Logger.Error("Failed to retrieve teams during login",e);
+                                                      }
+            });
         }
 
         public void Signup(String firstname, String lastname, String username, String password, String email, String location, bool supporter)

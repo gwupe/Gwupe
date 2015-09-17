@@ -38,11 +38,11 @@ namespace Gwupe.Agent.UI.WPF.Engage
         public EngagementWindow GetEngagementWindow(Attendance attendance)
         {
             // Call the engagement manager to get the engagement (which will add it if it doesn't exist and also dynamically create a egw due to the mirroring)
-            if(_appContext.EngagementManager.GetNewEngagement(attendance.Person.Username) != null)
+            if (_appContext.EngagementManager.GetNewEngagement(attendance.Party.Username) != null)
             {
-                if (ListLookup.ContainsKey(attendance.Person.Username))
+                if (ListLookup.ContainsKey(attendance.Party.Username))
                 {
-                    return ListLookup[attendance.Person.Username];
+                    return ListLookup[attendance.Party.Username];
                 }
             }
             return null;

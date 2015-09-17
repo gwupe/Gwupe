@@ -40,14 +40,14 @@ namespace Gwupe.Agent.UI.WPF.Engage
             private SendMessageCommand _sendMessage;
             private readonly GwupeClientAppContext _appContext;
             //private readonly ChatWindow _chatWindow;
-            public Person Self { get; private set; }
+            public Party Self { get; private set; }
             //public DispatchingCollection<ObservableCollection<ChatElement>, ChatElement> Exchange { get; private set; }
 
             public ChatWindowDataContext(GwupeClientAppContext appContext, Engagement engagement)
             {
                 this._appContext = appContext;
                 //this._chatWindow = chatWindow;
-                Self = engagement.SecondParty.Person;
+                Self = engagement.SecondParty.Party;
                 //  this.Exchange =
                 //    new DispatchingCollection<ObservableCollection<ChatElement>, ChatElement>(
                 //      _chatWindow._chat.Conversation.Exchange, chatWindow.Dispatcher);

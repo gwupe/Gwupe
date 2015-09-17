@@ -37,7 +37,7 @@ namespace Gwupe.Agent.UI.WPF.Engage
             {
                 ThreadPool.QueueUserWorkItem(state => GwupeClientAppContext.CurrentAppContext.UIManager.Alert(
                     "Please note, that by checking this box, you are allowing " +
-                    _dataContext.Engagement.SecondParty.Person.Name +
+                    _dataContext.Engagement.SecondParty.Party.Name +
                     " to access your desktop without prompting you for authorization. This is a potential security risk, please click OK to indicate you understand and accept the risks associated with this setting."));
             }
         }
@@ -62,13 +62,13 @@ namespace Gwupe.Agent.UI.WPF.Engage
                 };
                 Dispatcher.Invoke(new Action(() => { relationship.TheyHaveUnattendedAccess = (UnattendedAccessCheckbox.IsChecked == true); }));
                 GwupeClientAppContext.CurrentAppContext.RosterManager.UpdateRelationship(
-                    _dataContext.Engagement.SecondParty.Person.Username,
+                    _dataContext.Engagement.SecondParty.Party.Username,
                     relationship, tokenId, securityKey);
                 _updatedRelationship = true;
             }
             catch (Exception ex)
             {
-                Logger.Error("Failed to update the relationship to " + _dataContext.Engagement.SecondParty.Person.Username + " : " + ex.Message, ex);
+                Logger.Error("Failed to update the relationship to " + _dataContext.Engagement.SecondParty.Party.Username + " : " + ex.Message, ex);
                 UiHelper.Validator.SetError("Failed to save changes to server");
             }
         }

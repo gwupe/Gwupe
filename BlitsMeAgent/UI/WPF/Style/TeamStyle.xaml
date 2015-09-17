@@ -1,0 +1,67 @@
+﻿<ResourceDictionary
+	xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" 
+	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    <ResourceDictionary.MergedDictionaries>
+        <ResourceDictionary Source="Style.xaml" />
+        <ResourceDictionary Source="Theme.xaml" />
+    </ResourceDictionary.MergedDictionaries>
+    <!-- Resource dictionary entries should be defined here. -->
+    <Style x:Key="TeamInActive" TargetType="StackPanel">
+        <Setter Property="Background" Value="#DCE6F2" />
+        <Setter Property="Width" Value="80" />
+        <Setter Property="Margin" Value="1" />
+        <Style.Triggers></Style.Triggers>
+    </Style>
+
+    <Style x:Key="TeamActive" TargetType="StackPanel" BasedOn="{StaticResource TeamInActive}">
+        <Setter Property="Background" Value="#B9CDE5" />
+    </Style>
+
+    <DataTemplate x:Key="TeamIcon">
+        <StackPanel Orientation="Vertical" Style="{StaticResource ResourceKey=TeamInActive}">
+            <Grid HorizontalAlignment="Stretch" Margin="5,5,5,0">
+                <Rectangle x:Name="ImageContainer" Height="32" Width="32" StrokeThickness="0" VerticalAlignment="center" HorizontalAlignment="Center" ToolTip="{Binding Name}">
+                    <Rectangle.Fill>
+                        <ImageBrush Stretch="Uniform" ImageSource="{Binding Path=Avatar, Converter={StaticResource imageStreamReader}}" />
+                    </Rectangle.Fill>
+                </Rectangle>
+            </Grid>
+            <TextBlock Text="{Binding Path=Name, FallbackValue=Team Name}" FontSize="10" HorizontalAlignment="Center" MaxWidth="74"/>
+        </StackPanel>
+    </DataTemplate>
+
+    <DataTemplate x:Key="TeamIconSelected">
+        <StackPanel Orientation="Vertical" Style="{StaticResource ResourceKey=TeamActive}">
+            <Grid HorizontalAlignment="Stretch" Margin="5,5,5,0">
+                <Rectangle x:Name="ImageContainer" Height="32" Width="32" StrokeThickness="0" VerticalAlignment="center" HorizontalAlignment="Center" ToolTip="{Binding Name}">
+                    <Rectangle.Fill>
+                        <ImageBrush Stretch="Uniform" ImageSource="{Binding Path=Avatar, Converter={StaticResource imageStreamReader}}" />
+                    </Rectangle.Fill>
+                </Rectangle>
+            </Grid>
+            <TextBlock Text="{Binding Path=Name, FallbackValue=Team Name}" FontSize="10" HorizontalAlignment="Center" MaxWidth="74"/>
+        </StackPanel>
+    </DataTemplate>
+
+    <Style TargetType="{x:Type ListBoxItem}" x:Key="TeamIconContainerStyle" >
+        <EventSetter Event="ListBoxItem.Selected" Handler="TeamSelected" HandledEventsToo="True"/>
+        <Setter Property="OverridesDefaultStyle" Value="true"/>
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="{x:Type ListBoxItem}">
+                    <ContentPresenter x:Name="TeamPresenter"/>
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="IsSelected" Value="True">
+                            <Setter TargetName="TeamPresenter" Property="ContentTemplate" Value="{StaticResource TeamIconSelected}" />
+                        </Trigger>
+                        <Trigger Property="IsSelected" Value="False">
+                            <Setter TargetName="TeamPresenter" Property="ContentTemplate" Value="{StaticResource TeamIcon}" />
+                        </Trigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+    
+
+</ResourceDictionary>

@@ -81,7 +81,7 @@ namespace Gwupe.Agent.Managers
                     var peer = GetPeerInfoFromResponse(response);
                     peer.FacilitatorRepeatedEndPoint = pendingTunnel.FacilitatorEndPoint;
                     pendingTunnel.TunnelEndpoint.Sync(peer, response.uniqueId, GwupeClientAppContext.CurrentAppContext.SettingsManager.SyncTypes);
-                    Logger.Info("Successfully completed outgoing tunnel with " + secondParty.Person.Username + "-" + secondParty.ActiveShortCode + " [" + response.uniqueId + "]");
+                    Logger.Info("Successfully completed outgoing tunnel with " + secondParty.Party.Username + "-" + secondParty.ActiveShortCode + " [" + response.uniqueId + "]");
                 }
                 catch (Exception e)
                 {

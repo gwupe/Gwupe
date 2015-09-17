@@ -59,7 +59,7 @@ namespace Gwupe.Agent.UI.WPF
         private SearchWindow _searchWindow;
         private UserInfoControl _userInfoControl;
         private Settings _settings;
-        private TeamManagement _teamManagement;
+        private Team.TeamManagement _teamManagement;
         private Timer _searchCountDown;
         private readonly Object _searchLock = new Object();
         internal DashboardDataContext DashboardData;
@@ -467,7 +467,7 @@ namespace Gwupe.Agent.UI.WPF
 
         private void SetupRoster()
         {
-            dispatchingCollection = new DispatchingCollection<ObservableCollection<Attendance>, Attendance>(_appContext.RosterManager.ServicePersonAttendanceList, Dispatcher);
+            dispatchingCollection = new DispatchingCollection<ObservableCollection<Attendance>, Attendance>(_appContext.RosterManager.ServicePartyAttendanceList, Dispatcher);
 
             AllRosterList = new MainRosterList(dispatchingCollection, AllContacts);
             AllContacts.LostFocus += Contacts_LostFocus;
@@ -638,7 +638,7 @@ namespace Gwupe.Agent.UI.WPF
                 }
                 else
                 {
-                    Logger.Error("Failed to find an engagement window for " + attendance.Person);
+                    Logger.Error("Failed to find an engagement window for " + attendance.Party);
                 }
             }
         }
@@ -957,7 +957,7 @@ namespace Gwupe.Agent.UI.WPF
         {
             if (_teamManagement == null)
             {
-                _teamManagement = new TeamManagement();
+                _teamManagement = new Team.TeamManagement();
             }
             // Clear currently engaged
             var currentEngaged = _appContext.RosterManager.CurrentlyEngaged;

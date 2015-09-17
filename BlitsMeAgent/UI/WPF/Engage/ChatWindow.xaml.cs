@@ -57,7 +57,7 @@ namespace Gwupe.Agent.UI.WPF.Engage
                 ChatPanelViewer.ScrollToBottom();
                 if (_lastMessage.Day != DateTime.Now.Day)
                 {
-                    Logger.Debug("Rolling over into new day, adjusting times in " + _engagementWindow.Engagement.SecondParty.Person.Username);
+                    Logger.Debug("Rolling over into new day, adjusting times in " + _engagementWindow.Engagement.SecondParty.Party.Username);
                     // This is to make sure that all the items 'friendly dates' remain correct on midnight rollover
                     ChatPanel.Items.Refresh();
                 }

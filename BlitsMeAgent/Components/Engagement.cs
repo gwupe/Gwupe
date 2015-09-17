@@ -63,7 +63,7 @@ namespace Gwupe.Agent.Components
         }
 
 
-        public String SecondPartyUsername { get { return SecondParty == null ? null : SecondParty.Person.Username; } }
+        public String SecondPartyUsername { get { return SecondParty == null ? null : SecondParty.Party.Username; } }
 
         // This is to made sure the tunnel updates if the shortcode change (in other words we start talking with a different resource)
         private void SecondPartyPropertyChanged(object sender, PropertyChangedEventArgs e)
@@ -112,7 +112,7 @@ namespace Gwupe.Agent.Components
                 if (_active != value)
                 {
                     _active = value;
-                    Logger.Debug("Engagement with " + SecondParty.Person.Username + " has become " + (_active ? "active" : "inactive"));
+                    Logger.Debug("Engagement with " + SecondParty.Party.Username + " has become " + (_active ? "active" : "inactive"));
                     if (_active)
                     {
                         OnActivate(EventArgs.Empty);
@@ -414,7 +414,7 @@ namespace Gwupe.Agent.Components
 
         public void SetRating(string interactionId, string ratingName, int rating)
         {
-            var request = new RateRq {username = SecondParty.Person.Username, interactionId = interactionId, ratingName = ratingName, rating = rating};
+            var request = new RateRq { username = SecondParty.Party.Username, interactionId = interactionId, ratingName = ratingName, rating = rating };
             try
             {
                 _appContext.ConnectionManager.Connection.RequestAsync<RateRq, RateRs>(request, ProcessRateResponse);
@@ -433,7 +433,7 @@ namespace Gwupe.Agent.Components
             }
             else
             {
-                Logger.Debug("Successfully rated " + SecondParty.Person.Username + " " + request.rating + " for " +
+                Logger.Debug("Successfully rated " + SecondParty.Party.Username + " " + request.rating + " for " +
                              request.ratingName + " for interaction " + request.interactionId);
             }
         }

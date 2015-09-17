@@ -54,7 +54,7 @@ namespace Gwupe.Agent.Components.Functions.FileSend
                 FileSendRequestRq request = new FileSendRequestRq()
                     {
                         shortCode = _engagement.SecondParty.ActiveShortCode,
-                        username = _engagement.SecondParty.Person.Username,
+                        username = _engagement.SecondParty.Party.Username,
                         filename = fileInfo.Filename,
                         fileSize = fileInfo.FileSize,
                         fileSendId = fileInfo.FileSendId,
@@ -62,38 +62,38 @@ namespace Gwupe.Agent.Components.Functions.FileSend
                     };
                 try
                 {
-                    Chat.LogSystemMessage(string.Format("Sending {0} the file {1}, waiting for acceptance.", _engagement.SecondParty.Person.Firstname, filename));
+                    Chat.LogSystemMessage(string.Format("Sending {0} the file {1}, waiting for acceptance.", _engagement.SecondParty.Party.Firstname, filename));
                     _appContext.ConnectionManager.Connection.RequestAsync<FileSendRequestRq, FileSendRequestRs>(request,
                                                                           (req, res, ex) =>
                                                                           ProcessFileSendRequestRs(req, res, ex,
                                                                                                          fileInfo));
-                    Logger.Info("Requested to send " + fileInfo.Filename + " to " + _engagement.SecondParty.Person.Username);
+                    Logger.Info("Requested to send " + fileInfo.Filename + " to " + _engagement.SecondParty.Party.Username);
                     fileInfo.State = FileSendState.PendingSend;
                     _pendingFileSends.Add(request.fileSendId, fileInfo);
                     IsActive = true;
                     var notification = new CancellableNotification()
                     {
-                        AssociatedUsername = _engagement.SecondParty.Person.Username,
-                        Message = "Offering " + _engagement.SecondParty.Person.Firstname + " " + fileInfo.Filename,
+                        AssociatedUsername = _engagement.SecondParty.Party.Username,
+                        Message = "Offering " + _engagement.SecondParty.Party.Firstname + " " + fileInfo.Filename,
                         CancelTooltip = "Cancel File Send",
                         Id = fileInfo.FileSendId
                     };
                     notification.Cancelled += (sender, args) => CancelFileOffer(fileInfo);
                     fileInfo.Notification = notification;
                     _appContext.NotificationManager.AddNotification(notification);
-                    OnNewActivity(new FileSendActivity(_engagement, FileSendActivity.FILE_SEND_REQUEST) { From = "_SELF", To = _engagement.SecondParty.Person.Username, FileInfo = fileInfo });
+                    OnNewActivity(new FileSendActivity(_engagement, FileSendActivity.FILE_SEND_REQUEST) { From = "_SELF", To = _engagement.SecondParty.Party.Username, FileInfo = fileInfo });
                 }
                 catch (Exception ex)
                 {
                     Logger.Error("Error during request for File Send : " + ex.Message, ex);
-                    Chat.LogErrorMessage("An error occured trying to send " + _engagement.SecondParty.Person.Firstname +
+                    Chat.LogErrorMessage("An error occured trying to send " + _engagement.SecondParty.Party.Firstname +
                                                       " a request to send them a file.");
                 }
             }
             catch (Exception ex)
             {
                 Logger.Error("Error setting up request for file send : " + ex.Message, ex);
-                Chat.LogErrorMessage("An error occured trying to send " + _engagement.SecondParty.Person.Firstname + " a request to send them a file.");
+                Chat.LogErrorMessage("An error occured trying to send " + _engagement.SecondParty.Party.Firstname + " a request to send them a file.");
             }
         }
 
@@ -104,13 +104,13 @@ namespace Gwupe.Agent.Components.Functions.FileSend
             {
                 FileSendInfo fileInfo = _pendingFileSends[fileSendId];
                 _appContext.NotificationManager.DeleteNotification(fileInfo.Notification);
-                OnNewActivity(new FileSendActivity(_engagement, FileSendActivity.FILE_SEND_RESPONSE) { To = "_SELF", From = _engagement.SecondParty.Person.Username, FileInfo = fileInfo, Answer = accepted });
+                OnNewActivity(new FileSendActivity(_engagement, FileSendActivity.FILE_SEND_RESPONSE) { To = "_SELF", From = _engagement.SecondParty.Party.Username, FileInfo = fileInfo, Answer = accepted });
                 if (accepted)
                 {
 
                     fileInfo.State = FileSendState.Sending;
-                    Logger.Info("File send of file " + fileInfo.Filename + " accepted by " + _engagement.SecondParty.Person.Name);
-                    Chat.LogSystemMessage(_engagement.SecondParty.Person.Firstname + " accepted your request to send " +
+                    Logger.Info("File send of file " + fileInfo.Filename + " accepted by " + _engagement.SecondParty.Party.Name);
+                    Chat.LogSystemMessage(_engagement.SecondParty.Party.Firstname + " accepted your request to send " +
                                           fileInfo.Filename);
                     fileInfo.FileSender = new FileSendClient(_engagement.SecondParty, fileInfo);
                     var notification = ShowFileProgressNotification(fileInfo);
@@ -127,7 +127,7 @@ namespace Gwupe.Agent.Components.Functions.FileSend
                     OnNewActivity(new FileSendActivity(_engagement, FileSendActivity.FILE_SEND_START)
                     {
                         From = "_SELF",
-                        To = _engagement.SecondParty.Person.Username,
+                        To = _engagement.SecondParty.Party.Username,
                         FileInfo = fileInfo
                     });
                     /*}
@@ -147,9 +147,9 @@ namespace Gwupe.Agent.Components.Functions.FileSend
                 }
                 else
                 {
-                    Chat.LogSystemMessage(_engagement.SecondParty.Person.Firstname + " refused " + fileInfo.Filename);
+                    Chat.LogSystemMessage(_engagement.SecondParty.Party.Firstname + " refused " + fileInfo.Filename);
                     RemovePendingFileSend(fileInfo.FileSendId);
-                    Logger.Info("File send of file " + fileInfo.Filename + " rejected by " + _engagement.SecondParty.Person.Name);
+                    Logger.Info("File send of file " + fileInfo.Filename + " rejected by " + _engagement.SecondParty.Party.Name);
                 }
             }
             else
@@ -163,10 +163,10 @@ namespace Gwupe.Agent.Components.Functions.FileSend
         {
             if (e != null)
             {
-                Chat.LogSystemMessage("An error occured trying to send " + _engagement.SecondParty.Person.Username + " a request to send them " + fileInfo.Filename);
+                Chat.LogSystemMessage("An error occured trying to send " + _engagement.SecondParty.Party.Username + " a request to send them " + fileInfo.Filename);
                 Logger.Error("Failed to send file send request for " + fileInfo.Filename);
                 RemovePendingFileSend(fileInfo.FileSendId);
-                OnNewActivity(new FileSendActivity(_engagement, FileSendActivity.FILE_SEND_REQUEST_FAILED) { From = "_SELF", To = _engagement.SecondParty.Person.Username, FileInfo = fileInfo });
+                OnNewActivity(new FileSendActivity(_engagement, FileSendActivity.FILE_SEND_REQUEST_FAILED) { From = "_SELF", To = _engagement.SecondParty.Party.Username, FileInfo = fileInfo });
             }
             else
             {
@@ -176,10 +176,10 @@ namespace Gwupe.Agent.Components.Functions.FileSend
         // Called when the offering of the file is cancelled by this user
         private void CancelFileOffer(FileSendInfo fileInfo)
         {
-            Chat.LogSystemMessage("You stopped offering " + fileInfo.Filename + " to " + _engagement.SecondParty.Person.Firstname);
+            Chat.LogSystemMessage("You stopped offering " + fileInfo.Filename + " to " + _engagement.SecondParty.Party.Firstname);
             Logger.Debug("User cancelled the file send for " + fileInfo.Filename);
             RemovePendingFileSend(fileInfo.FileSendId);
-            OnNewActivity(new FileSendActivity(_engagement, FileSendActivity.FILE_SEND_CANCEL_REQUEST) { From = "_SELF", To = _engagement.SecondParty.Person.Username, FileInfo = fileInfo });
+            OnNewActivity(new FileSendActivity(_engagement, FileSendActivity.FILE_SEND_CANCEL_REQUEST) { From = "_SELF", To = _engagement.SecondParty.Party.Username, FileInfo = fileInfo });
         }
 
         #endregion
@@ -189,7 +189,7 @@ namespace Gwupe.Agent.Components.Functions.FileSend
         // Called when someone is requesting to send a file to us
         internal void ProcessIncomingFileSendRequest(string filename, string fileSendId, long fileSize)
         {
-            Logger.Info(_engagement.SecondParty.Person.Username + " requests to send the file " + filename);
+            Logger.Info(_engagement.SecondParty.Party.Username + " requests to send the file " + filename);
 
             var fileSendInfo = new FileSendInfo()
                 {
@@ -201,10 +201,10 @@ namespace Gwupe.Agent.Components.Functions.FileSend
                 };
             IsActive = true;
             _pendingFileReceives.Add(fileSendId, fileSendInfo);
-            FileSendRequestChatElement chatElement = LogFileSendRequest(_engagement.SecondParty.Person.Firstname + " offered you the file " + filename + ".", _engagement.SecondParty.Person.Username);
+            FileSendRequestChatElement chatElement = LogFileSendRequest(_engagement.SecondParty.Party.Firstname + " offered you the file " + filename + ".", _engagement.SecondParty.Party.Username);
             chatElement.AnsweredTrue += (sender, args) => ProcessAcceptFile(fileSendInfo);
             chatElement.AnsweredFalse += (sender, args) => ProcessDenyFile(fileSendInfo);
-            OnNewActivity(new FileSendActivity(_engagement, FileSendActivity.FILE_SEND_REQUEST) { To = "_SELF", From = _engagement.SecondParty.Person.Username, FileInfo = fileSendInfo });
+            OnNewActivity(new FileSendActivity(_engagement, FileSendActivity.FILE_SEND_REQUEST) { To = "_SELF", From = _engagement.SecondParty.Party.Username, FileInfo = fileSendInfo });
         }
 
         // We call this when we denies secondparty the request to send the file to us
@@ -212,12 +212,12 @@ namespace Gwupe.Agent.Components.Functions.FileSend
         {
             fileInfo.State = FileSendState.ReceiveCancelled;
             RemovePendingFileReceive(fileInfo.FileSendId);
-            Logger.Info("Denied request from " + _engagement.SecondParty.Person.Name + " to send the file " + fileInfo.Filename);
-            Chat.LogSystemMessage("You refused " + fileInfo.Filename + " from " + _engagement.SecondParty.Person.Firstname + ".");
+            Logger.Info("Denied request from " + _engagement.SecondParty.Party.Name + " to send the file " + fileInfo.Filename);
+            Chat.LogSystemMessage("You refused " + fileInfo.Filename + " from " + _engagement.SecondParty.Party.Firstname + ".");
             FileSendRequestResponseRq request = new FileSendRequestResponseRq()
             {
                 shortCode = _engagement.SecondParty.ActiveShortCode,
-                username = _engagement.SecondParty.Person.Username,
+                username = _engagement.SecondParty.Party.Username,
                 fileSendId = fileInfo.FileSendId,
                 accepted = false,
                 interactionId = _engagement.Interactions.CurrentOrNewInteraction.Id
@@ -234,25 +234,25 @@ namespace Gwupe.Agent.Components.Functions.FileSend
                     }
                     else
                     {
-                        OnNewActivity(new FileSendActivity(_engagement, FileSendActivity.FILE_SEND_RESPONSE) { From = "_SELF", To = _engagement.SecondParty.Person.Username, FileInfo = fileInfo, Answer = false });
+                        OnNewActivity(new FileSendActivity(_engagement, FileSendActivity.FILE_SEND_RESPONSE) { From = "_SELF", To = _engagement.SecondParty.Party.Username, FileInfo = fileInfo, Answer = false });
                     }
                 });
             }
             catch (Exception e)
             {
-                Logger.Error("Failed to send a file acceptance request for file " + fileInfo.Filename + "[" + fileInfo.FileSendId + "] to " + _engagement.SecondParty.Person.Username);
+                Logger.Error("Failed to send a file acceptance request for file " + fileInfo.Filename + "[" + fileInfo.FileSendId + "] to " + _engagement.SecondParty.Party.Username);
             }
         }
 
         // Called when this user accepts a file
         private void ProcessAcceptFile(FileSendInfo fileInfo)
         {
-            Logger.Info("Accepted request from " + _engagement.SecondParty.Person.Username + " to send the file " + fileInfo.Filename);
+            Logger.Info("Accepted request from " + _engagement.SecondParty.Party.Username + " to send the file " + fileInfo.Filename);
             //Chat.LogSystemMessage("Accepted " + fileInfo.Filename + ".");
             FileSendRequestResponseRq request = new FileSendRequestResponseRq()
             {
                 shortCode = _engagement.SecondParty.ActiveShortCode,
-                username = _engagement.SecondParty.Person.Username,
+                username = _engagement.SecondParty.Party.Username,
                 interactionId = _engagement.Interactions.CurrentOrNewInteraction.Id,
                 fileSendId = fileInfo.FileSendId,
                 accepted = true
@@ -274,7 +274,7 @@ namespace Gwupe.Agent.Components.Functions.FileSend
             }
             catch (Exception e)
             {
-                Logger.Error("Failed to send a file acceptance request for file " + fileInfo.Filename + "[" + fileInfo.FileSendId + "] to " + _engagement.SecondParty.Person.Username);
+                Logger.Error("Failed to send a file acceptance request for file " + fileInfo.Filename + "[" + fileInfo.FileSendId + "] to " + _engagement.SecondParty.Party.Username);
             }
         }
 
@@ -292,7 +292,7 @@ namespace Gwupe.Agent.Components.Functions.FileSend
                 }
                 else
                 {
-                    OnNewActivity(new FileSendActivity(_engagement, FileSendActivity.FILE_SEND_RESPONSE) { From = "_SELF", To = _engagement.SecondParty.Person.Username, FileInfo = fileInfo, Answer = true });
+                    OnNewActivity(new FileSendActivity(_engagement, FileSendActivity.FILE_SEND_RESPONSE) { From = "_SELF", To = _engagement.SecondParty.Party.Username, FileInfo = fileInfo, Answer = true });
                 }
             }
         }
@@ -309,19 +309,19 @@ namespace Gwupe.Agent.Components.Functions.FileSend
             {
                 var fileReceivedNotification = new FileReceivedNotification
                     {
-                        AssociatedUsername = _engagement.SecondParty.Person.Username,
+                        AssociatedUsername = _engagement.SecondParty.Party.Username,
                         FileInfo = fileInfo
                     };
                 _appContext.NotificationManager.AddNotification(fileReceivedNotification);
                 Chat.LogSystemMessage("Successfully received the file " + fileInfo.Filename);
-                OnNewActivity(new FileSendActivity(_engagement, FileSendActivity.FILE_SEND_COMPLETE) { To = "_SELF", From = _engagement.SecondParty.Person.Username, FileInfo = fileInfo });
+                OnNewActivity(new FileSendActivity(_engagement, FileSendActivity.FILE_SEND_COMPLETE) { To = "_SELF", From = _engagement.SecondParty.Party.Username, FileInfo = fileInfo });
             }
             else
             {
                 if (fileInfo.State != FileSendState.ReceiveCancelled)
                     Chat.LogErrorMessage("There was a problem receiving the file " +
                                                   fileInfo.Filename);
-                OnNewActivity(new FileSendActivity(_engagement, FileSendActivity.FILE_SEND_FAILED) { To = "_SELF", From = _engagement.SecondParty.Person.Username, FileInfo = fileInfo });
+                OnNewActivity(new FileSendActivity(_engagement, FileSendActivity.FILE_SEND_FAILED) { To = "_SELF", From = _engagement.SecondParty.Party.Username, FileInfo = fileInfo });
             }
         }
 
@@ -329,7 +329,7 @@ namespace Gwupe.Agent.Components.Functions.FileSend
         {
             var notification = new FileSendProgressNotification()
             {
-                AssociatedUsername = _engagement.SecondParty.Person.Username,
+                AssociatedUsername = _engagement.SecondParty.Party.Username,
                 FileInfo = fileInfo
             };
             _appContext.NotificationManager.AddNotification(notification);
@@ -345,7 +345,7 @@ namespace Gwupe.Agent.Components.Functions.FileSend
             RemovePendingFileReceive(fileInfo.FileSendId);
             fileInfo.FileReceiver.Close();
             _appContext.NotificationManager.DeleteNotification(fileInfo.Notification);
-            OnNewActivity(new FileSendActivity(_engagement, FileSendActivity.FILE_SEND_CANCEL) { From = "_SELF", To = _engagement.SecondParty.Person.Username, FileInfo = fileInfo });
+            OnNewActivity(new FileSendActivity(_engagement, FileSendActivity.FILE_SEND_CANCEL) { From = "_SELF", To = _engagement.SecondParty.Party.Username, FileInfo = fileInfo });
         }
 
 #endregion
@@ -364,7 +364,7 @@ namespace Gwupe.Agent.Components.Functions.FileSend
                 OnNewActivity(new FileSendActivity(_engagement, FileSendActivity.FILE_SEND_COMPLETE)
                 {
                     From = "_SELF",
-                    To = _engagement.SecondParty.Person.Username,
+                    To = _engagement.SecondParty.Party.Username,
                     FileInfo = fileInfo
                 });
             }
@@ -376,7 +376,7 @@ namespace Gwupe.Agent.Components.Functions.FileSend
                     OnNewActivity(new FileSendActivity(_engagement, FileSendActivity.FILE_SEND_FAILED)
                     {
                         From = "_SELF",
-                        To = _engagement.SecondParty.Person.Username,
+                        To = _engagement.SecondParty.Party.Username,
                         FileInfo = fileInfo
                     });
                 }
@@ -392,7 +392,7 @@ namespace Gwupe.Agent.Components.Functions.FileSend
             RemovePendingFileReceive(fileInfo.FileSendId);
             fileInfo.FileSender.Close();
             _appContext.NotificationManager.DeleteNotification(fileInfo.Notification);
-            OnNewActivity(new FileSendActivity(_engagement, FileSendActivity.FILE_SEND_CANCEL) { From = "_SELF", To = _engagement.SecondParty.Person.Username, FileInfo = fileInfo });
+            OnNewActivity(new FileSendActivity(_engagement, FileSendActivity.FILE_SEND_CANCEL) { From = "_SELF", To = _engagement.SecondParty.Party.Username, FileInfo = fileInfo });
         }
 
         #endregion
@@ -409,7 +409,7 @@ namespace Gwupe.Agent.Components.Functions.FileSend
             // Fire the event
             OnNewActivity(new ChatActivity(_engagement, ChatActivity.LOG_FILE_SEND_REQUEST)
             {
-                From = _engagement.SecondParty.Person.Username,
+                From = _engagement.SecondParty.Party.Username,
                 To = _appContext.CurrentUserManager.CurrentUser.Username,
                 Message = message
             });

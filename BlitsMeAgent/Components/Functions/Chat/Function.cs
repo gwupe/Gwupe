@@ -49,7 +49,7 @@ namespace Gwupe.Agent.Components.Functions.Chat
         {
             this._appContext = appContext;
             this._engagement = engagement;
-            this._to = engagement.SecondParty.Person.Username;
+            this._to = engagement.SecondParty.Party.Username;
             SetupCommands();
             Conversation = new Conversation(appContext);
             _chatQueue = new ConcurrentQueue<SelfChatElement>();
@@ -125,7 +125,7 @@ namespace Gwupe.Agent.Components.Functions.Chat
                 Speaker = _to,
                 SpeakTime = DateTime.Now,
                 UserName = userName,
-                Avatar = _engagement.SecondParty.Person.Avatar,
+                Avatar = _engagement.SecondParty.Party.Avatar,
             };
             Conversation.AddMessage(newMessage);
             if (chatId != null)
