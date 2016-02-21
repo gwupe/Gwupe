@@ -10,10 +10,7 @@
              >
     <UserControl.Resources>
         <ResourceDictionary>
-            <utils:ImageStreamReader x:Key="imageStreamReader" />
 			<utils:BoolToVisibilityConverter x:Key="BoolToVisConverter" />
-			<utils:BoolToInvisibilityConverter x:Key="BoolToInvisConverter" />
-			<utils:InvertBoolConverter x:Key="InvertBoolConverter" />
             <ResourceDictionary.MergedDictionaries>
                 <ResourceDictionary Source="../Style/RosterStyle.xaml" />
                 <ResourceDictionary Source="../Style/Style.xaml"/>
@@ -32,10 +29,6 @@
     </UserControl.Resources>
     <Border BorderThickness="1" BorderBrush="#4A7EBB" Margin="0,5,0,0">
         <DockPanel Background="White" MinHeight="60" LastChildFill="True">
-			<!--
-            <Image Stretch="Uniform" Source="{Binding Path=Person.Avatar, Converter={StaticResource imageStreamReader}}"
-                        Width="70" Height="55" Grid.Column="1" VerticalAlignment="Top" Margin="0,10,0,0"/>
-            -->
             <Image Stretch="Uniform" Source="/Gwupe.Agent;component/UI/WPF/Images/silhoette.png"
                         Height="55" Margin="5,0,0,0" VerticalAlignment="Center" HorizontalAlignment="Left"
 						DockPanel.Dock="Left"

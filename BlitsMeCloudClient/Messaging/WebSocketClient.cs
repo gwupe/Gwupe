@@ -32,7 +32,7 @@ namespace Gwupe.Cloud.Messaging
 
         public TRs SendRequest<TRq, TRs>(TRq request) where TRq : API.Request where TRs : API.Response
         {
-            request.date = DateTime.Now;
+            //request.date = DateTime.Now;
             try
             {
                 _messageHandler.SendMessage(request);
@@ -80,16 +80,23 @@ namespace Gwupe.Cloud.Messaging
 
         public void ProcessResponse(API.Response response)
         {
-            _responseStore.Add(response.id, response);
-            // Signal the wait handler
             try
             {
-                _responseWaiters[response.id].Set();
+                _responseStore.Add(response.id, response);
+                try
+                {
+                    // Signal the wait handler
+                    _responseWaiters[response.id].Set();
+                }
+                catch (KeyNotFoundException e)
+                {
+                    Logger.Error("No event handler found to message [" + response.id + "] : " + e.Message);
+                }
             }
-            catch (KeyNotFoundException e)
+            catch (Exception e)
             {
-                Logger.Info("No event handler found to message [" + response.id + "] : " + e.Message);
-            }
+                Logger.Error("Failed to process response " + response,e);
+            } 
         }
     }
 }

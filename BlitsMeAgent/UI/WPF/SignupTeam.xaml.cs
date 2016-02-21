@@ -1,11 +1,14 @@
 ﻿using System;
 using System.ComponentModel;
+using System.Reflection;
 using System.Threading;
 using System.Windows.Controls;
 using Gwupe.Agent.Annotations;
 using Gwupe.Agent.Components;
 using Gwupe.Agent.Components.Person;
+using Gwupe.Agent.Exceptions;
 using Gwupe.Agent.UI.WPF.API;
+using Gwupe.Agent.UI.WPF.Team;
 using Gwupe.Agent.UI.WPF.Utils;
 using Gwupe.Cloud.Exceptions;
 using Gwupe.Cloud.Messaging.Request;
@@ -14,26 +17,28 @@ using log4net;
 
 namespace Gwupe.Agent.UI.WPF
 {
-	/// <summary>
-	/// Interaction logic for SignupTeam.xaml
-	/// </summary>
-	public partial class SignupTeam : GwupeDataCaptureForm
-	{
+    /// <summary>
+    /// Interaction logic for SignupTeam.xaml
+    /// </summary>
+    public partial class SignupTeam : GwupeDataCaptureForm
+    {
+        private readonly TeamManagement _teamManagementWindow;
         private static readonly ILog Logger = LogManager.GetLogger(typeof(SignupTeam));
-	    private SignupTeamDataContext _dataContext;
+        private SignupTeamDataContext _dataContext;
         public string TeamHandle { get; private set; }
 
-        public SignupTeam(ContentPresenter disabler)
-	    {
+        public SignupTeam(ContentPresenter disabler, TeamManagement teamManagementWindow)
+        {
+            _teamManagementWindow = teamManagementWindow;
             _dataContext = new SignupTeamDataContext();
-	        this.DataContext = _dataContext;
-			this.InitializeComponent();
+            this.DataContext = _dataContext;
+            this.InitializeComponent();
             InitGwupeDataCaptureForm(disabler, null, ErrorText);
-	        ProcessingWord = "Creating";
-	    }
+            ProcessingWord = "Creating";
+        }
 
-	    protected override bool ValidateInput()
-	    {
+        protected override bool ValidateInput()
+        {
             bool dataOK = true;
             dataOK = UiHelper.Validator.ValidateFieldNonEmpty(Email, Email.Text, null, "Please enter your email address")
                 && UiHelper.Validator.ValidateEmail(Email, null) && dataOK;
@@ -45,13 +50,13 @@ namespace Gwupe.Agent.UI.WPF
                                                     "Team handle cannot contain spaces", "", ".* .*") && dataOK;
             dataOK = UiHelper.Validator.ValidateFieldNonEmpty(Teamname, Teamname.Text, null, "Please enter your team's name", "Team Name") && dataOK;
 
-	        return dataOK;
-	    }
+            return dataOK;
+        }
 
         protected override void ResetStatus()
-	    {
+        {
             UiHelper.Validator.ResetStatus(new Control[] { Email, Username, Location, Teamname }, new Label[] { null, null, null, null });
-	    }
+        }
 
         protected override void ResetInputs()
         {
@@ -69,122 +74,80 @@ namespace Gwupe.Agent.UI.WPF
             }
         }
 
-	    protected override bool CommitInput()
-	    {
-	        var signupTeamRq = GetSignupTeamRq();
+        protected override void CommitInput()
+        {
             try
             {
-                GwupeClientAppContext.CurrentAppContext.ConnectionManager.Connection.Request<SignupTeamRq, SignupTeamRs>(signupTeamRq);
-                TeamHandle = signupTeamRq.uniqueHandle;
-                return true;
+                GwupeClientAppContext.CurrentAppContext.TeamManager.SignupTeam(
+                    UiUtils.GetFieldValue<String>(Teamname, Dispatcher),
+                    UiUtils.GetFieldValue<String>(Username, Dispatcher),
+                    UiUtils.GetFieldValue<String>(Location, Dispatcher),
+                    UiUtils.GetFieldValue<String>(Email, Dispatcher),
+                    UiUtils.GetFieldValue<bool>(Supporter, Dispatcher)
+                    );
+                TeamHandle = UiUtils.GetFieldValue<String>(Username, Dispatcher);
             }
-            catch (MessageException<SignupTeamRs> ex)
+            catch (DataSubmissionException ex)
             {
-                var errors = new DataSubmitErrorArgs();
-                Logger.Warn("Failed to signup team : " + ex.Message);
-                if (ex.Response.signupErrors != null)
-                {
-                    if (ex.Response.signupErrors.Contains(SignupRs.SignupErrorEmailAddressInUse))
-                    {
-                        errors.SubmitErrors.Add(new DataSubmitError()
-                        {
-                            FieldName = "email",
-                            ErrorCode = SignupRs.SignupErrorEmailAddressInUse
-                        });
-                    }
-                    if (ex.Response.signupErrors.Contains(SignupRs.SignupErrorEmailAddressInvalid))
-                    {
-                        errors.SubmitErrors.Add(new DataSubmitError()
-                        {
-                            FieldName = "email",
-                            ErrorCode = SignupRs.SignupErrorEmailAddressInvalid
-                        });
-                    }
-                    if (ex.Response.signupErrors.Contains(SignupRs.SignupErrorUserExists))
-                    {
-                        errors.SubmitErrors.Add(new DataSubmitError()
-                        {
-                            FieldName = "username",
-                            ErrorCode = SignupRs.SignupErrorUserExists
-                        });
-                    }
-                    if (ex.Response.signupErrors.Contains(SignupRs.SignupErrorPasswordComplexity))
-                    {
-                        errors.SubmitErrors.Add(new DataSubmitError()
-                        {
-                            FieldName = "password",
-                            ErrorCode = SignupRs.SignupErrorPasswordComplexity
-                        });
-                    }
-                }
-                SubmissionErrors = errors;
+                Logger.Error("Failed to signup team : " + ex.Message);
+                throw ex;
             }
             catch (Exception ex)
             {
                 Logger.Warn("Failed to signup : " + ex.Message);
-                SubmissionErrors = new DataSubmitErrorArgs();
+                throw new DataSubmissionException();
             }
-	        return false;
-	    }
+        }
 
-	    private SignupTeamRq GetSignupTeamRq()
-	    {
-	        SignupTeamRq request = null;
-	        if (!Dispatcher.CheckAccess())
-	        {
-	            Dispatcher.Invoke(new Action(() => { request = GetSignupTeamRq(); }));
-	        }
-	        else
-	        {
-	            request = new SignupTeamRq()
-	            {
-	                email = Email.Text.Trim(),
-	                teamName = Teamname.Text.Trim(),
-	                location = Location.Text.Trim(),
-	                uniqueHandle = Username.Text.Trim(),
-	                supporter = Supporter.IsChecked == true
-	            };
-	        }
-	        return request;
-	    }
+        protected override void CommitFailed(Exception exception)
+        {
+            var submissionError = exception as DataSubmissionException;
+            if (submissionError != null)
+            {
+                if (submissionError.SubmitErrors.Count == 0)
+                {
+                    UiHelper.Validator.SetError("Error submitting");
+                }
+                else
+                {
+                    if (submissionError.SubmitErrors[0].ErrorCode == DataSubmitErrorCode.InUse &&
+                        submissionError.SubmitErrors[0].FieldName.Equals("email"))
+                    {
+                        UiHelper.Validator.SetError("Email address in use", Email);
+                    }
+                    else if (submissionError.SubmitErrors[0].ErrorCode == DataSubmitErrorCode.EmailInvalid)
+                    {
+                        UiHelper.Validator.SetError("Email address is invalid", Email);
+                    }
+                    else if (submissionError.SubmitErrors[0].ErrorCode == DataSubmitErrorCode.InUse &&
+                             submissionError.SubmitErrors[0].FieldName.Equals("username"))
+                    {
+                        UiHelper.Validator.SetError("This team already exists", Username);
+                    }
+                    else
+                    {
+                        UiHelper.Validator.SetError("Unknown Error occurred");
+                    }
 
-	    protected override void CommitFailed()
-	    {
-	        if (SubmissionErrors.SubmitErrors.Count == 0)
-	        {
-	            UiHelper.Validator.SetError("Error submitting");
-	        }
-	        else
-	        {
-	            if (SubmissionErrors.SubmitErrors[0].ErrorCode.Equals(SignupRs.SignupErrorEmailAddressInUse))
-	            {
-	                UiHelper.Validator.SetError("Email address in use",Email);
-                }
-                else if (SubmissionErrors.SubmitErrors[0].ErrorCode.Equals(SignupRs.SignupErrorEmailAddressInvalid))
-                {
-                    UiHelper.Validator.SetError("Email address is invalid", Email);
-                }
-                else if (SubmissionErrors.SubmitErrors[0].ErrorCode.Equals(SignupRs.SignupErrorUserExists))
-                {
-                    UiHelper.Validator.SetError("This team already exists", Username);
                 }
             }
+            else
+            {
+                UiHelper.Validator.SetError("Unknown Error occurred.");
+            }
 
-	    }
+        }
 
-	    protected override void CommitSuccessful()
-	    {
-	        if (!Dispatcher.CheckAccess())
-	        {
-	            Dispatcher.Invoke(new Action(CommitSuccessful));
-	        }
-	        else
-	        {
-	            TeamHandle = Teamname.Text;
-	        }
-	    }
+        protected override void CommitSuccessful()
+        {
+            ResetInputs();
+            UiHelper.Disabler.DisableInputs(true, "Refreshing");
+            GwupeClientAppContext.CurrentAppContext.TeamManager.RetrieveTeams();
+            UiHelper.Disabler.DisableInputs(false);
+            _teamManagementWindow.SelectTeam(TeamHandle);
+        }
 
-	}
+    }
 
     public class SignupTeamDataContext : INotifyPropertyChanged
     {

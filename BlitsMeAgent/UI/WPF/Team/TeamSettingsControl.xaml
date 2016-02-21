@@ -1,0 +1,92 @@
+﻿<api:GwupeDataCaptureForm x:Class="Gwupe.Agent.UI.WPF.Team.TeamSettingsControl"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:Gwupe.Agent.UI.WPF.Team"
+             xmlns:controls="http://metro.mahapps.com/winfx/xaml/controls"
+             xmlns:api="clr-namespace:Gwupe.Agent.UI.WPF.API"
+             xmlns:util="clr-namespace:Gwupe.Agent.UI.WPF.Utils"
+             xmlns:System="clr-namespace:System;assembly=mscorlib"
+             xmlns:elements="clr-namespace:Gwupe.Cloud.Messaging.Elements;assembly=Gwupe.Cloud"
+             mc:Ignorable="d" 
+             >
+    <UserControl.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="../Style/Style.xaml" />
+                <ResourceDictionary Source="../Style/NotificationStyle.xaml" />
+                <ResourceDictionary Source="pack://application:,,,/MahApps.Metro;component/Styles/Colors.xaml" />
+                <ResourceDictionary Source="pack://application:,,,/MahApps.Metro;component/Styles/Fonts.xaml" />
+                <ResourceDictionary Source="pack://application:,,,/MahApps.Metro;component/Styles/Controls.xaml" />
+                <ResourceDictionary Source="pack://application:,,,/MahApps.Metro;component/Styles/Accents/BaseLight.xaml" />
+                <ResourceDictionary Source="../Style/Theme.xaml" />
+                <ResourceDictionary Source="../Skins/Skin.xaml" />
+            </ResourceDictionary.MergedDictionaries>
+            <util:BoolToVisibilityConverter x:Key="boolToVisibilityConverter" />
+            <util:BoolToInvisibilityConverter x:Key="boolToInvisibilityConverter" />
+            <util:EnumEqualityToVisibilityConverter x:Key="enumEqualityToVisibilityConverter" />
+            <util:EnumEqualityToBoolConverter x:Key="enumEqualityToBoolConverter" FalseValue="{x:Static elements:PlayerMembership.none}"/>
+        </ResourceDictionary>
+    </UserControl.Resources>
+    <Grid x:Name="LayoutRoot" MinHeight="350">
+        <Border BorderThickness="1" BorderBrush="#4A7EBB"  Width="332" >
+            <Grid Width="330"  Background="#FFDCE6F2"  >
+                <ContentPresenter Name="Disabler" Content="{Binding}" ContentTemplate="{StaticResource DisablingWindow}" Panel.ZIndex="5" Visibility="Hidden" Grid.ColumnSpan="3" d:LayoutOverrides="LeftMargin, RightMargin, TopMargin, BottomMargin" Grid.RowSpan="2" />
+                <StackPanel Orientation="Vertical">
+                    <StackPanel Orientation="Horizontal" Margin="5,0,0,0">
+                        <StackPanel Grid.Column="0" d:LayoutOverrides="LeftMargin, RightMargin, TopMargin, BottomMargin" Grid.RowSpan="2">
+                            <Button Width="100"  Height="100" Background="White"  Click="AvatarImage_Click" Grid.Column="0" Grid.Row="0"
+                        VerticalAlignment="Top" Margin="0,10,0,0"  IsEnabled="{Binding Admin}">
+                                <Image x:Name="AvatarImage" Source="{Binding Path=Avatar, Converter={StaticResource avatarImageStreamReader}}" />
+                            </Button>
+                            <Label Content="{Binding UniqueHandle, FallbackValue=team_handle}"  Name="UniqueHandle" HorizontalAlignment="Center" />
+                        </StackPanel>
+                        <StackPanel Orientation="Vertical" Grid.Column="2" Grid.Row="0" Margin="5,10,10,0" d:LayoutOverrides="LeftMargin, RightMargin, TopMargin, BottomMargin">
+                            <TextBox Text="{Binding Firstname, FallbackValue=Team Name}" controls:TextboxHelper.Watermark="Team Name" TextWrapping="Wrap" x:Name="Firstname" Margin="0,0,0,0" HorizontalAlignment="Left" Width="200" IsEnabled="{Binding Admin}" />
+                            <TextBox Text="{Binding Location, FallbackValue=Second Star to the Right}"  controls:TextboxHelper.Watermark="Location" Name="Location" Margin="0,5,0,0" HorizontalAlignment="Left" Width="200"  IsEnabled="{Binding Admin}"/>
+                            <TextBox Text="{Binding Email, FallbackValue=jamest@enterprise.com}" Name="Email"  controls:TextboxHelper.Watermark="Email Address" Width="200" Margin="0,5,0,0" HorizontalAlignment="Left" IsEnabled="{Binding Admin}"/>
+                            <CheckBox x:Name="Supporter" Content="This team offers IT support" IsChecked="{Binding Supporter}" Margin="5,10,0,0"  IsEnabled="{Binding Admin}"/>
+                        </StackPanel>
+                    </StackPanel>
+                    <TextBox Name="Description"   TextWrapping="Wrap" Text="{Binding Description, FallbackValue=Description of Team}"  
+                         controls:TextboxHelper.Watermark="Description of Team" VerticalScrollBarVisibility="Auto" ScrollViewer.CanContentScroll="True" 
+                         VerticalAlignment="Top"
+                         Margin="5,5,10,0" Height="110"
+                         Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="3"  IsEnabled="{Binding Admin}"/>
+                    <StackPanel Margin="5,5,5,0" Orientation="Horizontal">
+                        <Label Content="Your Roles :" />
+                        <CheckBox Name="Admin" IsChecked="{Binding Admin}"  Content="Admin" Margin="15,0,0,0" IsEnabled="{Binding Admin}" />
+                        <CheckBox Name="Player" IsChecked="{Binding Player, Converter={StaticResource enumEqualityToBoolConverter}, ConverterParameter={x:Static elements:PlayerMembership.player}}" Content="Player" Margin="15,0,0,0" Visibility="{Binding Admin, Converter={StaticResource boolToVisibilityConverter}, FallbackValue=Collapsed}"/>
+                        <StackPanel Visibility="{Binding Admin, Converter={StaticResource boolToInvisibilityConverter}}" Orientation="Horizontal" VerticalAlignment="Center">
+                            <StackPanel Orientation="Horizontal" Visibility="{Binding Player, Converter={StaticResource enumEqualityToVisibilityConverter}, ConverterParameter={x:Static elements:PlayerMembership.invited}, FallbackValue=Visible}" Margin="15,0,0,0">
+                                <TextBlock Text="Invited to be Player" />
+                                <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Margin="10,0,0,0">
+                                    <Button Style="{StaticResource NotificationAcceptButtonStyle}" Height="15" Width="15" Template="{DynamicResource TransparentButtonNotificationAcceptStyle}" Click="AcceptClick" />
+                                    <Button Style="{StaticResource NotificationDenyButtonStyle}" Height="15" Width="15" Margin="5,0,0,0" Template="{DynamicResource TransparentButtonNotificationCloseStyle}" Click="DeclineClick"/>
+                                </StackPanel>
+                            </StackPanel>
+                            <StackPanel Orientation="Horizontal" Visibility="{Binding Player, Converter={StaticResource enumEqualityToVisibilityConverter}, ConverterParameter={x:Static elements:PlayerMembership.player}, FallbackValue=Collapsed}"  Margin="15,0,0,0" >
+                                <TextBlock Text="Player" />
+                            </StackPanel>
+                        </StackPanel>
+                    </StackPanel>
+                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,10,10,0" Grid.Column="0" Grid.ColumnSpan="3" Grid.Row="2" Visibility="{Binding Admin, Converter={StaticResource boolToVisibilityConverter}}">
+                        <Border BorderBrush="#5574AF" BorderThickness="1" Margin="0" Width="120">
+                            <Button Content="Reload from Server"  Name="CancelChanges" Click="ResetUserInput" Style="{DynamicResource UserinfoBtnstyle}" />
+                        </Border>
+                        <Border BorderBrush="#5574AF" BorderThickness="1" Margin="10,0,0,0" Width="100">
+                            <Button Content="Save To Server"   x:Name="SaveChanges" Click="ProcessUserInput"  Style="{DynamicResource UserinfoBtnstyle}"  />
+                        </Border>
+                    </StackPanel>
+                    <Grid Margin="0,5,0,0">
+                        <TextBlock x:Name="ErrorText" Text="Test" HorizontalAlignment="Center" Margin="5,5,5,5" Foreground="Red" TextAlignment="Justify"  
+                               Visibility="Collapsed"/>
+                        <TextBlock x:Name="StatusText" Text="Success"   Foreground="#FF2B519B" HorizontalAlignment="Center" TextAlignment="Justify" FontWeight="Bold"
+                           Visibility="Collapsed" Margin="5,5,5,5"/>
+                    </Grid>
+                </StackPanel>
+            </Grid>
+        </Border>
+    </Grid>
+</api:GwupeDataCaptureForm>

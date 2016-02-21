@@ -10,6 +10,7 @@ using System.Threading;
 using System.Windows.Forms;
 using Gwupe.Agent.Components;
 using Gwupe.Agent.Components.Schedule;
+using Gwupe.Agent.Exceptions;
 using Gwupe.Agent.Managers;
 using Gwupe.Agent.Misc;
 using Gwupe.Cloud.Messaging.Request;
@@ -51,12 +52,13 @@ namespace Gwupe.Agent
         internal TeamManager TeamManager { get; set; }
         //internal Thread DashboardUiThread;
         internal bool IsShuttingDown { get; private set; }
-        internal readonly GwupeUserRegistry Reg = new GwupeUserRegistry();
+        internal readonly GwupeUserRegistry Reg = GwupeUserRegistry.getInstance();
         internal readonly String StartupVersion;
         internal readonly ScheduleManager ScheduleManager;
         private IdleState _idleState;
         internal ObservableCollection<String> ChangeLog = new ObservableCollection<string>();
         internal string ChangeDescription { get; set; }
+        private ElevateToken CurrentToken { get; set; }
 
         internal static GwupeClientAppContext CurrentAppContext;
 
@@ -268,7 +270,7 @@ namespace Gwupe.Agent
                     }
                     catch (Exception e)
                     {
-                        Logger.Error("Failed to extract log from " + filename,e);
+                        Logger.Error("Failed to extract log from " + filename, e);
                         request.report += "\n\n\nFailed to extract log from " + filename;
                     }
                     try
@@ -307,78 +309,51 @@ namespace Gwupe.Agent
             long toRead = stream.Length < 131072 ? stream.Length : 131072;
             stream.Seek(-toRead, SeekOrigin.End);
             byte[] buffer = new byte[toRead];
-            var read = stream.Read(buffer, 0, (int) toRead);
+            var read = stream.Read(buffer, 0, (int)toRead);
             stream.Close();
             byte[] zippedLog = Common.Misc.Instance().Zip(buffer);
             return zippedLog;
         }
 
-        public bool Elevate(out String tokenId, out String securityKey)
+        internal ElevateToken Elevate()
         {
-            return Elevate("The secure action you are requesting requires you to enter your current Gwupe password to verify your identity.",
-                out tokenId, out securityKey);
+            return Elevate("The secure action you are requesting requires you to enter your current Gwupe password to verify your identity.");
         }
 
-        public bool Elevate(String message, out String tokenId, out String securityKey)
+        internal ElevateToken Elevate(String message)
         {
-            ElevateTokenRq erq = new ElevateTokenRq();
-            try
+            if (CurrentToken == null || CurrentToken.IsExpired())
             {
-                String password = UIManager.RequestElevation(message);
-                if (!String.IsNullOrWhiteSpace(password))
+                Logger.Debug("We don't have an elevation token or it has expired, requesting from server.");
+                ElevateTokenRq erq = new ElevateTokenRq();
+                try
                 {
-                    ElevateTokenRs ers = ConnectionManager.Connection.Request<ElevateTokenRq, ElevateTokenRs>(erq);
-                    tokenId = ers.tokenId;
-                    securityKey = Util.getSingleton().hashPassword(password, ers.token);
+                    String password = UIManager.RequestElevation(message);
+                    // Make sure password isn't empty and conforms to the current password.
+                    if (!String.IsNullOrWhiteSpace(password) &&
+                        Util.getSingleton().hashPassword(password).Equals(Reg.PasswordHash))
+                    {
+                        ElevateTokenRs ers = ConnectionManager.Connection.Request<ElevateTokenRq, ElevateTokenRs>(erq);
+                        CurrentToken = new ElevateToken(ers.tokenId, ers.token, password, ers.expires);
+                    }
+                    else
+                    {
+                        Logger.Error("Entered password for elevation is invalid.");
+                        CurrentToken = null;
+                        throw new ElevationException();
+                    }
                 }
-                else
+                finally
                 {
-                    tokenId = null;
-                    securityKey = null;
-                    return false;
+                    UIManager.CompleteElevation();
                 }
-            }
-            finally
-            {
-                UIManager.CompleteElevation();
-            }
-            return true;
-            /*
-            ElevateApprovalWindow approvalWindow = new ElevateApprovalWindow { Owner = UIManager.Dashboard };
-            if (!String.IsNullOrWhiteSpace(message)) { approvalWindow.Message.Text = message; }
-            UIManager.Dashboard.IsEnabled = false;
-            approvalWindow.ShowDialog();
-            UIManager.Dashboard.IsEnabled = true;
-            if (!approvalWindow.Cancelled)
-            {
-                tokenId = ers.tokenId;
-                securityKey = Util.getSingleton().hashPassword(approvalWindow.ConfirmPassword.Password, ers.token);
-                if (approvalWindow.Dispatcher.CheckAccess())
-                    approvalWindow.ConfirmPassword.Password = "";
-                else
-                    approvalWindow.Dispatcher.Invoke(new Action(() => approvalWindow.ConfirmPassword.Password = ""));
             }
             else
             {
-                tokenId = null;
-                securityKey = null;
-                return false;
+                Logger.Debug("Reusing elevate token " + CurrentToken.TokenId);
             }
-            return true;
-            */
+            return CurrentToken;
         }
-
-        /*
-        internal void SetupAndRunDashboard()
-        {
-            if (DashboardUiThread == null)
-            {
-                DashboardUiThread = new Thread(RunDashboard) { Name = "dashboardUIThread" };
-                DashboardUiThread.SetApartmentState(ApartmentState.STA);
-                DashboardUiThread.Start();
-                _dashboardReady.WaitOne();
-            }
-        }*/
 
         // Handle messages from the dashboard window
         public IntPtr WndProc(IntPtr hwnd, int msg, IntPtr wParam, IntPtr lParam, ref bool handled)

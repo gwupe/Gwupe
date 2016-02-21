@@ -21,7 +21,7 @@ namespace Gwupe.Agent.Managers
         private static readonly ILog Logger = LogManager.GetLogger(typeof(ConnectionManager));
         private readonly GwupeClientAppContext _appContext;
         private readonly CloudConnection _connection;
-        private readonly GwupeUserRegistry _reg = new GwupeUserRegistry();
+        private readonly GwupeUserRegistry _reg = GwupeUserRegistry.getInstance();
         private X509Certificate2 _cert;
         internal bool IsClosed { get; private set; }
         public event ConnectionEvent Disconnect

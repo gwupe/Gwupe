@@ -16,7 +16,7 @@ namespace Gwupe.Cloud.Messaging.Request
         public bool supporter { get; set; }
 
         [DataMember]
-        public string teamname { get; set; }
+        public string teamName { get; set; }
 
         [DataMember]
         public String uniqueHandle { get; set; }

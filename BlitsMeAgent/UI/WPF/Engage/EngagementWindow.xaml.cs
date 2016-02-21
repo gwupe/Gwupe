@@ -291,7 +291,7 @@ namespace Gwupe.Agent.UI.WPF.Engage
                         _appContext.UIManager.Alert(
                             "This user is a guest, for to get unattended access to their desktop and for other features, they need to be logged in."));
             }
-            else if (Engagement.SecondParty.Party is Team)
+            else if (Engagement.SecondParty.Party is Components.Person.Team)
             {
                 ThreadPool.QueueUserWorkItem(
                     state =>

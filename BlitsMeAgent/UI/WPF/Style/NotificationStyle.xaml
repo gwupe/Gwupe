@@ -10,7 +10,7 @@
     xmlns:engage="clr-namespace:Gwupe.Agent.UI.WPF.Engage"
     >
 
-    <utils:ImageStreamReader x:Key="imageStreamReader" />
+    <utils:ImageStreamReader x:Key="avatarImageStreamReader" DefaultImageUri="pack://application:,,,/ui/wpf/Images/silhoette.png" />
     <utils:RectConverter x:Key="rectConverter" />
     <Style x:Key="NotificationActionButton" TargetType="{x:Type Button}">
         <Setter Property="Background" Value="White" />
@@ -47,7 +47,7 @@
             </Setter.Value>
         </Setter>
         <Setter Property="ContentTemplate" Value="{DynamicResource DenyButtonTemplate}" />
-        <Setter Property="ToolTip" Value="Deny" />
+        <Setter Property="ToolTip" Value="Decline" />
     </Style>
 
     <Style x:Key="NotificationAcceptButtonStyle" TargetType="{x:Type Button}" BasedOn="{StaticResource NotificationActionButton}">
@@ -68,7 +68,7 @@
             </Setter.Value>
         </Setter>
         <Setter Property="ContentTemplate" Value="{DynamicResource DenyButtonTemplate}" />
-        <Setter Property="ToolTip" Value="Deny" />
+        <Setter Property="ToolTip" Value="Decline" />
     </Style>
     <Style x:Key="StopRDPButtonStyle" TargetType="{x:Type Button}" BasedOn="{StaticResource NotificationActionButton}">
         <Setter Property="Command" Value="{Binding AnswerDeleteStopRDP}" />
@@ -133,7 +133,7 @@
     </DataTemplate>
     <DataTemplate DataType="{x:Type notification:AddBuddyNotification}">
         <StackPanel Orientation="Horizontal" Style="{StaticResource NotificationStackStyle}" Height="50">
-            <Image Stretch="Uniform" Source="{Binding Path=Person, Converter={StaticResource imageStreamReader}}" 
+            <Image Stretch="Uniform" Source="{Binding Path=Person, Converter={StaticResource avatarImageStreamReader}}" 
                    Width="35" Height="40" Margin="5,0,0,0"/>
             <StackPanel Orientation="Vertical" Margin="5,0,0,0" Width="85" VerticalAlignment="Center">
                 <TextBlock HorizontalAlignment="Left" Text="Contact Request" Foreground="Black" FontWeight="SemiBold" 
@@ -153,7 +153,7 @@
     </DataTemplate>
     <DataTemplate DataType="{x:Type notification:RDPDisconnectNotification}">
         <StackPanel Orientation="Horizontal" Style="{StaticResource NotificationStackStyle}" ToolTip="Terminate RDP Session">
-            <Image Stretch="Uniform" Source="{Binding Path=Person, Converter={StaticResource imageStreamReader}}" 
+            <Image Stretch="Uniform" Source="{Binding Path=Person, Converter={StaticResource avatarImageStreamReader}}" 
                    Width="40" Height="40" Margin="5,0,0,0"/>
             <StackPanel Orientation="Vertical" Margin="5,0,0,0" Width="85">
                 <TextBlock HorizontalAlignment="Left" Text="Terminate RDP Session" Foreground="Black" FontWeight="SemiBold" 

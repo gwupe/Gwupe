@@ -94,19 +94,19 @@ namespace Gwupe.Agent.UI.WPF
             {
                 ResetStatus();
                 bool foundError = false;
-                if (dataSubmitErrorArgs.HasError(SignupRs.SignupErrorEmailAddressInUse))
+                if (dataSubmitErrorArgs.HasError(DataSubmitErrorCode.InUse) && dataSubmitErrorArgs.HasErrorField("email"))
                 {
                     Email.Background = new SolidColorBrush(Colors.MistyRose);
                     _validator.SetError("Email address in use");
                     foundError = true;
                 }
-                if (dataSubmitErrorArgs.HasError(SignupRs.SignupErrorUserExists))
+                if (dataSubmitErrorArgs.HasError(DataSubmitErrorCode.InUse) && dataSubmitErrorArgs.HasErrorField("username"))
                 {
                     Username.Background = new SolidColorBrush(Colors.MistyRose);
                     _validator.SetError("Username already in use");
                     foundError = true;
                 }
-                if (dataSubmitErrorArgs.HasError(SignupRs.SignupErrorPasswordComplexity))
+                if (dataSubmitErrorArgs.HasError(DataSubmitErrorCode.NotComplexEnough))
                 {
                     Password.Background = new SolidColorBrush(Colors.MistyRose);
                     _validator.SetError("Password is insecure");

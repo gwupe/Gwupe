@@ -7,39 +7,9 @@ using System.Text;
 namespace Gwupe.Cloud.Messaging.Elements
 {
     [DataContract]
-    public class UserElement
+    public class UserElement : PartyElement
     {
         [DataMember]
-        public String firstname;
-        [DataMember]
-        public String lastname;
-        [DataMember]
-        public String name;
-        [DataMember]
-        public String subscriptionStatus;
-        [DataMember]
-        public String user;
-        [DataMember]
-        public String subscriptionType;
-        [DataMember]
-        public String description;
-        [DataMember]
-        public String email;
-        [DataMember]
-        public String location;
-        [DataMember]
-        public int rating;
-        [DataMember]
-        public DateTime? joined;
-        [DataMember]
-        public String avatarData;
-        [DataMember]
-        public bool hasAvatar;
-        [DataMember] 
-        public bool supporter;
-        [DataMember]
         public bool guest;
-        [DataMember]
-        public bool organisation;
     }
 }

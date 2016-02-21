@@ -79,10 +79,10 @@
 	</Target>
 	-->
   <Target Name="SignBundleEngine">
-    <SignFile Condition=" '$(Configuration)' == 'Release' " CertificateThumbprint="ab9772b33b05e157f66d29ba9c29ee8ed66688e7" SigningTarget="@(SignBundleEngine)" />
+    <SignFile Condition=" '$(Configuration)' == 'Release' " TimestampUrl="http://timestamp.verisign.com/scripts/timstamp.dll" CertificateThumbprint="863cd2a61bf91f7dd193f2cbdad6c2abaa642c0b" SigningTarget="@(SignBundleEngine)" />
   </Target>
   <Target Name="SignBundle">
-    <SignFile Condition=" '$(Configuration)' == 'Release' " CertificateThumbprint="ab9772b33b05e157f66d29ba9c29ee8ed66688e7" SigningTarget="@(SignBundle)" />
+    <SignFile Condition=" '$(Configuration)' == 'Release' " TimestampUrl="http://timestamp.verisign.com/scripts/timstamp.dll" CertificateThumbprint="863cd2a61bf91f7dd193f2cbdad6c2abaa642c0b" SigningTarget="@(SignBundle)" />
     <!-- move the filename to its final name after signing -->
     <Exec Command="ren &quot;$(TargetPath)&quot; &quot;$(FinalTargetFileName)&quot;" />
   </Target>

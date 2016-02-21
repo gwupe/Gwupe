@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Windows.Controls;
 using System.Windows.Threading;
+using Gwupe.Agent.Components;
 using Gwupe.Agent.UI.WPF.API;
 using Gwupe.Agent.UI.WPF.Utils;
 using log4net;
@@ -23,18 +24,17 @@ namespace Gwupe.Agent.UI.WPF
             _validator = new InputValidator(statusText,errorText,dispatcher);
         }
 
-        public void RunElevation(String disablerMessage, Action<String, String> successMethod, String actionDescription)
+        internal void RunElevation(String disablerMessage, Action<ElevateToken> successMethod, String actionDescription)
         {
             try
             {
                 _disabler.DisableInputs(true, disablerMessage);
-                String tokenId;
-                String securityKey;
-                if (GwupeClientAppContext.CurrentAppContext.Elevate(out tokenId, out securityKey))
+                try
                 {
-                    successMethod(tokenId, securityKey);
+                    ElevateToken token = GwupeClientAppContext.CurrentAppContext.Elevate();
+                    successMethod(token);
                 }
-                else
+                catch(Exception ex)
                 {
                     _validator.SetError("Failed to authorise " + actionDescription + ".");
                 }

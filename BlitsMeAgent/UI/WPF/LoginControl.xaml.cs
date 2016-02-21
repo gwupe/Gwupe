@@ -42,16 +42,11 @@ namespace Gwupe.Agent.UI.WPF
                 Validate();
                 return true;
             }
-            else if (dataSubmissionErrors.HasError("INCOMPLETE"))
+            else if (dataSubmissionErrors.HasError(DataSubmitErrorCode.DataIncomplete))
             {
                 Password.Password = "";
                 Username.Text = "";
                 Validate();
-                return true;
-            } else if (dataSubmissionErrors.HasError("STARTUP"))
-            {
-                Password.Password = "";
-                Username.Text = "";
                 return true;
             }
             return false;

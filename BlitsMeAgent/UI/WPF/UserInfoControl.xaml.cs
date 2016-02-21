@@ -8,12 +8,16 @@ using System.Windows.Controls;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using Gwupe.Agent.Annotations;
+using Gwupe.Agent.Components;
+using Gwupe.Agent.Exceptions;
 using Gwupe.Agent.Managers;
+using Gwupe.Agent.Misc;
 using Gwupe.Agent.UI.WPF.API;
 using Gwupe.Agent.UI.WPF.Utils;
 using Gwupe.Cloud.Exceptions;
 using Gwupe.Cloud.Messaging.API;
 using Gwupe.Cloud.Messaging.Response;
+using Gwupe.Common.Security;
 using log4net;
 
 namespace Gwupe.Agent.UI.WPF
@@ -91,11 +95,17 @@ namespace Gwupe.Agent.UI.WPF
             }
         }
 
-        private void SaveCurrentUser(string tokenId, string securityKey)
+        private void SaveCurrentUser(ElevateToken token)
         {
             try
             {
-                _appContext.CurrentUserManager.SaveCurrentUser(tokenId, securityKey, GetPasswordChange());
+                String password = GetPasswordChange();
+                _appContext.CurrentUserManager.SaveCurrentUser(token.TokenId, token.SecurityKey, password);
+                // save the password if it was changed. (for auto login)
+                if (password != null)
+                {
+                    GwupeUserRegistry.getInstance().PasswordHash = Util.getSingleton().hashPassword(password);
+                }
                 _uiHelper.Validator.SetStatus("Saved changes to server.");
                 Dispatcher.Invoke(new Action(() =>
                 {
@@ -103,6 +113,10 @@ namespace Gwupe.Agent.UI.WPF
                     PasswordChange.IsChecked = false;
                     Password.IsEnabled = false;
                 }));
+            }
+            catch (ElevationException ex)
+            {
+                _uiHelper.Validator.SetError("Incorrect password, please try again");
             }
             catch (MessageException<UpdateUserRs> ex)
             {
@@ -183,7 +197,7 @@ namespace Gwupe.Agent.UI.WPF
         private void AvatarImage_Click(object sender, RoutedEventArgs e)
         {
 
-            var avatarWindow = new AvatarImageWindow(_appContext) { ProfileImage = ImageStreamReader.CreateBitmapImage(_appContext.CurrentUserManager.CurrentUser.Avatar) };
+            var avatarWindow = new AvatarImageWindow(_appContext,_appContext.CurrentUserManager.CurrentUser.Avatar);
             ApplyBlurEffect(UserControl);
             _appContext.UIManager.ShowDialog(avatarWindow);
             ClearBlurEffect(UserControl);

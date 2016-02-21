@@ -19,7 +19,7 @@ namespace Gwupe.Agent.Managers
         private static readonly ILog Logger = LogManager.GetLogger(typeof(LoginManager));
         private Thread _loginManagerThread;
         internal bool IsClosed { get; private set; }
-        private readonly GwupeUserRegistry _reg = new GwupeUserRegistry();
+        private readonly GwupeUserRegistry _reg = GwupeUserRegistry.getInstance();
         private readonly AutoResetEvent _signinEvent = new AutoResetEvent(false);
         private readonly GwupeClientAppContext _appContext;
         public bool IsLoggedIn = false;
@@ -92,7 +92,7 @@ namespace Gwupe.Agent.Managers
             if (handler != null) handler(this, EventArgs.Empty);
         }
 
-        private void OnLoginFailed(String fieldName, String errorCode)
+        private void OnLoginFailed(String fieldName, DataSubmitErrorCode errorCode)
         {
             if (_appContext.IsShuttingDown) return;
             var error = new DataSubmitError() { FieldName = fieldName, ErrorCode = errorCode };
@@ -248,7 +248,7 @@ namespace Gwupe.Agent.Managers
                 Logger.Error("Failed to get the hardware id : " + e.Message);
             }
             if (!LoginDetails.Ready)
-                OnLoginFailed(null, "STARTUP");
+                OnLoginFailed(null, DataSubmitErrorCode.DataIncomplete);
             // Main logging in thread
             while (true)
             {
@@ -281,18 +281,18 @@ namespace Gwupe.Agent.Managers
                         {
                             LoginDetails.PasswordHash = "";
                             LoginDetails.LoginGuest = false;
-                            OnLoginFailed("PasswordHash", "INCORRECT");
+                            OnLoginFailed("PasswordHash", DataSubmitErrorCode.AuthInvalid);
                         } else if (e.InvalidDetails)
                         {
                             LoginDetails.Username = "";
                             LoginDetails.PasswordHash = "";
                             LoginDetails.LoginGuest = false;
-                            OnLoginFailed(null, "INCOMPLETE");
+                            OnLoginFailed(null, DataSubmitErrorCode.DataIncomplete);
                         }
                         else
                         {
                             // Failed for another reason, lets retry after 10 seconds (loop test will check login details and connection readiness
-                            OnLoginFailed(null, e.Failure);
+                            OnLoginFailed(null, DataSubmitErrorCode.Unknown);
                             Thread.Sleep(10000);
                         }
                     }
@@ -300,7 +300,7 @@ namespace Gwupe.Agent.Managers
                     {
                         // Do nothing here, just try keep connecting
                         Logger.Warn("Login has failed : " + e.Message, e);
-                        OnLoginFailed(null, "UNKNOWN_ERROR");
+                        OnLoginFailed(null, DataSubmitErrorCode.Unknown);
                         Thread.Sleep(10000);
                     }
 
@@ -437,7 +437,7 @@ namespace Gwupe.Agent.Managers
                         errors.SubmitErrors.Add(new DataSubmitError()
                         {
                             FieldName = "email",
-                            ErrorCode = SignupRs.SignupErrorEmailAddressInUse
+                            ErrorCode = DataSubmitErrorCode.InUse
                         });
                     }
                     if (ex.Response.signupErrors.Contains(SignupRs.SignupErrorEmailAddressInvalid))
@@ -445,7 +445,7 @@ namespace Gwupe.Agent.Managers
                         errors.SubmitErrors.Add(new DataSubmitError()
                         {
                             FieldName = "email",
-                            ErrorCode = SignupRs.SignupErrorEmailAddressInvalid
+                            ErrorCode = DataSubmitErrorCode.EmailInvalid
                         });
                     } 
                     if (ex.Response.signupErrors.Contains(SignupRs.SignupErrorUserExists))
@@ -453,7 +453,7 @@ namespace Gwupe.Agent.Managers
                         errors.SubmitErrors.Add(new DataSubmitError()
                         {
                             FieldName = "username",
-                            ErrorCode = SignupRs.SignupErrorUserExists
+                            ErrorCode = DataSubmitErrorCode.InUse
                         });
                     }
                     if (ex.Response.signupErrors.Contains(SignupRs.SignupErrorPasswordComplexity))
@@ -461,7 +461,7 @@ namespace Gwupe.Agent.Managers
                         errors.SubmitErrors.Add(new DataSubmitError()
                         {
                             FieldName = "password",
-                            ErrorCode = SignupRs.SignupErrorPasswordComplexity
+                            ErrorCode = DataSubmitErrorCode.NotComplexEnough
                         });
                     }
                 }

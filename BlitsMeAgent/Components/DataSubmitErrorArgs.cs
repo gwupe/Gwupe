@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
 using System.Text;
 
@@ -8,6 +9,7 @@ namespace Gwupe.Agent.Components
     public class DataSubmitErrorArgs : EventArgs
     {
         internal List<DataSubmitError> SubmitErrors = new List<DataSubmitError>();
+        public Exception Exception { get; set; }
 
         public bool HasErrorField(string fieldName)
         {
@@ -22,17 +24,31 @@ namespace Gwupe.Agent.Components
             return mystring + " }";
         }
 
-        public bool HasError(string errorCode)
+        public bool HasError(DataSubmitErrorCode errorCode)
         {
-            if (String.IsNullOrEmpty(errorCode)) return false;
-            return SubmitErrors.Any(dataSubmitError => errorCode.Equals(dataSubmitError.ErrorCode));
+            return SubmitErrors.Any(dataSubmitError => errorCode == dataSubmitError.ErrorCode);
         }
 
     }
 
+    public enum DataSubmitErrorCode
+    {
+        EmailInvalid,
+        NotExist,
+        Empty,
+        InUse,
+        TooLong,
+        TooShort,
+        NotComplexEnough,
+        DataIncomplete,
+        AuthInvalid,
+        InvalidKey,
+        Unknown
+    };
+
     internal class DataSubmitError
     {
         internal String FieldName;
-        internal String ErrorCode;
+        internal DataSubmitErrorCode ErrorCode;
     }
 }

@@ -28,7 +28,8 @@ namespace Gwupe.Agent.Components.Person
 
         public void InitParty(PartyElement partyElement)
         {
-            Username = partyElement.user.Split(new char[] { '@' })[0];
+            Username = partyElement.user;
+            UniqueHandle = partyElement.uniqueHandle;
             Name = partyElement.name;
             Email = partyElement.email;
             Location = partyElement.location;
@@ -48,6 +49,17 @@ namespace Gwupe.Agent.Components.Person
                 {
                     Logger.Error("Failed to decode avatar from avatar data", e);
                 }
+            }
+        }
+
+        public string UniqueHandle
+        {
+            get { return _uniqueHandle; }
+            set
+            {
+                if (value == _uniqueHandle) return;
+                _uniqueHandle = value;
+                OnPropertyChanged(nameof(UniqueHandle));
             }
         }
 
@@ -124,6 +136,8 @@ namespace Gwupe.Agent.Components.Person
         }
 
         private bool _supporter;
+        private string _uniqueHandle;
+
         public bool Supporter
         {
             get { return _supporter; }

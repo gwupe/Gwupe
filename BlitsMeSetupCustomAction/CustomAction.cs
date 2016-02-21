@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Diagnostics;
+using Gwupe.Common;
 using Microsoft.Deployment.WindowsInstaller;
 
 namespace GwupeSetupCustomAction
@@ -16,7 +17,7 @@ namespace GwupeSetupCustomAction
         {
             session.Log("Begin open GwupeRestart");
             // send messages to all blitsme agents
-            OsUtils.PostMessage((IntPtr)OsUtils.HWND_BROADCAST, OsUtils.WM_UPGRADEBM,
+            OsUtils.PostMessage((IntPtr)OsUtils.HWND_BROADCAST, OsUtils.WM_UPGRADEGWUPE,
 #if DEBUG
                             IntPtr.Zero, 
 #else
@@ -31,7 +32,7 @@ namespace GwupeSetupCustomAction
         {
             session.Log("Begin open GwupeIfNotOpen");
             Process pr = OsUtils.GetMyProcess("BlitsMe.Agent", null, OsUtils.ProgramFilesx86 + "\\BlitsMe" + BuildMarker + "\\BlitsMe.Agent.exe");
-            Process pr2 = OsUtils.GetMyProcess("Gwupe", null, OsUtils.ProgramFilesx86 + "\\Gwupe" + BuildMarker + "\\Gwupe.Agent.exe");
+            Process pr2 = OsUtils.GetMyProcess("Gwupe.Agent", null, OsUtils.ProgramFilesx86 + "\\Gwupe" + BuildMarker + "\\Gwupe.Agent.exe");
             if (pr == null && pr2 == null)
             {
                 // Now start Gwupe
@@ -55,7 +56,7 @@ namespace GwupeSetupCustomAction
         {
             session.Log("Begin terminate Gwupe");
             // send messages to all blitsme agents
-            OsUtils.PostMessage((IntPtr)OsUtils.HWND_BROADCAST, OsUtils.WM_SHUTDOWNBM,
+            OsUtils.PostMessage((IntPtr)OsUtils.HWND_BROADCAST, OsUtils.WM_SHUTDOWNGWUPE,
 #if DEBUG
                             IntPtr.Zero, 
 #else
@@ -87,7 +88,7 @@ namespace GwupeSetupCustomAction
                             }
                         }
                     }
-                    if (pr.ProcessName == "Gwupe" &&
+                    if (pr.ProcessName == "Gwupe.Agent" &&
                         (OsUtils.ProgramFilesx86 + "\\Gwupe" + BuildMarker + "\\Gwupe.Agent.exe")
                             .Equals(OsUtils.GetMainModuleFilepath(pr.Id)))
                     {

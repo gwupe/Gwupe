@@ -2,8 +2,10 @@
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using System.ComponentModel;
+using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Threading;
 using Gwupe.Agent.Annotations;
 using Gwupe.Agent.UI.WPF.API;
 using log4net;
@@ -18,6 +20,7 @@ namespace Gwupe.Agent.UI.WPF.Team
         private static readonly ILog Logger = LogManager.GetLogger(typeof(TeamManagement));
         private TeamManagementData _dataContext;
         private SignupTeam _signupForm;
+        private TeamSettingsControl _teamSettings;
         internal DispatchingCollection<ObservableCollection<Components.Person.Team>, Components.Person.Team> Teams;
 
         public TeamManagement()
@@ -25,7 +28,29 @@ namespace Gwupe.Agent.UI.WPF.Team
             this.InitializeComponent();
             Teams = new DispatchingCollection<ObservableCollection<Components.Person.Team>, Components.Person.Team>(GwupeClientAppContext.CurrentAppContext.TeamManager.Teams, Dispatcher);
             _dataContext = new TeamManagementData(this);
+            TeamList.ItemContainerStyle.Setters.Add(new EventSetter(ListBoxItem.SelectedEvent, new RoutedEventHandler(TeamSelected)));
             DataContext = _dataContext;
+            GwupeClientAppContext.CurrentAppContext.TeamManager.Teams.CollectionChanged += TeamsOnCollectionChanged;
+        }
+
+        private void TeamsOnCollectionChanged(object sender, NotifyCollectionChangedEventArgs notifyCollectionChangedEventArgs)
+        {
+            var teamSettings = _dataContext.Content as TeamSettingsControl;
+            if (teamSettings != null)
+            {
+                // If single throws an exception, then it doesn't exist
+                try
+                {
+                    GwupeClientAppContext.CurrentAppContext.TeamManager.Teams.Single(chooseTeam => chooseTeam.Username.Equals(teamSettings.Team.Username));
+                }
+                catch (Exception)
+                {
+                    Logger.Debug("Team " + teamSettings.Team.Username +
+                                 " is no longer in our list, closing settings control.");
+                    // this team is no longer active
+                    _dataContext.Content = null;
+                }
+            }
         }
 
         public void SetAsMain(Dashboard dashboard)
@@ -35,24 +60,58 @@ namespace Gwupe.Agent.UI.WPF.Team
 
         public void TeamSelected(object sender, RoutedEventArgs e)
         {
-            _dataContext.Content = new TeamSettingsControl();
+            ListBoxItem item = sender as ListBoxItem;
+            if (item != null)
+            {
+                SelectTeam(item.DataContext as Components.Person.Team);
+            }
+        }
+
+        public void SelectTeam(String uniqueHandle)
+        {
+            try
+            {
+                SelectTeam(GwupeClientAppContext.CurrentAppContext.TeamManager.GetTeamByUniqueHandle(uniqueHandle));
+            }
+            catch (Exception e)
+            {
+                Logger.Error("Error activating new team", e);
+                ClearContent();
+            }
+
+        }
+
+        public void SelectTeam(Components.Person.Team team)
+        {
+            if (!Dispatcher.CheckAccess())
+            {
+                Dispatcher.Invoke(new Action(() => SelectTeam(team)));
+                return;
+            }
+            if (_teamSettings == null)
+            {
+                _teamSettings = new TeamSettingsControl(Disabler);
+            }
+            _teamSettings.Team = team;
+            _dataContext.Content = _teamSettings;
+            TeamList.SelectedItem = team;
         }
 
         private void Button_Click(object sender, System.Windows.RoutedEventArgs e)
         {
             Logger.Debug("Adding new Team");
-            //GwupeClientAppContext.CurrentAppContext.TeamManager.Teams.Add(new Team() { Name = "Darren" });
             if (_signupForm == null)
             {
-                _signupForm = new SignupTeam(Disabler);
+                _signupForm = new SignupTeam(Disabler, this);
                 _signupForm.CommitCancelled += (o, args) => ClearContent();
             }
             _signupForm.Reset();
+            TeamList.SelectedItem = null;
             _dataContext.Content = _signupForm;
 
         }
 
-        private void ClearContent()
+        internal void ClearContent()
         {
             if (!Dispatcher.CheckAccess())
             {
@@ -61,6 +120,7 @@ namespace Gwupe.Agent.UI.WPF.Team
             else
             {
                 _dataContext.Content = null;
+                TeamList.SelectedIndex = -1;
             }
         }
     }
@@ -69,7 +129,7 @@ namespace Gwupe.Agent.UI.WPF.Team
     {
         private static readonly ILog Logger = LogManager.GetLogger(typeof(TeamManagementData));
         public Visibility AddButtonVisibility { get { return Teams.Count < 50 ? Visibility.Visible : Visibility.Collapsed; } }
-        public DispatchingCollection<ObservableCollection<Components.Person.Team>,Components.Person.Team> Teams { get; private set; }
+        public DispatchingCollection<ObservableCollection<Components.Person.Team>, Components.Person.Team> Teams { get; private set; }
 
         private readonly TeamManagement _teamManagement;
         private UserControl _content;

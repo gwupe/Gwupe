@@ -11,6 +11,8 @@ namespace Gwupe.Agent.Misc
     public class GwupeUserRegistry
     {
         private static readonly ILog Logger = LogManager.GetLogger(typeof(GwupeUserRegistry));
+        private static object _instanceLock = new object();
+        private static GwupeUserRegistry _oneAndOnly;
         public const String root = @"SOFTWARE\BlitsMe" + Program.BuildMarker;
         public const String serverIPsKey = "serverIPs";
         public const String usernameKey = "username";
@@ -34,6 +36,23 @@ namespace Gwupe.Agent.Misc
         public string Profile {
             get { return getRegValue(profileKey); }
             set { setRegValue(profileKey, value); }
+        }
+
+        private GwupeUserRegistry()
+        {
+            
+        }
+
+        public static GwupeUserRegistry getInstance()
+        {
+            lock (_instanceLock)
+            {
+                if (_oneAndOnly == null)
+                {
+                    _oneAndOnly = new GwupeUserRegistry();
+                }
+            }
+            return _oneAndOnly;
         }
 
         public string LastVersion

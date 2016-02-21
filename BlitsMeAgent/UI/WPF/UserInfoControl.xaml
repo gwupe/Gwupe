@@ -40,7 +40,7 @@
 				<StackPanel>
                 <Button Width="100"  Height="100" Background="White"  Click="AvatarImage_Click" Grid.Column="0" Grid.Row="0"
                         VerticalAlignment="Top" Margin="0,10,0,0">
-                    <Image x:Name="AvatarImage" Source="{Binding Path=Avatar, Converter={StaticResource imageStreamReader}}" />
+                    <Image x:Name="AvatarImage" Source="{Binding Path=Avatar, Converter={StaticResource avatarImageStreamReader}}" />
                 </Button>
                     <Label Content="{Binding Username, FallbackValue=jamestkirk}"  Name="Username" HorizontalAlignment="Center" />
 					</StackPanel>

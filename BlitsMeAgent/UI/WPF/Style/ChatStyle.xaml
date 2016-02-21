@@ -26,7 +26,7 @@
 
     <!-- Helper Objects -->
     <!-- Reads a binary stream and builds an image -->
-    <Utils:ImageStreamReader x:Key="imageStreamReader" />
+    <Utils:ImageStreamReader x:Key="avatarImageStreamReader"  DefaultImageUri="pack://application:,,,/ui/wpf/Images/silhoette.png" />
     <!-- Makes a date/time human friendly -->
     <Utils:RelativeMessageTimeConverter x:Key="relativeMessageTimeConverter" />
     <!-- Converts boolean to a visibility true=>Visible false=>Collapsed -->
@@ -194,7 +194,7 @@
 		<Setter Property="Margin" Value="0" />
 		<Setter Property="Fill">
 			<Setter.Value>
-				<ImageBrush Stretch="Uniform" ImageSource="{Binding Path=Avatar, Converter={StaticResource imageStreamReader}}" />
+                <ImageBrush Stretch="Uniform" ImageSource="{Binding Path=Avatar, Converter={StaticResource avatarImageStreamReader}}" />
 			</Setter.Value>
 		</Setter>
 	</Style>

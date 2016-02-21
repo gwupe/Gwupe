@@ -3,7 +3,7 @@
                     xmlns:ed="http://schemas.microsoft.com/expression/2010/drawing"
                     xmlns:utils="clr-namespace:Gwupe.Agent.UI.WPF.Utils"
                     xmlns:s="clr-namespace:System;assembly=mscorlib"
-                    xmlns:Microsoft_Windows_Themes="clr-namespace:Microsoft.Windows.Themes;assembly=PresentationFramework.Aero">
+                    >
 
 
     

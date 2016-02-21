@@ -15,7 +15,7 @@ namespace Gwupe.Cloud.Messaging.API
         public abstract String type { get; set; }
         [DataMember(IsRequired = true,Order = 1)]
         public String id { get; set; }
-        [DataMember(IsRequired = true)]
-        public DateTime date { get; set; }
+        //[DataMember(IsRequired = true)]
+        //public DateTime date { get; set; }
     }
 }

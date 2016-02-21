@@ -36,7 +36,7 @@ namespace Gwupe.Cloud.Messaging
         private void SendResponse(API.Response response, API.Request request)
         {
             response.id = request.id;
-            response.date = DateTime.Now;
+            //response.date = DateTime.Now;
             try
             {
                 _messageHander.SendMessage(response);

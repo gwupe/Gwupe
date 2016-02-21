@@ -2,6 +2,7 @@
 using System.Diagnostics;
 using System.IO;
 using System.Reflection;
+using Gwupe.Common;
 
 namespace Gwupe.Upgrade
 {
@@ -30,7 +31,7 @@ namespace Gwupe.Upgrade
             {
                 foreach (Process pr in prs)
                 {
-                    //Console.WriteLine(pr.ProcessName);
+                    Console.WriteLine(pr.ProcessName);
                     if (pr.ProcessName == "Gwupe.Agent" || pr.ProcessName == "BlitsMe.Agent")
                     {
                         // If Gwupe was started by an elevated process we can't get the module path.

@@ -8,6 +8,7 @@ using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Threading;
 using Gwupe.Agent.Components;
+using Gwupe.Agent.Exceptions;
 
 namespace Gwupe.Agent.UI.WPF.API
 {
@@ -20,7 +21,7 @@ namespace Gwupe.Agent.UI.WPF.API
         private string _processingWord = "Processing";
         public Control StartWithFocus;
         public event EventHandler CommitCancelled;
-        public DataSubmitErrorArgs SubmissionErrors { get; protected set; }
+        public Exception SubmissionError { get; protected set; }
 
         protected virtual void OnCommitCancelled()
         {
@@ -38,10 +39,10 @@ namespace Gwupe.Agent.UI.WPF.API
 
         public event EventHandler<DataSubmitErrorArgs> CommitFail;
 
-        protected virtual void OnCommitFail(DataSubmitErrorArgs args)
+        protected virtual void OnCommitFail(Exception args)
         {
             EventHandler<DataSubmitErrorArgs> handler = CommitFail;
-            if (handler != null) handler(this, args);
+            handler?.Invoke(this, new DataSubmitErrorArgs() { SubmitErrors = args is DataSubmissionException ? ((DataSubmissionException)args).SubmitErrors : null, Exception = args });
         }
 
         public String ProcessingWord
@@ -63,6 +64,15 @@ namespace Gwupe.Agent.UI.WPF.API
             OnCommitCancelled();
         }
 
+        protected void ResetUserInput(object sender, RoutedEventArgs e)
+        {
+            ThreadPool.QueueUserWorkItem(state =>
+            {
+                ResetStatus();
+                ResetInputs();
+            });
+        }
+
         protected void ProcessUserInput(object sender, RoutedEventArgs e)
         {
             ResetStatus();
@@ -72,16 +82,32 @@ namespace Gwupe.Agent.UI.WPF.API
                 Cancelled = false;
                 ThreadPool.QueueUserWorkItem(state =>
                 {
-                    if (CommitInput())
+                    try
                     {
+                        SubmissionError = null;
+                        CommitInput();
                         CommitSuccessful();
                         OnCommitSucceed();
-                        ResetInputs();
                     }
-                    else
+                    catch (DataSubmissionException ex)
                     {
-                        CommitFailed();
-                        OnCommitFail(SubmissionErrors);
+                        SubmissionError = ex;
+                    }
+                    catch (ElevationException ex)
+                    {
+                        SubmissionError = ex;
+                    }
+                    catch (Exception ex)
+                    {
+                        SubmissionError = ex;
+                    }
+                    finally
+                    {
+                        if (SubmissionError != null)
+                        {
+                            CommitFailed(SubmissionError);
+                            OnCommitFail(SubmissionError);
+                        }
                     }
                     Dispatcher.Invoke(new Action(() => UiHelper.Disabler.DisableInputs(false)));
 
@@ -114,16 +140,37 @@ namespace Gwupe.Agent.UI.WPF.API
             ResetStatus();
         }
 
+        /// <summary>
+        /// Is called after submission to validate the input
+        /// </summary>
+        /// <returns>true if the input is valid</returns>
         protected abstract bool ValidateInput();
 
+        /// <summary>
+        /// Called to reset the inputs to their pre-edited state
+        /// </summary>
         protected abstract void ResetInputs();
 
-        protected abstract bool CommitInput();
+        /// <summary>
+        /// Called to commit the input
+        /// </summary>
+        /// <returns>true if the commit was successful</returns>
+        protected abstract void CommitInput();
 
-        protected abstract void CommitFailed();
+        /// <summary>
+        /// Called if the commit failed.
+        /// </summary>
+        /// <param name="submissionError"></param>
+        protected abstract void CommitFailed(Exception submissionError);
 
+        /// <summary>
+        /// Called if the commit was successful
+        /// </summary>
         protected abstract void CommitSuccessful();
 
+        /// <summary>
+        /// Called to remove all the status' markings of pre submission successes and failures.
+        /// </summary>
         protected abstract void ResetStatus();
     }
 }

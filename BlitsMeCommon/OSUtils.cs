@@ -10,13 +10,14 @@ namespace Gwupe.Common
     public static class OsUtils
     {
         public const int HWND_BROADCAST = 0xFFFF;
+
         [DllImport("user32.dll")]
         public static extern bool PostMessage(IntPtr hwnd, int msg, IntPtr wparam, IntPtr lparam);
         [DllImport("user32")]
         public static extern int RegisterWindowMessage(string message);
-        public static readonly int WM_SHOWBM = RegisterWindowMessage("WM_SHOWBM");
-        public static readonly int WM_UPGRADEBM = RegisterWindowMessage("WM_RESTARTBM");
-        public static readonly int WM_SHUTDOWNBM = RegisterWindowMessage("WM_SHUTDOWNBM");
+        public static readonly int WM_SHOWGWUPE = RegisterWindowMessage("WM_SHOWGWUPE");
+        public static readonly int WM_UPGRADEGWUPE = RegisterWindowMessage("WM_UPGRADEGWUPE");
+        public static readonly int WM_SHUTDOWNGWUPE = RegisterWindowMessage("WM_SHUTDOWNGWUPE");
 
         public static bool IsWinVistaOrHigher
         {
@@ -86,10 +87,10 @@ namespace Gwupe.Common
 
             foreach (Process pr in prs)
             {
-                if (pr.ProcessName == "Gwupe" &&
+                if (pr.ProcessName == "Gwupe.Agent" &&
                         (
-                            (!String.IsNullOrWhiteSpace(pathRegex) && Regex.Match(GetMainModuleFilepath(pr.Id), pathRegex).Success) ||
-                            (!String.IsNullOrWhiteSpace(path) && path.Equals(GetMainModuleFilepath(pr.Id)))
+                            (pathRegex != null && path != "" && Regex.Match(GetMainModuleFilepath(pr.Id), pathRegex).Success) ||
+                            (path != null && path != "" && path.Equals(GetMainModuleFilepath(pr.Id)))
                         ) &&
                         (Environment.UserDomainName + "\\" + Environment.UserName).Equals(GetProcessOwner(pr.Id)))
                 {

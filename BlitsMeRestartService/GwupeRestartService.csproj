@@ -60,6 +60,6 @@
   -->
   <Target Name="AfterBuild">
     <Copy DestinationFolder="$(OutputPath)" SourceFiles="@(RootContent)" SkipUnchangedFiles="true" />
-    <Exec Condition=" '$(Configuration)' == 'Release' " Command="&quot;C:\Program Files (x86)\Microsoft SDKs\Windows\v7.1A\Bin\Signtool.exe&quot; sign /d &quot;BlitsMe Agent Application&quot; /sha1 ab9772b33b05e157f66d29ba9c29ee8ed66688e7 &quot;$(TargetDir)BlitsMeRestartService.exe&quot;" />
+    <Exec Condition=" '$(Configuration)' == 'Release' " Command="&quot;C:\Program Files (x86)\Microsoft SDKs\Windows\v7.1A\Bin\Signtool.exe&quot; sign /d &quot;BlitsMe Agent Application&quot;  /fd SHA256 /du http://www.gwupe.com /t http://timestamp.verisign.com/scripts/timstamp.dll /sha1 863cd2a61bf91f7dd193f2cbdad6c2abaa642c0b &quot;$(TargetDir)GwupeRestartService.exe&quot;" />
   </Target>
 </Project>

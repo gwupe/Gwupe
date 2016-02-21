@@ -41,7 +41,15 @@ namespace Gwupe.Cloud.Messaging
         public void OnOpen(WebSocketConnection aConnection)
         {
             this._connection = aConnection;
-            Logger.Debug("Client : Made connection [" + aConnection.Client.Client.RemoteEndPoint + "]");
+            try
+            {
+                Logger.Debug("Client : Made connection [" + aConnection.Client.Client.RemoteEndPoint + "]");
+            }
+            catch (Exception e)
+            {
+                // For some reason occassionally there is an exception on getting the remote endpoint
+                Logger.Error("Failed to read the remote endpoint",e);
+            }
         }
 
         /*

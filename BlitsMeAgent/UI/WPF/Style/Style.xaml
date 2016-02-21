@@ -1,11 +1,11 @@
 ﻿<ResourceDictionary
 	xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" 
 	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-	xmlns:utils="clr-namespace:Gwupe.Agent.UI.WPF.Utils"
 	xmlns:mahappsControls="clr-namespace:MahApps.Metro.Controls;assembly=MahApps.Metro"
 	xmlns:ed="http://schemas.microsoft.com/expression/2010/drawing"
 	xmlns:diag="clr-namespace:System.Diagnostics;assembly=WindowsBase"
-	xmlns:wpf="clr-namespace:Gwupe.Agent.UI.WPF">
+	xmlns:wpf="clr-namespace:Gwupe.Agent.UI.WPF"
+	xmlns:utils="clr-namespace:Gwupe.Agent.UI.WPF.Utils">
     <ResourceDictionary.MergedDictionaries>
         <ResourceDictionary Source="pack://application:,,,/MahApps.Metro;component/Styles/Colors.xaml" />
         <ResourceDictionary Source="pack://application:,,,/MahApps.Metro;component/Styles/Fonts.xaml" />
@@ -14,7 +14,7 @@
         <ResourceDictionary Source="Theme.xaml" />
     </ResourceDictionary.MergedDictionaries>
     <utils:StarRatingConverter x:Key="starRatingConverter" />
-    <utils:ImageStreamReader x:Key="imageStreamReader" />
+    <utils:ImageStreamReader x:Key="avatarImageStreamReader"   DefaultImageUri="pack://application:,,,/ui/wpf/Images/silhoette.png" />
     <!-- Resource dictionary entries should be defined here. -->
     <Style x:Key="WindowStyle" TargetType="Window">
         <Setter Property="Width" Value="826"  />

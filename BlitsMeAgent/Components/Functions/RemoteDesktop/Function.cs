@@ -159,7 +159,7 @@ namespace Gwupe.Agent.Components.Functions.RemoteDesktop
                     Logger.Error("Failed to start server : " + e.Message, e);
                 }
                 // Notify the second party that we have answered that he can connect
-                SendRdpRequestResponse(true, connectionId, delegate(RDPRequestResponseRq rq, RDPRequestResponseRs rs, Exception exception) { IsActive = exception == null; });
+                SendRdpRequestResponse(true, connectionId, delegate (RDPRequestResponseRq rq, RDPRequestResponseRs rs, Exception exception) { IsActive = exception == null; });
             }
             else
             {
@@ -168,7 +168,7 @@ namespace Gwupe.Agent.Components.Functions.RemoteDesktop
                 // Log in the chat that we denied the request
                 Chat.LogSystemMessage("You denied the desktop assistance request from " + _engagement.SecondParty.Party.Firstname);
                 // notify the second party that he cannot connect.
-                SendRdpRequestResponse(false, null, delegate(RDPRequestResponseRq rq, RDPRequestResponseRs rs, Exception arg3) { IsActive = false; });
+                SendRdpRequestResponse(false, null, delegate (RDPRequestResponseRq rq, RDPRequestResponseRs rs, Exception arg3) { IsActive = false; });
             }
             OnNewActivity(new RemoteDesktopActivity(_engagement, RemoteDesktopActivity.REMOTE_DESKTOP_RESPONSE) { To = _engagement.SecondParty.Party.Username, From = "_SELF", Answer = accept });
         }
@@ -178,13 +178,13 @@ namespace Gwupe.Agent.Components.Functions.RemoteDesktop
         {
             // compile the request
             RDPRequestResponseRq request = new RDPRequestResponseRq()
-                {
-                    accepted = answer,
-                    shortCode = _engagement.SecondParty.ActiveShortCode,
-                    username = _engagement.SecondParty.Party.Username,
-                    interactionId = _engagement.Interactions.CurrentOrNewInteraction.Id,
-                    connectionId = connectionId,
-                };
+            {
+                accepted = answer,
+                shortCode = _engagement.SecondParty.ActiveShortCode,
+                username = _engagement.SecondParty.Party.Username,
+                interactionId = _engagement.Interactions.CurrentOrNewInteraction.Id,
+                connectionId = connectionId,
+            };
             try
             {
                 // Send the request asynchronously 
@@ -266,12 +266,12 @@ namespace Gwupe.Agent.Components.Functions.RemoteDesktop
             }
             else
             {
-                RequestRdpSession(null, null);
+                RequestRdpSession(null);
             }
         }
 
         // Called When this user send a rdp request to the second party
-        private void RequestRdpSession(string tokenId, string securityKey)
+        private void RequestRdpSession(ElevateToken token)
         {
             // now we compile the request to second party to control his desktop
             RDPRequestRq request = new RDPRequestRq()
@@ -279,8 +279,8 @@ namespace Gwupe.Agent.Components.Functions.RemoteDesktop
                 shortCode = _engagement.SecondParty.ActiveShortCode,
                 username = _engagement.SecondParty.Party.Username,
                 interactionId = _engagement.Interactions.CurrentOrNewInteraction.Id,
-                securityKey = securityKey,
-                tokenId = tokenId,
+                securityKey = token?.SecurityKey,
+                tokenId = token?.TokenId,
             };
             try
             {
@@ -288,14 +288,17 @@ namespace Gwupe.Agent.Components.Functions.RemoteDesktop
                 //_appContext.ConnectionManager.Connection.RequestAsync<RDPRequestRq, RDPRequestRs>(request, (req, res, ex) => ProcessRequestRDPSessionResponse(req, res, ex, chatElement));
                 try
                 {
-                    // Print in chat that we sent the second party a rdp request
-                    Chat.LogSystemMessage("You sent " + _engagement.SecondParty.Party.Firstname + " a request to control their desktop.");
-                    var response = _appContext.ConnectionManager.Connection.Request<RDPRequestRq, RDPRequestRs>(request);
                     // if its unattended, indicate this
-                    if (tokenId != null)
+                    if (token != null)
                     {
                         Chat.LogSystemMessage("You have unattended access to their desktop, you will be granted access automatically after 10 seconds.");
                     }
+                    else
+                    {
+                        // Print in chat that we sent the second party a rdp request
+                        Chat.LogSystemMessage("You sent " + _engagement.SecondParty.Party.Firstname + " a request to control their desktop.");
+                    }
+                    var response = _appContext.ConnectionManager.Connection.Request<RDPRequestRq, RDPRequestRs>(request);
                     // The message was delivered
                     IsActive = true;
                     // Raise an activity that we managed to send a rdp request to second party successfully.
@@ -303,14 +306,16 @@ namespace Gwupe.Agent.Components.Functions.RemoteDesktop
                 }
                 catch (MessageException<RDPRequestRs> e)
                 {
-                    if ("WILL_NOT_PROCESS_ELEVATE".Equals(e.ErrorCode) && (tokenId == null && securityKey == null))
+                    if ("WILL_NOT_PROCESS_ELEVATE".Equals(e.ErrorCode) && (token == null))
                     {
                         // need elevation
                         ElevatedRequestRdpSession();
-                    } else if ("WILL_NOT_PROCESS_AUTH".Equals(e.ErrorCode))
+                    }
+                    else if ("WILL_NOT_PROCESS_AUTH".Equals(e.ErrorCode))
                     {
                         Chat.LogErrorMessage("Sorry, you entered your password incorrectly.  Please try again.");
-                    } else if ("KEY_NOT_FOUND".Equals(e.ErrorCode))
+                    }
+                    else if ("KEY_NOT_FOUND".Equals(e.ErrorCode))
                     {
                         // sometimes the user disappears and comes back with another shortcode, lets try that
                         if (_engagement.SecondParty.Presence.IsOnline &&
@@ -318,7 +323,7 @@ namespace Gwupe.Agent.Components.Functions.RemoteDesktop
                         {
                             Logger.Debug("ActiveShortCode is different from current presence shortcode, trying the new one");
                             _engagement.SecondParty.ActiveShortCode = _engagement.SecondParty.Presence.ShortCode;
-                            RequestRdpSession(tokenId, securityKey);
+                            RequestRdpSession(token);
                         }
                         else
                         {
@@ -340,16 +345,14 @@ namespace Gwupe.Agent.Components.Functions.RemoteDesktop
 
         private void ElevatedRequestRdpSession()
         {
-            string tokenId;
-            string securityKey;
-            if (
-                GwupeClientAppContext.CurrentAppContext.Elevate(
-                    "This connection requires you to verify your identity, please enter your Gwupe password to connect to " +
-                    _engagement.SecondParty.Party.Name + ".", out tokenId, out securityKey))
+            try
             {
-                RequestRdpSession(tokenId, securityKey);
+                ElevateToken token = GwupeClientAppContext.CurrentAppContext.Elevate(
+                    "This connection requires you to verify your identity, please enter your Gwupe password to connect to " +
+                    _engagement.SecondParty.Party.Name + ".");
+                RequestRdpSession(token);
             }
-            else
+            catch (Exception ex)
             {
                 Chat.LogErrorMessage("Failed to elevate privileges to connect to " + _engagement.SecondParty.Party.Name);
                 throw new Exception("Failed to gain unattended access through elevation");

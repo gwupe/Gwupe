@@ -133,15 +133,15 @@ namespace Gwupe.Agent.UI
         {
             e.Cancel = false;
             notifyIcon.ContextMenuStrip.Items.Clear();
-            notifyIcon.ContextMenuStrip.Items.Add(Utils.GenerateItem("&Open",
+            notifyIcon.ContextMenuStrip.Items.Add(UiUtils.GenerateItem("&Open",
                 (o, args) => GwupeClientAppContext.CurrentAppContext.UIManager.Show()));
-            ToolStripMenuItem logoutItem = Utils.GenerateItem("&Logout", (o, args) => _appContext.LoginManager.Logout());
+            ToolStripMenuItem logoutItem = UiUtils.GenerateItem("&Logout", (o, args) => _appContext.LoginManager.Logout());
             if (!_appContext.LoginManager.IsLoggedIn)
             {
                 logoutItem.Enabled = false;
             }
             notifyIcon.ContextMenuStrip.Items.Add(logoutItem);
-            notifyIcon.ContextMenuStrip.Items.Add(Utils.GenerateItem("&Exit", exitItem_Click));
+            notifyIcon.ContextMenuStrip.Items.Add(UiUtils.GenerateItem("&Exit", exitItem_Click));
         }
 
         public void Close()

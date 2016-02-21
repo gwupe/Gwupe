@@ -17,6 +17,20 @@ namespace Gwupe.Cloud.Messaging.Response
         }
 
         [DataMember] public UserElement userElement;
+        [DataMember] public TeamElement teamElement;
         [DataMember] public RelationshipElement relationshipElement;
+
+        public PartyElement PartyElement
+        {
+            get
+            {
+                return IsTeam() ? (PartyElement)teamElement : userElement;
+            }
+        }
+
+        public Boolean IsTeam()
+        {
+            return teamElement != null;
+        }
     }
 }

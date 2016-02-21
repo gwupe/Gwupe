@@ -7,11 +7,11 @@
             xmlns:Person="clr-namespace:Gwupe.Agent.Components.Person">
     <UserControl.Resources>
         <ResourceDictionary>
-            <utils:ImageStreamReader x:Key="imageStreamReader" />
+            <utils:ImageStreamReader x:Key="AvatarImageStreamReader"  DefaultImageUri="pack://application:,,,/ui/wpf/Images/silhoette.png" />
         </ResourceDictionary>
     </UserControl.Resources>
     <Grid>
-        <Image Stretch="Uniform" Source="{Binding Path=Self.Avatar, Converter={StaticResource imageStreamReader}}"
+        <Image Stretch="Uniform" Source="{Binding Path=Self.Avatar, Converter={StaticResource AvatarImageStreamReader}}"
                         Width="30" Height="30"/>
     </Grid>
 </UserControl>

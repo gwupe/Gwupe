@@ -19,7 +19,7 @@ namespace Gwupe.Agent.Managers
     {
         private static readonly ILog Logger = LogManager.GetLogger(typeof(ScheduleManager));
         private readonly Timer _schedulerTimer;
-        private const int Interval = 1000;
+        private const int Interval = 5000;
         private readonly List<IScheduledTask> _tasks;
         internal bool IsClosed { get; private set; }
 
@@ -31,6 +31,8 @@ namespace Gwupe.Agent.Managers
 
         public void AddTask(IScheduledTask task)
         {
+            task.LastExecuteTime = DateTime.Now;
+            task.LastCompleteTime = DateTime.Now;
             lock (_tasks)
             {
                 if (_tasks.Contains(task))

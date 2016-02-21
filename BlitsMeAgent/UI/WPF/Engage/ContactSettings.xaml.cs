@@ -52,7 +52,7 @@ namespace Gwupe.Agent.UI.WPF.Engage
 
 
 
-        private void UpdateRelationship(string tokenId, string securityKey)
+        private void UpdateRelationship(ElevateToken token)
         {
             try
             {
@@ -63,7 +63,7 @@ namespace Gwupe.Agent.UI.WPF.Engage
                 Dispatcher.Invoke(new Action(() => { relationship.TheyHaveUnattendedAccess = (UnattendedAccessCheckbox.IsChecked == true); }));
                 GwupeClientAppContext.CurrentAppContext.RosterManager.UpdateRelationship(
                     _dataContext.Engagement.SecondParty.Party.Username,
-                    relationship, tokenId, securityKey);
+                    relationship, token.TokenId, token.SecurityKey);
                 _updatedRelationship = true;
             }
             catch (Exception ex)

@@ -10,14 +10,14 @@
     <UserControl.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
-                <ResourceDictionary Source="Skins/Skin.xaml"/>
-                <ResourceDictionary Source="Style/Style.xaml"/>
+                <ResourceDictionary Source="../Skins/Skin.xaml"/>
+                <ResourceDictionary Source="../Style/Style.xaml"/>
                 <ResourceDictionary Source="pack://application:,,,/MahApps.Metro;component/Styles/Colors.xaml" />
                 <ResourceDictionary Source="pack://application:,,,/MahApps.Metro;component/Styles/Fonts.xaml" />
                 <ResourceDictionary Source="pack://application:,,,/MahApps.Metro;component/Styles/Controls.xaml" />
                 <ResourceDictionary Source="pack://application:,,,/MahApps.Metro;component/Styles/Accents/BaseLight.xaml" />
-                <ResourceDictionary Source="Style/Theme.xaml" />
-                <ResourceDictionary Source="Style/TeamStyle.xaml"/>
+                <ResourceDictionary Source="../Style/Theme.xaml" />
+                <ResourceDictionary Source="../Style/TeamStyle.xaml"/>
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>
     </UserControl.Resources>
@@ -30,13 +30,13 @@
                     <RowDefinition Height="*" />
                 </Grid.RowDefinitions>
 
-                <Grid VerticalAlignment="Top" Height="60" Margin="10,18,10,0" Grid.Row="0">
+                <Grid VerticalAlignment="Top" Height="80" Margin="10,18,10,0" Grid.Row="0">
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="*" />
                         <ColumnDefinition Width="Auto" />
                         <ColumnDefinition Width="Auto" />
                     </Grid.ColumnDefinitions>
-                    <ListBox Grid.Column="0" ItemsSource="{Binding Teams}" ScrollViewer.HorizontalScrollBarVisibility="Auto" Background="Transparent" 
+                    <ListBox Name="TeamList" Grid.Column="0" ItemsSource="{Binding Teams}" ScrollViewer.HorizontalScrollBarVisibility="Auto" Background="Transparent" 
                              VerticalAlignment="Top" ScrollViewer.CanContentScroll="False"
 						ItemContainerStyle="{StaticResource TeamIconContainerStyle}">
                         <ListBox.ItemsPanel>
@@ -46,11 +46,11 @@
                         </ListBox.ItemsPanel>
                     </ListBox>
                     <Button Template="{DynamicResource TransparentButtonProgressCloseStyle}" ToolTip="Add a Team" Margin="10,3,0,0" Height="32" Width="32" Visibility="{Binding Path=AddButtonVisibility, FallbackValue=Visible}" Click="Button_Click" Grid.Column="1"  VerticalAlignment="Top">
-                        <Image Source="Images/add_30_black.png" Width="30" Height="30"/>
+                        <Image Source="../Images/add_30_black.png" Width="30" Height="30"/>
                     </Button>
                     <StackPanel Orientation="Horizontal" VerticalAlignment="Top" HorizontalAlignment="Right" Margin="10,0,0,0" Grid.Column="2">
                         <TextBlock Style="{DynamicResource TextblockHeaderActiveStyle}" Text="Teams" HorizontalAlignment="Right" Margin="0,0,10,0" />
-                        <Image Source="Images/team_label_30.png" Height="27" Margin="0,3,5,0" />
+                        <Image Source="../Images/team_label_30.png" Height="27" Margin="0,3,5,0" />
                     </StackPanel>
                 </Grid>
                 <ContentControl Name="TeamManagementContent" Content="{Binding Path=Content}" Grid.Row="1" />

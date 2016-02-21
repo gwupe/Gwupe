@@ -14,16 +14,20 @@ namespace Gwupe.Agent.UI.WPF.Utils
             return CreateBitmapImage((byte[])value);
         }
 
-        internal static BitmapImage CreateBitmapImage(byte[] value)
+        public String DefaultImageUri { get; set; }
+
+        internal BitmapImage CreateBitmapImage(byte[] value)
         {
-            BitmapImage image;
-            image = new BitmapImage();
+            var image = new BitmapImage();
             image.BeginInit();
             if (value == null)
             {
                 // default image
-                image.UriSource = new Uri("pack://application:,,,/UI/WPF/Images/silhoette.png", UriKind.RelativeOrAbsolute);
-                image.CacheOption = BitmapCacheOption.OnLoad;
+                if (DefaultImageUri != null)
+                {
+                    image.UriSource = new Uri(DefaultImageUri, UriKind.RelativeOrAbsolute);
+                    image.CacheOption = BitmapCacheOption.OnLoad;
+                }
             }
             else
             {

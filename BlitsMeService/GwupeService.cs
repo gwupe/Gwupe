@@ -5,6 +5,7 @@ using System.IO;
 using System.Net;
 using System.Net.Security;
 using System.Reflection;
+using System.Runtime.InteropServices;
 using System.Security.Cryptography.X509Certificates;
 using System.ServiceProcess;
 using System.Text.RegularExpressions;
@@ -18,19 +19,47 @@ using Timer = System.Timers.Timer;
 
 namespace Gwupe.Service
 {
+    public enum ServiceState
+    {
+        SERVICE_STOPPED = 0x00000001,
+        SERVICE_START_PENDING = 0x00000002,
+        SERVICE_STOP_PENDING = 0x00000003,
+        SERVICE_RUNNING = 0x00000004,
+        SERVICE_CONTINUE_PENDING = 0x00000005,
+        SERVICE_PAUSE_PENDING = 0x00000006,
+        SERVICE_PAUSED = 0x00000007,
+    }
+
+    [StructLayout(LayoutKind.Sequential)]
+    public struct ServiceStatus
+    {
+        public uint dwServiceType;
+        public ServiceState dwCurrentState;
+        public uint dwControlsAccepted;
+        public uint dwWin32ExitCode;
+        public uint dwServiceSpecificExitCode;
+        public uint dwCheckPoint;
+        public uint dwWaitHint;
+    };
+
     public partial class GwupeService : ServiceBase
     {
         private static readonly ILog Logger = LogManager.GetLogger(typeof(GwupeService));
+
+
+
         private WebClient _webClient;
         private Timer _updateCheck;
 #if DEBUG
         private const String UpdateServer = "dev.gwupe.com";
         private const int UpdateCheckInterval = 300;
         public const String BuildMarker = "_Dev";
+        public const String EventSourceName = "GwupeService_Dev";
 #else
         private const String UpdateServer = "gwupe.com";
         private const int UpdateCheckInterval = 3600;
         public const String BuildMarker = "";
+        public const String EventSourceName = "GwupeService";
 #endif
         // FIXME: Move this to a global config file at some point
         private const string VncServiceName = "GwupeSupportService" + BuildMarker;
@@ -43,26 +72,50 @@ namespace Gwupe.Service
         private System.ServiceModel.ServiceHost _serviceHost;
         public GwupeService()
         {
+            WriteEventLog("Initing Component GwupeService" + BuildMarker);
             InitializeComponent();
-            if (!EventLog.SourceExists("GwupeService"))
-                EventLog.CreateEventSource("GwupeService", "Application");
-            EventLog.WriteEntry("GwupeService", "Initialised the GwupeService" + BuildMarker);
+        }
+
+        private static void WriteEventLog(String entry)
+        {
+            if (!EventLog.SourceExists(EventSourceName))
+                EventLog.CreateEventSource(EventSourceName, "Application");
+            EventLog.WriteEntry(EventSourceName, entry);
         }
 
         protected override void OnStart(string[] args)
         {
+            WriteEventLog("Starting GwupeService" + BuildMarker);
+
+            // Update the service state to Start Pending.
+            ServiceStatus serviceStatus = new ServiceStatus();
+            serviceStatus.dwCurrentState = ServiceState.SERVICE_START_PENDING;
+            serviceStatus.dwWaitHint = 100000;
+            SetServiceStatus(this.ServiceHandle, ref serviceStatus);
+
             ThreadPool.QueueUserWorkItem(state => BackgroundInit());
+            WriteEventLog("Started Background Init Thread for GwupeService" + BuildMarker);
+
+            // Update the service state to Running.
+            serviceStatus.dwCurrentState = ServiceState.SERVICE_RUNNING;
+            SetServiceStatus(this.ServiceHandle, ref serviceStatus);
         }
 
         private void BackgroundInit()
         {
-            EventLog.WriteEntry("GwupeService", "Starting GwupeService" + BuildMarker);
+            WriteEventLog("Initializing background Init for GwupeService" + BuildMarker);
             XmlConfigurator.Configure(Assembly.GetExecutingAssembly().GetManifestResourceStream("Gwupe.Service.log4net.xml"));
+            WriteEventLog("Got log4net resource location for GwupeService" + BuildMarker);
+            Logger.Debug("Got log4net resource location for GwupeService" + BuildMarker);
             _version =
                 Regex.Replace(FileVersionInfo.GetVersionInfo(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location) +
                                                              "/Gwupe.Agent.exe").FileVersion, "\\.[0-9]+$", "");
+            WriteEventLog("Determined Version for GwupeService" + BuildMarker);
+            Logger.Debug("Determined Version for GwupeService" + BuildMarker);
             Logger.Info("Gwupe Service Starting Up [" + Environment.UserName + ", " + _version + "]");
             SaveVersion();
+            WriteEventLog("Saved Version for GwupeService" + BuildMarker);
+            Logger.Debug("Saved Version for GwupeService" + BuildMarker);
 #if DEBUG
             foreach (var manifestResourceName in Assembly.GetExecutingAssembly().GetManifestResourceNames())
             {
@@ -75,10 +128,16 @@ namespace Gwupe.Service
             _updateCheck = new Timer(UpdateCheckInterval * 1000);
             _updateCheck.Elapsed += delegate { CheckForNewVersion(); };
             _updateCheck.Start();
+            WriteEventLog("Started update check timer for GwupeService" + BuildMarker);
+            Logger.Debug("Started update check timer for GwupeService" + BuildMarker);
             initServers();
+            WriteEventLog("Initialized servers for GwupeService" + BuildMarker);
+            Logger.Debug("Initialized servers for GwupeService" + BuildMarker);
             _serviceHost = new System.ServiceModel.ServiceHost(new ServiceHost.GwupeService(this),
                 new Uri("net.pipe://localhost/GwupeService" + BuildMarker));
             _serviceHost.Open();
+            WriteEventLog("Opened Service Host for GwupeService" + BuildMarker);
+            Logger.Debug("Opened Service Host for GwupeService" + BuildMarker);
             Logger.Info("Gwupe Service Init Complete [" + Environment.UserName + ", " + _version + "]");
         }
 
@@ -341,7 +400,8 @@ namespace Gwupe.Service
         protected override void OnStop()
         {
             _serviceHost.Close();
-            Logger.Info("Gwupe Service Shutting Down");
+            Logger.Info("GwupeService" + BuildMarker + " Shutting Down");
+            WriteEventLog("Shutting down GwupeService" + BuildMarker);
         }
 
         public void SetPreRelease(bool preRelease)
@@ -371,6 +431,9 @@ namespace Gwupe.Service
                 throw e2;
             }
         }
+
+        [DllImport("advapi32.dll", SetLastError = true)]
+        private static extern bool SetServiceStatus(IntPtr handle, ref ServiceStatus serviceStatus);
 
         private static RegistryKey GetRegistry()
         {

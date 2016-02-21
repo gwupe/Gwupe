@@ -2,13 +2,6 @@
 using System.Threading;
 using System.Windows.Forms;
 using BlitsMe.Common.Security;
-using BlitsMe.Communication.P2P.RUDP.Connector;
-using BlitsMe.Communication.P2P.RUDP.Connector.API;
-using BlitsMe.Communication.P2P.RUDP.Packet.TCP;
-using BlitsMe.Communication.P2P.RUDP.Socket.API;
-using BlitsMe.Communication.P2P.RUDP.Tunnel;
-using BlitsMe.Communication.P2P.RUDP.Tunnel.API;
-using BlitsMe.Communication.P2P.RUDP.Tunnel.Transport;
 using log4net;
 
 namespace BlitsMe.TransportEmulator

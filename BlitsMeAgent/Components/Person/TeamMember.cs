@@ -5,7 +5,7 @@ namespace Gwupe.Agent.Components.Person
     public class TeamMember : Person
     {
         private bool _admin;
-        private bool _member;
+        private PlayerMembership _player;
 
         public TeamMember(TeamMemberElement teamMemberElement)
         {
@@ -16,7 +16,7 @@ namespace Gwupe.Agent.Components.Person
         {
             InitParty(teamMemberElement);
             Admin = teamMemberElement.admin;
-            Member = teamMemberElement.player;
+            Player = teamMemberElement.Player;
         }
 
         public bool Admin
@@ -30,15 +30,20 @@ namespace Gwupe.Agent.Components.Person
             }
         }
 
-        public bool Member
+        public PlayerMembership Player
         {
-            get { return _member; }
+            get { return _player; }
             set
             {
-                if (value.Equals(_member)) return;
-                _member = value;
-                OnPropertyChanged("Member");
+                if (value.Equals(_player)) return;
+                _player = value;
+                OnPropertyChanged("Player");
             }
+        }
+
+        public override string ToString()
+        {
+            return base.ToString() + " [" + (Admin ? " admin" : " ") + Player + " ]";
         }
     }
 }

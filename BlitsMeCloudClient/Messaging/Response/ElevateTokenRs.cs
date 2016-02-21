@@ -17,5 +17,6 @@ namespace Gwupe.Cloud.Messaging.Response
 
         [DataMember] public String tokenId;
         [DataMember] public String token;
+        [DataMember] public int expires;
     }
 }

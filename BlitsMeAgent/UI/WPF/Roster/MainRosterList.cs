@@ -76,7 +76,7 @@ namespace Gwupe.Agent.UI.WPF.Roster
         protected override void FilterEventHandler(object sender, FilterEventArgs eventArgs)
         {
             Attendance attendance = eventArgs.Item as Attendance;
-            if (attendance != null && attendance.Presence != null && attendance.Presence.IsOnline && !attendance.IsActive && !attendance.IsUnread && (attendance.Party is Team || (attendance.Party is Person && !((Person)attendance.Party).Guest)))
+            if (attendance != null && attendance.Presence != null && attendance.Presence.IsOnline && !attendance.IsActive && !attendance.IsUnread && (attendance.Party is Components.Person.Team || (attendance.Party is Person && !((Person)attendance.Party).Guest)))
             //if (attendance != null && attendance.Presence != null && attendance.Presence.IsOnline && !attendance.Person.Guest)
             {
                 eventArgs.Accepted = true;

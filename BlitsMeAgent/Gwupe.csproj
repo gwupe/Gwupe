@@ -172,6 +172,7 @@
     <Compile Include="Components\Activity\InteractionActivity.cs" />
     <Compile Include="Components\Alert\Alert.cs" />
     <Compile Include="Components\DataSubmitErrorArgs.cs" />
+    <Compile Include="Components\ElevateToken.cs" />
     <Compile Include="Components\Engagement.cs" />
     <Compile Include="Components\EngagementActivity.cs" />
     <Compile Include="Components\Functions\API\ClientImpl.cs" />
@@ -247,6 +248,8 @@
     <Compile Include="Components\Schedule\DetectIdleTask.cs" />
     <Compile Include="Components\Schedule\IScheduledTask.cs" />
     <Compile Include="Components\Search\SearchResult.cs" />
+    <Compile Include="Exceptions\DataSubmissionException.cs" />
+    <Compile Include="Exceptions\ElevationException.cs" />
     <Compile Include="Exceptions\LoginException.cs" />
     <Compile Include="Exceptions\RDPSessionFailedException.cs" />
     <Compile Include="Components\Functions\RemoteDesktop\Client.cs" />
@@ -271,13 +274,13 @@
     <Compile Include="Managers\UIManager.cs" />
     <Compile Include="Misc\GwupeUserRegistry.cs" />
     <Compile Include="Managers\RosterManager.cs" />
-    <Compile Include="OSUtils.cs" />
     <Compile Include="Properties\Annotations.cs" />
     <Compile Include="Properties\Resources.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
+    <Compile Include="UIUtils.cs" />
     <Compile Include="UI\SystemTray.cs" />
     <Compile Include="UI\WPF\AlertControl.xaml.cs">
       <DependentUpon>AlertControl.xaml</DependentUpon>
@@ -498,6 +501,8 @@
     <Compile Include="UI\WPF\Utils\BoolToInvisibilityConverter.cs" />
     <Compile Include="UI\WPF\Utils\BoolToStringConverter.cs" />
     <Compile Include="UI\WPF\Utils\BoolToVisibilityConverter.cs" />
+    <Compile Include="UI\WPF\Utils\EnumEqualityToBoolConverter.cs" />
+    <Compile Include="UI\WPF\Utils\EnumEqualityToVisibilityConverter.cs" />
     <Compile Include="UI\WPF\Utils\ImageStreamReader.cs" />
     <Compile Include="UI\WPF\Utils\InputValidator.cs" />
     <Compile Include="UI\WPF\Utils\InvertBoolConverter.cs" />
@@ -508,6 +513,7 @@
     <Compile Include="UI\WPF\Search\SearchResultControl.xaml.cs">
       <DependentUpon>SearchResultControl.xaml</DependentUpon>
     </Compile>
+    <Compile Include="..\BlitsMeCommon\OSUtils.cs" />
     <Compile Include="UI\WPF\Search\SearchResultControlList.cs" />
     <Compile Include="UI\WPF\Search\SearchWindow.xaml.cs">
       <DependentUpon>SearchWindow.xaml</DependentUpon>
@@ -516,7 +522,6 @@
     <Compile Include="UI\WPF\Roster\RosterElement.xaml.cs">
       <DependentUpon>RosterElement.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Utils.cs" />
     <Compile Include="GwupeClientAppContext.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

@@ -2,24 +2,17 @@
 using System.Diagnostics;
 using System.IO;
 using System.Net;
-using System.Net.Sockets;
 using System.Reflection;
 using System.Text;
 using System.Threading;
 using System.Windows;
-using BlitsMe.Common.Security;
-using BlitsMe.Communication.P2P.P2P.Connector;
-using BlitsMe.Communication.P2P.P2P.Socket;
-using BlitsMe.Communication.P2P.P2P.Tunnel;
-using BlitsMe.Communication.P2P.RUDP.Connector;
-using BlitsMe.Communication.P2P.RUDP.Packet;
-using BlitsMe.Communication.P2P.RUDP.Socket;
-using BlitsMe.Communication.P2P.RUDP.Utils;
+using Gwupe.Communication.P2P.P2P.Socket;
+using Gwupe.Communication.P2P.P2P.Tunnel;
+using Gwupe.Communication.P2P.RUDP.Packet;
 using log4net;
 using log4net.Config;
-using log4net.Repository.Hierarchy;
 using Microsoft.Win32;
-using Socket = Udt.Socket;
+using EncryptData = Gwupe.Communication.P2P.RUDP.Tunnel.API.EncryptData;
 
 namespace BlitsMe.UDTTester
 {
@@ -32,7 +25,7 @@ namespace BlitsMe.UDTTester
         //private Socket _udtSocket;
         //private Socket _udtConnection;
         private static readonly ILog Logger = LogManager.GetLogger(typeof (MainWindow));
-        private BmUdtSocket _socket;
+        private Gwupe.Communication.P2P.P2P.Socket.BmUdtSocket _socket;
 
         public MainWindow()
         {
@@ -57,7 +50,7 @@ namespace BlitsMe.UDTTester
             }
             //_socket = new BmUdtSocket();
             var aes = new AesCryptoPacketUtil(Encoding.UTF8.GetBytes("0123456789ABCDEF"));
-            _socket = new BmUdtEncryptedSocket() { EncryptData = aes.EncryptData, DecryptData = aes.DecryptData };
+            //_socket = new BmUdtEncryptedSocket(); { EncryptData = aes.EncryptData, DecryptData = aes.DecryptData };
             //IPEndPoint endPoint = new IPEndPoint(IPAddress.Any, 0);
             //_udpClient = new UdpClient(endPoint);
             //_udtSocket = new Udt.Socket(AddressFamily.InterNetwork, SocketType.Stream);
@@ -104,9 +97,9 @@ namespace BlitsMe.UDTTester
             WaitSyncFromButton.IsEnabled = false;
             try
             {
-                var peerInfo = new PeerInfo
+                var peerInfo = new PeerInfo();
                 {
-                    ExternalEndPoint = new IPEndPoint(IPAddress.Parse(Destination.Text), Convert.ToInt32(DestinationPort.Text))
+                    //ExternalEndPoint = new IPEndPoint(IPAddress.Parse(Destination.Text), Convert.ToInt32(DestinationPort.Text))
                 };
                 _socket.Sync(peerInfo, "test");
                 Status.Text = "Synced with " + Destination.Text + ":" + DestinationPort.Text;
@@ -296,10 +289,10 @@ namespace BlitsMe.UDTTester
             DisableClientServerButtons();
             try
             {
-                var proxy = new StreamProxy(
-                    new BmTcpSocket(new IPEndPoint(IPAddress.Loopback, Convert.ToInt32(IncomingPort.Text))),
-                    _socket);
-                proxy.Start();
+               // var proxy = new StreamProxy(
+               //     new BmTcpSocket(new IPEndPoint(IPAddress.Loopback, Convert.ToInt32(IncomingPort.Text))),
+               //     _socket);
+               // proxy.Start();
             }
             catch (Exception ex)
             {
@@ -312,9 +305,9 @@ namespace BlitsMe.UDTTester
             DisableClientServerButtons();
             try
             {
-                var proxy = new StreamProxy(_socket,
-                    new BmTcpSocket(new IPEndPoint(IPAddress.Parse(ProxyAddress.Text), Convert.ToInt32(ProxyPort.Text))));
-                proxy.Start();
+                //var proxy = new StreamProxy(_socket,
+                  //  new BmTcpSocket(new IPEndPoint(IPAddress.Parse(ProxyAddress.Text), Convert.ToInt32(ProxyPort.Text))));
+                //proxy.Start();
             }
             catch (Exception ex)
             {

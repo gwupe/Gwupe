@@ -26,12 +26,12 @@ namespace Gwupe.Agent.UI.WPF
             set { _profileImage = value; ImageContainer.Fill = new ImageBrush() { ImageSource = value, Stretch = Stretch.Uniform }; }
         }
 
-        internal AvatarImageWindow(GwupeClientAppContext appContext)
+        internal AvatarImageWindow(GwupeClientAppContext appContext, byte[] currentImageBytes)
         {
             _appContext = appContext;
             this.InitializeComponent();
             validator = new InputValidator(StatusText, ErrorText,Dispatcher);
-            // Insert code required on object creation below this point.
+            ProfileImage = new ImageStreamReader() {DefaultImageUri = "pack://application:,,,/ui/wpf/Images/silhoette.png" }.CreateBitmapImage(currentImageBytes);
         }
 
         private void WebcamButton_Click(object sender, System.Windows.RoutedEventArgs e)
