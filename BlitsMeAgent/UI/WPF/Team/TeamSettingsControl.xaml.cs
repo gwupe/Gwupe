@@ -1,21 +1,10 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
 using Gwupe.Agent.Components;
 using Gwupe.Agent.Exceptions;
 using Gwupe.Agent.UI.WPF.API;
-using Gwupe.Cloud.Messaging.Elements;
 using Gwupe.Cloud.Messaging.Request;
 using Gwupe.Cloud.Messaging.Response;
 using log4net;
@@ -150,7 +139,6 @@ namespace Gwupe.Agent.UI.WPF.Team
                     SubscribeRq request = new SubscribeRq { subscribe = subscribe, username = Team.Username };
                     GwupeClientAppContext.CurrentAppContext.ConnectionManager.Connection
                         .Request<SubscribeRq, SubscribeRs>(request);
-                    GwupeClientAppContext.CurrentAppContext.TeamManager.ReloadTeam(Team.Username);
                 }
                 catch (Exception ex)
                 {
@@ -162,6 +150,11 @@ namespace Gwupe.Agent.UI.WPF.Team
         private void DeclineClick(object sender, RoutedEventArgs e)
         {
             SendSubscribe(false);
+        }
+
+        private void DeclinePlayerClick(object sender, RoutedEventArgs e)
+        {
+            throw new NotImplementedException();
         }
     }
 }

@@ -5,7 +5,8 @@
 	xmlns:ed="http://schemas.microsoft.com/expression/2010/drawing"
 	xmlns:diag="clr-namespace:System.Diagnostics;assembly=WindowsBase"
 	xmlns:wpf="clr-namespace:Gwupe.Agent.UI.WPF"
-	xmlns:utils="clr-namespace:Gwupe.Agent.UI.WPF.Utils">
+	xmlns:utils="clr-namespace:Gwupe.Agent.UI.WPF.Utils"
+	xmlns:system="clr-namespace:System;assembly=mscorlib">
     <ResourceDictionary.MergedDictionaries>
         <ResourceDictionary Source="pack://application:,,,/MahApps.Metro;component/Styles/Colors.xaml" />
         <ResourceDictionary Source="pack://application:,,,/MahApps.Metro;component/Styles/Fonts.xaml" />
@@ -64,6 +65,101 @@
         <Setter Property="SnapsToDevicePixels" Value="True" />
         <Setter Property="FontWeight" Value="Bold" />
     </Style>
+
+    <!-- Style to make a button border transparent and mouseover raise -->
+    <Style TargetType="{x:Type Border}" x:Key="TransparentButtonBorderStyle">
+        <Setter Property="Background" Value="Transparent" />
+        <Style.Triggers>
+            <Trigger Property="IsMouseOver" Value="True">
+                <Setter Property="Background" Value="Transparent" />
+                <Setter Property="BorderBrush" Value="Gray" />
+                <Setter Property="BorderThickness" Value="1" />
+            </Trigger>
+        </Style.Triggers>
+    </Style>
+
+    <!-- the Template containing the image we use for cancel -->
+    <DataTemplate x:Key="CancelButtonImage">
+        <Image Source="/Gwupe.Agent;component/UI/WPF/Images/smallcross.png" Width="16" Height="16" />
+    </DataTemplate>
+
+    <!-- the Template containing the image we use for accept -->
+    <DataTemplate x:Key="AcceptButtonImage">
+        <Image Source="/Gwupe.Agent;component/UI/WPF/Images/smalltick.png" Width="16" Height="16" />
+    </DataTemplate>
+
+    <!-- Template for a cancel button -->
+    <DataTemplate x:Key="CancelButtonTemplate">
+        <Grid HorizontalAlignment="Center" VerticalAlignment="Center">
+            <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Center">
+                <Border CornerRadius="3" Style="{StaticResource TransparentButtonBorderStyle}" >
+                    <ContentPresenter ContentTemplate="{StaticResource CancelButtonImage}" />
+                </Border>
+            </StackPanel>
+        </Grid>
+    </DataTemplate>
+
+    <!-- Template for a Accept button -->
+    <DataTemplate x:Key="AcceptButtonTemplate">
+        <Grid HorizontalAlignment="Center" VerticalAlignment="Center">
+            <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Center">
+                <Border CornerRadius="3" Style="{StaticResource TransparentButtonBorderStyle}" >
+                    <ContentPresenter ContentTemplate="{StaticResource AcceptButtonImage}" />
+                </Border>
+            </StackPanel>
+        </Grid>
+    </DataTemplate>
+
+    <!-- Style for a Generic Yes/No Button -->
+    <Style TargetType="{x:Type Button}" x:Key="YesNoButtonStyle">
+        <Setter Property="Height" Value="18" />
+        <Setter Property="Width" Value="18" />
+        <Setter Property="HorizontalAlignment" Value="Center" />
+        <Setter Property="VerticalAlignment" Value="Center" />
+        <Setter Property="BorderBrush" Value="Transparent" />
+        <!-- This part makes it have no border -->
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="{x:Type Button}" >
+                    <ContentPresenter />
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <!-- Style for a Tick Yes Button -->
+    <Style x:Key="AcceptButtonStyle" TargetType="{x:Type Button}" BasedOn="{StaticResource YesNoButtonStyle}">
+        <Setter Property="ContentTemplate" Value="{DynamicResource AcceptButtonTemplate}" />
+        <Setter Property="ToolTip" Value="Accept" />
+    </Style>
+
+    <!-- Style for the Tick Yes Button with a Command -->
+    <Style x:Key="AcceptButtonCommandStyle" TargetType="{x:Type Button}" BasedOn="{StaticResource AcceptButtonStyle}">
+        <Setter Property="Command" Value="{Binding RelativeSource={RelativeSource TemplatedParent}, Path=DataContext.AnswerHandler.AnswerTrueFalse}" />
+        <Setter Property="CommandParameter">
+            <Setter.Value>
+                <system:Boolean>True</system:Boolean>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <!-- Style for the Cross No Button -->
+    <Style x:Key="CancelButtonStyle" TargetType="{x:Type Button}" BasedOn="{StaticResource YesNoButtonStyle}">
+        <Setter Property="ContentTemplate" Value="{DynamicResource CancelButtonTemplate}" />
+        <Setter Property="ToolTip" Value="Cancel" />
+    </Style>
+    
+    <!-- Style for the Cross No Button -->
+    <Style x:Key="CancelButtonCommandStyle" TargetType="{x:Type Button}" BasedOn="{StaticResource CancelButtonStyle}">
+        <Setter Property="Command" Value="{Binding RelativeSource={RelativeSource TemplatedParent}, Path=DataContext.AnswerHandler.AnswerTrueFalse}" />
+        <Setter Property="CommandParameter">
+            <Setter.Value>
+                <system:Boolean>False</system:Boolean>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <!-- Template for Logging In -->
     <DataTemplate x:Key="LoggingInWindow" DataType="wpf:DashboardDataContext">
         <Grid>
             <Grid Background="White" Opacity="0.6" />

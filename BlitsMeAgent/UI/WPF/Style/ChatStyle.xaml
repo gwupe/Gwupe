@@ -108,22 +108,7 @@
         <Setter Property="BorderBrush" Value="White" />
     </Style>
 
-    <!-- Style for a Generic Yes/No Button -->
-    <Style TargetType="{x:Type Button}" x:Key="YesNoButtonStyle">
-        <Setter Property="Height" Value="18" />
-        <Setter Property="Width" Value="18" />
-        <Setter Property="HorizontalAlignment" Value="Center" />
-        <Setter Property="VerticalAlignment" Value="Center" />
-        <Setter Property="BorderBrush" Value="Transparent" />
-        <!-- This part makes it have no border -->
-        <Setter Property="Template">
-            <Setter.Value>
-                <ControlTemplate TargetType="{x:Type Button}" >
-                    <ContentPresenter />
-                </ControlTemplate>
-            </Setter.Value>
-        </Setter>
-    </Style>
+
 
     <!-- Base Style for Image Buttons -->
     <Style x:Key="NotificationActionButton" TargetType="{x:Type Button}">
@@ -131,41 +116,6 @@
         <Setter Property="HorizontalAlignment" Value="Right" />
     </Style>
 
-    <!-- Style for the Tick Yes Button -->
-    <Style x:Key="AcceptButtonStyle" TargetType="{x:Type Button}" BasedOn="{StaticResource YesNoButtonStyle}">
-        <Setter Property="Command" Value="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type Grid}}, Path=DataContext.AnswerTrueFalse}" />
-        <Setter Property="CommandParameter">
-            <Setter.Value>
-                <s:Boolean>True</s:Boolean>
-            </Setter.Value>
-        </Setter>
-        <Setter Property="ContentTemplate" Value="{DynamicResource ChatAcceptButtonTemplate}" />
-        <Setter Property="ToolTip" Value="Accept" />
-    </Style>
-
-    <!-- Style for the Cross No Button -->
-    <Style x:Key="CancelButtonStyle" TargetType="{x:Type Button}" BasedOn="{StaticResource YesNoButtonStyle}">
-        <Setter Property="Command" Value="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type Grid}}, Path=DataContext.AnswerTrueFalse}" />
-        <Setter Property="CommandParameter">
-            <Setter.Value>
-                <s:Boolean>False</s:Boolean>
-            </Setter.Value>
-        </Setter>
-        <Setter Property="ContentTemplate" Value="{DynamicResource ChatCancelButtonTemplate}" />
-        <Setter Property="ToolTip" Value="Deny" />
-    </Style>
-
-    <!-- Style to make a button border transparent and mouseover raise -->
-    <Style TargetType="{x:Type Border}" x:Key="TransparentButtonBorderStyle">
-        <Setter Property="Background" Value="Transparent" />
-        <Style.Triggers>
-            <Trigger Property="IsMouseOver" Value="True">
-                <Setter Property="Background" Value="Transparent" />
-                <Setter Property="BorderBrush" Value="Gray" />
-                <Setter Property="BorderThickness" Value="1" />
-            </Trigger>
-        </Style.Triggers>
-    </Style>
 
 	<!-- Style for the text associated with service items -->
     <Style x:Key="ServiceCompleteText" TargetType="TextBlock">
@@ -279,53 +229,19 @@
         </Grid>
     </DataTemplate>
 
-    <!-- the Template containing the image we use for cancel -->
-    <DataTemplate x:Key="CancelButtonImage">
-        <Image Source="/Gwupe.Agent;component/UI/WPF/Images/smallcross.png" Width="16" Height="16" />
-    </DataTemplate>
-
-    <!-- the Template containing the image we use for accept -->
-    <DataTemplate x:Key="AcceptButtonImage">
-        <Image Source="/Gwupe.Agent;component/UI/WPF/Images/smalltick.png" Width="16" Height="16" />
-    </DataTemplate>
-
-    <!-- Template for a cancel button -->
-    <DataTemplate x:Key="ChatCancelButtonTemplate">
-        <Grid HorizontalAlignment="Center" VerticalAlignment="Center">
-            <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Center">
-                <Border CornerRadius="3" Style="{StaticResource TransparentButtonBorderStyle}" >
-                    <ContentPresenter ContentTemplate="{StaticResource CancelButtonImage}" />
-                </Border>
-            </StackPanel>
-        </Grid>
-    </DataTemplate>
-
-    <!-- Template for a Accept button -->
-    <DataTemplate x:Key="ChatAcceptButtonTemplate">
-        <Grid HorizontalAlignment="Center" VerticalAlignment="Center">
-            <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Center">
-                <Border CornerRadius="3" Style="{StaticResource TransparentButtonBorderStyle}" >
-                    <ContentPresenter ContentTemplate="{StaticResource AcceptButtonImage}" />
-                </Border>
-            </StackPanel>
-        </Grid>
-    </DataTemplate>
-
     <!-- Template used for displaying a unattended rdp request -->
     <DataTemplate DataType="{x:Type rdp:RdpRequestUnattendedChatElement}" >
         <Grid>
             <Border Style="{StaticResource SystemMessageBorderStyle}">
                 <DockPanel Background="Transparent" LastChildFill="True"  >
                     <ContentPresenter Margin="10,0,10,0" DockPanel.Dock="Right" ContentTemplate="{StaticResource ChatDateTime}" DataContext="{Binding}" />
-                    <StackPanel Margin="10,0,0,0" DockPanel.Dock="Right" Orientation="Horizontal" Visibility="{Binding Answered, Converter={StaticResource BoolToInvisConverter}}">
+                    <StackPanel Margin="10,0,0,0" DockPanel.Dock="Right" Orientation="Horizontal" Visibility="{Binding IsAnswered, Converter={StaticResource BoolToInvisConverter}}">
                         <StackPanel Orientation="Vertical" VerticalAlignment="Bottom">
-                            <Button Style="{StaticResource AcceptButtonStyle}" />
-                            <!-- <Button Style="{DynamicResource AcceptButtonStyle}" Template="{DynamicResource TransparentButtonFileSendAcceptStyle}" /> -->
+                            <Button Style="{StaticResource AcceptButtonCommandStyle}" />
                             <TextBlock Text="{Binding Timeout, FallbackValue=30}"  HorizontalAlignment="Center" FontSize="10" Height="14" VerticalAlignment="Top" />
                         </StackPanel>
                         <StackPanel Orientation="Vertical" VerticalAlignment="Bottom">
-							<Button Style="{StaticResource CancelButtonStyle}" />
-                            <!-- <ContentPresenter ContentTemplate="{StaticResource CancelButton}" /> -->
+							<Button Style="{StaticResource CancelButtonCommandStyle}" />
                             <TextBlock Text=""  HorizontalAlignment="Center" FontSize="10" Height="14" VerticalAlignment="Top" />
                         </StackPanel>
                     </StackPanel>
@@ -341,9 +257,9 @@
             <Border Style="{StaticResource SystemMessageBorderStyle}">
                 <DockPanel Background="Transparent" LastChildFill="True"  >
                     <ContentPresenter Margin="10,0,10,0" DockPanel.Dock="Right" ContentTemplate="{StaticResource ChatDateTime}" DataContext="{Binding}" />
-                    <StackPanel Margin="10,0,0,0" DockPanel.Dock="Right" Orientation="Horizontal" Visibility="{Binding Answered, Converter={StaticResource BoolToInvisConverter}}">
-                        <Button Style="{StaticResource AcceptButtonStyle}" />
-						<Button Style="{StaticResource CancelButtonStyle}" />
+                    <StackPanel Margin="10,0,0,0" DockPanel.Dock="Right" Orientation="Horizontal" Visibility="{Binding IsAnswered, Converter={StaticResource BoolToInvisConverter}}">
+                        <Button Style="{StaticResource AcceptButtonCommandStyle}" />
+						<Button Style="{StaticResource CancelButtonCommandStyle}" />
                     </StackPanel>
                     <ContentPresenter Margin="10,5,0,7" DockPanel.Dock="Left" ContentTemplate="{StaticResource ChatMessage}" DataContext="{Binding}" />
                 </DockPanel>
@@ -357,9 +273,9 @@
             <Border Style="{StaticResource SystemMessageBorderStyle}">
                 <DockPanel Background="Transparent" LastChildFill="True"  >
                     <ContentPresenter Margin="10,0,10,0" DockPanel.Dock="Right" ContentTemplate="{StaticResource ChatDateTime}" DataContext="{Binding}" />
-                    <StackPanel Margin="10,0,0,0" DockPanel.Dock="Right" Orientation="Horizontal" Visibility="{Binding Answered, Converter={StaticResource BoolToInvisConverter}}">
-                        <Button Style="{StaticResource AcceptButtonStyle}" />
-						<Button Style="{StaticResource CancelButtonStyle}" />
+                    <StackPanel Margin="10,0,0,0" DockPanel.Dock="Right" Orientation="Horizontal" Visibility="{Binding IsAnswered, Converter={StaticResource BoolToInvisConverter}}">
+                        <Button Style="{StaticResource AcceptButtonCommandStyle}" />
+						<Button Style="{StaticResource CancelButtonCommandStyle}" />
                     </StackPanel>
                     <ContentPresenter Margin="10,5,0,7" DockPanel.Dock="Left" ContentTemplate="{StaticResource ChatMessage}" DataContext="{Binding}" />
                 </DockPanel>

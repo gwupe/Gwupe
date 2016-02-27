@@ -32,8 +32,7 @@ namespace Gwupe.Agent.Components.Processors
                     Location = request.userElement.location,
                     Message = request.userElement.name + " would like to add you."
                 };
-                notification.AnsweredTrue += delegate { ProcessAnswer(true, request.username); };
-                notification.AnsweredFalse += delegate { ProcessAnswer(false, request.username); };
+                notification.AnswerHandler.Answered += delegate { ProcessAnswer(notification.AnswerHandler.Answer, request.username); };
                 _appContext.NotificationManager.AddNotification(notification);
                 _appContext.UIManager.Show();
             }

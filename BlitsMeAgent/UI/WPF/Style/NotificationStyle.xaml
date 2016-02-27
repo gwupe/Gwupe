@@ -9,9 +9,21 @@
 	xmlns:utils="clr-namespace:Gwupe.Agent.UI.WPF.Utils" 
     xmlns:engage="clr-namespace:Gwupe.Agent.UI.WPF.Engage"
     >
+    <!-- Resource dictionary entries should be defined here. -->
+    <ResourceDictionary.MergedDictionaries>
+        <ResourceDictionary Source="Style.xaml" />
+        <ResourceDictionary Source="Theme.xaml" />
+        <ResourceDictionary Source="pack://application:,,,/MahApps.Metro;component/Styles/Colors.xaml" />
+        <ResourceDictionary Source="pack://application:,,,/MahApps.Metro;component/Styles/Fonts.xaml" />
+        <ResourceDictionary Source="pack://application:,,,/MahApps.Metro;component/Styles/Controls.xaml" />
+        <ResourceDictionary Source="pack://application:,,,/MahApps.Metro;component/Styles/Accents/BaseLight.xaml" />
+    </ResourceDictionary.MergedDictionaries>
 
-    <utils:ImageStreamReader x:Key="avatarImageStreamReader" DefaultImageUri="pack://application:,,,/ui/wpf/Images/silhoette.png" />
+    <!--    <utils:ImageStreamReader x:Key="avatarImageStreamReader" DefaultImageUri="pack://application:,,,/ui/wpf/Images/silhoette.png" /> -->
     <utils:RectConverter x:Key="rectConverter" />
+    <utils:RelativeMessageTimeConverter x:Key="relativeMessageTimeConverter" />
+
+    <!--
     <Style x:Key="NotificationActionButton" TargetType="{x:Type Button}">
         <Setter Property="Background" Value="White" />
         <Setter Property="HorizontalAlignment" Value="Right" />
@@ -39,6 +51,8 @@
         <Setter Property="ContentTemplate" Value="{DynamicResource AcceptButtonTemplate}" />
         <Setter Property="ToolTip" Value="Accept" />
     </Style>
+    -->
+    <!--
     <Style x:Key="DenyButtonStyle" TargetType="{x:Type Button}" BasedOn="{StaticResource NotificationActionButton}">
         <Setter Property="Command" Value="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type Grid}}, Path=DataContext.AnswerTrueFalse}" />
         <Setter Property="CommandParameter">
@@ -49,7 +63,6 @@
         <Setter Property="ContentTemplate" Value="{DynamicResource DenyButtonTemplate}" />
         <Setter Property="ToolTip" Value="Decline" />
     </Style>
-
     <Style x:Key="NotificationAcceptButtonStyle" TargetType="{x:Type Button}" BasedOn="{StaticResource NotificationActionButton}">
         <Setter Property="Command" Value="{Binding AnswerTrueFalse}" />
         <Setter Property="CommandParameter">
@@ -80,6 +93,7 @@
         <Setter Property="ContentTemplate" Value="{DynamicResource DenyButtonTemplate}" />
         <Setter Property="ToolTip" Value="Deny" />
     </Style>
+    -->
     <Style x:Key="NotificationDockStyle" TargetType="{x:Type DockPanel}">
         <Setter Property="HorizontalAlignment" Value="Stretch" />
         <Setter Property="LastChildFill" Value="true" />
@@ -108,33 +122,26 @@
         <Setter Property="TextWrapping" Value="Wrap" />
     </Style>
 
-    <utils:RelativeMessageTimeConverter x:Key="relativeMessageTimeConverter" />
-    <!-- Resource dictionary entries should be defined here. -->
+    <!-- Template for the Sending File Progress Bar -->
     <DataTemplate DataType="{x:Type fileSendNotification:FileSendProgressNotification}">
-        <!--
-        <DockPanel Style="{StaticResource NotificationDockStyle}">
-            <StackPanel Orientation="Horizontal" Margin="2,2,2,2" HorizontalAlignment="Right" DockPanel.Dock="Right">
-                <Button Style="{DynamicResource DeleteButtonStyle}" Command="{Binding CancelFileSend}" />
-            </StackPanel>
-            <ProgressBar Height="15" Width="Auto" Margin="2,2,0,2" TextBlock.FontWeight="Bold" Value="{Binding Progress, FallbackValue=0}"
-			Tag="{Binding Message, FallbackValue=Waiting}" 
-			Foreground="Black"
-             Style="{DynamicResource MyProgressBarStyle}" />
-        </DockPanel>
-            -->
         <Grid>
             <ProgressBar Height="18" TextBlock.FontWeight="Bold" Value="{Binding Progress, FallbackValue=0}"
 			        Tag="{Binding Message, FallbackValue=Waiting}" Foreground="Black" 
                          Style="{DynamicResource MyProgressBarStyle}" FontFamily="Segoe UI" FontWeight="SemiBold"
-                         FontSize="11" Margin="5,0,5,0"
+                         FontSize="11" Margin="5,0,5,0" MaxWidth="5000"
 						 />
-            <Button Style="{DynamicResource CancelButtonStyle}" Template="{DynamicResource TransparentButtonDeleteStyle}" Height="15" Width="14" Margin="0,0,15,0"/>
+            <Button Style="{DynamicResource CancelButtonStyle}" Margin="0,0,15,0" HorizontalAlignment="Right"/>
         </Grid>
     </DataTemplate>
+    
+    <!-- Template for Roster Area When receiving a Notify Add Buddy -->
     <DataTemplate DataType="{x:Type notification:AddBuddyNotification}">
         <StackPanel Orientation="Horizontal" Style="{StaticResource NotificationStackStyle}" Height="50">
-            <Image Stretch="Uniform" Source="{Binding Path=Person, Converter={StaticResource avatarImageStreamReader}}" 
+                <Image Stretch="Uniform" Source="{Binding Path=Person, Converter={StaticResource avatarImageStreamReader}}" 
                    Width="35" Height="40" Margin="5,0,0,0"/>
+            <!--            
+                        <Image Stretch="Uniform" Source="/Gwupe.Agent;component/UI/WPF/Images/silhoette.png" Width="35" Height="40" Margin="5,0,0,0"/>
+                -->
             <StackPanel Orientation="Vertical" Margin="5,0,0,0" Width="85" VerticalAlignment="Center">
                 <TextBlock HorizontalAlignment="Left" Text="Contact Request" Foreground="Black" FontWeight="SemiBold" 
                            FontFamily="Segoe UI" FontSize="11" Width="85" TextWrapping="Wrap"/>
@@ -145,12 +152,14 @@
                            Foreground="Black" FontFamily="Segoe UI" FontSize="10"
                            Width="85" TextWrapping="Wrap"/>
             </StackPanel>
-            <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Margin="10,0,0,0">
-                <Button Style="{DynamicResource NotificationAcceptButtonStyle}" Height="15" Width="15" Template="{DynamicResource TransparentButtonNotificationAcceptStyle}"/>
-                <Button Style="{DynamicResource NotificationDenyButtonStyle}" Height="15" Width="15" Margin="10,0,0,0" Template="{DynamicResource TransparentButtonNotificationCloseStyle}"/>
+            <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Margin="10,0,0,0" >
+                <Button Style="{StaticResource AcceptButtonCommandStyle}" ToolTip="Add Buddy"/>
+                <Button Style="{DynamicResource CancelButtonCommandStyle}" Margin="5,0,0,0" ToolTip="Decline Buddy" />
             </StackPanel>
         </StackPanel>
     </DataTemplate>
+
+    <!--
     <DataTemplate DataType="{x:Type notification:RDPDisconnectNotification}">
         <StackPanel Orientation="Horizontal" Style="{StaticResource NotificationStackStyle}" ToolTip="Terminate RDP Session">
             <Image Stretch="Uniform" Source="{Binding Path=Person, Converter={StaticResource avatarImageStreamReader}}" 
@@ -165,14 +174,17 @@
             </StackPanel>
         </StackPanel>
     </DataTemplate>
-
+    -->
+    
+    <!-- Generic Yes No Buttons with Commands -->
     <DataTemplate x:Key="AnswerYesNoButtons">
-        <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Margin="5,0,10,0" Grid.Column="4">
-            <Button Style="{DynamicResource AcceptButtonStyle}" Template="{DynamicResource TransparentButtonFileSendAcceptStyle}"/>
-            <Button Style="{DynamicResource DenyButtonStyle}" Margin="15,0,10,0" Template="{DynamicResource TransparentButtonFileSendCloseStyle}"/>
+        <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Margin="5,0,10,0">
+            <Button Style="{DynamicResource AcceptButtonCommandStyle}" />
+            <Button Style="{DynamicResource CancelButtonCommandStyle}" ToolTip="Decline" Margin="5,0,10,0"/>
         </StackPanel>
     </DataTemplate>
 
+    <!-- Bubble request RDP Access -->
     <DataTemplate x:Key="RDPRequestNotification" DataType="{x:Type rdpNotification:RDPNotification}">
         <Grid>
             <Grid.ColumnDefinitions>
@@ -212,24 +224,12 @@
                             </Style>
                         </ContentControl.Style>
                     </ContentControl>
-
-                    <!--<StackPanel Orientation="Horizontal" VerticalAlignment="Center" Margin="5,0,10,0" Grid.Column="3">
-                        <Button Style="{DynamicResource AcceptButtonStyle}" Template="{DynamicResource TransparentButtonFileSendAcceptStyle}"/>
-                        <Button Style="{DynamicResource DenyButtonStyle}" Margin="15,0,10,0" Template="{DynamicResource TransparentButtonFileSendCloseStyle}"/>
-                    </StackPanel>-->
                 </Grid>
             </Border>
         </Grid>
-        <!--<Border BorderBrush="#015E15" BorderThickness="1">
-            <DockPanel Style="{StaticResource NotificationDockStyle}">
-                <StackPanel Orientation="Horizontal" Margin="0,8,8,8" HorizontalAlignment="Right" DockPanel.Dock="Right">
-                    <Button Style="{DynamicResource AcceptButtonStyle}" />
-                    <Button Style="{DynamicResource DenyButtonStyle}" />
-                </StackPanel>
-                <TextBlock HorizontalAlignment="Left" Margin="8,11,0,8" Text="{Binding Message, FallbackValue=Unknown Notification}" DockPanel.Dock="Left" Foreground="Black" FontWeight="Bold"/>
-            </DockPanel>
-        </Border>-->
     </DataTemplate>
+    
+    <!-- Unattended RDP Request Notification, countdown to decline -->
     <DataTemplate x:Key="RDPRequestUnattendedNotification" DataType="{x:Type rdpNotification:RDPNotification}">
         <Grid>
             <Grid.ColumnDefinitions>
@@ -272,6 +272,8 @@
             </Border>
         </Grid>
     </DataTemplate>
+    
+    <!-- Not sure about this template -->
     <DataTemplate x:Key="RDPRequestNotificationGroup" DataType="{x:Type rdpNotification:RDPNotification}">
         <Grid>
             <Grid.ColumnDefinitions>
@@ -316,25 +318,20 @@
                 <Image Style="{DynamicResource ChatBubbleJoinMe}" />
             </StackPanel>
         </Grid>
-        <!--<Border BorderBrush="#015E15" BorderThickness="1">
-            <DockPanel Style="{StaticResource NotificationDockStyle}">
-                <StackPanel Orientation="Horizontal" Margin="0,8,8,8" HorizontalAlignment="Right" DockPanel.Dock="Right">
-                    <Button Style="{DynamicResource AcceptButtonStyle}" />
-                    <Button Style="{DynamicResource DenyButtonStyle}" />
-                </StackPanel>
-                <TextBlock HorizontalAlignment="Left" Margin="8,11,0,8" Text="{Binding Message, FallbackValue=Unknown Notification}" DockPanel.Dock="Left" Foreground="Black" FontWeight="Bold"/>
-            </DockPanel>
-        </Border>-->
     </DataTemplate>
+
+    <!-- Template to Accept/Decline an incoming file request-->
     <DataTemplate DataType="{x:Type fileSendNotification:FileSendRequestNotification}">
         <DockPanel Style="{StaticResource NotificationDockStyle}">
             <StackPanel Orientation="Horizontal" Margin="0,8,8,8" HorizontalAlignment="Right" DockPanel.Dock="Right">
-                <Button Style="{DynamicResource AcceptButtonStyle}" />
-                <Button Style="{DynamicResource DenyButtonStyle}" />
+                <Button Style="{DynamicResource AcceptButtonCommandStyle}" />
+                <Button Style="{DynamicResource CancelButtonCommandStyle}" Margin="5,0,0,0"/>
             </StackPanel>
             <TextBlock HorizontalAlignment="Left" Margin="8,11,0,8" Text="{Binding Message, FallbackValue=Unknown Notification}" DockPanel.Dock="Left" Foreground="Black" FontWeight="Bold"/>
         </DockPanel>
     </DataTemplate>
+    
+    <!-- Template called to show file complete, open or whatever actions... -->
     <DataTemplate DataType="{x:Type fileSendNotification:FileReceivedNotification}">
         <DockPanel Style="{StaticResource NotificationDockStyle}">
             <StackPanel Orientation="Horizontal" Margin="0,8,8,8" HorizontalAlignment="Right" DockPanel.Dock="Right">
@@ -346,29 +343,35 @@
                         Style="{DynamicResource NotificationActionButton}"  Margin="0,0,5,0">
                     <Button.CommandParameter>Folder</Button.CommandParameter>
                 </Button>
-                <Button Style="{DynamicResource DeleteButtonStyle}" Template="{DynamicResource TransparentButtonDeleteStyle}" Margin="0,0,5,0"/>
+                <Button Style="{DynamicResource CancelButtonCommandStyle}" Margin="0,0,5,0"/>
             </StackPanel>
             <TextBlock HorizontalAlignment="Left" Margin="8,11,0,8" Text="{Binding Message, FallbackValue=Unknown Notification}" DockPanel.Dock="Left" Foreground="Black" FontWeight="Bold"/>
         </DockPanel>
     </DataTemplate>
+    
+    <!-- Generic Notification with a Cancel Button -->
     <DataTemplate DataType="{x:Type notification:CancellableNotification}">
         <DockPanel Style="{StaticResource NotificationDockStyle}">
             <StackPanel Orientation="Horizontal" Margin="0,8,8,8" HorizontalAlignment="Right" DockPanel.Dock="Right">
-                <Button Style="{DynamicResource CancelButtonStyle}" />
+                <Button Style="{StaticResource CancelButtonCommandStyle}" />
             </StackPanel>
             <TextBlock HorizontalAlignment="Left" Margin="8,11,0,8" Text="{Binding Message, FallbackValue=Unknown Notification}" DockPanel.Dock="Left" Foreground="Black" FontWeight="Bold"/>
         </DockPanel>
     </DataTemplate>
+    
+    <!-- Template for a Info Notification with Close Button -->
     <DataTemplate DataType="{x:Type notification:InfoNotification}">
         <DockPanel HorizontalAlignment="Stretch" LastChildFill="true" Background="#FF1AAD45">
             <StackPanel Orientation="Horizontal" Margin="0,8,8,8" HorizontalAlignment="Right" DockPanel.Dock="Right">
-                <Button Style="{DynamicResource DeleteButtonStyle}" />
+                <Button Style="{DynamicResource CancelButtonCommandStyle}" />
             </StackPanel>
             <TextBlock HorizontalAlignment="Left" Margin="8,11,0,8" Text="{Binding Message, FallbackValue=Unknown Notification}" DockPanel.Dock="Left" Foreground="White" FontWeight="Bold"/>
         </DockPanel>
     </DataTemplate>
+    
+    <!-- Template for an Alert, with a build in Left Click command for binding -->
     <DataTemplate DataType="{x:Type alert:Alert}">
-        <DockPanel HorizontalAlignment="Stretch" LastChildFill="true" Background="#4A7EBB" Margin="0,1,0,0">
+        <DockPanel HorizontalAlignment="Stretch" LastChildFill="true" Background="#4A7EBB" Margin="0,0,0,0">
             <TextBlock HorizontalAlignment="Stretch" Margin="3" Text="{Binding Message, FallbackValue=Unknown Alert}" Foreground="White" FontWeight="Bold" Background="#4A7EBB" TextAlignment="Center" DockPanel.Dock="Left">
 				<TextBlock.InputBindings>
 					<MouseBinding Command="{Binding Command}" MouseAction="LeftClick" />
@@ -501,6 +504,7 @@
             </Setter.Value>
         </Setter>
     </Style>
+    <!--
     <DataTemplate x:Key="CancelButtonTemplate">
         <Image Source="/Gwupe.Agent;component/UI/WPF/Images/close.png"/>
     </DataTemplate>
@@ -510,5 +514,5 @@
     <DataTemplate x:Key="DenyButtonTemplate">
         <Image Source="/Gwupe.Agent;component/UI/WPF/Images/close.png"/>
     </DataTemplate>
-
+    -->
 </ResourceDictionary>

@@ -12,11 +12,6 @@ namespace Gwupe.Agent.Components.Functions.RemoteDesktop.ChatElement
         private readonly int _startTime;
         private readonly Timer _timer;
 
-        private void OnAnswered(object sender, EventArgs eventArgs)
-        {
-            _timer.Stop();
-        }
-
         public int Timeout
         {
             get { return _timeout; }
@@ -25,8 +20,7 @@ namespace Gwupe.Agent.Components.Functions.RemoteDesktop.ChatElement
 
         public RdpRequestUnattendedChatElement(int timeToOverride)
         {
-            AnsweredFalse += OnAnswered;
-            AnsweredTrue += OnAnswered;
+            AnswerHandler.Answered += (sender, args) => _timer.Stop();
             _timeToOverride = timeToOverride * 1000;
             Timeout = timeToOverride;
             _startTime = Environment.TickCount;
@@ -41,7 +35,7 @@ namespace Gwupe.Agent.Components.Functions.RemoteDesktop.ChatElement
             if (timed > (_timeToOverride))
             {
                 Timeout = 0;
-                Answer = true;
+                AnswerHandler.Answer = true;
             }
             else
             {

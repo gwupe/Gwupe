@@ -311,29 +311,6 @@
                     <ColumnDefinition Width="10"/>
                     <ColumnDefinition Width="Auto"/>
                 </Grid.ColumnDefinitions>
-                <!--<Image Margin="8,0,0,8" Source="/Gwupe.Agent;component/UI/WPF/Images/Thought Bubble Left.png" Height="80" VerticalAlignment="Bottom" HorizontalAlignment="Left" Width="1135">
-                    <Image.Effect>
-                        <DropShadowEffect/>
-                    </Image.Effect>
-                </Image>-->
-                <!--<Grid x:Name="BubbleCover" Margin="0,0,0,8" VerticalAlignment="Bottom" HorizontalAlignment="Right" Width="320" 
-                      Background="#FF2B519B" >
-                </Grid>-->
-                <!--<Image Margin="0,0,62,8" Source="/Gwupe.Agent;component/UI/WPF/Images/Thought Bubble Right.png" Height="80" VerticalAlignment="Bottom" HorizontalAlignment="Right" Width="277">
-                    <Image.Effect>
-                        <DropShadowEffect/>
-                    </Image.Effect>
-                </Image>
-                <Rectangle x:Name="ImageContainer"
-                           
-		  Width="50" Height="50" StrokeThickness="0" HorizontalAlignment="Right" Margin="0,0,12,23" VerticalAlignment="Bottom">
-                    <Rectangle.Fill>
-                        <ImageBrush
-			  Stretch="Uniform" ImageSource="{Binding Path=Self.Avatar, Converter={DynamicResource imageStreamReader}}"
-			  PresentationOptions:Freeze="True" />
-                    </Rectangle.Fill>
-                </Rectangle>-->
-
                 <TextBox x:Name="messageBox" BorderThickness="0" SpellCheck.IsEnabled="True" 
                          VerticalScrollBarVisibility="Auto" TextWrapping="Wrap" MinWidth="540"
                          Grid.Column="0" >

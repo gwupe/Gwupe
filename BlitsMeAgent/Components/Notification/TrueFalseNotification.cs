@@ -3,31 +3,18 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Windows.Input;
+using Gwupe.Agent.Components.Functions.API;
 
 namespace Gwupe.Agent.Components.Notification
 {
-    class TrueFalseNotification : Notification
+    internal class TrueFalseNotification : Notification
     {
-        public event EventHandler AnsweredTrue;
+        public TrueFalseCommandHandler AnswerHandler { get; private set; }
 
-        public void OnAnswerTrue(EventArgs e)
+        public TrueFalseNotification()
         {
-            EventHandler handler = AnsweredTrue;
-            if (handler != null) handler(this, e);
-        }
-
-        public event EventHandler AnsweredFalse;
-
-        public void OnAnswerFalse(EventArgs e)
-        {
-            EventHandler handler = AnsweredFalse;
-            if (handler != null) handler(this, e);
-        }
-
-        private ICommand _answerTrueFalseCommand;
-        public ICommand AnswerTrueFalse
-        {
-            get { return _answerTrueFalseCommand ?? (_answerTrueFalseCommand = new AnswerTrueFalseCommand(this.Manager, this)); }
+            AnswerHandler = new TrueFalseCommandHandler();
+            AnswerHandler.Answered += (sender, args) => this.Manager.DeleteNotification(this);
         }
     }
 }

@@ -1,64 +1,28 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using System.Text;
 using System.Windows.Input;
+using Gwupe.Agent.Components.Functions.API;
 
 namespace Gwupe.Agent.Components.Functions.Chat.ChatElement
 {
-    public abstract class TrueFalseChatElement : BaseChatElement
+    public abstract class TrueFalseChatElement : BaseChatElement, INotifyPropertyChanged
     {
-        public bool Answered
+        private bool _isAnswered;
+        public TrueFalseCommandHandler AnswerHandler { get; private set; }
+
+        protected TrueFalseChatElement()
         {
-            get { return _answered; }
-            private set { _answered = value; OnPropertyChanged("Answered"); }
+            AnswerHandler = new TrueFalseCommandHandler();
+            AnswerHandler.Answered += (sender, args) => IsAnswered = true;
         }
 
-        public bool Answer
+        public bool IsAnswered
         {
-            get { return _answer; }
-            set
-            {
-                if (!Answered)
-                {
-                    _answer = value;
-                    OnPropertyChanged("Answer");
-                    Answered = true;
-                    if (_answer)
-                    {
-                        OnAnswerTrue(EventArgs.Empty);
-                    }
-                    else
-                    {
-                        OnAnswerFalse(EventArgs.Empty);
-                    }
-                }
-            }
-        }
-
-        public event EventHandler AnsweredTrue;
-
-        private void OnAnswerTrue(EventArgs e)
-        {
-            EventHandler handler = AnsweredTrue;
-            if (handler != null) handler(this, e);
-        }
-
-        public event EventHandler AnsweredFalse;
-
-        private void OnAnswerFalse(EventArgs e)
-        {
-            EventHandler handler = AnsweredFalse;
-            if (handler != null) handler(this, e);
-        }
-
-        private ICommand _answerTrueFalseCommand;
-        private bool _answer;
-        private bool _answered;
-
-        public ICommand AnswerTrueFalse
-        {
-            get { return _answerTrueFalseCommand ?? (_answerTrueFalseCommand = new AnswerTrueFalseCommand(this)); }
+            set { _isAnswered = value; OnPropertyChanged(nameof(IsAnswered)); }
+            get { return _isAnswered; }
         }
     }
 }

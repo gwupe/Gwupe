@@ -44,24 +44,6 @@ namespace Gwupe.Agent.Components.Functions.RemoteDesktop
         // Method is called by RequestManager when the second party is requesting a remote desktop session with us
         internal void ProcessIncomingRemoteDesktopRequest(String shortCode)
         {
-            /*
-            bool notificationExists = false;
-            // Loop through existing notifications to see if we already have a remote desktop request
-            // from the SecondParty. If the .From and Type of the notification match the SecondParty.UserName
-            // and RDPNotification type
-            
-            _engagement.IsRemoteControlActive = true;
-            foreach (Components.Notification.Notification n in _appContext.NotificationManager.Notifications)
-            {
-                if (n.AssociatedUsername == _engagement.SecondParty.Person.Username && n is RDPNotification)
-                {
-                    // if the notification exists set flag.
-                    notificationExists = true;
-                }
-            }
-            if (!notificationExists)
-            {
-             * */
             // Ignore request if a session is underway
             if (Server.Closed)
             {
@@ -76,14 +58,12 @@ namespace Gwupe.Agent.Components.Functions.RemoteDesktop
                 _engagement.SecondParty.ActiveShortCode = shortCode;
                 // Print to the chat that someone is trying to request control of the desktop (allowing them to click yes/no)
                 var rdpChatElement = LogRdpRequest();
-                // Setup anser handlers
-                rdpChatElement.AnsweredTrue += delegate { ProcessAnswer(true); };
-                rdpChatElement.AnsweredFalse += delegate { ProcessAnswer(false); };
+                // Setup answer handlers
+                rdpChatElement.AnswerHandler.Answered += delegate { ProcessAnswer(rdpChatElement.AnswerHandler.Answer); };
                 // There has been an activity, raise the event
                 OnNewActivity(new RemoteDesktopActivity(_engagement, RemoteDesktopActivity.REMOTE_DESKTOP_REQUEST) { To = "_SELF", From = _engagement.SecondParty.Party.Username });
                 // Now we wait to see what the user does
             }
-            //}
         }
 
         // This method prints the message in the chat that someone is requesting a rdp session with us, allowing the user to answer
@@ -114,6 +94,7 @@ namespace Gwupe.Agent.Components.Functions.RemoteDesktop
                 };
 
             }
+            // Add the appropriate chat element
             Chat.Conversation.AddMessage(chatElement);
             // Notify that there is activity in the chat
             OnNewActivity(new ChatActivity(_engagement, ChatActivity.LOG_RDP_REQUEST)

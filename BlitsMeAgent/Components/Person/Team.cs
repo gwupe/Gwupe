@@ -34,6 +34,7 @@ namespace Gwupe.Agent.Components.Person
                 if (value.Equals(_player)) return;
                 _player = value;
                 OnPropertyChanged(nameof(Player));
+                Logger.Debug("Player changed to " + _player);
             }
         }
 
@@ -48,6 +49,7 @@ namespace Gwupe.Agent.Components.Person
         public Team(TeamElement teamElement)
         {
             InitTeam(teamElement);
+
         }
 
         public void InitTeam(TeamElement teamElement)

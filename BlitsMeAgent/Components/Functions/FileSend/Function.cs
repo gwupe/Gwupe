@@ -202,8 +202,8 @@ namespace Gwupe.Agent.Components.Functions.FileSend
             IsActive = true;
             _pendingFileReceives.Add(fileSendId, fileSendInfo);
             FileSendRequestChatElement chatElement = LogFileSendRequest(_engagement.SecondParty.Party.Firstname + " offered you the file " + filename + ".", _engagement.SecondParty.Party.Username);
-            chatElement.AnsweredTrue += (sender, args) => ProcessAcceptFile(fileSendInfo);
-            chatElement.AnsweredFalse += (sender, args) => ProcessDenyFile(fileSendInfo);
+            chatElement.AnswerHandler.AnsweredTrue += (sender, args) => ProcessAcceptFile(fileSendInfo);
+            chatElement.AnswerHandler.AnsweredFalse += (sender, args) => ProcessDenyFile(fileSendInfo);
             OnNewActivity(new FileSendActivity(_engagement, FileSendActivity.FILE_SEND_REQUEST) { To = "_SELF", From = _engagement.SecondParty.Party.Username, FileInfo = fileSendInfo });
         }
 

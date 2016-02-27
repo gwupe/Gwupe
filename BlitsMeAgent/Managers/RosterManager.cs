@@ -360,7 +360,16 @@ namespace Gwupe.Agent.Managers
                 {
                     try
                     {
-                        ServicePartyAttendanceLookup[vCardRq.username].Party.InitParty(vCardRs.PartyElement);
+                        if (vCardRs.IsTeam())
+                        {
+                            var team = ServicePartyAttendanceLookup[vCardRq.username].Party as Team;
+                            team?.InitTeam(vCardRs.teamElement);
+                        }
+                        else
+                        {
+                            var user = ServicePartyAttendanceLookup[vCardRq.username].Party as Person;
+                            user?.InitPerson(vCardRs.userElement);
+                        }
                         ServicePartyAttendanceLookup[vCardRq.username].Relationship.InitRelationship(vCardRs.relationshipElement);
                     }
                     catch (Exception e1)

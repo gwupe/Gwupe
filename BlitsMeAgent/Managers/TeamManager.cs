@@ -20,6 +20,7 @@ namespace Gwupe.Agent.Managers
     {
         private static readonly ILog Logger = LogManager.GetLogger(typeof(TeamManager));
         internal ObservableCollection<Team> Teams;
+        private bool initialised = false;
 
         internal TeamManager()
         {
@@ -43,6 +44,7 @@ namespace Gwupe.Agent.Managers
                         this.Teams.Add(newTeam);
                     }
                 }
+                initialised = true;
             }
             catch (Exception e)
             {
@@ -54,6 +56,7 @@ namespace Gwupe.Agent.Managers
         public void Reset()
         {
             Teams.Clear();
+            initialised = false;
         }
 
         public void ReloadTeam(string username)
@@ -73,7 +76,7 @@ namespace Gwupe.Agent.Managers
             catch (Exception e)
             {
                 Logger.Error("Failed to reload team " + username, e);
-                throw e;
+                throw;
             }
         }
 

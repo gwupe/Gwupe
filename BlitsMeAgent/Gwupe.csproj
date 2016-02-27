@@ -175,11 +175,12 @@
     <Compile Include="Components\ElevateToken.cs" />
     <Compile Include="Components\Engagement.cs" />
     <Compile Include="Components\EngagementActivity.cs" />
+    <Compile Include="Components\Functions\API\AnswerTrueFalseCommand.cs" />
     <Compile Include="Components\Functions\API\ClientImpl.cs" />
     <Compile Include="Components\Functions\API\FunctionImpl.cs" />
     <Compile Include="Components\Functions\API\IFunction.cs" />
     <Compile Include="Components\Functions\API\ServerImpl.cs" />
-    <Compile Include="Components\Functions\Chat\AnswerTrueFalseCommand.cs" />
+    <Compile Include="Components\Functions\API\TrueFalseCommandHandler.cs" />
     <Compile Include="Components\Functions\Chat\ChatElement\BaseChatElement.cs" />
     <Compile Include="Components\Functions\Chat\ChatElement\DeliverableChatElement.cs" />
     <Compile Include="Components\Functions\Chat\ChatElement\SystemErrorElement.cs" />
@@ -213,7 +214,6 @@
     <Compile Include="Components\IdleState.cs" />
     <Compile Include="Components\Interaction.cs" />
     <Compile Include="Components\Interactions.cs" />
-    <Compile Include="Components\Notification\AnswerTrueFalseCommand.cs" />
     <Compile Include="Components\Notification\CancellableNotification.cs" />
     <Compile Include="Components\Notification\CancelCommand.cs" />
     <Compile Include="Components\Notification\InfoNotification.cs" />
