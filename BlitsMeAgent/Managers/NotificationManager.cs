@@ -1,11 +1,8 @@
 using System;
 using System.Collections.ObjectModel;
 using System.Timers;
-using Gwupe.Agent.Components;
 using Gwupe.Agent.Components.Alert;
-using Gwupe.Agent.Components.Functions.RemoteDesktop;
 using Gwupe.Agent.Components.Notification;
-using Gwupe.Agent.UI.WPF.Engage;
 using log4net;
 
 namespace Gwupe.Agent.Managers

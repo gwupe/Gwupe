@@ -24,14 +24,36 @@ namespace Gwupe.Agent.Components.Processors
             SubscribeRs response = new SubscribeRs();
             if (request.subscribe)
             {
-                AddBuddyNotification notification = new AddBuddyNotification()
+                TrueFalseNotification notification;
+                if (request.team)
                 {
-                    Manager = _appContext.NotificationManager,
-                    Person = request.userElement.hasAvatar ? Convert.FromBase64String(request.userElement.avatarData) :  null,
-                    Name = request.userElement.name,
-                    Location = request.userElement.location,
-                    Message = request.userElement.name + " would like to add you."
-                };
+                    notification = new JoinTeamNotification()
+                    {
+                        Manager = _appContext.NotificationManager,
+                        Avatar =
+                            request.teamElement.hasAvatar
+                                ? Convert.FromBase64String(request.teamElement.avatarData)
+                                : null,
+                        Name = request.teamElement.name,
+                        Location = request.teamElement.location,
+                        Message = "Join Team?",
+                        TeamUsername = request.teamElement.user,
+                    };
+                }
+                else
+                {
+                    notification = new AddBuddyNotification()
+                    {
+                        Manager = _appContext.NotificationManager,
+                        Avatar =
+                            request.userElement.hasAvatar
+                                ? Convert.FromBase64String(request.userElement.avatarData)
+                                : null,
+                        Name = request.userElement.name,
+                        Location = request.userElement.location,
+                        Message = "Add Contact?",
+                    };
+                }
                 notification.AnswerHandler.Answered += delegate { ProcessAnswer(notification.AnswerHandler.Answer, request.username); };
                 _appContext.NotificationManager.AddNotification(notification);
                 _appContext.UIManager.Show();

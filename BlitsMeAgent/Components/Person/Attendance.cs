@@ -34,27 +34,19 @@ namespace Gwupe.Agent.Components.Person
             }
         }
 
-        private Relationship _relationship;
-        public Relationship Relationship
-        {
-            get { return _relationship; }
-            set { _relationship = value; OnPropertyChanged("Relationship"); }
-        }
-
-        internal Attendance(UserElement element, RelationshipElement relationshipElement) 
-            : this(new Person(element), new Relationship(relationshipElement))
+        internal Attendance(UserElement element) 
+            : this(new Person(element))
         {
         }
 
-        internal Attendance(TeamElement element, RelationshipElement relationshipElement)
-            : this(new Team(element), new Relationship(relationshipElement))
+        internal Attendance(TeamElement element)
+            : this(new Team(element))
         {
         }
 
-        internal Attendance(Party party, Relationship relationship)
+        internal Attendance(Party party)
         {
             Party = party;
-            Relationship = relationship;
             this._presence = new MultiPresence();
         }
 

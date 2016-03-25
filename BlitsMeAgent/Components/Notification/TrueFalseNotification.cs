@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Windows.Input;
-using Gwupe.Agent.Components.Functions.API;
+﻿using Gwupe.Agent.Components.Functions.API;
 
 namespace Gwupe.Agent.Components.Notification
 {

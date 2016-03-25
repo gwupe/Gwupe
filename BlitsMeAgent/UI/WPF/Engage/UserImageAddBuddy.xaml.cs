@@ -45,7 +45,7 @@ namespace Gwupe.Agent.UI.WPF.Engage
 
         public void Execute(object parameter)
         {
-            _appContext.RosterManager.AddPerson(_person);
+            _appContext.RosterManager.SubscribePerson(_person);
         }
 
         public bool CanExecute(object parameter)

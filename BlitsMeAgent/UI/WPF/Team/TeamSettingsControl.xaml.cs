@@ -3,8 +3,10 @@ using System.Threading;
 using System.Windows;
 using System.Windows.Controls;
 using Gwupe.Agent.Components;
+using Gwupe.Agent.Components.Notification;
 using Gwupe.Agent.Exceptions;
 using Gwupe.Agent.UI.WPF.API;
+using Gwupe.Cloud.Messaging.Elements;
 using Gwupe.Cloud.Messaging.Request;
 using Gwupe.Cloud.Messaging.Response;
 using log4net;
@@ -16,6 +18,7 @@ namespace Gwupe.Agent.UI.WPF.Team
     /// </summary>
     public partial class TeamSettingsControl : GwupeDataCaptureForm
     {
+        private readonly TeamManagement _teamManagement;
         private static readonly ILog Logger = LogManager.GetLogger(typeof(TeamSettingsControl));
         private Components.Person.Team _team;
 
@@ -30,8 +33,9 @@ namespace Gwupe.Agent.UI.WPF.Team
             }
         }
 
-        public TeamSettingsControl(ContentPresenter disabler)
+        public TeamSettingsControl(ContentPresenter disabler, TeamManagement teamManagement)
         {
+            _teamManagement = teamManagement;
             InitializeComponent();
             InitGwupeDataCaptureForm(disabler, StatusText, ErrorText);
             ProcessingWord = "Updating";
@@ -125,36 +129,73 @@ namespace Gwupe.Agent.UI.WPF.Team
             UiHelper.Validator.ResetStatus(new Control[] { Email, Firstname, Location, Description }, new Label[] { null, null, null, null });
         }
 
-        private void AcceptClick(object sender, RoutedEventArgs e)
+        private void AcceptPlayerRequestClick(object sender, RoutedEventArgs e)
         {
             SendSubscribe(true);
         }
 
         private void SendSubscribe(bool subscribe)
         {
+            UiHelper.Disabler.DisableInputs(true, "Updating");
             ThreadPool.QueueUserWorkItem(state =>
             {
                 try
                 {
-                    SubscribeRq request = new SubscribeRq { subscribe = subscribe, username = Team.Username };
+                    SubscribeRq request = new SubscribeRq {subscribe = subscribe, username = Team.Username};
                     GwupeClientAppContext.CurrentAppContext.ConnectionManager.Connection
                         .Request<SubscribeRq, SubscribeRs>(request);
+
+                    // Hack the answer (actual notify comes through a little later)
+                    Dispatcher.Invoke(new Action(() =>
+                    {
+                        Team.Player = subscribe
+                            ? PlayerMembership.player
+                            : PlayerMembership.none;
+                    }));
+                    // look through notifications to make sure that none related to this are there
+                    foreach (
+                        var notification in GwupeClientAppContext.CurrentAppContext.NotificationManager.Notifications)
+                    {
+                        if (notification is JoinTeamNotification)
+                        {
+                            var teamNotification = notification as JoinTeamNotification;
+                            if (!String.IsNullOrEmpty(teamNotification.TeamUsername) &&
+                                teamNotification.TeamUsername.Equals(Team.Username))
+                            {
+                                // this is the one, delete and break
+                                GwupeClientAppContext.CurrentAppContext.NotificationManager.DeleteNotification(
+                                    notification);
+                                break;
+                            }
+                        }
+                    }
                 }
                 catch (Exception ex)
                 {
-                    Logger.Error("Failed to " + (subscribe ? "accept" : "decline") + " subscription to " + Team.Username, ex);
+                    Logger.Error(
+                        "Failed to " + (subscribe ? "accept" : "decline") + " subscription to " + Team.Username, ex);
+                    UiHelper.Validator.SetError("Failed to send subscription status to server.");
+                }
+                finally
+                {
+                    UiHelper.Disabler.DisableInputs(false);
                 }
             });
         }
 
-        private void DeclineClick(object sender, RoutedEventArgs e)
+        private void DeclinePlayerRequestClick(object sender, RoutedEventArgs e)
         {
             SendSubscribe(false);
         }
 
-        private void DeclinePlayerClick(object sender, RoutedEventArgs e)
+        private void RecusePlayerClick(object sender, RoutedEventArgs e)
         {
-            throw new NotImplementedException();
+            SendSubscribe(false);
+        }
+
+        private void RecuseAdminClick(object sender, RoutedEventArgs e)
+        {
+
         }
     }
 }

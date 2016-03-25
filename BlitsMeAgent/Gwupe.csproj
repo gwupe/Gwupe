@@ -218,6 +218,7 @@
     <Compile Include="Components\Notification\CancelCommand.cs" />
     <Compile Include="Components\Notification\InfoNotification.cs" />
     <Compile Include="Components\LoginDetails.cs" />
+    <Compile Include="Components\Notification\JoinTeamNotification.cs" />
     <Compile Include="Components\Notification\Notification.cs" />
     <Compile Include="Components\Notification\AddBuddyNotification.cs" />
     <Compile Include="Components\Notification\RDPDisconnectNotification.cs" />
@@ -259,10 +260,12 @@
     <Compile Include="FaultReport.cs" />
     <Compile Include="FlashWindowHelper.cs" />
     <Compile Include="Managers\ConnectionManager.cs" />
+    <Compile Include="Managers\PartyManager.cs" />
     <Compile Include="Managers\CurrentUserManager.cs" />
     <Compile Include="Managers\EngagementManager.cs" />
     <Compile Include="Components\Login\LoginEventArgs.cs" />
     <Compile Include="Managers\LoginManager.cs" />
+    <Compile Include="Managers\RelationshipManager.cs" />
     <Compile Include="Managers\RepeaterManager.cs" />
     <Compile Include="Managers\ScheduleManager.cs" />
     <Compile Include="Managers\NotificationManager.cs" />

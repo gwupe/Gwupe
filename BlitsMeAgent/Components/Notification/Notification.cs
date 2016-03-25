@@ -16,7 +16,7 @@ namespace Gwupe.Agent.Components.Notification
         internal String Id { get; set; }
         public readonly long NotifyTime;
         private string _message;
-        private byte[] _person;
+        private byte[] _avatar;
         private string _name;
         private string _location;
 
@@ -44,10 +44,10 @@ namespace Gwupe.Agent.Components.Notification
             set { _message = value; OnPropertyChanged("Message"); }
         }
 
-        public virtual byte[] Person
+        public virtual byte[] Avatar
         {
-            get { return _person; }
-            set { _person = value; OnPropertyChanged("Person"); }
+            get { return _avatar; }
+            set { _avatar = value; OnPropertyChanged("Avatar"); }
         }
 
         public virtual string Name

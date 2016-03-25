@@ -24,7 +24,7 @@ namespace Gwupe.Agent.Components.Processors
                 {
                     try
                     {
-                        GwupeClientAppContext.CurrentAppContext.RosterManager.RequestContactUpdate(request.changeId);
+                        GwupeClientAppContext.CurrentAppContext.PartyManager.GetParty(request.changeId, true);
                     }
                     catch (Exception)
                     {

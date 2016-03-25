@@ -26,7 +26,7 @@
             <util:BoolToVisibilityConverter x:Key="boolToVisibilityConverter" />
             <util:BoolToInvisibilityConverter x:Key="boolToInvisibilityConverter" />
             <util:EnumEqualityToVisibilityConverter x:Key="enumEqualityToVisibilityConverter" />
-            <util:EnumEqualityToBoolConverter x:Key="enumEqualityToBoolConverter" FalseValue="{x:Static elements:PlayerMembership.none}"/>
+            <!--<util:EnumEqualityToBoolConverter x:Key="enumEqualityToBoolConverter" FalseValue="{x:Static elements:PlayerMembership.none}"/> -->
         </ResourceDictionary>
     </UserControl.Resources>
     <Grid x:Name="LayoutRoot" MinHeight="350">
@@ -56,21 +56,33 @@
                          Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="3"  IsEnabled="{Binding Admin}"/>
                     <StackPanel Margin="5,5,5,0" Orientation="Horizontal">
                         <Label Content="Your Roles :" />
-                        <StackPanel Orientation="Horizontal" Visibility="{Binding Admin, Converter={StaticResource boolToVisibilityConverter}, FallbackValue=Visible}">
-                            <CheckBox Name="Admin" IsChecked="{Binding Admin}"  Content="Admin" Margin="15,0,0,0" IsEnabled="{Binding Admin}" />
-                            <CheckBox Name="Player" IsChecked="{Binding Player, Converter={StaticResource enumEqualityToBoolConverter}, ConverterParameter={x:Static elements:PlayerMembership.player}}" Content="Player" Margin="15,0,0,0" />
-                        </StackPanel>
-                        <StackPanel Visibility="{Binding Admin, Converter={StaticResource boolToInvisibilityConverter}}" Orientation="Horizontal" VerticalAlignment="Center">
+                        <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                            <!-- Button to stop admining -->
+                            <StackPanel Orientation="Horizontal" Visibility="{Binding Admin, Converter={StaticResource boolToVisibilityConverter}, FallbackValue=Visible}"  Margin="15,0,0,0" >
+                                <TextBlock Text="Admin" Margin="0,1,0,0"/>
+                                <Button Style="{StaticResource CancelButtonStyle}" Margin="5,0,0,0" Click="RecuseAdminClick" ToolTip="Stop administering this Team" />
+                            </StackPanel>
+                            <!-- Button to become a Player (if you are an admin, you can become a player whenever you feel like it) -->
+                            <Grid Visibility="{Binding Admin, Converter={StaticResource boolToVisibilityConverter}, FallbackValue=Visible}">
+                                <StackPanel Orientation="Horizontal" Visibility="{Binding Player, Converter={StaticResource enumEqualityToVisibilityConverter}, ConverterParameter={x:Static elements:PlayerMembership.none}, FallbackValue=Collapsed}" Margin="15,0,0,0">
+                                    <TextBlock Text="Become a Player?" Margin="0,1,0,0"/>
+                                    <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Margin="5,0,0,0">
+                                        <Button Style="{StaticResource AcceptButtonStyle}" Click="AcceptPlayerRequestClick" />
+                                    </StackPanel>
+                                </StackPanel>
+                            </Grid>
+                            <!-- Buttons to accept or reject a request to join a team as a player -->
                             <StackPanel Orientation="Horizontal" Visibility="{Binding Player, Converter={StaticResource enumEqualityToVisibilityConverter}, ConverterParameter={x:Static elements:PlayerMembership.invited}, FallbackValue=Collapsed}" Margin="15,0,0,0">
                                 <TextBlock Text="Want to be a Player?" Margin="0,1,0,0"/>
                                 <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Margin="5,0,0,0">
-                                    <Button Style="{StaticResource AcceptButtonStyle}" Click="AcceptClick" />
-                                    <Button Style="{StaticResource CancelButtonStyle}" Margin="5,0,0,0" Click="DeclineClick"/>
+                                    <Button Style="{StaticResource AcceptButtonStyle}" Click="AcceptPlayerRequestClick" />
+                                    <Button Style="{StaticResource CancelButtonStyle}" Margin="5,0,0,0" Click="DeclinePlayerRequestClick"/>
                                 </StackPanel>
                             </StackPanel>
+                            <!-- Button to leave the team as a player -->
                             <StackPanel Orientation="Horizontal" Visibility="{Binding Player, Converter={StaticResource enumEqualityToVisibilityConverter}, ConverterParameter={x:Static elements:PlayerMembership.player}, FallbackValue=Collapsed}"  Margin="15,0,0,0" >
                                 <TextBlock Text="Player" Margin="0,1,0,0"/>
-                                <Button Style="{StaticResource CancelButtonStyle}" Margin="5,0,0,0" Click="DeclinePlayerClick"/>
+                                <Button Style="{StaticResource CancelButtonStyle}" Margin="5,0,0,0" Click="RecusePlayerClick" ToolTip="Leave the Team"/>
                             </StackPanel>
                         </StackPanel>
                     </StackPanel>

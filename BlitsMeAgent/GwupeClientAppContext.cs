@@ -49,7 +49,9 @@ namespace Gwupe.Agent
         internal UIManager UIManager { get; private set; }
         internal RepeaterManager RepeaterManager { get; private set; }
         internal SettingsManager SettingsManager { get; private set; }
-        internal TeamManager TeamManager { get; set; }
+        internal TeamManager TeamManager { get; private set; }
+        internal RelationshipManager RelationshipManager { get; private set; }
+        internal PartyManager PartyManager { get; private set; }
         //internal Thread DashboardUiThread;
         internal bool IsShuttingDown { get; private set; }
         internal readonly GwupeUserRegistry Reg = GwupeUserRegistry.getInstance();
@@ -97,6 +99,8 @@ namespace Gwupe.Agent
             ScheduleManager.AddTask(new CheckServiceTask(this) { PeriodSeconds = 120 });
             ScheduleManager.AddTask(new DetectIdleTask(this));
             RepeaterManager = new RepeaterManager();
+            RelationshipManager = new RelationshipManager();
+            PartyManager = new PartyManager();
             SetupChangeLog();
             // Start all the Active Managers
             UIManager.Start();
@@ -106,6 +110,7 @@ namespace Gwupe.Agent
             // Set correct last version
             Reg.LastVersion = StartupVersion;
         }
+
 
         private void SetupChangeLog()
         {

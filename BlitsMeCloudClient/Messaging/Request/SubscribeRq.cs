@@ -10,7 +10,7 @@ namespace Gwupe.Cloud.Messaging.Request
         public override string type { get { return "Subscribe-RQ"; } set { } }
         [DataMember] public String username;
         [DataMember] public bool subscribe;
-        [DataMember] public bool isTeam;
+        [DataMember] public bool team;
         [DataMember] public UserElement userElement;
         [DataMember] public TeamElement teamElement;
     }

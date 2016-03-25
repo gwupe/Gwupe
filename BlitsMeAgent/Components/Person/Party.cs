@@ -14,14 +14,13 @@ namespace Gwupe.Agent.Components.Person
 
     public abstract class Party : INotifyPropertyChanged
     {
-
         private static readonly ILog Logger = LogManager.GetLogger(typeof(Party));
 
         protected Party()
         {
         }
 
-        public Party(PartyElement partyElement)
+        protected Party(PartyElement partyElement)
         {
             InitParty(partyElement);
         }
@@ -165,7 +164,7 @@ namespace Gwupe.Agent.Components.Person
         protected virtual void OnPropertyChanged(string propertyName)
         {
             PropertyChangedEventHandler handler = PropertyChanged;
-            if (handler != null) handler(this, new PropertyChangedEventArgs(propertyName));
+            handler?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
     }
 }

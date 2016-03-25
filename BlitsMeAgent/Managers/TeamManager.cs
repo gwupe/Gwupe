@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.ComponentModel;
 using System.Linq;
 using System.Resources;
 using System.Windows.Controls;
@@ -39,8 +40,11 @@ namespace Gwupe.Agent.Managers
                 Teams.Clear();
                 if (response.teams != null)
                 {
-                    foreach (var newTeam in response.teams.Select(team => new Team(team)))
+                    foreach (var newTeam in response.teams.Select(team => GwupeClientAppContext.CurrentAppContext.PartyManager.AddUpdatePartyFromElement(team) as Team))
                     {
+                        // we need to take it off first (some items new, some updated)
+                        newTeam.PropertyChanged -= TeamOnPropertyChanged;
+                        newTeam.PropertyChanged += TeamOnPropertyChanged;
                         this.Teams.Add(newTeam);
                     }
                 }
@@ -51,6 +55,18 @@ namespace Gwupe.Agent.Managers
                 Logger.Error("Failed to get the team", e);
                 throw e;
             }
+        }
+
+        private void TeamOnPropertyChanged(object sender, PropertyChangedEventArgs propertyChangedEventArgs)
+        {
+            if (propertyChangedEventArgs.PropertyName.Equals(nameof(Team.Admin)) ||
+                propertyChangedEventArgs.PropertyName.Equals(nameof(Team.Player)))
+            {
+                // Admin or player has changed, we need to check this team
+                CheckTeamAccess(sender as Team);
+            }
+
+
         }
 
         public void Reset()
@@ -66,11 +82,7 @@ namespace Gwupe.Agent.Managers
                 var team = Teams.Single(chooseTeam => chooseTeam.Username.Equals(username));
                 if (team != null)
                 {
-                    var request = new VCardRq(username);
-                    var response =
-                        GwupeClientAppContext.CurrentAppContext.ConnectionManager.Connection.Request<VCardRq, VCardRs>(
-                            request);
-                    UpdateTeamFromTeamElement(team, response.teamElement);
+                    GwupeClientAppContext.CurrentAppContext.PartyManager.GetParty(username, true);
                 }
             }
             catch (Exception e)
@@ -80,15 +92,15 @@ namespace Gwupe.Agent.Managers
             }
         }
 
-        private void UpdateTeamFromTeamElement(Team team, TeamElement teamElement)
+        private void CheckTeamAccess(Team team)
         {
-            team.InitTeam(teamElement);
             // if the team is no longer applicable to me, then it must go
-            if (!team.Admin && team.Player == PlayerMembership.none)
+            if (team != null && !team.Admin && team.Player == PlayerMembership.none)
             {
-                Logger.Debug("I am no longer a member of this team, removing team from my list.");
+                Logger.Debug("I am no longer a member of this team" + team.Username + ", removing team from my list.");
                 Teams.Remove(team);
             }
+
         }
 
         public Team GetTeamByUniqueHandle(string uniqueHandle)
@@ -212,7 +224,7 @@ namespace Gwupe.Agent.Managers
                 var response = GwupeClientAppContext.CurrentAppContext.ConnectionManager.Connection
                     .Request<UpdateTeamRq, UpdateTeamRs>(
                         request);
-                UpdateTeamFromTeamElement(team, response.teamElement);
+                GwupeClientAppContext.CurrentAppContext.PartyManager.AddUpdatePartyFromElement(response.teamElement);
             }
             catch (MessageException<UpdateTeamRs> ex)
             {

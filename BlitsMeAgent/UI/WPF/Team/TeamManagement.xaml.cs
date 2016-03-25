@@ -3,6 +3,7 @@ using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using System.ComponentModel;
 using System.Linq;
+using System.Threading;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Threading;
@@ -21,6 +22,7 @@ namespace Gwupe.Agent.UI.WPF.Team
         private TeamManagementData _dataContext;
         private SignupTeam _signupForm;
         private TeamSettingsControl _teamSettings;
+        private UiHelper _uiHelper;
         internal DispatchingCollection<ObservableCollection<Components.Person.Team>, Components.Person.Team> Teams;
 
         public TeamManagement()
@@ -28,6 +30,7 @@ namespace Gwupe.Agent.UI.WPF.Team
             this.InitializeComponent();
             Teams = new DispatchingCollection<ObservableCollection<Components.Person.Team>, Components.Person.Team>(GwupeClientAppContext.CurrentAppContext.TeamManager.Teams, Dispatcher);
             _dataContext = new TeamManagementData(this);
+            _uiHelper = new UiHelper(Dispatcher,Disabler,null,null);
             TeamList.ItemContainerStyle.Setters.Add(new EventSetter(ListBoxItem.SelectedEvent, new RoutedEventHandler(TeamSelected)));
             DataContext = _dataContext;
             GwupeClientAppContext.CurrentAppContext.TeamManager.Teams.CollectionChanged += TeamsOnCollectionChanged;
@@ -51,6 +54,28 @@ namespace Gwupe.Agent.UI.WPF.Team
                     _dataContext.Content = null;
                 }
             }
+        }
+
+        public void RetreiveTeams()
+        {
+            // We Need to remove this team from our list
+            _uiHelper.Disabler.DisableInputs(true, "Refreshing");
+            ThreadPool.QueueUserWorkItem(state =>
+            {
+                try
+                {
+                    GwupeClientAppContext.CurrentAppContext.TeamManager.RetrieveTeams();
+                }
+                catch (Exception e)
+                {
+                    Logger.Error("Failed to retreive the team list", e);
+                }
+                finally
+                {
+                    _uiHelper.Disabler.DisableInputs(false);
+                }
+            });
+
         }
 
         public void SetAsMain(Dashboard dashboard)
@@ -90,7 +115,7 @@ namespace Gwupe.Agent.UI.WPF.Team
             }
             if (_teamSettings == null)
             {
-                _teamSettings = new TeamSettingsControl(Disabler);
+                _teamSettings = new TeamSettingsControl(Disabler, this);
             }
             _teamSettings.Team = team;
             _dataContext.Content = _teamSettings;

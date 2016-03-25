@@ -118,22 +118,7 @@ namespace Gwupe.Agent.Managers
                             if (rosterElement.presence != null && "none".Equals(rosterElement.PartyElement.subscriptionType))
                                 continue;
                             // Add each buddy to the list
-                            // I think we should not add a default presence, lets see how it goes
-                            
                             AddPartyElementToList(rosterElement.PartyElement, rosterElement.relationshipElement);
-                            // Now async get the images
-                            if (rosterElement.PartyElement.hasAvatar)
-                            {
-                                try
-                                {
-                                    _appContext.ConnectionManager.Connection.RequestAsync<VCardRq, VCardRs>(
-                                        new VCardRq(rosterElement.PartyElement.user), ResponseHandler);
-                                }
-                                catch (Exception e)
-                                {
-                                    Logger.Error("Failed to get the vcard for " + rosterElement.PartyElement.user, e);
-                                }
-                            }
                         }
                         // Process the queued changes
                         while (_queuedPresenceChanges.Count > 0)
@@ -181,53 +166,32 @@ namespace Gwupe.Agent.Managers
             ServicePartyAttendanceLookup.Clear();
         }
 
-        private void ResponseHandler(VCardRq vCardRq, VCardRs vCardRs, Exception e)
-        {
-            if (e == null)
-            {
-                if (!String.IsNullOrWhiteSpace(vCardRs.PartyElement.avatarData) && ServicePartyAttendanceLookup.ContainsKey(vCardRq.username))
-                {
-                    try
-                    {
-                        ServicePartyAttendanceLookup[vCardRq.username].Party.SetAvatarData(vCardRs.PartyElement.avatarData);
-                    }
-                    catch (Exception e1)
-                    {
-                        Logger.Error("Failed to set avatar data for " + vCardRq.username, e);
-                    }
-                }
-            }
-            else
-            {
-                Logger.Error("Failed to get vcard for " + vCardRq.username, e);
-            }
-        }
-
-
         private void AddUsernameToList(String username, Presence presence)
         {
             try
             {
-                VCardRs cardRs = _appContext.ConnectionManager.Connection.Request<VCardRq, VCardRs>(new VCardRq(username));
-                AddPartyElementToList(cardRs.PartyElement, cardRs.relationshipElement, presence);
+                AddPartyToList(GwupeClientAppContext.CurrentAppContext.PartyManager.GetParty(username), presence);
             }
             catch (Exception e)
             {
-                Logger.Error("Failed to get VCard information for " + username + " : " + e.Message, e);
+                Logger.Error("Failed to add the username " + username + " to the roster : " + e.Message, e);
             }
         }
 
         private void AddPartyElementToList(PartyElement partyElement, RelationshipElement relationshipElement, Presence presence = null)
         {
-            Attendance attendance = null;
-            if (partyElement is UserElement)
-            {
-                attendance = new Attendance(new Person(partyElement as UserElement), new Relationship(relationshipElement));
-            }
-            else
-            {
-                attendance = new Attendance(new Team(partyElement as TeamElement), new Relationship(relationshipElement));
-            }
+            var party = GwupeClientAppContext.CurrentAppContext.PartyManager.AddUpdatePartyFromElement(partyElement);
+            // Make sure we update the relationship
+            GwupeClientAppContext.CurrentAppContext.RelationshipManager.AddUpdateRelationship(party.Username, new Relationship(relationshipElement));
+            // This is to update the party in the background (avatar)
+            ThreadPool.QueueUserWorkItem(state => GwupeClientAppContext.CurrentAppContext.PartyManager.GetParty(partyElement.user, true));
+            // Now add it to the list
+            AddPartyToList(party, presence);
+        }
+
+        private void AddPartyToList(Party party, Presence presence)
+        {
+            var attendance = new Attendance(party);
             attendance.PropertyChanged += MarkUnmarkCurrentlyEngaged;
             if (presence != null)
             {
@@ -256,7 +220,7 @@ namespace Gwupe.Agent.Managers
             }
         }
 
-        public void AddPerson(Person person)
+        public void SubscribePerson(Person person)
         {
             // Lets add this person to the roster
             Logger.Debug("Attempting to add " + person + " to " + _appContext.CurrentUserManager.CurrentUser.Username + "'s Team");
@@ -268,71 +232,11 @@ namespace Gwupe.Agent.Managers
             {
                 _appContext.ConnectionManager.Connection.RequestAsync<SubscribeRq, SubscribeRs>(new SubscribeRq() { username = person.Username, subscribe = true },
                                                                       (request, response, ex) =>
-                                                                      ResponseHandler(request, response, ex, person));
+                                                                      SubscribePersonResponseHandler(request, response, ex, person));
             }
         }
 
-        public void AddAdHocPerson(String username, String shortCode)
-        {
-            VCardRq request = new VCardRq(username);
-            try
-            {
-                var response = _appContext.ConnectionManager.Connection.Request<VCardRq, VCardRs>(request);
-                AddAdHocPerson(response.PartyElement, shortCode);
-            }
-            catch (Exception e)
-            {
-                Logger.Error("Failed to add adhoc person " + username, e);
-            }
-        }
-
-        public void AddAdHocPerson(PartyElement partyElement, String shortCode)
-        {
-            Attendance attendance = null;
-            if (partyElement is UserElement)
-            {
-                attendance = new Attendance(new Person(partyElement as UserElement), Relationship.NoRelationship);
-            }
-            else
-            {
-                attendance = new Attendance(new Team(partyElement as TeamElement), Relationship.NoRelationship);
-            }
-            var presence = Presence.AlwaysOn;
-            presence.Resource = "_blitsme-" + shortCode;
-            presence.ShortCode = shortCode;
-            attendance.PropertyChanged += MarkUnmarkCurrentlyEngaged;
-            attendance.SetPresence(presence);
-            ServicePartyAttendanceList.Add(attendance);
-            ServicePartyAttendanceLookup[attendance.Party.Username] = attendance;
-        }
-
-        internal void UpdateRelationship(String contactUsername, Relationship relationship, String tokenId, String securityKey)
-        {
-            var response = _appContext.ConnectionManager.Connection
-                .Request<UpdateRelationshipRq, UpdateRelationshipRs>(
-                    new UpdateRelationshipRq()
-                    {
-                        relationshipElement = new RelationshipElement()
-                        {
-                            theyHaveUnattendedAccess = relationship.TheyHaveUnattendedAccess,
-                            ihaveUnattendedAccess = relationship.IHaveUnattendedAccess
-                        },
-                        contactUsername = contactUsername,
-                        tokenId = tokenId,
-                        securityKey = securityKey
-                    });
-            if (!ServicePartyAttendanceLookup.ContainsKey(contactUsername))
-            {
-                Logger.Error("Failed to update relationship to " + contactUsername + ", no such contact.");
-            }
-            else
-            {
-                ServicePartyAttendanceLookup[contactUsername].Relationship =
-                    new Relationship(response.relationshipElement);
-            }
-        }
-
-        private void ResponseHandler(SubscribeRq request, SubscribeRs response, Exception e, Person person)
+        private void SubscribePersonResponseHandler(SubscribeRq request, SubscribeRs response, Exception e, Person person)
         {
             if (e == null)
             {
@@ -345,44 +249,37 @@ namespace Gwupe.Agent.Managers
             }
         }
 
-        public void RequestContactUpdate(string changeId)
+        public void AddAdHocPerson(String username, String shortCode)
         {
-            _appContext.ConnectionManager.Connection.RequestAsync<VCardRq, VCardRs>(
-                new VCardRq(changeId), UpdateContactResponseHandler);
-
-        }
-
-        private void UpdateContactResponseHandler(VCardRq vCardRq, VCardRs vCardRs, Exception exception)
-        {
-            if (exception == null)
+            try
             {
-                if (ServicePartyAttendanceLookup.ContainsKey(vCardRq.username))
-                {
-                    try
-                    {
-                        if (vCardRs.IsTeam())
-                        {
-                            var team = ServicePartyAttendanceLookup[vCardRq.username].Party as Team;
-                            team?.InitTeam(vCardRs.teamElement);
-                        }
-                        else
-                        {
-                            var user = ServicePartyAttendanceLookup[vCardRq.username].Party as Person;
-                            user?.InitPerson(vCardRs.userElement);
-                        }
-                        ServicePartyAttendanceLookup[vCardRq.username].Relationship.InitRelationship(vCardRs.relationshipElement);
-                    }
-                    catch (Exception e1)
-                    {
-                        Logger.Error("Failed to update contact information for " + vCardRq.username, e1);
-                    }
-                }
+                AddAdHocPerson(GwupeClientAppContext.CurrentAppContext.PartyManager.GetParty(username), shortCode);
             }
-            else
+            catch (Exception e)
             {
-                Logger.Error("Failed to update contact " + vCardRq.username, exception);
+                Logger.Error("Failed to add adhoc person " + username, e);
             }
         }
+
+        public void AddAdHocPerson(PartyElement partyElement, String shortCode)
+        {
+            AddAdHocPerson(GwupeClientAppContext.CurrentAppContext.PartyManager.AddUpdatePartyFromElement(partyElement), shortCode);
+        }
+
+        public void AddAdHocPerson(Party party, String shortCode)
+        {
+            var attendance = new Attendance(party);
+            var presence = Presence.AlwaysOn;
+            presence.Resource = "_blitsme-" + shortCode;
+            presence.ShortCode = shortCode;
+            attendance.PropertyChanged += MarkUnmarkCurrentlyEngaged;
+            attendance.SetPresence(presence);
+            ServicePartyAttendanceList.Add(attendance);
+            ServicePartyAttendanceLookup[attendance.Party.Username] = attendance;
+        }
+
+
+
 
     }
 }

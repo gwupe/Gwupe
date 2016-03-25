@@ -58,10 +58,10 @@ namespace Gwupe.Agent.UI.WPF.Engage
             {
                 var relationship = new Relationship
                 {
-                    IHaveUnattendedAccess = _dataContext.Engagement.SecondParty.Relationship.IHaveUnattendedAccess
+                    IHaveUnattendedAccess = GwupeClientAppContext.CurrentAppContext.RelationshipManager.GetRelationship(_dataContext.Engagement.SecondParty.Party.Username).IHaveUnattendedAccess
                 };
                 Dispatcher.Invoke(new Action(() => { relationship.TheyHaveUnattendedAccess = (UnattendedAccessCheckbox.IsChecked == true); }));
-                GwupeClientAppContext.CurrentAppContext.RosterManager.UpdateRelationship(
+                GwupeClientAppContext.CurrentAppContext.RelationshipManager.UpdateRelationship(
                     _dataContext.Engagement.SecondParty.Party.Username,
                     relationship, token.TokenId, token.SecurityKey);
                 _updatedRelationship = true;
@@ -91,7 +91,7 @@ namespace Gwupe.Agent.UI.WPF.Engage
         protected override void ResetInputs()
         {
             _updatedRelationship = false;
-            UnattendedAccessCheckbox.IsChecked = _dataContext.Engagement.SecondParty.Relationship.TheyHaveUnattendedAccess;
+            UnattendedAccessCheckbox.IsChecked = GwupeClientAppContext.CurrentAppContext.RelationshipManager.GetRelationship(_dataContext.Engagement.SecondParty.Party.Username).TheyHaveUnattendedAccess;
         }
     }
 }

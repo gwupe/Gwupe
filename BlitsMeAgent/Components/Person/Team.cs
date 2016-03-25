@@ -34,7 +34,6 @@ namespace Gwupe.Agent.Components.Person
                 if (value.Equals(_player)) return;
                 _player = value;
                 OnPropertyChanged(nameof(Player));
-                Logger.Debug("Player changed to " + _player);
             }
         }
 
@@ -58,8 +57,6 @@ namespace Gwupe.Agent.Components.Person
             bool foundMe = false;
             var currentUsername = GwupeClientAppContext.CurrentAppContext.CurrentUserManager.CurrentUser.Username;
             _teamMembers.Clear();
-            Admin = false;
-            Player = PlayerMembership.none;
             _playerRequest = null;
             foreach (var teamMemberElement in teamElement.teamMembers)
             {
@@ -73,6 +70,11 @@ namespace Gwupe.Agent.Components.Person
                     Player = teamMember.Player;
                     foundMe = true;
                 }
+            }
+            if (!foundMe)
+            {
+                Admin = false;
+                Player = PlayerMembership.none;
             }
         }
 

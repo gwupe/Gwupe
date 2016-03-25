@@ -11,7 +11,6 @@ using System.ServiceProcess;
 using System.Text.RegularExpressions;
 using System.Threading;
 using Gwupe.Common.Security;
-using Gwupe.Service.ServiceHost;
 using log4net;
 using log4net.Config;
 using Microsoft.Win32;
@@ -78,9 +77,11 @@ namespace Gwupe.Service
 
         private static void WriteEventLog(String entry)
         {
+            /*
             if (!EventLog.SourceExists(EventSourceName))
                 EventLog.CreateEventSource(EventSourceName, "Application");
             EventLog.WriteEntry(EventSourceName, entry);
+            */
         }
 
         protected override void OnStart(string[] args)
@@ -88,9 +89,11 @@ namespace Gwupe.Service
             WriteEventLog("Starting GwupeService" + BuildMarker);
 
             // Update the service state to Start Pending.
-            ServiceStatus serviceStatus = new ServiceStatus();
-            serviceStatus.dwCurrentState = ServiceState.SERVICE_START_PENDING;
-            serviceStatus.dwWaitHint = 100000;
+            ServiceStatus serviceStatus = new ServiceStatus
+            {
+                dwCurrentState = ServiceState.SERVICE_START_PENDING,
+                dwWaitHint = 100000
+            };
             SetServiceStatus(this.ServiceHandle, ref serviceStatus);
 
             ThreadPool.QueueUserWorkItem(state => BackgroundInit());

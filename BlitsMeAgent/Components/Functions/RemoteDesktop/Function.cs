@@ -71,7 +71,7 @@ namespace Gwupe.Agent.Components.Functions.RemoteDesktop
         {
             RdpRequestChatElement chatElement = null;
             String message;
-            if (_engagement.SecondParty.Relationship.TheyHaveUnattendedAccess)
+            if (GwupeClientAppContext.CurrentAppContext.RelationshipManager.GetRelationship(_engagement.SecondParty.Party.Username).TheyHaveUnattendedAccess)
             {
                 message = _engagement.SecondParty.Party.Firstname +
                           " requested control of your desktop. Unattended access will be granted in 10 seconds.";
@@ -224,7 +224,7 @@ namespace Gwupe.Agent.Components.Functions.RemoteDesktop
             IsActive = false;
             IsUnderway = false;
             Logger.Info("Server connection closed, notifying end of service.");
-            if (_engagement.SecondParty.Relationship.TheyHaveUnattendedAccess)
+            if (GwupeClientAppContext.CurrentAppContext.RelationshipManager.GetRelationship(_engagement.SecondParty.Party.Username).TheyHaveUnattendedAccess)
             {
                 Chat.LogServiceCompleteMessage("You were just helped by " + _engagement.SecondParty.Party.Name, false);
             }
@@ -241,7 +241,7 @@ namespace Gwupe.Agent.Components.Functions.RemoteDesktop
             //BlitsMeClientAppContext.CurrentAppContext.UIManager.GetRemoteEngagement(_engagement);
             // all these checks are to make sure that we aren't currently accessing second partys desktop
             if (CheckRdpActive()) return;
-            if (_engagement.SecondParty.Relationship.IHaveUnattendedAccess)
+            if (GwupeClientAppContext.CurrentAppContext.RelationshipManager.GetRelationship(_engagement.SecondParty.Party.Username).IHaveUnattendedAccess)
             {
                 ElevatedRequestRdpSession();
             }

@@ -137,13 +137,13 @@
     <!-- Template for Roster Area When receiving a Notify Add Buddy -->
     <DataTemplate DataType="{x:Type notification:AddBuddyNotification}">
         <StackPanel Orientation="Horizontal" Style="{StaticResource NotificationStackStyle}" Height="50">
-                <Image Stretch="Uniform" Source="{Binding Path=Person, Converter={StaticResource avatarImageStreamReader}}" 
+                <Image Stretch="Uniform" Source="{Binding Path=Avatar, Converter={StaticResource avatarImageStreamReader}}" 
                    Width="35" Height="40" Margin="5,0,0,0"/>
             <!--            
                         <Image Stretch="Uniform" Source="/Gwupe.Agent;component/UI/WPF/Images/silhoette.png" Width="35" Height="40" Margin="5,0,0,0"/>
                 -->
             <StackPanel Orientation="Vertical" Margin="5,0,0,0" Width="85" VerticalAlignment="Center">
-                <TextBlock HorizontalAlignment="Left" Text="Contact Request" Foreground="Black" FontWeight="SemiBold" 
+                <TextBlock HorizontalAlignment="Left" Text="{Binding Message}" Foreground="Black" FontWeight="SemiBold" 
                            FontFamily="Segoe UI" FontSize="11" Width="85" TextWrapping="Wrap"/>
                 <TextBlock HorizontalAlignment="Left" Text="{Binding Name, FallbackValue=Unknown Notification}" 
                            Foreground="Black" FontWeight="SemiBold" FontFamily="Segoe UI" FontSize="10"
@@ -158,6 +158,29 @@
             </StackPanel>
         </StackPanel>
     </DataTemplate>
+
+    <!-- Template for Roster Area when receiving a join team notification -->
+    <DataTemplate DataType="{x:Type notification:JoinTeamNotification}">
+        <StackPanel Orientation="Horizontal" Style="{StaticResource NotificationStackStyle}" Height="50">
+            <Image Stretch="Uniform" Source="{Binding Path=Avatar, Converter={StaticResource avatarImageStreamReader}}" 
+                   Width="35" Height="40" Margin="5,0,0,0"/>
+            <StackPanel Orientation="Vertical" Margin="5,0,0,0" Width="85" VerticalAlignment="Center">
+                <TextBlock HorizontalAlignment="Left" Text="{Binding Message}" Foreground="Black" FontWeight="SemiBold" 
+                           FontFamily="Segoe UI" FontSize="11" Width="85" TextWrapping="Wrap"/>
+                <TextBlock HorizontalAlignment="Left" Text="{Binding Name, FallbackValue=Unknown Notification}" 
+                           Foreground="Black" FontWeight="SemiBold" FontFamily="Segoe UI" FontSize="10"
+                           Width="85" TextWrapping="Wrap"/>
+                <TextBlock HorizontalAlignment="Left" Text="{Binding Location, FallbackValue=Unknown Notification}" 
+                           Foreground="Black" FontFamily="Segoe UI" FontSize="10"
+                           Width="85" TextWrapping="Wrap"/>
+            </StackPanel>
+            <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Margin="10,0,0,0" >
+                <Button Style="{StaticResource AcceptButtonCommandStyle}" ToolTip="Join Team"/>
+                <Button Style="{DynamicResource CancelButtonCommandStyle}" Margin="5,0,0,0" ToolTip="Decline Invitation" />
+            </StackPanel>
+        </StackPanel>
+    </DataTemplate>
+
 
     <!--
     <DataTemplate DataType="{x:Type notification:RDPDisconnectNotification}">
